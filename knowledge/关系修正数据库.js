@@ -2056,6 +2056,222 @@ window._RELATION_PATCH_DATA = (function() {
       "width": 2,
       "strength": 4,
       "note": "声速与光速都描述传播快慢，但声波需要介质而光在真空中也能传播。"
+    },
+    {
+      "from": "mech_force_concept",
+      "to": "mech_newton1",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "牛顿第一定律建立在力的基本概念之上。"
+    },
+    {
+      "from": "mech_newton1",
+      "to": "mech_inertia",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "惯性概念与牛顿第一定律直接对应。"
+    },
+    {
+      "from": "mech_newton1",
+      "to": "mech_force_motion_state",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "理解力与运动状态关系需要牛顿第一定律。"
+    },
+    {
+      "from": "mech_liquid_pressure",
+      "to": "mech_communicating_vessels",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "连通器规律建立在液体压强特点上。"
+    },
+    {
+      "from": "mech_pressure",
+      "to": "mech_pascal_principle",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "帕斯卡原理属于液体压强传递规律的深化。"
+    },
+    {
+      "from": "mech_lever_balance",
+      "to": "mech_wheel_axle",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "轮轴可用杠杆平衡条件分析。"
+    },
+    {
+      "from": "mech_force_concept",
+      "to": "mech_work",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "功的定义包含力和沿力方向通过的距离。"
+    },
+    {
+      "from": "therm_melting_freezing",
+      "to": "therm_熔化吸热与凝固放热",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "先识别熔化/凝固，再讨论其吸放热。"
+    },
+    {
+      "from": "therm_分子间作用力",
+      "to": "therm_internal_energy",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "内能包含与分子间作用有关的势能。"
+    },
+    {
+      "from": "therm_internal_energy",
+      "to": "therm_改变内能的方式",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "改变内能的方式建立在内能概念基础上。"
+    },
+    {
+      "from": "therm_specific_heat",
+      "to": "therm_heat_calculation",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "Q=cmΔt 的计算以比热容概念为基础。"
+    },
+    {
+      "from": "therm_熔点与凝固点",
+      "to": "therm_物态变化图像",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "识别熔化平台需要理解熔点/凝固点。"
+    },
+    {
+      "from": "therm_internal_energy",
+      "to": "therm_能量守恒定律_热学",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "热过程能量守恒需要先理解内能。"
+    },
+    {
+      "from": "therm_能量守恒定律_热学",
+      "to": "therm_热力学第一定律",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "热力学第一定律是热过程中能量守恒的定量表达。"
+    },
+    {
+      "from": "therm_分子热运动",
+      "to": "therm_温度与分子运动",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "温度与微观运动关系需要分子热运动模型。"
+    },
+    {
+      "from": "therm_temperature",
+      "to": "therm_热膨胀",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "热膨胀讨论物体随温度变化的尺寸变化。"
+    },
+    {
+      "from": "opt_球面镜",
+      "to": "opt_凸面镜",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "凸面镜属于球面镜的一个分支。"
+    },
+    {
+      "from": "opt_reflection_law",
+      "to": "opt_光路可逆性",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "反射光路可逆性可由反射规律理解。"
+    },
+    {
+      "from": "elec_charge",
+      "to": "elec_摩擦起电",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "摩擦起电现象用电荷转移解释。"
+    },
+    {
+      "from": "elec_voltage",
+      "to": "elec_electric_work",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "电功计算涉及电压。"
+    },
+    {
+      "from": "elec_electric_power",
+      "to": "elec_额定功率与实际功率",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "额定功率与实际功率是电功率概念的直接应用。"
+    },
+    {
+      "from": "elec_current",
+      "to": "elec_电流的磁效应",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "电流的磁效应以电流存在为前提。"
+    },
+    {
+      "from": "elec_magnetic_field",
+      "to": "elec_electromagnetic_induction",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "电磁感应建立在磁场及其变化的基础上。"
+    },
+    {
+      "from": "elec_交流电",
+      "to": "elec_变压器",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "变压器工作需要交变电流。"
     }
   ];
 
