@@ -1274,9 +1274,15 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
+        "mech_force_diagram",
+        "mech_force_gravity",
+        "mech_force_elastic",
         "mech_friction"
       ],
-      "follow_ups": [],
+      "follow_ups": [
+        "mech_balance_forces",
+        "mech_force_motion_state"
+      ],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
