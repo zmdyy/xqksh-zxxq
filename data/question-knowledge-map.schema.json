@@ -1,62 +1,25 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "QuestionKnowledgeMappingV1",
+  "title": "QuestionConceptMappingV1",
+  "description": "P0 题目—知识点映射。concept_id 必须等于知识星球节点的 id。",
   "type": "object",
-  "required": [
-    "key",
-    "batchLabel",
-    "questionTitle",
-    "mainKnowledgeId",
-    "teacherConfirmed",
-    "updatedAt"
-  ],
+  "additionalProperties": false,
+  "required": ["exam_id", "question_no", "concept_id"],
   "properties": {
-    "key": {
-      "type": "string"
+    "exam_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "考试批次的稳定 ID"
     },
-    "schemaVersion": {
-      "const": 1
+    "question_no": {
+      "type": "string",
+      "minLength": 1,
+      "description": "题号。当前实现使用 科目/题号，避免不同科目同号冲突"
     },
-    "batchLabel": {
-      "type": "string"
-    },
-    "subject": {
-      "type": "string"
-    },
-    "questionTitle": {
-      "type": "string"
-    },
-    "scoreHeader": {
-      "type": "string"
-    },
-    "mainKnowledgeId": {
-      "type": "string"
-    },
-    "mainKnowledgeName": {
-      "type": "string"
-    },
-    "relatedKnowledgeIds": {
-      "type": "array",
-      "maxItems": 2,
-      "items": {
-        "type": "string"
-      }
-    },
-    "relatedKnowledgeNames": {
-      "type": "array",
-      "maxItems": 2,
-      "items": {
-        "type": "string"
-      }
-    },
-    "candidateErrorModel": {
-      "type": "string"
-    },
-    "teacherConfirmed": {
-      "type": "boolean"
-    },
-    "updatedAt": {
-      "type": "string"
+    "concept_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "主知识点 ID，与 data/knowledge/knowledge-db.js 中节点 id 完全一致"
     }
   }
 }
