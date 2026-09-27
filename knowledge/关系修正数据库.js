@@ -510,6 +510,226 @@ window._RELATION_PATCH_DATA = (function() {
     {
       "from": "energy_energy_classification",
       "to": "mech_work"
+    },
+    {
+      "from": "mech_force_gravity",
+      "to": "mech_force_elastic"
+    },
+    {
+      "from": "mech_force_elastic",
+      "to": "mech_friction"
+    },
+    {
+      "from": "mech_force_gravity",
+      "to": "mech_pressure_force"
+    },
+    {
+      "from": "mech_force_gravity",
+      "to": "mech_buoyancy_cause"
+    },
+    {
+      "from": "mech_pressure_force",
+      "to": "mech_buoyancy_cause"
+    },
+    {
+      "from": "mech_pressure",
+      "to": "mech_archimedes"
+    },
+    {
+      "from": "mech_liquid_pressure",
+      "to": "mech_float_sink_condition"
+    },
+    {
+      "from": "mech_length_measure",
+      "to": "mech_motion_reference"
+    },
+    {
+      "from": "mech_motion_reference",
+      "to": "mech_avg_speed"
+    },
+    {
+      "from": "mech_sound_propagation",
+      "to": "mech_timbre"
+    },
+    {
+      "from": "mech_sound_speed",
+      "to": "mech_loudness"
+    },
+    {
+      "from": "mech_atmospheric_pressure",
+      "to": "mech_浮力应用_轮船"
+    },
+    {
+      "from": "mech_滑轮",
+      "to": "mech_power"
+    },
+    {
+      "from": "therm_熔化吸热与凝固放热",
+      "to": "therm_液化方法"
+    },
+    {
+      "from": "therm_液化方法",
+      "to": "therm_升华与凝华"
+    },
+    {
+      "from": "therm_分子热运动",
+      "to": "therm_热量"
+    },
+    {
+      "from": "therm_扩散现象",
+      "to": "therm_改变内能的方式"
+    },
+    {
+      "from": "therm_分子间作用力",
+      "to": "therm_热传递"
+    },
+    {
+      "from": "therm_heat_calculation",
+      "to": "therm_calorific_value"
+    },
+    {
+      "from": "therm_水的比热容",
+      "to": "therm_heat_engine_efficiency"
+    },
+    {
+      "from": "therm_自然界水循环",
+      "to": "therm_热膨胀"
+    },
+    {
+      "from": "opt_light_source",
+      "to": "opt_影子的形成"
+    },
+    {
+      "from": "opt_light_speed",
+      "to": "opt_日食与月食"
+    },
+    {
+      "from": "opt_平面镜成像",
+      "to": "opt_球面镜"
+    },
+    {
+      "from": "opt_平面镜应用",
+      "to": "opt_凹面镜"
+    },
+    {
+      "from": "opt_u_f成像",
+      "to": "opt_照相机"
+    },
+    {
+      "from": "opt_light_speed",
+      "to": "opt_dispersion"
+    },
+    {
+      "from": "elec_摩擦起电",
+      "to": "elec_导体与绝缘体"
+    },
+    {
+      "from": "elec_series_circuit",
+      "to": "elec_voltage"
+    },
+    {
+      "from": "elec_parallel_circuit",
+      "to": "elec_电压表"
+    },
+    {
+      "from": "elec_影响电阻的因素",
+      "to": "elec_ohm_law"
+    },
+    {
+      "from": "elec_伏安法测电阻",
+      "to": "elec_电路故障分析"
+    },
+    {
+      "from": "elec_electric_power",
+      "to": "elec_joule_law"
+    },
+    {
+      "from": "elec_电能表",
+      "to": "elec_额定功率与实际功率"
+    },
+    {
+      "from": "elec_额定功率与实际功率",
+      "to": "elec_电热利用与防止"
+    },
+    {
+      "from": "elec_joule_law",
+      "to": "elec_家庭电路"
+    },
+    {
+      "from": "elec_电热利用与防止",
+      "to": "elec_安全用电"
+    },
+    {
+      "from": "elec_家庭电路",
+      "to": "elec_触电急救"
+    },
+    {
+      "from": "elec_地磁场",
+      "to": "elec_电磁铁"
+    },
+    {
+      "from": "elec_generator",
+      "to": "elec_电磁波"
+    },
+    {
+      "from": "elec_交流电",
+      "to": "elec_电磁波"
+    },
+    {
+      "from": "elec_变压器",
+      "to": "elec_电磁波"
+    },
+    {
+      "from": "energy_energy_conservation",
+      "to": "energy_solar_energy"
+    },
+    {
+      "from": "energy_nuclear_energy",
+      "to": "energy_renewable_nonrenewable"
+    },
+    {
+      "from": "energy_nuclear_fusion_fission",
+      "to": "energy_sustainable_可持续发展"
+    },
+    {
+      "from": "mech_newton1",
+      "to": "mech_pressure"
+    },
+    {
+      "from": "opt_透镜",
+      "to": "elec_current"
+    },
+    {
+      "from": "mech_newton1",
+      "to": "therm_能量守恒定律_热学"
+    },
+    {
+      "from": "elec_磁场对电流的作用",
+      "to": "elec_generator"
+    },
+    {
+      "from": "elec_electric_motor",
+      "to": "elec_交流电"
+    },
+    {
+      "from": "mech_sound_propagation",
+      "to": "opt_light_speed"
+    },
+    {
+      "from": "opt_光路可逆性",
+      "to": "elec_光纤通信"
+    },
+    {
+      "from": "elec_电磁波",
+      "to": "elec_互联网"
+    },
+    {
+      "from": "elec_家庭电路",
+      "to": "elec_电话"
+    },
+    {
+      "from": "therm_热传递方向",
+      "to": "energy_directionality"
     }
   ];
 
@@ -1746,6 +1966,96 @@ window._RELATION_PATCH_DATA = (function() {
       "width": 2,
       "strength": 5,
       "note": "热学中的能量守恒是总能量守恒定律在热过程中的具体化。"
+    },
+    {
+      "from": "mech_force_diagram",
+      "to": "mech_force_elastic",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "会画力的示意图后，再分别学习弹力。"
+    },
+    {
+      "from": "mech_force_diagram",
+      "to": "mech_friction",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "会画力的示意图后，再分别学习摩擦力。"
+    },
+    {
+      "from": "mech_force_gravity",
+      "to": "mech_force_elastic",
+      "type": "parallel",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "重力与弹力是受力分析中的并列基本力类型。"
+    },
+    {
+      "from": "mech_force_gravity",
+      "to": "mech_friction",
+      "type": "parallel",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "重力与摩擦力是受力分析中的并列基本力类型。"
+    },
+    {
+      "from": "mech_force_elastic",
+      "to": "mech_friction",
+      "type": "parallel",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "弹力与摩擦力是接触力中的并列知识分支。"
+    },
+    {
+      "from": "mech_liquid_pressure",
+      "to": "mech_buoyancy_cause",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "浮力产生于液体对物体上下表面压力差，直接依赖液体压强。"
+    },
+    {
+      "from": "elec_摩擦起电",
+      "to": "elec_导体与绝缘体",
+      "type": "parallel",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "摩擦起电与导体/绝缘体是静电与电学基础中的并列知识。"
+    },
+    {
+      "from": "opt_u_2f成像",
+      "to": "opt_照相机",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "照相机利用 u>2f 时成倒立、缩小实像。"
+    },
+    {
+      "from": "elec_electric_motor",
+      "to": "elec_generator",
+      "type": "parallel",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "电动机与发电机分别实现电能↔机械能转换，是互为对照的电磁装置。"
+    },
+    {
+      "from": "mech_sound_speed",
+      "to": "opt_light_speed",
+      "type": "cross_module",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "声速与光速都描述传播快慢，但声波需要介质而光在真空中也能传播。"
     }
   ];
 
@@ -1761,7 +2071,8 @@ window._RELATION_PATCH_DATA = (function() {
 
     result = result.filter(conn => !auditRemove.some(target => samePair(conn, target)));
     auditAdd.forEach(conn => {
-      if (!result.some(existing => samePair(existing, conn))) result.push(conn);
+      result = result.filter(existing => !samePair(existing, conn));
+      result.push(conn);
     });
 
     // 一个概念对只保留一条主关系，避免同一对节点叠出两条线。
