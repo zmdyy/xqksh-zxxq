@@ -5426,7 +5426,8 @@ function showCollectiveDiagnosisStudents(contextId) {
     }
     var title = '「' + escapeHtml(e.title) + '」' + (e.type === 'common' ? '共性异常' : e.type === 'group' ? e.tierLabel + '群体异常' : '个体异常');
     var html = '<div style="font-size:12px;color:#64748b;margin-bottom:8px;">' + escapeHtml(e.note || '') + '</div>';
-    html += '<div style="overflow:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr><th>#</th><th>姓名</th><th>班级</th><th>本题得分</th><th>满分</th><th>本题得分率</th><th>个人常态</th></tr></thead><tbody>';
+    var baselineLabel = e.type === 'group' ? '所在分组本题均值' : '个人常态';
+    html += '<div style="overflow:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr><th>#</th><th>姓名</th><th>班级</th><th>本题得分</th><th>满分</th><th>本题得分率</th><th>' + baselineLabel + '</th></tr></thead><tbody>';
     rows.forEach(function(x, i) {
         var baseline = x.baseline;
         if ((baseline === null || baseline === undefined) && x.row) {
