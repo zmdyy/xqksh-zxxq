@@ -1,9 +1,84 @@
 window._RELATION_PATCH_DATA = (function() {
   const remove = [
-    { from: 'opt_refraction_law', to: 'elec_current' }
+    { from: 'opt_refraction_law', to: 'elec_current' },
+    // 原始数据把“受力分析”线性接在“摩擦力”之后，并重复写了 prerequisite + causal。
+    // 这里先移除该 pair，再按“受力分析 = 汇聚型方法节点”重建关系。
+    { from: 'mech_friction', to: 'mech_force_analysis' }
   ];
 
   const add = [
+    {
+      from: 'mech_force_diagram',
+      to: 'mech_force_analysis',
+      type: 'prerequisite',
+      color: '',
+      width: 2,
+      strength: 5,
+      note: '受力分析需要先能用力的示意图准确表示力的方向、作用点和作用线。'
+    },
+    {
+      from: 'mech_force_gravity',
+      to: 'mech_force_analysis',
+      type: 'prerequisite',
+      color: '',
+      width: 2,
+      strength: 5,
+      note: '重力是初中受力分析中最常见的基本力之一，应直接汇入受力分析。'
+    },
+    {
+      from: 'mech_force_elastic',
+      to: 'mech_force_analysis',
+      type: 'prerequisite',
+      color: '',
+      width: 2,
+      strength: 5,
+      note: '支持力、拉力等接触力在初中阶段可由弹力统一理解，是受力分析的核心力类型。'
+    },
+    {
+      from: 'mech_friction',
+      to: 'mech_force_analysis',
+      type: 'prerequisite',
+      color: '',
+      width: 2,
+      strength: 5,
+      note: '摩擦力是受力分析的重要基本力之一，但不是受力分析的唯一来源。'
+    },
+    {
+      from: 'mech_pressure_force',
+      to: 'mech_force_analysis',
+      type: 'parallel',
+      color: '',
+      width: 2,
+      strength: 4,
+      note: '压力是接触面间的作用力，在涉及压强、接触面问题时应纳入受力分析。'
+    },
+    {
+      from: 'mech_buoyancy_cause',
+      to: 'mech_force_analysis',
+      type: 'parallel',
+      color: '',
+      width: 2,
+      strength: 4,
+      note: '浮力问题同样需要把浮力与重力、拉力等共同放入受力分析。'
+    },
+    {
+      from: 'mech_force_analysis',
+      to: 'mech_balance_forces',
+      type: 'prerequisite',
+      color: '',
+      width: 2,
+      strength: 5,
+      note: '判断二力平衡前，应先完整识别研究对象受到的力。'
+    },
+    {
+      from: 'mech_force_analysis',
+      to: 'mech_force_motion_state',
+      type: 'prerequisite',
+      color: '',
+      width: 2,
+      strength: 5,
+      note: '分析力与运动状态的关系前，应先完成研究对象的受力分析。'
+    },
     {
       from: 'opt_light_speed',
       to: 'elec_电磁波',
