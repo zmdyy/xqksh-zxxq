@@ -1023,15 +1023,6 @@ window._RELATION_PATCH_DATA = (function() {
       "note": "液体压强与大气压强是流体压强的并列情境。"
     },
     {
-      "from": "mech_force_analysis",
-      "to": "mech_pressure_force",
-      "type": "prerequisite",
-      "color": "",
-      "width": 2,
-      "strength": 4,
-      "note": "判断压力方向和作用对象需要受力分析。"
-    },
-    {
       "from": "mech_float_sink_condition",
       "to": "mech_浮力应用_潜水艇",
       "type": "prerequisite",
@@ -2272,6 +2263,24 @@ window._RELATION_PATCH_DATA = (function() {
       "width": 2,
       "strength": 5,
       "note": "变压器工作需要交变电流。"
+    },
+    {
+      "from": "mech_pressure_force",
+      "to": "mech_force_analysis",
+      "type": "parallel",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "压力是具体接触力类型，在涉及接触面的题目中需要纳入受力分析，但“受力分析”不是学习压力概念的前置条件。"
+    },
+    {
+      "from": "mech_force_concept",
+      "to": "mech_pressure_force",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "压力首先是一种力，理解压力需建立在力的基本概念之上。"
     }
   ];
 
