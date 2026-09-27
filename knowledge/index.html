@@ -1,0 +1,3728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>物理知识宇宙 | Physics Knowledge Universe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/postprocessing/Pass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/controls/OrbitControls.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#090a0d;--glass:rgba(12,13,16,0.58);--glass-border:rgba(255,255,255,0.08);
+  --text:#f0f0ec;--text-sec:rgba(240,240,236,0.62);--text-dim:rgba(240,240,236,0.34);
+  --accent:#d9f7ff;--gold:#d8b35a;--radius:12px;
+  --力学:#cdd9ff;--声学:#9ee8d0;--热学:#f0a7b5;--光学:#e7d57a;--电磁学:#b9a6ee;--能量:#e4b06e;--数学:#9bb4ff;
+  font-family:'Microsoft YaHei UI','Microsoft YaHei','Noto Sans SC','PingFang SC','Inter',sans-serif;color:var(--text);background:var(--bg);
+  text-rendering:geometricPrecision;-webkit-font-smoothing:subpixel-antialiased;-moz-osx-font-smoothing:auto
+}
+html,body{width:100%;height:100%;overflow:hidden;background:
+  radial-gradient(circle at 12% 18%,rgba(35,70,110,.26),transparent 28%),
+  radial-gradient(circle at 78% 24%,rgba(58,34,84,.22),transparent 32%),
+  radial-gradient(circle at 56% 76%,rgba(14,30,58,.34),transparent 34%),
+  radial-gradient(circle at 50% 50%,#0a1020 0%,#050916 46%,#01030a 100%)}
+body::before{
+  content:'';position:fixed;inset:-18%;z-index:2;pointer-events:none;opacity:.62;
+  background:linear-gradient(112deg,transparent 0 22%,rgba(76,126,198,.055) 34%,rgba(206,190,164,.04) 45%,rgba(139,73,138,.045) 60%,transparent 78%);
+  filter:blur(18px);mix-blend-mode:screen;transform:rotate(-12deg)
+}
+body::after{
+  content:'';position:fixed;inset:0;z-index:3;pointer-events:none;opacity:.62;
+  background:radial-gradient(ellipse at center,transparent 36%,rgba(0,0,0,.72) 100%)
+}
+canvas{display:block}
+#loading{
+  position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;background:var(--bg);
+  transition:opacity 0.8s ease,visibility 0.8s ease
+}
+#loading.hidden{opacity:0;visibility:hidden;pointer-events:none}
+#loading h1{
+  font-family:'Orbitron',sans-serif;font-size:36px;font-weight:900;
+  background:linear-gradient(135deg,var(--accent),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:4px;margin-bottom:8px
+}
+#loading p{font-size:14px;color:var(--text-sec);letter-spacing:2px;margin-bottom:30px}
+#loading .bar-wrap{width:240px;height:2px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden}
+#loading .bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--gold));border-radius:2px}
+#loading .status{font-size:12px;color:var(--text-dim);margin-top:12px;letter-spacing:1px}
+
+.loading-ring {
+  width: 100px;
+  height: 100px;
+  border: 2px solid transparent;
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.loading-ring::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 2px solid transparent;
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite reverse;
+}
+
+.loading-ring::after {
+  content: '';
+  position: absolute;
+  inset: 15px;
+  border: 2px solid transparent;
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.glass{
+  background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--glass-border);border-radius:var(--radius)
+}
+.glass-light{
+  background:rgba(10,20,50,0.35);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px solid var(--glass-border);border-radius:var(--radius)
+}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(110,231,255,0.2);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:rgba(110,231,255,0.4)}
+::selection{background:rgba(110,231,255,0.3)}
+
+#ui-overlay{position:fixed;inset:0;pointer-events:none;z-index:100}
+#ui-overlay>*{pointer-events:auto}
+
+#label-layer{position:fixed;inset:0;z-index:50;pointer-events:none;overflow:hidden}
+.star-label{
+  position:absolute;left:0;top:0;transform:translate(-50%,-50%);white-space:nowrap;
+  color:rgba(244,244,239,.9);font-family:'Microsoft YaHei UI','Microsoft YaHei','Noto Sans SC','PingFang SC','Inter',sans-serif;font-weight:800;
+  text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 6px currentColor;
+  letter-spacing:.2px;opacity:.9;transition:opacity .25s ease,color .25s ease,filter .25s ease;
+  will-change:transform,opacity;font-size:16px
+}
+.star-label.core{font-size:26px;color:#fff;filter:drop-shadow(0 0 5px rgba(255,255,255,.28))}
+.star-label.basic{font-size:20px}.star-label.extension{font-size:14px;font-weight:700;opacity:.68}
+.star-label.dim{opacity:.2}.star-label.active{opacity:1;color:#fff;filter:drop-shadow(0 0 12px rgba(216,179,90,.48))}
+
+#top-bar{
+  position:absolute;top:20px;left:50%;transform:translateX(-50%) translateZ(0);
+  display:flex;align-items:center;gap:16px;padding:8px 20px;height:52px;
+  background:rgba(10,20,50,0.5);backdrop-filter:blur(24px);
+  border:1px solid var(--glass-border);border-radius:26px;
+  box-shadow:0 4px 30px rgba(0,0,0,0.3);
+  white-space:nowrap;transition:all 0.3s;will-change:transform
+}
+#top-bar .logo{
+  font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;
+  background:linear-gradient(135deg,var(--accent),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:2px;cursor:pointer;transition:opacity 0.3s
+}
+#top-bar .logo:hover{opacity:0.8}
+#top-bar .divider{width:1px;height:24px;background:var(--glass-border)}
+.module-btn{
+  background:transparent;border:none;color:var(--text-sec);font-size:13px;
+  font-family:'Inter',sans-serif;padding:4px 12px;border-radius:16px;
+  cursor:pointer;transition:all 0.3s;position:relative;letter-spacing:0.5px
+}
+.module-btn:hover{color:var(--text);background:rgba(255,255,255,0.05)}
+.module-btn.active{color:#fff;background:rgba(110,231,255,0.12)}
+.module-btn .dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px;vertical-align:middle}
+#top-bar .search-box{
+  display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.04);
+  border:1px solid var(--glass-border);border-radius:16px;padding:0 14px;
+  height:32px;width:180px;transition:all 0.3s;cursor:text
+}
+#top-bar .search-box:focus-within{width:240px;border-color:rgba(110,231,255,0.3);background:rgba(255,255,255,0.06)}
+#top-bar .search-box i{font-size:12px;color:var(--text-dim)}
+#top-bar .search-box input{
+  background:transparent;border:none;outline:none;color:var(--text);
+  font-size:13px;font-family:'Inter',sans-serif;width:100%
+}
+#top-bar .search-box input::placeholder{color:var(--text-dim)}
+
+.help-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-sec);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+
+.help-btn:hover {
+  color: var(--accent);
+  background: rgba(110, 231, 255, 0.1);
+}
+
+#helpPanel {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  width: 280px;
+  padding: 20px;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+
+#helpPanel.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+#helpPanel h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  color: var(--accent);
+  margin-bottom: 15px;
+  letter-spacing: 1px;
+}
+
+.shortcut-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shortcut-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.shortcut-item:last-child {
+  border-bottom: none;
+}
+
+.shortcut-item .key {
+  background: rgba(110, 231, 255, 0.15);
+  color: var(--accent);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.shortcut-item .action {
+  color: var(--text-sec);
+  font-size: 12px;
+}
+
+#helpPanel .hint {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 11px;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+#sidebar{
+  position:absolute;left:20px;top:50%;transform:translateY(-50%) translateZ(0);
+  display:flex;flex-direction:column;gap:8px;padding:12px 10px;
+  background:rgba(10,20,50,0.4);backdrop-filter:blur(16px);
+  border:1px solid var(--glass-border);border-radius:14px;will-change:transform
+}
+#sidebar .s-btn{
+  width:36px;height:36px;border-radius:50%;border:1px solid transparent;
+  background:rgba(255,255,255,0.03);cursor:pointer;transition:all 0.3s;
+  display:flex;align-items:center;justify-content:center;position:relative
+}
+#sidebar .s-btn:hover{background:rgba(255,255,255,0.08);transform:scale(1.1)}
+#sidebar .s-btn.active{border-color:var(--accent);box-shadow:0 0 12px rgba(110,231,255,0.2)}
+#sidebar .s-btn .tip{
+  position:absolute;left:48px;background:rgba(0,0,0,0.8);color:#fff;
+  padding:4px 10px;border-radius:6px;font-size:12px;white-space:nowrap;
+  opacity:0;pointer-events:none;transition:all 0.3s
+}
+#sidebar .s-btn:hover .tip{opacity:1}
+#sidebar .s-btn i{font-size:16px}
+
+#info-panel{
+  position:absolute;right:20px;top:82px;bottom:22px;transform:translateX(calc(100% + 20px));
+  width:450px;max-height:none;overflow-y:auto;padding:28px 30px;
+  background:rgba(7,12,28,0.98);backdrop-filter:none;-webkit-backdrop-filter:none;
+  border:1px solid rgba(152,190,255,0.16);border-radius:18px;
+  box-shadow:0 18px 70px rgba(0,0,0,0.62),inset 0 1px 0 rgba(255,255,255,0.04);
+  transition:transform 0.5s cubic-bezier(0.22,1,0.36,1),opacity 0.5s ease;
+  opacity:0
+}
+#info-panel.visible{transform:translateX(0);opacity:1}
+#info-panel .close{
+  position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;
+  border:none;background:rgba(255,255,255,0.04);color:var(--text-sec);
+  cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;font-size:14px
+}
+#info-panel .close:hover{background:rgba(255,255,255,0.1);color:var(--text)}
+#info-panel .star-icon{width:30px;height:30px;border-radius:50%;margin-bottom:14px;display:flex;align-items:center;justify-content:center;font-size:14px}
+#info-panel h2{font-size:28px;font-weight:900;margin-bottom:8px;letter-spacing:0;color:#fff;line-height:1.15;text-shadow:none}
+#info-panel .meta{font-size:13px;color:rgba(236,241,250,.86);margin-bottom:14px;display:flex;gap:10px 14px;flex-wrap:wrap;font-weight:700}
+#info-panel .meta span{display:flex;align-items:center;gap:4px}
+#info-panel .section{
+  margin-bottom:18px;padding:14px 15px;border-radius:14px;
+  background:rgba(255,255,255,.028);border:1px solid rgba(255,255,255,.06)
+}
+#info-panel .section:last-child{margin-bottom:0}
+#info-panel .section h3{
+  display:flex;align-items:center;gap:8px;font-size:13px;font-weight:900;text-transform:none;letter-spacing:0.8px;
+  color:#fff;margin-bottom:11px;padding-bottom:9px;border-bottom:1px solid rgba(255,255,255,.07)
+}
+#info-panel .section h3::before{
+  content:'';width:7px;height:7px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 10px var(--accent);flex-shrink:0
+}
+#info-panel .section h3::after{
+  content:attr(data-step);margin-left:auto;font-size:10px;font-weight:800;letter-spacing:1px;
+  color:rgba(216,179,90,.85);padding:2px 7px;border-radius:999px;background:rgba(216,179,90,.1)
+}
+#info-panel .section p{font-size:16px;line-height:1.72;color:#f7f9fc;font-weight:600}
+#info-panel .panel-summary{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 18px
+}
+#info-panel .summary-card{
+  padding:9px 10px;border-radius:10px;background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.07)
+}
+#info-panel .summary-card strong{display:block;font-size:11px;color:rgba(236,241,250,.72);margin-bottom:4px}
+#info-panel .summary-card span{display:block;font-size:13px;color:#fff;font-weight:800;line-height:1.25}
+#info-panel .concept-card{
+  background:linear-gradient(135deg,rgba(110,231,255,.08),rgba(255,255,255,.025));
+  border-color:rgba(110,231,255,.18)
+}
+#info-panel .concept-card p{margin:0}
+#info-panel .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+#info-panel .tags .tag{
+  padding:3px 10px;border-radius:10px;font-size:12px;
+  border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03)
+}
+#info-panel .tags .tag.clickable{cursor:pointer}
+#info-panel .tags .tag.clickable:hover{background:rgba(255,255,255,0.08)}
+#info-panel .related-group{
+  margin-bottom:12px;border-radius:10px;overflow:hidden;
+  border-left:4px solid;padding:10px 12px;background:rgba(255,255,255,0.035)
+}
+#info-panel .related-group-header{
+  font-size:12px;font-weight:800;letter-spacing:0.6px;
+  margin-bottom:4px;display:flex;align-items:center;gap:6px
+}
+#info-panel .related-group-desc{font-size:12px;color:rgba(236,241,250,.68);line-height:1.5;margin-bottom:8px;font-weight:600}
+#info-panel .learning-path{
+  display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:stretch;
+  margin-bottom:14px;padding:12px;border-radius:13px;background:linear-gradient(135deg,rgba(216,179,90,.1),rgba(255,255,255,.03));
+  border:1px solid rgba(216,179,90,.18)
+}
+#info-panel .path-node{min-width:0;padding:8px;border-radius:8px;background:rgba(0,0,0,.14)}
+#info-panel .path-node.clickable{cursor:pointer;transition:background .2s ease,border-color .2s ease,transform .2s ease;border:1px solid rgba(255,255,255,.04)}
+#info-panel .path-node.clickable:hover{background:rgba(110,231,255,.1);border-color:rgba(110,231,255,.22);transform:translateY(-1px)}
+#info-panel .path-node strong{display:block;font-size:11px;color:rgba(236,241,250,.52);margin-bottom:5px}
+#info-panel .path-node span{display:block;font-size:13px;color:rgba(247,249,252,.9);line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#info-panel .path-arrow{align-self:center;color:rgba(216,179,90,.8);font-size:13px}
+#info-panel .path-node.current{background:rgba(216,179,90,.14);border:1px solid rgba(216,179,90,.22)}
+#info-panel .path-node.current span{color:#ffd766}
+#info-panel .related-group-header i{font-size:10px;opacity:0.8}
+#info-panel .related-item{
+  display:grid;grid-template-columns:8px 1fr auto;align-items:center;gap:8px;padding:8px 9px;margin:3px 0;
+  border-radius:8px;cursor:pointer;transition:all 0.15s;font-size:14px;color:rgba(247,249,252,.9);
+  border:1px solid rgba(255,255,255,0.04);background:rgba(0,0,0,.12)
+}
+#info-panel .related-item:hover{background:rgba(255,255,255,0.075);border-color:rgba(255,255,255,0.12);transform:translateX(2px)}
+#info-panel .related-item .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+#info-panel .related-item .mod-label{font-size:11px;color:rgba(236,241,250,.48);margin-left:auto}
+#info-panel .nav-bar{
+  display:flex;align-items:center;gap:6px;margin-top:10px;padding-top:8px;
+  border-top:1px solid var(--glass-border)
+}
+#info-panel .nav-bar .nav-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:4px;
+  padding:7px 10px;border:1px solid var(--glass-border);border-radius:8px;
+  background:rgba(255,255,255,0.03);color:var(--text);cursor:pointer;
+  font-size:12px;transition:all 0.3s;font-family:'Inter',sans-serif
+}
+#info-panel .nav-bar .nav-btn:hover{background:rgba(110,231,255,0.1);border-color:rgba(110,231,255,0.2)}
+#info-panel .nav-bar .nav-btn:active{transform:scale(0.97)}
+#info-panel .nav-bar .nav-counter{
+  font-size:11px;color:var(--text-dim);white-space:nowrap;min-width:50px;
+  text-align:center;letter-spacing:0.5px
+}
+#info-panel .formula{
+  padding:18px 16px;background:linear-gradient(180deg,rgba(0,0,0,.42),rgba(5,8,18,.64));border-radius:12px;
+  font-size:26px;text-align:center;color:var(--gold);margin:4px 0 2px;
+  border:1px solid rgba(216,179,90,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+  font-family:'Times New Roman',serif
+}
+#info-panel .formula .frac{
+  display:inline-flex;flex-direction:column;align-items:center;
+  vertical-align:middle;margin:0 3px;font-size:16px;line-height:1.1
+}
+#info-panel .formula .frac .num{
+  border-bottom:1px solid var(--gold);padding:0 4px 3px
+}
+#info-panel .formula .frac .den{
+  padding:3px 4px 0
+}
+#info-panel .formula-units{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:7px;margin-top:10px;
+  font-family:'Microsoft YaHei UI','Microsoft YaHei','Noto Sans SC','PingFang SC','Inter',sans-serif;text-align:left
+}
+#info-panel .formula-unit{
+  padding:8px 9px;border-radius:9px;background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.07);color:rgba(245,248,252,.9);line-height:1.35
+}
+#info-panel .formula-unit strong{display:block;color:#ffd766;font-size:13px;margin-bottom:2px}
+#info-panel .formula-unit span{display:block;font-size:12px;color:rgba(236,241,250,.78)}
+#info-panel .formula-tip{
+  font-family:'Microsoft YaHei UI','Microsoft YaHei','Noto Sans SC','PingFang SC','Inter',sans-serif;
+  font-size:12px;color:rgba(236,241,250,.68);margin-top:8px;text-align:left;line-height:1.5
+}
+#info-panel .app-list{list-style:none;padding:0;display:grid;gap:8px}
+#info-panel .app-list li{
+  padding:9px 11px;font-size:14px;line-height:1.55;color:rgba(236,241,250,.88);
+  border:1px solid rgba(255,255,255,0.06);border-radius:10px;background:rgba(0,0,0,.12)
+}
+#info-panel .app-list li:last-child{border-bottom:none}
+#info-panel .app-list li::before{content:'▸ ';color:var(--accent)}
+#info-panel .app-list li{font-weight:600}
+#panelThinking{display:grid;gap:10px}
+.thinking-focus{
+  padding:12px;border-radius:12px;background:rgba(216,179,90,.1);
+  border:1px solid rgba(216,179,90,.18);color:#fff;font-weight:800;line-height:1.5
+}
+.thinking-model{
+  padding:10px 12px;border-radius:10px;background:rgba(110,231,255,.07);
+  border:1px solid rgba(110,231,255,.15);color:rgba(239,248,255,.94);font-size:14px;line-height:1.55
+}
+.thinking-chain{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:2px 0}
+.thinking-chip{
+  padding:6px 9px;border-radius:999px;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.08);font-size:12px;font-weight:800;color:rgba(247,249,252,.92)
+}
+.thinking-arrow{color:rgba(216,179,90,.9);font-size:11px}
+.thinking-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.thinking-mini{
+  padding:9px 10px;border-radius:10px;background:rgba(0,0,0,.16);
+  border:1px solid rgba(255,255,255,.06);min-width:0
+}
+.thinking-mini strong{display:block;color:#ffd766;font-size:13px;margin-bottom:4px}
+.thinking-mini span{display:block;color:rgba(236,241,250,.82);font-size:12px;line-height:1.45}
+.thinking-list{display:grid;gap:7px}
+.thinking-list div{
+  padding:8px 10px;border-radius:9px;background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.055);font-size:13px;line-height:1.5;color:rgba(245,248,252,.9)
+}
+.confuse-card{
+  padding:10px 12px;border-radius:10px;background:rgba(255,215,102,.06);
+  border:1px solid rgba(255,215,102,.18);margin-bottom:8px
+}
+.confuse-card .pair{display:flex;gap:8px;align-items:stretch;margin-bottom:8px}
+.confuse-card .side{
+  flex:1;min-width:0;padding:8px;border-radius:8px;background:rgba(0,0,0,.16);
+  border:1px solid rgba(255,255,255,.06);cursor:default
+}
+.confuse-card .side.clickable{cursor:pointer}
+.confuse-card .side.clickable:hover{border-color:rgba(110,231,255,.28);background:rgba(110,231,255,.08)}
+.confuse-card .side strong{display:block;font-size:13px;margin-bottom:4px;color:#ffd766}
+.confuse-card .side span{display:block;font-size:12px;line-height:1.45;color:rgba(236,241,250,.82)}
+.confuse-card .diff{font-size:13px;line-height:1.55;color:rgba(247,249,252,.9)}
+.chain-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}
+.chain-step{
+  padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);font-size:12px;cursor:pointer;max-width:140px
+}
+.chain-step:hover{border-color:rgba(110,231,255,.3);background:rgba(110,231,255,.08)}
+.chain-step.current{border-color:rgba(216,179,90,.45);background:rgba(216,179,90,.14);color:#ffd766}
+.chain-step.unlearned{border-color:rgba(255,120,120,.35);color:#ffb4b4}
+.chain-step strong{display:block;font-size:10px;opacity:.6;margin-bottom:2px}
+.chain-arrow{font-size:11px;color:rgba(216,179,90,.75)}
+.diag-btn{
+  margin-top:8px;padding:6px 10px;border-radius:8px;border:1px solid rgba(110,231,255,.2);
+  background:rgba(110,231,255,.08);color:var(--accent);font-size:12px;cursor:pointer
+}
+.mistake-item{padding:8px 10px;border-radius:9px;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.18);font-size:13px;line-height:1.5;margin-bottom:6px;color:rgba(255,220,220,.95)}
+.scene-item{padding:8px 10px;border-radius:9px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.055);margin-bottom:6px}
+.scene-item strong{display:block;font-size:13px;color:#9ee8d0;margin-bottom:4px}
+.scene-item span{display:block;font-size:12px;line-height:1.5;color:rgba(236,241,250,.82)}
+
+#info-panel .learn-btn{
+  width:100%;padding:10px;border:none;border-radius:8px;
+  background:linear-gradient(135deg,rgba(110,231,255,0.2),rgba(110,231,255,0.05));
+  color:var(--accent);font-size:14px;font-weight:500;cursor:pointer;
+  transition:all 0.3s;border:1px solid rgba(110,231,255,0.15);margin-top:16px
+}
+#info-panel .learn-btn:hover{background:linear-gradient(135deg,rgba(110,231,255,0.3),rgba(110,231,255,0.1))}
+#info-panel .learn-btn.learned{background:linear-gradient(135deg,rgba(46,213,115,0.2),rgba(46,213,115,0.05));color:#2ed573;border-color:rgba(46,213,115,0.2)}
+
+#tooltip{
+  position:fixed;pointer-events:none;z-index:200;
+  padding:6px 14px;background:rgba(0,0,0,0.8);
+  backdrop-filter:blur(12px);border:1px solid var(--glass-border);
+  border-radius:8px;font-size:13px;color:var(--text);
+  white-space:nowrap;opacity:0;transition:opacity 0.15s;transform:translate(-50%,-100%);
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);will-change:opacity
+}
+#tooltip.visible{opacity:1}
+
+#search-overlay{
+  position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(8px);display:none;align-items:flex-start;justify-content:center;
+  padding-top:80px
+}
+#search-overlay.open{display:flex}
+#search-overlay .panel{
+  width:480px;max-height:60vh;overflow-y:auto;padding:20px;
+  background:rgba(8,16,40,0.85);backdrop-filter:blur(28px);
+  border:1px solid var(--glass-border);border-radius:16px
+}
+#search-overlay .panel input{
+  width:100%;padding:12px 16px;border:1px solid var(--glass-border);border-radius:10px;
+  background:rgba(255,255,255,0.04);color:var(--text);font-size:15px;
+  font-family:'Inter',sans-serif;outline:none;transition:all 0.3s
+}
+#search-overlay .panel input:focus{border-color:rgba(110,231,255,0.3)}
+#search-overlay .result-item{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;margin-top:6px;
+  border-radius:8px;cursor:pointer;transition:all 0.3s;
+  border:1px solid transparent
+}
+#search-overlay .result-item:hover{background:rgba(255,255,255,0.04);border-color:var(--glass-border)}
+#search-overlay .result-item .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+#search-overlay .result-item .name{font-size:14px;font-weight:500}
+#search-overlay .result-item .mod{font-size:11px;color:var(--text-dim);margin-left:auto}
+#search-overlay .empty{padding:30px;text-align:center;color:var(--text-dim);font-size:14px}
+
+#bottom-bar{
+  position:absolute;bottom:20px;left:50%;transform:translateX(-50%) translateZ(0);
+  padding:8px 20px;display:flex;align-items:center;gap:16px;
+  background:rgba(10,20,50,0.35);backdrop-filter:blur(12px);
+  border:1px solid var(--glass-border);border-radius:20px;font-size:12px;color:var(--text-dim);will-change:transform
+}
+#bottom-bar{pointer-events:none}
+#bottom-bar button,#bottom-bar input{pointer-events:auto}
+#bottom-bar span{display:flex;align-items:center;gap:6px}
+#bottom-bar .key{
+  display:inline-block;padding:1px 6px;border-radius:4px;
+  background:rgba(255,255,255,0.06);font-size:10px;font-family:'Inter',sans-serif;
+  color:var(--text-sec)
+}
+
+.data-controls {
+  display: flex;
+  gap: 8px;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.data-btn {
+  background: rgba(110, 231, 255, 0.1);
+  border: 1px solid rgba(110, 231, 255, 0.2);
+  color: var(--accent);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  font-size: 12px;
+}
+
+.data-btn:hover {
+  background: rgba(110, 231, 255, 0.2);
+  border-color: rgba(110, 231, 255, 0.4);
+  transform: scale(1.1);
+}
+
+@media(max-width:768px){
+  #top-bar{left:10px;right:10px;transform:none;top:12px;padding:6px 14px;height:46px;gap:10px;border-radius:20px;justify-content:space-between}
+  #top-bar .search-box{width:120px}
+  #top-bar .search-box:focus-within{width:160px}
+  #top-bar .logo{font-size:13px;letter-spacing:1px}
+  .module-btn{font-size:11px;padding:3px 8px}
+  #sidebar{left:8px;padding:8px 6px;gap:6px}
+  #sidebar .s-btn{width:30px;height:30px;font-size:13px}
+  #info-panel{width:calc(100% - 16px);right:8px;top:70px;bottom:12px;max-height:none;padding:16px}
+  #bottom-bar{font-size:10px;gap:10px;padding:6px 14px}
+  #search-overlay .panel{width:calc(100% - 32px)}
+  
+  #helpPanel {
+    width: calc(100% - 40px);
+    right: 20px;
+    left: 20px;
+  }
+  
+  .data-controls {
+    margin-left: 8px;
+    padding-left: 8px;
+  }
+  
+  .data-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
+  
+  .loading-ring {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+@media(max-width:480px){
+  #top-bar {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 8px 12px;
+    gap: 8px;
+  }
+  
+  .module-btn {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+  
+  #sidebar {
+    display: none;
+  }
+  
+  #info-panel {
+    width: 100%;
+    right: 0;
+    left: 0;
+    top: auto;
+    bottom: 0;
+    max-height: 80vh;
+    border-radius: 16px 16px 0 0;
+  }
+  
+  #bottom-bar {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+  
+  .loading-ring {
+    width: 60px;
+    height: 60px;
+  }
+  
+  #loading h1 {
+    font-size: 24px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="loading-ring"></div>
+  <h1>✦ 物理知识宇宙</h1>
+  <p>Physics Knowledge Universe</p>
+  <div class="bar-wrap"><div class="bar" id="load-bar"></div></div>
+  <div class="status" id="load-status">正在加载宇宙...</div>
+</div>
+
+<div id="label-layer"></div>
+<div id="tooltip"></div>
+
+<div id="ui-overlay">
+  <div id="top-bar">
+    <span class="logo" id="logoBtn">✦ 物理宇宙</span>
+    <a href="../index.html" title="返回学情可视化" style="color:var(--text-sec);text-decoration:none;font-size:13px;padding:7px 10px;border:1px solid var(--glass-border);border-radius:8px;white-space:nowrap;">← 学情可视化</a>
+    <span class="divider"></span>
+    <button class="module-btn active" data-module="all"><span class="dot" style="background:rgba(255,255,255,0.4)"></span>总览</button>
+    <button class="module-btn" data-module="力学"><span class="dot" style="background:var(--力学)"></span>力学</button>
+    <button class="module-btn" data-module="热学"><span class="dot" style="background:var(--热学)"></span>热学</button>
+    <button class="module-btn" data-module="光学"><span class="dot" style="background:var(--光学)"></span>光学</button>
+    <button class="module-btn" data-module="电磁学"><span class="dot" style="background:var(--电磁学)"></span>电磁学</button>
+    <button class="module-btn" data-module="能量"><span class="dot" style="background:var(--能量)"></span>能量</button>
+    <button class="module-btn" data-module="数学"><span class="dot" style="background:var(--数学)"></span>数学</button>
+    <span class="divider"></span>
+    <div class="search-box" id="searchTrigger">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="搜索知识点..." readonly>
+    </div>
+    <button class="help-btn" id="helpBtn" title="帮助 (H)"><i class="fas fa-question-circle"></i></button>
+  </div>
+
+  <!-- Help Panel -->
+  <div id="helpPanel" class="glass">
+    <h3>键盘快捷键</h3>
+    <div class="shortcut-list">
+      <div class="shortcut-item">
+        <span class="key">1-6</span>
+        <span class="action">切换模块</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="key">R</span>
+        <span class="action">重置视图</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="key">←→</span>
+        <span class="action">导航相关知识点</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="key">双击</span>
+        <span class="action">高亮知识发展链</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="key">Ctrl+K</span>
+        <span class="action">按现象/易混说法搜索</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="key">Esc</span>
+        <span class="action">关闭面板</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="key">H</span>
+        <span class="action">显示/隐藏帮助</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="key">F</span>
+        <span class="action">聚焦选中行星</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="key">D</span>
+        <span class="action">取消选择</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="key">S</span>
+        <span class="action">显示行星信息</span>
+      </div>
+    </div>
+    <p class="hint">点击行星查看详情，滚轮缩放，拖拽旋转</p>
+  </div>
+
+  <div id="sidebar">
+    <button class="s-btn active" data-module="all" title="总览"><i class="fas fa-globe" style="color:rgba(255,255,255,0.6)"></i><span class="tip">宇宙总览</span></button>
+    <button class="s-btn" data-module="力学" title="力学"><i class="fas fa-cog" style="color:var(--力学)"></i><span class="tip">牛顿座 · 力学</span></button>
+    <button class="s-btn" data-module="热学" title="热学"><i class="fas fa-fire" style="color:var(--热学)"></i><span class="tip">火焰座 · 热学</span></button>
+    <button class="s-btn" data-module="光学" title="光学"><i class="fas fa-lightbulb" style="color:var(--光学)"></i><span class="tip">棱镜座 · 光学</span></button>
+    <button class="s-btn" data-module="电磁学" title="电磁学"><i class="fas fa-bolt" style="color:var(--电磁学)"></i><span class="tip">闪电座 · 电磁学</span></button>
+    <button class="s-btn" data-module="能量" title="能量"><i class="fas fa-recycle" style="color:var(--能量)"></i><span class="tip">能量环 · 能量</span></button>
+    <button class="s-btn" data-module="数学" title="数学"><i class="fas fa-calculator" style="color:var(--数学)"></i><span class="tip">坐标座 · 数学</span></button>
+  </div>
+
+  <div id="info-panel">
+    <button class="close" id="panelClose"><i class="fas fa-times"></i></button>
+    <div class="star-icon" id="panelIcon">✦</div>
+    <h2 id="panelTitle">知识点名称</h2>
+    <div class="meta" id="panelMeta"></div>
+    <div class="section"><h3>核心定义</h3><p id="panelDef">定义内容</p></div>
+    <div class="section" id="panelMistakesWrap"><h3>常见错误</h3><div id="panelMistakes"></div></div>
+    <div class="section" id="panelFormulaWrap"><h3>公式</h3><div class="formula" id="panelFormula"></div></div>
+    <div class="section" id="panelThinkingWrap"><h3>思维可视化</h3><div id="panelThinking"></div></div>
+    <div class="section" id="panelConfuseWrap"><h3>易混淆对照</h3><div id="panelConfuse"></div></div>
+    <div class="section"><h3>生活应用</h3><ul class="app-list" id="panelApps"></ul><div id="panelScenes"></div></div>
+    <div class="section"><h3>中考考点</h3><p id="panelExam" style="font-size:13px;color:var(--text-sec)"></p></div>
+    <div class="section" id="panelHistoryWrap"><h3>科学故事</h3><p id="panelHistory" style="font-size:13px;color:var(--text-sec);line-height:1.7"></p></div>
+    <div class="section" id="panelCrossWrap"><h3>跨学科关联</h3><div class="tags" id="panelCross"></div></div>
+    <div class="section" id="panelChainWrap"><h3>知识发展链</h3><div id="panelChain"></div></div>
+    <div class="section"><h3>关联知识点</h3><div class="tags" id="panelRelated"></div></div>
+    <button class="learn-btn" id="learnBtn"><i class="far fa-circle"></i> 标记为已学习</button>
+  </div>
+
+  <div id="bottom-bar">
+    <span><span class="key">左键拖拽</span> 旋转</span>
+    <span><span class="key">滚轮</span> 缩放</span>
+    <span><span class="key">点击</span> 查看详情</span>
+    <span><span class="key">← →</span> 关联导航</span>
+    <span id="starCount" style="margin-left:4px;color:var(--text-sec)">✦ 0 知识点</span>
+    <span id="focusBadge" style="margin-left:8px;padding:1px 8px;border-radius:8px;font-size:10px;background:rgba(110,231,255,0.12);color:var(--accent);display:none">聚焦模式</span>
+    <div class="data-controls">
+      <button class="data-btn" id="exportBtn" title="导出学习数据"><i class="fas fa-download"></i></button>
+      <button class="data-btn" id="importBtn" title="导入学习数据"><i class="fas fa-upload"></i></button>
+      <input type="file" id="importFile" accept=".json" style="display: none">
+    </div>
+  </div>
+</div>
+
+<div id="search-overlay">
+  <div class="panel">
+    <input type="text" id="searchInput" placeholder="搜索知识点、生活现象或易混说法..." autofocus>
+    <div id="searchResults"></div>
+  </div>
+</div>
+
+<script src="../data/knowledge/knowledge-db.js"></script>
+<script src="力学思维拓展数据库.js"></script>
+<script src="电磁学思维拓展数据库.js"></script>
+<script src="光学思维拓展数据库.js"></script>
+<script src="关联连线数据库.js"></script>
+<script src="关系修正数据库.js"></script>
+<script src="易混淆概念对比表.js"></script>
+<script src="知识链排序配置表.js"></script>
+<script src="生活应用场景.js"></script>
+
+<script>
+// ========================== DELTA-TIME ANIMATION ENGINE ==========================
+// Replaces TWEEN.js: frame-rate independent, single tick per frame
+const AnimEngine = {
+  _tweens: [],
+  _clock: null,
+  get clock() {
+    if (!this._clock) { this._clock = new THREE.Clock(true); }
+    return this._clock;
+  },
+  tick() {
+    const dt = this.clock.getDelta();
+    const elapsed = this.clock.getElapsedTime();
+    let i = this._tweens.length;
+    while (i--) {
+      const t = this._tweens[i];
+      t._elapsed += dt;
+      const p = Math.min(t._elapsed / t._duration, 1);
+      const eased = t._easing ? t._easing(p) : p;
+      t._onUpdate(eased, dt);
+      if (p >= 1) {
+        t._onComplete();
+        this._tweens.splice(i, 1);
+      }
+    }
+    return { dt, elapsed };
+  },
+  add(tween) {
+    this._tweens.push(tween);
+    return tween;
+  },
+  remove(tween) {
+    const i = this._tweens.indexOf(tween);
+    if (i >= 0) this._tweens.splice(i, 1);
+  },
+  clear() { this._tweens.length = 0; },
+  get activeCount() { return this._tweens.length; }
+};
+
+function createTween(opts) {
+  const durationMs = opts.duration || 500;
+  return {
+    _elapsed: 0,
+    _duration: durationMs > 20 ? durationMs / 1000 : durationMs,
+    _easing: opts.easing || null,
+    _onUpdate: opts.onUpdate || (() => {}),
+    _onComplete: opts.onComplete || (() => {}),
+    stop() { AnimEngine.remove(this); },
+    cancel() { if (opts.onCancel) opts.onCancel(); this._onComplete = ()=>{}; AnimEngine.remove(this); }
+  };
+}
+
+// Easing functions
+const Easing = {
+  linear: t => t,
+  quadIn: t => t * t,
+  quadOut: t => t * (2 - t),
+  quadInOut: t => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t,
+  cubicInOut: t => t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1,
+  smoothstep: t => t * t * (3 - 2 * t),
+  smootherstep: t => t * t * t * (t * (t * 6 - 15) + 10),
+  expOut: t => 1 - Math.pow(2, -10 * t),
+  spring: t => Math.pow(2, -10 * t) * Math.sin((t - 0.075) * 2 * Math.PI / 0.3) + 1
+};
+
+// Exponential smooth (framerate-independent low-pass filter)
+function expSmooth(current, target, smoothTime, dt) {
+  if (dt <= 0) return current;
+  const omega = 2.0 / smoothTime;
+  const x = omega * dt;
+  const factor = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x);
+  return target + (current - target) * factor;
+}
+
+// ========================== MODULE CONFIG ==========================
+const MODULES = {
+  力学: { color: '#00e5ff', pos: new THREE.Vector3(0, 0, 0), rotSpeed: 0.08, icon: 'fa-cog', desc: '牛顿座' },
+  声学: { color: '#00eb80', pos: new THREE.Vector3(0, 0, 0), rotSpeed: 0.10, icon: 'fa-music', desc: '音律座' },
+  热学: { color: '#ff3250', pos: new THREE.Vector3(0, 0, 0), rotSpeed: 0.12, icon: 'fa-fire', desc: '火焰座' },
+  光学: { color: '#ffdd00', pos: new THREE.Vector3(0, 0, 0), rotSpeed: 0.10, icon: 'fa-lightbulb', desc: '棱镜座' },
+  电磁学: { color: '#bb77ff', pos: new THREE.Vector3(0, 0, 0), rotSpeed: 0.14, icon: 'fa-bolt', desc: '闪电座' },
+  能量: { color: '#ff8800', pos: new THREE.Vector3(0, 0, 0), rotSpeed: 0.06, icon: 'fa-recycle', desc: '能量环' },
+  数学: { color: '#4d7cff', pos: new THREE.Vector3(0, 0, 0), rotSpeed: 0.07, icon: 'fa-calculator', desc: '坐标座' }
+};
+const MODULE_KEYS = Object.keys(MODULES);
+
+const MOD_COLORS = {
+  '力学': new THREE.Color('#00e5ff'),
+  '声学': new THREE.Color('#00eb80'),
+  '热学': new THREE.Color('#ff3250'),
+  '光学': new THREE.Color('#ffdd00'),
+  '电磁学': new THREE.Color('#bb77ff'),
+  '能量': new THREE.Color('#ff8800'),
+  '数学': new THREE.Color('#4d7cff')
+};
+const CONN_TYPE_MAP = { prerequisite:0, causal:1, parallel:2, historical:3, cross_module:4, cross_disciplinary:5 };
+
+// ========================== DATA ==========================
+const starById = new Map();
+const starMap = new Map();
+const connMap = new Map();
+let connDataArr = [];
+let confusingConcepts = [];
+let knowledgeChains = null;
+const confuseByNodeId = new Map();
+const chainsByNodeId = new Map();
+const lifeByNodeId = new Map();
+
+function indexDiagnosticData() {
+  confuseByNodeId.clear();
+  (confusingConcepts || []).forEach(function(pair) {
+    [pair.idA, pair.idB].forEach(function(nid) {
+      if (!nid) return;
+      if (!confuseByNodeId.has(nid)) confuseByNodeId.set(nid, []);
+      if (confuseByNodeId.get(nid).indexOf(pair) < 0) confuseByNodeId.get(nid).push(pair);
+    });
+  });
+  const list = (knowledgeChains && knowledgeChains.knowledgeChains) || knowledgeChains || [];
+  const chains = Array.isArray(list) ? list : [];
+  chainsByNodeId.clear();
+  chains.forEach(function(chain) {
+    (chain.nodes || []).forEach(function(nid) {
+      if (!chainsByNodeId.has(nid)) chainsByNodeId.set(nid, []);
+      chainsByNodeId.get(nid).push(chain);
+    });
+  });
+  lifeByNodeId.clear();
+  const life = (window._LIFE_DATA && window._LIFE_DATA.lifeApplications) || [];
+  life.forEach(function(item) {
+    if (!item.nodeId) return;
+    const prev = lifeByNodeId.get(item.nodeId) || [];
+    lifeByNodeId.set(item.nodeId, prev.concat(item.scenes || []));
+  });
+}
+
+function collectDiagnosticChainIds(id) {
+  const ids = new Set();
+  if (id) ids.add(id);
+  (chainsByNodeId.get(id) || []).forEach(function(chain) {
+    (chain.nodes || []).forEach(function(nid) {
+      if (starById.has(nid)) ids.add(nid);
+    });
+  });
+  const star = starById.get(id);
+  if (star) {
+    (star.prerequisites || []).forEach(function(pid) {
+      const cleanPid = String(pid || '').trim();
+      if (cleanPid) ids.add(cleanPid);
+      const pStar = starById.get(cleanPid);
+      if (pStar) {
+        (pStar.prerequisites || []).forEach(function(pp) {
+          if (String(pp || '').trim()) ids.add(String(pp).trim());
+        });
+      }
+    });
+    (star.followUps || []).forEach(function(fid) {
+      if (String(fid || '').trim()) ids.add(String(fid).trim());
+    });
+  }
+  return ids;
+}
+
+function resolveCrossItem(item) {
+  if (!item) return null;
+  if (typeof item === 'object' && item.subject && item.concept) return item;
+  if (typeof item !== 'string') return null;
+  const target = starById.get(item);
+  if (target) return { subject: target.module, concept: target.name, targetId: target.id };
+  const parts = item.split('_');
+  if (parts.length >= 2) return { subject: parts[0], concept: parts.slice(1).join('_') };
+  return null;
+}
+
+function pushCrossDiscipline(star, entry) {
+  if (!star || !entry || !entry.subject || !entry.concept) return;
+  star._crossKeys = star._crossKeys || new Set();
+  const key = entry.subject + '|' + entry.concept + '|' + (entry.targetId || '');
+  if (star._crossKeys.has(key)) return;
+  star._crossKeys.add(key);
+  star.crossDiscipline.push(entry);
+}
+
+function buildDataMaps(dbData, connData) {
+  starById.clear(); starMap.clear(); connMap.clear(); connDataArr = connData || [];
+  dbData.forEach((d, i) => {
+    const id = d.id;
+    const star = {
+      id, idx: i, name: d.name, module: d.module, chapter: d.chapter,
+      difficulty: d.difficulty, grade: d.grade,
+      definition: d.core_definition,
+      formula: d.formula === '无' ? '' : d.formula,
+      historyScientist: d.history ? d.history.scientist || '' : '',
+      historyYear: d.history ? d.history.year || '' : '',
+      applications: d.applications || [],
+      mistakes: d.common_mistakes || [],
+      examFreq: d.exam_points ? d.exam_points.frequency : 0,
+      examTypes: d.exam_points ? d.exam_points.question_types : [],
+      prerequisites: d.prerequisites || [],
+      followUps: d.follow_ups || [],
+      crossDiscipline: [],
+      keyExperiments: d.key_experiments || [],
+      units: d.units || '',
+      lifeScenes: d.life_scenes || [],
+      thinking: d.thinking || null,
+      x: d.x, y: d.y, z: d.z,
+      size: d.size || 10, starLevel: d.star_level || 3,
+      learned: false
+    };
+    starById.set(id, star);
+    starMap.set(i, star);
+  });
+  dbData.forEach(function(d) {
+    const s = starById.get(d.id);
+    (d.cross_disciplinary || []).forEach(function(item) {
+      pushCrossDiscipline(s, resolveCrossItem(item));
+    });
+  });
+  connData.forEach(c => {
+    const from = starById.get(c.from);
+    const to = starById.get(c.to);
+    if (!from || !to) return;
+    const typeNum = CONN_TYPE_MAP[c.type] !== undefined ? CONN_TYPE_MAP[c.type] : 0;
+    const conn = { from, to, type: typeNum, fromId: c.from, toId: c.to };
+    if (!connMap.has(c.from)) connMap.set(c.from, []);
+    if (!connMap.has(c.to)) connMap.set(c.to, []);
+    connMap.get(c.from).push(conn);
+    connMap.get(c.to).push(conn);
+    if (c.type === 'cross_disciplinary') {
+      pushCrossDiscipline(from, { subject: to.module, concept: to.name, targetId: to.id });
+    }
+  });
+}
+
+// localStorage helper with error handling
+function getLearned() {
+  try { return JSON.parse(localStorage.getItem('pku_learned') || '{}'); }
+  catch(e) { return {}; }
+}
+function saveLearned(data) {
+  try { localStorage.setItem('pku_learned', JSON.stringify(data)); } catch(e) {}
+}
+function isLearned(id) {
+  return !!(getLearned()[id]);
+}
+
+// Enhanced state management
+const stateManager = {
+  save: function() {
+    const state = {
+      learned: getLearned(),
+      cameraPosition: camera.position.toArray(),
+      cameraTarget: controls.target.toArray(),
+      selectedModule: currentModule,
+      timestamp: Date.now()
+    };
+    try {
+      localStorage.setItem('pku_state', JSON.stringify(state));
+      return true;
+    } catch(e) {
+      console.warn('Failed to save state:', e);
+      return false;
+    }
+  },
+  
+  load: function() {
+    try {
+      const stateStr = localStorage.getItem('pku_state');
+      if (!stateStr) return null;
+      const state = JSON.parse(stateStr);
+      
+      // Restore camera position
+      if (state.cameraPosition) {
+        camera.position.fromArray(state.cameraPosition);
+      }
+      if (state.cameraTarget) {
+        controls.target.fromArray(state.cameraTarget);
+      }
+      
+      // Restore module
+      if (state.selectedModule) {
+        setActiveModule(state.selectedModule);
+      }
+      
+      return state;
+    } catch(e) {
+      console.warn('Failed to load state:', e);
+      return null;
+    }
+  },
+  
+  clear: function() {
+    try {
+      localStorage.removeItem('pku_state');
+      localStorage.removeItem('pku_learned');
+      return true;
+    } catch(e) {
+      return false;
+    }
+  },
+  
+  exportData: function() {
+    const data = {
+      learned: getLearned(),
+      exportDate: new Date().toISOString(),
+      version: '1.0'
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `physics-universe-backup-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  },
+  
+  importData: function(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (data.learned) {
+            saveLearned(data.learned);
+            updateLearnedGlows();
+            updateStarCount();
+            resolve(true);
+          } else {
+            reject(new Error('Invalid data format'));
+          }
+        } catch(err) {
+          reject(err);
+        }
+      };
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsText(file);
+    });
+  }
+};
+
+// Auto-save on changes
+let autoSaveTimeout = null;
+function scheduleAutoSave() {
+  if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
+  autoSaveTimeout = setTimeout(() => {
+    stateManager.save();
+  }, 5000); // Auto-save after 5 seconds of inactivity
+}
+
+// Save state before unload
+window.addEventListener('beforeunload', () => {
+  stateManager.save();
+});
+
+// ========================== THREE.JS SETUP ==========================
+let scene, camera, renderer, controls;
+let pointTex;
+let networkGroup;
+let starPositions, starColors, starSizes, starSeeds, starDimFactors;
+let starData, starIdxMap, starIdList;
+let starGeo, starMat, starPoints;
+let glowLayers = { mid: null, outer: null };
+// 3D Planet system
+const planetMeshes = new Map();
+const atmosphereMeshes = new Map();
+const ringMeshes = new Map();
+const planetGeometry = new THREE.SphereGeometry(1, 32, 32);
+let allLineData = [];
+let composer, bloomPass;
+let orbitTween = null;
+let hoveredId = null, selectedId = null;
+let selectedConnectedIds = new Set();
+let focusRelatedList = [];
+let focusRelatedIndex = -1;
+let connCounts, maxConn, minConn, hubStarId, hubConnCount;
+let currentModuleHubId = null;
+let visualCenterStar = null;
+let labelLayer;
+let labelItems = [];
+const hitMeshes = new Map();
+const hitGeometry = new THREE.SphereGeometry(1, 12, 12);
+const hitMaterial = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
+
+// DOM refs
+let panel, panelTitle, panelMeta, panelDef, panelFormula, panelFormulaWrap, panelThinking, panelThinkingWrap;
+let panelApps, panelExam, panelRelated, panelCross, panelCrossWrap;
+let panelMistakes, panelMistakesWrap, panelConfuse, panelConfuseWrap, panelChain, panelChainWrap, panelScenes;
+let panelHistory, panelHistoryWrap, learnBtn, panelClose, panelIcon;
+let searchTrigger, searchOverlay, searchInput, searchResults;
+let loadBar, loadStatus, tooltip;
+
+// ========================== LOADING ==========================
+loadBar = document.getElementById('load-bar');
+loadStatus = document.getElementById('load-status');
+tooltip = document.getElementById('tooltip');
+let loadProgress = 0;
+function updateLoad(p, msg) {
+  const target = Math.min(p, 100);
+  if (msg) loadStatus.textContent = msg;
+  const tween = createTween({
+    duration: 300,
+    easing: Easing.quadOut,
+    onUpdate: (t) => {
+      loadProgress = target;
+      loadBar.style.width = loadProgress + '%';
+    },
+    onComplete: () => {}
+  });
+  AnimEngine.add(tween);
+}
+
+const delay = ms => new Promise(r => setTimeout(r, ms));
+
+(async () => {
+
+updateLoad(5, '加载知识点数据...');
+try {
+  const dbObj = window.KNOWLEDGE_DB || window._DB_DATA;
+  const connObj = window._CONN_DATA;
+  confusingConcepts = (window._CONF_DATA && window._CONF_DATA.confusingConcepts) || [];
+  knowledgeChains = (window._CHAIN_DATA && window._CHAIN_DATA.knowledgeChains) || window._CHAIN_DATA;
+  const dbData = dbObj.data || dbObj;
+  [window._MECH_THINKING_DATA, window._ELEC_THINKING_DATA, window._OPT_THINKING_DATA].forEach(function(extension) {
+    if (extension && extension.applyTo) extension.applyTo(dbData);
+  });
+  let connData = connObj.data || connObj;
+  if (window._RELATION_PATCH_DATA && window._RELATION_PATCH_DATA.applyTo) {
+    connData = window._RELATION_PATCH_DATA.applyTo(connData);
+  }
+  buildDataMaps(dbData, connData);
+  indexDiagnosticData();
+  updateLoad(12, '数据加载完成，初始化3D场景...');
+} catch (e) {
+  console.error('数据加载失败:', e);
+  loadStatus.textContent = '数据加载失败，请刷新重试';
+}
+
+updateLoad(15, '初始化3D场景...');
+scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x07080b, 0.00035);
+camera = new THREE.PerspectiveCamera(44, window.innerWidth/window.innerHeight, 10, 10000);
+camera.position.set(0, 46, 330);
+
+renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
+renderer.setClearColor(0x01030a);
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.9;
+document.body.prepend(renderer.domElement);
+
+composer = new THREE.EffectComposer(renderer);
+composer.addPass(new THREE.RenderPass(scene, camera));
+bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.42, 0.55, 0.08);
+composer.addPass(bloomPass);
+
+// Add cinematic color grading shader
+const colorGradingShader = {
+  uniforms: {
+    tDiffuse: { value: null },
+    brightness: { value: 0.045 },
+    contrast: { value: 1.12 },
+    saturation: { value: 1.18 },
+    vignette: { value: 0.24 }
+  },
+  vertexShader: `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `,
+  fragmentShader: `
+    uniform sampler2D tDiffuse;
+    uniform float brightness;
+    uniform float contrast;
+    uniform float saturation;
+    uniform float vignette;
+    varying vec2 vUv;
+    
+    void main() {
+      vec4 color = texture2D(tDiffuse, vUv);
+      
+      // Brightness adjustment
+      color.rgb += brightness;
+      
+      // Contrast adjustment
+      color.rgb = (color.rgb - 0.5) * contrast + 0.5;
+      
+      // Saturation adjustment
+      float luminance = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
+      color.rgb = mix(vec3(luminance), color.rgb, saturation);
+      
+      // Vignette effect
+      vec2 center = vUv - 0.5;
+      float dist = length(center);
+      color.rgb *= 1.0 - dist * vignette;
+      
+      color.rgb += vec3(0.015, 0.014, 0.01) * (1.0 - dist);
+      
+      gl_FragColor = color;
+    }
+  `
+};
+
+const colorGradingPass = new THREE.ShaderPass(colorGradingShader);
+composer.addPass(colorGradingPass);
+
+controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.045;
+controls.minDistance = 90;
+controls.maxDistance = 1200;
+controls.maxPolarAngle = Math.PI / 1.85;
+controls.target.set(0, 0, 0);
+controls.autoRotate = true;
+controls.autoRotateSpeed = 0.035;
+controls.update();
+
+// ========================== BACKGROUND ==========================
+function createBgStarLayer(count, size, opacity, colorSpread) {
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(count * 3);
+  const cols = new Float32Array(count * 3);
+  const seeds = new Float32Array(count);
+  const rMin = 1800, rMax = 4000;
+  for (let i = 0; i < count; i++) {
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const r = rMin + Math.random() * (rMax - rMin);
+    pos[i*3] = r * Math.sin(phi) * Math.cos(theta);
+    pos[i*3+1] = r * Math.cos(phi) * (0.3 + Math.random() * 0.3);
+    pos[i*3+2] = r * Math.sin(phi) * Math.sin(theta);
+    const c = new THREE.Color(0xffffff);
+    if (colorSpread) {
+      const tint = new THREE.Color(colorSpread);
+      c.lerp(tint, Math.random() * 0.4);
+    }
+    cols[i*3] = c.r; cols[i*3+1] = c.g; cols[i*3+2] = c.b;
+    seeds[i] = Math.random() * Math.PI * 2;
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+  geo.setAttribute('seed', new THREE.BufferAttribute(seeds, 1));
+  const mat = new THREE.PointsMaterial({
+    size, transparent: true, opacity, vertexColors: true,
+    sizeAttenuation: true, depthWrite: false, blending: THREE.AdditiveBlending
+  });
+  return new THREE.Points(geo, mat);
+}
+scene.add(createBgStarLayer(2600, 0.62, 0.32));
+scene.add(createBgStarLayer(900, 1.05, 0.16, '#5f9bde'));
+scene.add(createBgStarLayer(260, 2.1, 0.07, '#b85b91'));
+
+// Nebula clouds
+function createNebulaSprite(color, pos, size, opacity) {
+  const c = document.createElement('canvas');
+  c.width = c.height = 256;
+  const ctx = c.getContext('2d');
+  const grad = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+  grad.addColorStop(0, color);
+  grad.addColorStop(0.3, color.slice(0,7) + '44');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 256, 256);
+  const tex = new THREE.CanvasTexture(c);
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: tex, transparent: true, opacity, depthWrite: false, blending: THREE.AdditiveBlending
+  }));
+  sprite.position.set(pos[0], pos[1], pos[2]);
+  sprite.scale.set(size, size, 1);
+  scene.add(sprite);
+  return sprite;
+}
+const nebulas = [
+  createNebulaSprite('#4f89d2', [-1500, 220, -2300], 1500, 0.035),
+  createNebulaSprite('#b2598b', [1550, -160, -2200], 1300, 0.028),
+  createNebulaSprite('#ccbfa4', [260, -520, -2600], 1100, 0.022),
+  createNebulaSprite('#5c46bc', [-820, 620, -2700], 1250, 0.025)
+];
+
+// Galaxy band effect - a curved line of stars
+const galaxyBandGeometry = new THREE.BufferGeometry();
+const galaxyBandPositions = [];
+const galaxyBandColors = [];
+const galaxyBandSizes = [];
+
+for (let i = 0; i < 680; i++) {
+  const t = Math.random();
+  const spread = (Math.random() - 0.5);
+  const x = (t - 0.5) * 4200 + spread * 260;
+  const y = (t - 0.5) * 520 + spread * 320;
+  const z = -2600 + (Math.random() - 0.5) * 700;
+  
+  galaxyBandPositions.push(x, y, z);
+  
+  // Desaturated blue-white dust, close to a natural Milky Way band.
+  const r = 0.55 + Math.random() * 0.25;
+  const g = 0.66 + Math.random() * 0.22;
+  const b = 0.82 + Math.random() * 0.16;
+  galaxyBandColors.push(r, g, b);
+  
+  galaxyBandSizes.push(0.16 + Math.random() * 0.42);
+}
+
+galaxyBandGeometry.setAttribute('position', new THREE.Float32BufferAttribute(galaxyBandPositions, 3));
+galaxyBandGeometry.setAttribute('color', new THREE.Float32BufferAttribute(galaxyBandColors, 3));
+galaxyBandGeometry.setAttribute('size', new THREE.Float32BufferAttribute(galaxyBandSizes, 1));
+
+const galaxyBandMaterial = new THREE.PointsMaterial({
+  size: 0.45,
+  vertexColors: true,
+  transparent: true,
+  opacity: 0.32,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false,
+  sizeAttenuation: true
+});
+
+const galaxyBand = new THREE.Points(galaxyBandGeometry, galaxyBandMaterial);
+scene.add(galaxyBand);
+
+await delay(50);
+
+// ========================== POINT TEXTURE ==========================
+function createPointTexture(size) {
+  const c = document.createElement('canvas');
+  c.width = c.height = size;
+  const ctx = c.getContext('2d');
+  const half = size / 2;
+  const grad = ctx.createRadialGradient(half, half, 0, half, half, half);
+  grad.addColorStop(0, 'rgba(255,255,255,1)');
+  grad.addColorStop(0.15, 'rgba(255,255,255,1)');
+  grad.addColorStop(0.4, 'rgba(255,255,255,0.8)');
+  grad.addColorStop(0.7, 'rgba(255,255,255,0.2)');
+  grad.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, size, size);
+  return new THREE.CanvasTexture(c);
+}
+pointTex = createPointTexture(256);
+
+updateLoad(25, '创建纹理与数据...');
+
+// Connection counts & hub
+connCounts = new Map();
+starById.forEach((s, id) => connCounts.set(id, (connMap.get(id) || []).length));
+maxConn = 0; minConn = Infinity;
+connCounts.forEach(c => { if (c > maxConn) maxConn = c; if (c < minConn) minConn = c; });
+hubStarId = null; hubConnCount = 0;
+connCounts.forEach((c, id) => { if (c > hubConnCount) { hubConnCount = c; hubStarId = id; } });
+
+// ========================== POSITION TRANSFORM ==========================
+(function transformPositions() {
+  let cx = 0, cy = 0, cz = 0, n = 0;
+  starById.forEach(s => { cx += s.x; cy += s.y; cz += s.z; n++; });
+  if (n === 0) return;
+  cx /= n; cy /= n; cz /= n;
+  starById.forEach(s => { s.x -= cx; s.y -= cy; s.z -= cz; });
+  let maxDist = 0;
+  starById.forEach(s => {
+    const d = Math.sqrt(s.x*s.x + s.y*s.y + s.z*s.z);
+    if (d > maxDist) maxDist = d;
+  });
+  if (maxDist === 0) maxDist = 1;
+  const targetRadius = 250;
+  const scaleBase = targetRadius / maxDist;
+  const safeMaxConn = Math.max(maxConn, 1);
+  starById.forEach(s => {
+    const cc = connCounts.get(s.id) || 1;
+    const gravityFactor = 1 + (1 - cc / safeMaxConn) * 0.35;
+    s.x *= scaleBase * gravityFactor;
+    s.y *= scaleBase * gravityFactor;
+    s.z *= scaleBase * gravityFactor;
+  });
+  const hub = hubStarId ? starById.get(hubStarId) : null;
+  if (hub) {
+    const hx = hub.x, hy = hub.y, hz = hub.z;
+    starById.forEach(s => { s.x -= hx; s.y -= hy; s.z -= hz; });
+  }
+  visualCenterStar = hub || null;
+})();
+
+if (visualCenterStar) {
+  camera.position.set(visualCenterStar.x + 18, visualCenterStar.y + 36, visualCenterStar.z + 260);
+  controls.target.set(visualCenterStar.x, visualCenterStar.y, visualCenterStar.z);
+  controls.update();
+}
+
+updateLoad(42, '生成星辰系统...');
+await delay(50);
+
+networkGroup = new THREE.Group();
+networkGroup.position.set(0, 0, 0);
+scene.add(networkGroup);
+networkGroup.userData.rotationSpeed = 0.0006;
+
+// ========================== 3-POINT LIGHTING ==========================
+// Key light (main light - warm white)
+const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
+keyLight.position.set(50, 100, 50);
+keyLight.castShadow = true;
+keyLight.shadow.mapSize.width = 2048;
+keyLight.shadow.mapSize.height = 2048;
+scene.add(keyLight);
+
+// Fill light (softer, cooler tone, opposite side)
+const fillLight = new THREE.DirectionalLight(0x88aaff, 0.6);
+fillLight.position.set(-50, 30, 50);
+scene.add(fillLight);
+
+// Back light (rim lighting, subtle)
+const backLight = new THREE.DirectionalLight(0xffffff, 0.3);
+backLight.position.set(0, 50, -50);
+scene.add(backLight);
+
+// Ambient fill (very subtle)
+const ambientLight = new THREE.AmbientLight(0x404040, 0.2);
+scene.add(ambientLight);
+
+starIdxMap = new Map();
+starIdList = [];
+
+// Atmospheric glow shaders
+const atmosphereVertexShader = `
+  varying vec3 vNormal;
+  varying vec3 vWorldPosition;
+  
+  void main() {
+    vNormal = normalize(normalMatrix * normal);
+    vWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const atmosphereFragmentShader = `
+  uniform vec3 glowColor;
+  uniform float intensity;
+  uniform float power;
+  
+  varying vec3 vNormal;
+  varying vec3 vWorldPosition;
+  
+  void main() {
+    vec3 viewDirection = normalize(cameraPosition - vWorldPosition);
+    float fresnel = pow(1.0 - dot(viewDirection, vNormal), power);
+    fresnel *= intensity;
+    
+    gl_FragColor = vec4(glowColor, fresnel * 0.6);
+  }
+`;
+
+function createPlanetMaterial(color, isHub) {
+  return new THREE.MeshStandardMaterial({
+    color: color,
+    roughness: 0.7,
+    metalness: 0.3,
+    emissive: color,
+    emissiveIntensity: isHub ? 0.3 : 0.1
+  });
+}
+
+function createAtmosphereMaterial(color) {
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      glowColor: { value: color },
+      intensity: { value: 1.5 },
+      power: { value: 3.0 }
+    },
+    vertexShader: atmosphereVertexShader,
+    fragmentShader: atmosphereFragmentShader,
+    transparent: true,
+    side: THREE.BackSide,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  });
+}
+
+function createOrbitalRing(radius, color) {
+  const ringGeometry = new THREE.RingGeometry(radius * 0.95, radius * 1.05, 64);
+  const ringMaterial = new THREE.MeshBasicMaterial({
+    color: color,
+    transparent: true,
+    opacity: 0.3,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  });
+  return new THREE.Mesh(ringGeometry, ringMaterial);
+}
+
+// ========================== STAR POINTS ==========================
+const N = starById.size;
+starPositions = new Float32Array(N * 3);
+starColors = new Float32Array(N * 3);
+starSizes = new Float32Array(N);
+starSeeds = new Float32Array(N);
+starDimFactors = new Float32Array(N);
+starData = new Map();
+
+const TIER_CFG = [
+  { maxDiff: 2, label: 'extension', size: 9, brightness: 0.58 },
+  { maxDiff: 4, label: 'basic', size: 15, brightness: 0.9 },
+  { maxDiff: 5, label: 'core', size: 27, brightness: 1.35 }
+];
+labelLayer = document.getElementById('label-layer');
+let i = 0;
+starById.forEach((star) => {
+  const mod = star.module;
+  const color = MOD_COLORS[mod] || new THREE.Color(0xffffff);
+  const tierCfg = TIER_CFG.find(t => star.difficulty <= t.maxDiff) || TIER_CFG[1];
+  const isHub = (star.id === hubStarId);
+  const hubBoost = isHub ? 3.0 : 1.0;
+  const defaultSize = tierCfg.size * hubBoost;
+  const tierBright = tierCfg.brightness * (isHub ? 1.95 : 1.0);
+  
+  const hitRadius = (tierCfg.label === 'core' ? 9 : tierCfg.label === 'basic' ? 6 : 4) * hubBoost;
+
+  starPositions[i*3] = star.x;
+  starPositions[i*3+1] = star.y;
+  starPositions[i*3+2] = star.z;
+  starColors[i*3] = color.r;
+  starColors[i*3+1] = color.g;
+  starColors[i*3+2] = color.b;
+  starSizes[i] = defaultSize;
+  starSeeds[i] = Math.random() * Math.PI * 2;
+  starDimFactors[i] = tierBright;
+
+  starIdxMap.set(star.id, i);
+  starIdList[i] = star.id;
+  
+  const hitMesh = new THREE.Mesh(hitGeometry, hitMaterial);
+  hitMesh.scale.setScalar(hitRadius);
+  hitMesh.position.set(star.x, star.y, star.z);
+  hitMesh.userData = { starId: star.id, tier: tierCfg.label, isHub };
+  networkGroup.add(hitMesh);
+  hitMeshes.set(star.id, hitMesh);
+  planetMeshes.set(star.id, hitMesh);
+
+  const label = document.createElement('div');
+  label.className = 'star-label ' + tierCfg.label;
+  label.textContent = star.name;
+  label.style.color = tierCfg.label === 'core' ? '#fff' : color.getStyle();
+  labelLayer.appendChild(label);
+  labelItems.push({ id: star.id, star, label, tier: tierCfg.label, world: new THREE.Vector3(star.x, star.y, star.z) });
+  
+  starData.set(star.id, { pointIndex: i, star, defaultSize, tierSize: defaultSize, tierBright, color, isHub, tier: tierCfg.label, planetMesh: hitMesh, atmosphereMesh: null });
+  i++;
+});
+
+starGeo = new THREE.BufferGeometry();
+starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+const starColorAttr = new THREE.BufferAttribute(starColors, 3);
+starGeo.setAttribute('color', starColorAttr);
+starGeo.setAttribute('customColor', starColorAttr);
+starGeo.setAttribute('size', new THREE.BufferAttribute(starSizes, 1));
+starGeo.setAttribute('seed', new THREE.BufferAttribute(starSeeds, 1));
+starGeo.setAttribute('dimFactor', new THREE.BufferAttribute(starDimFactors, 1));
+const burstFactors = new Float32Array(N).fill(1.0);
+starGeo.setAttribute('burstFactor', new THREE.BufferAttribute(burstFactors, 1));
+
+// --- Enhanced vertex shader with stronger twinkle & pulse ---
+const starVertexShader = `
+  attribute float size;
+  attribute vec3 customColor;
+  attribute float seed;
+  attribute float dimFactor;
+  attribute float burstFactor;
+  varying vec3 vColor;
+  varying float vSeed;
+  varying float vDim;
+  varying float vBurst;
+  uniform float uTime;
+  uniform float uScale;
+  void main() {
+    vColor = customColor;
+    vSeed = seed;
+    vDim = dimFactor;
+    vBurst = burstFactor;
+    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+    float breath = 1.0 + 0.055 * sin(uTime * 0.82 + seed * 6.2831);
+    gl_PointSize = size * burstFactor * breath * (uScale / -mvPosition.z);
+    gl_Position = projectionMatrix * mvPosition;
+  }
+`;
+const starFragmentShader = `
+  uniform sampler2D pointTex;
+  uniform float uTime;
+  varying vec3 vColor;
+  varying float vSeed;
+  varying float vDim;
+  varying float vBurst;
+  void main() {
+    vec4 texColor = texture2D(pointTex, gl_PointCoord);
+    float freq = 0.45 + vSeed * 0.7;
+    float twinkle = 0.9 + 0.1 * sin(vSeed + uTime * freq) + 0.04 * sin(uTime * 0.3 + vSeed * 5.0);
+    vec3 coreWhite = vec3(1.0);
+    float coreMix = texColor.r * 0.55 + 0.28;
+    vec3 finalColor = mix(vColor, coreWhite, coreMix);
+    float alpha = texColor.a * vDim * vBurst * 0.72;
+    gl_FragColor = vec4(finalColor * twinkle, alpha);
+  }
+`;
+
+starMat = new THREE.ShaderMaterial({
+  uniforms: {
+    pointTex: { value: pointTex },
+    uTime: { value: 0 },
+    uScale: { value: 300 * Math.min(window.devicePixelRatio, 2) }
+  },
+  vertexShader: starVertexShader,
+  fragmentShader: starFragmentShader,
+    transparent: true,
+    depthWrite: false,
+    depthTest: true,
+    blending: THREE.AdditiveBlending
+});
+
+starPoints = new THREE.Points(starGeo, starMat);
+networkGroup.add(starPoints);
+
+// ========================== GLOW LAYERS ==========================
+function makeGlowLayer(sizeMul, opacity) {
+  const sizeMulLiteral = Number(sizeMul).toFixed(1);
+  const g = new THREE.ShaderMaterial({
+    uniforms: {
+      pointTex: { value: pointTex },
+      uScale: { value: 300 * Math.min(window.devicePixelRatio, 2) },
+      uTime: { value: 0 }
+    },
+    vertexShader: `
+      attribute vec3 customColor;
+      attribute float size;
+      attribute float seed;
+      attribute float burstFactor;
+      varying vec3 vColor;
+      varying float vSeed;
+      varying float vBurst;
+      uniform float uScale;
+      void main() {
+        vColor = customColor;
+        vSeed = seed;
+        vBurst = burstFactor;
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        float breath = 1.0 + 0.045 * sin(uTime * 0.82 + seed * 6.2831);
+        gl_PointSize = size * ${sizeMulLiteral} * burstFactor * breath * (uScale / -mv.z);
+        gl_Position = projectionMatrix * mv;
+      }
+    `,
+    fragmentShader: `
+      uniform sampler2D pointTex;
+      uniform float uTime;
+      varying vec3 vColor;
+      varying float vSeed;
+      varying float vBurst;
+      void main() {
+        vec4 t = texture2D(pointTex, gl_PointCoord);
+        float freq = 1.5 + vSeed * 2.0;
+        float twinkle = 1.0 + 0.08 * sin(vSeed + uTime * freq);
+        gl_FragColor = vec4(vColor * twinkle * vBurst, t.a * ${opacity} * vBurst);
+      }
+    `,
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
+  });
+  const mesh = new THREE.Points(starGeo, g);
+  networkGroup.add(mesh);
+  return mesh;
+}
+glowLayers.mid = makeGlowLayer(2.4, 0.26);
+glowLayers.outer = makeGlowLayer(5.2, 0.09);
+
+// ========================== 3D PLANET SYSTEM ==========================
+const PLANET_TIERS = [
+  { maxDiff: 2, label: 'extension', radius: 0.3, brightness: 0.7, ringRadius: 0.8 },
+  { maxDiff: 4, label: 'basic', radius: 0.5, brightness: 0.9, ringRadius: 1.2 },
+  { maxDiff: 5, label: 'core', radius: 0.8, brightness: 1.2, ringRadius: 1.8 }
+];
+
+updateLoad(62, '生成连接线...');
+await delay(50);
+
+// ========================== CONNECTION LINES (merged) ==========================
+const rawConns = [];
+connDataArr.forEach(c => {
+  const type = CONN_TYPE_MAP[c.type] || 0;
+  const from = starById.get(c.from);
+  const to = starById.get(c.to);
+  if (!from || !to) return;
+  if (type >= 4 || from.module === to.module) {
+    rawConns.push({ from, to, type, isCrossModule: type >= 4 });
+  }
+});
+
+const darkPos = [], darkCol = [], darkAlphas = [];
+const glowPos = [], glowCol = [], glowProgressArr = [];
+const trailPos = [], trailCol = [], trailSiz = [], trailSeed = [];
+const connToRange = [];
+const lineDataMap = [];
+
+function makeStrandPoints(from, to, seed, segments) {
+  const start = new THREE.Vector3(from.x, from.y, from.z);
+  const end = new THREE.Vector3(to.x, to.y, to.z);
+  const mid = start.clone().add(end).multiplyScalar(0.5);
+  const dir = end.clone().sub(start);
+  const normal = new THREE.Vector3(
+    Math.sin(seed * 12.9898),
+    Math.cos(seed * 78.233),
+    Math.sin(seed * 37.719)
+  ).normalize();
+  const bend = Math.min(42, Math.max(10, dir.length() * 0.11));
+  mid.add(normal.multiplyScalar(bend));
+  const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
+  return curve.getPoints(segments);
+}
+
+rawConns.forEach((c, i) => {
+  const { from, to, type, isCrossModule } = c;
+  const color = MOD_COLORS[from.module] || new THREE.Color(0x666688);
+  const dep = type <= 1 ? 'strong' : type <= 3 ? 'medium' : 'weak';
+  const speeds = { strong: 1.0, medium: 0.7, weak: 0.5 };
+  const isHubStrand = hubStarId && (from.id === hubStarId || to.id === hubStarId);
+  const opacity = isHubStrand ? 0.28 : 0.075;
+  const strand = makeStrandPoints(from, to, i + type * 0.37, 10);
+
+  const dS = darkPos.length / 3;
+  for (let s = 0; s < strand.length - 1; s++) {
+    const a = strand[s], b = strand[s + 1];
+    darkPos.push(a.x, a.y, a.z, b.x, b.y, b.z);
+    const fade = Math.sin((s / (strand.length - 2)) * Math.PI) * 0.45 + 0.55;
+    for (let k = 0; k < 2; k++) {
+      darkCol.push(color.r, color.g, color.b);
+      darkAlphas.push(opacity * fade);
+    }
+  }
+
+  const gS = glowPos.length / 3;
+  for (let s = 0; s < strand.length - 1; s++) {
+    const a = strand[s], b = strand[s + 1];
+    glowPos.push(a.x, a.y, a.z, b.x, b.y, b.z);
+    for (let k = 0; k < 2; k++) {
+      glowCol.push(color.r, color.g, color.b);
+      glowProgressArr.push(0);
+    }
+  }
+
+  // Sparse particles keep selected relationships alive without overpowering the silk-line graph.
+  const trailCount = 8;
+  const tS = trailPos.length / 3;
+  for (let j = 0; j < trailCount; j++) {
+    const p = j / trailCount;
+    trailPos.push(from.x + (to.x - from.x) * p);
+    trailPos.push(from.y + (to.y - from.y) * p);
+    trailPos.push(from.z + (to.z - from.z) * p);
+    trailCol.push(color.r * 1.35, color.g * 1.35, color.b * 1.35);
+    trailSiz.push((trailCount - j) / trailCount * (isHubStrand ? 3.6 : 1.6));
+    trailSeed.push(Math.random() * Math.PI * 2);
+  }
+
+  connToRange[i] = { dark: dS, glow: gS, segmentCount: strand.length - 1, trail: tS, trailCount };
+  lineDataMap.push({
+    idx: i, from, to, type, dep, depSpeed: speeds[dep],
+    parentColor: color, isCrossModule,
+    glowActive: false, glowProgress: 0, darkAlpha: opacity,
+    _targetAlpha: undefined
+  });
+});
+
+// ===== Dark lines =====
+const darkLineGeo = new THREE.BufferGeometry();
+darkLineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(darkPos), 3));
+const darkLineColorAttr = new THREE.BufferAttribute(new Float32Array(darkCol), 3);
+darkLineGeo.setAttribute('color', darkLineColorAttr);
+darkLineGeo.setAttribute('customColor', darkLineColorAttr);
+darkLineGeo.setAttribute('lineAlpha', new THREE.BufferAttribute(new Float32Array(darkAlphas), 1));
+const darkLineMat = new THREE.ShaderMaterial({
+  vertexShader: `
+    attribute vec3 customColor;
+    attribute float lineAlpha;
+    varying vec3 vColor;
+    varying float vAlpha;
+    void main() {
+      vColor = customColor;
+      vAlpha = lineAlpha;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `,
+  fragmentShader: `
+    varying vec3 vColor;
+    varying float vAlpha;
+    void main() {
+      // Enhanced glow effect with color boost
+      vec3 glowColor = vColor * 1.3;
+      gl_FragColor = vec4(glowColor, vAlpha * 0.8);
+    }
+  `,
+  transparent: true,
+  depthWrite: false,
+  blending: THREE.AdditiveBlending
+});
+networkGroup.add(new THREE.LineSegments(darkLineGeo, darkLineMat));
+
+// ===== Glow lines =====
+const glowLineGeo = new THREE.BufferGeometry();
+glowLineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(glowPos), 3));
+const glowLineColorAttr = new THREE.BufferAttribute(new Float32Array(glowCol), 3);
+glowLineGeo.setAttribute('color', glowLineColorAttr);
+glowLineGeo.setAttribute('customColor', glowLineColorAttr);
+glowLineGeo.setAttribute('glowProgress', new THREE.BufferAttribute(new Float32Array(glowProgressArr), 1));
+const glowLineMat = new THREE.ShaderMaterial({
+  vertexShader: `attribute vec3 customColor;attribute float glowProgress;varying vec3 vColor;varying float vGlow;void main(){vColor=customColor;vGlow=glowProgress;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+  fragmentShader: `varying vec3 vColor;varying float vGlow;void main(){gl_FragColor=vec4(vColor,vGlow*0.9);}`,
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
+});
+networkGroup.add(new THREE.LineSegments(glowLineGeo, glowLineMat));
+
+// ===== Trail particles =====
+const trailPointsGeo = new THREE.BufferGeometry();
+trailPointsGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(trailPos), 3));
+const trailColorAttr = new THREE.BufferAttribute(new Float32Array(trailCol), 3);
+trailPointsGeo.setAttribute('color', trailColorAttr);
+trailPointsGeo.setAttribute('customColor', trailColorAttr);
+trailPointsGeo.setAttribute('size', new THREE.BufferAttribute(new Float32Array(trailSiz), 1));
+trailPointsGeo.setAttribute('seed', new THREE.BufferAttribute(new Float32Array(trailSeed), 1));
+const trailMat = new THREE.ShaderMaterial({
+  uniforms: { uScale: { value: 300 * Math.min(window.devicePixelRatio, 2) } },
+  vertexShader: `
+    attribute float size;
+    attribute vec3 customColor;
+    varying vec3 vColor;
+    varying float vSize;
+    uniform float uScale;
+    void main() {
+      vColor = customColor;
+      vSize = size;
+      vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+      gl_PointSize = max(size, 0.1) * (uScale / -mvPosition.z);
+      gl_Position = projectionMatrix * mvPosition;
+    }
+  `,
+  fragmentShader: `
+    varying vec3 vColor;
+    varying float vSize;
+    void main() {
+      if (vSize < 0.2) discard;
+      float d = length(gl_PointCoord - vec2(0.5)) * 2.0;
+      float alpha = smoothstep(1.0, 0.1, d) * 0.8;
+      gl_FragColor = vec4(vColor * 1.3, alpha);
+    }
+  `,
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
+});
+networkGroup.add(new THREE.Points(trailPointsGeo, trailMat));
+
+// ===== Continuous flow particles =====
+// Create particles that flow along connections continuously
+const flowParticleCount = 420;
+const flowParticleGeometry = new THREE.BufferGeometry();
+const flowParticlePositions = new Float32Array(flowParticleCount * 3);
+const flowParticleColors = new Float32Array(flowParticleCount * 3);
+const flowParticleSpeeds = new Float32Array(flowParticleCount);
+const flowParticleLineIndices = new Int32Array(flowParticleCount);
+
+for (let i = 0; i < flowParticleCount; i++) {
+  // Randomly assign to a connection line
+  const lineIdx = Math.floor(Math.random() * lineDataMap.length);
+  const meta = lineDataMap[lineIdx];
+  
+  // Random position along the line
+  const t = Math.random();
+  flowParticlePositions[i * 3] = meta.from.x + (meta.to.x - meta.from.x) * t;
+  flowParticlePositions[i * 3 + 1] = meta.from.y + (meta.to.y - meta.from.y) * t;
+  flowParticlePositions[i * 3 + 2] = meta.from.z + (meta.to.z - meta.from.z) * t;
+  
+  // Color from module
+  const color = MOD_COLORS[meta.from.module] || new THREE.Color(0xffffff);
+  flowParticleColors[i * 3] = color.r;
+  flowParticleColors[i * 3 + 1] = color.g;
+  flowParticleColors[i * 3 + 2] = color.b;
+  
+  // Random speed
+  flowParticleSpeeds[i] = 0.1 + Math.random() * 0.3;
+  flowParticleLineIndices[i] = lineIdx;
+}
+
+flowParticleGeometry.setAttribute('position', new THREE.BufferAttribute(flowParticlePositions, 3));
+flowParticleGeometry.setAttribute('color', new THREE.BufferAttribute(flowParticleColors, 3));
+
+const flowParticleMaterial = new THREE.PointsMaterial({
+  size: 0.16,
+  vertexColors: true,
+  transparent: true,
+  opacity: 0.22,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false,
+  sizeAttenuation: true
+});
+
+const flowParticles = new THREE.Points(flowParticleGeometry, flowParticleMaterial);
+networkGroup.add(flowParticles);
+
+// Animation for flow particles
+function updateFlowParticles(dt) {
+  const positions = flowParticles.geometry.attributes.position.array;
+  
+  for (let i = 0; i < flowParticleCount; i++) {
+    const lineIdx = flowParticleLineIndices[i];
+    const meta = lineDataMap[lineIdx];
+    
+    // Move particle along line
+    const speed = flowParticleSpeeds[i];
+    const dx = meta.to.x - meta.from.x;
+    const dy = meta.to.y - meta.from.y;
+    const dz = meta.to.z - meta.from.z;
+    const length = Math.sqrt(dx * dx + dy * dy + dz * dz);
+    
+    if (length > 0) {
+      positions[i * 3] += (dx / length) * speed * dt * 100;
+      positions[i * 3 + 1] += (dy / length) * speed * dt * 100;
+      positions[i * 3 + 2] += (dz / length) * speed * dt * 100;
+    }
+    
+    // Check if particle reached end of line
+    const currentT = (positions[i * 3] - meta.from.x) / dx;
+    if (currentT > 1 || currentT < 0) {
+      // Reset to start of line
+      positions[i * 3] = meta.from.x;
+      positions[i * 3 + 1] = meta.from.y;
+      positions[i * 3 + 2] = meta.from.z;
+    }
+  }
+  
+  flowParticles.geometry.attributes.position.needsUpdate = true;
+}
+
+// Build allLineData for existing code compatibility
+lineDataMap.forEach((meta) => {
+  const gW = { material: glowLineMat, geometry: glowLineGeo, userData: { fromId: meta.from.id, toId: meta.to.id, isGlow: true, _glowActive: false, _glowProgress: 0, connIdx: meta.idx } };
+  allLineData.push({ from: meta.from, to: meta.to, glowLine: gW, idx: meta.idx });
+});
+
+// ========================== RESPONSIVE ==========================
+let resizeTimer = null;
+window.addEventListener('resize', () => {
+  if (resizeTimer) clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    if (composer) composer.setSize(window.innerWidth, window.innerHeight);
+    const pxScale = 300 * Math.min(window.devicePixelRatio, 2);
+    if (starMat) starMat.uniforms.uScale.value = pxScale;
+    if (trailMat) trailMat.uniforms.uScale.value = pxScale;
+    if (glowLayers.mid) glowLayers.mid.material.uniforms.uScale.value = pxScale;
+    if (glowLayers.outer) glowLayers.outer.material.uniforms.uScale.value = pxScale;
+  }, 150);
+});
+
+updateLoad(80, '建立知识网络...');
+await delay(50);
+
+// ========================== RAYCASTER & INTERACTION ==========================
+const raycaster = new THREE.Raycaster();
+// Dynamic threshold based on camera distance
+function getRaycasterThreshold() {
+  const dist = camera.position.length();
+  return Math.max(2, Math.min(6, dist / 80));
+}
+const pointer = new THREE.Vector2();
+let mouseDownPos = { x: 0, y: 0 };
+const isTouchDevice = 'ontouchstart' in window;
+let hoverThrottle = 0;
+
+function updatePointer(clientX, clientY) {
+  pointer.x = (clientX / window.innerWidth) * 2 - 1;
+  pointer.y = -(clientY / window.innerHeight) * 2 + 1;
+}
+function hitTest() {
+  raycaster.setFromCamera(pointer, camera);
+  const planetArray = Array.from(hitMeshes.values());
+  const intersects = raycaster.intersectObjects(planetArray);
+  if (intersects.length > 0) {
+    const mesh = intersects[0].object;
+    const id = mesh.userData.starId;
+    const entry = starData.get(id);
+    if (entry) {
+      return { idx: entry.pointIndex, id, entry };
+    }
+  }
+  return null;
+}
+function showTooltipAt(entry, cx, cy) {
+  const diffStars = entry.star.difficulty;
+  const diffStr = '⭐'.repeat(diffStars);
+  tooltip.textContent = `${entry.star.name}  ${diffStr}`;
+  tooltip.style.left = cx + 'px';
+  tooltip.style.top = (cy - 10) + 'px';
+  tooltip.classList.add('visible');
+}
+function hideTooltip() {
+  tooltip.classList.remove('visible');
+}
+
+renderer.domElement.addEventListener('pointerdown', e => {
+  cancelCameraTweenForUserInput();
+  mouseDownPos = { x: e.clientX, y: e.clientY };
+});
+
+renderer.domElement.addEventListener('wheel', () => {
+  cancelCameraTweenForUserInput();
+}, { passive: true });
+
+renderer.domElement.addEventListener('pointermove', e => {
+  updatePointer(e.clientX, e.clientY);
+});
+
+renderer.domElement.addEventListener('pointerup', e => {
+  // Ignore drag (more than 5px movement)
+  if (Math.abs(e.clientX - mouseDownPos.x) > 5 || Math.abs(e.clientY - mouseDownPos.y) > 5) return;
+  updatePointer(e.clientX, e.clientY);
+  const hit = hitTest();
+  if (hit && hit.entry) {
+    selectStar(hit.id);
+  } else {
+    deselectStar();
+  }
+});
+
+renderer.domElement.addEventListener('dblclick', e => {
+  updatePointer(e.clientX, e.clientY);
+  const hit = hitTest();
+  if (hit && hit.entry) showKnowledgeChain(hit.id);
+});
+
+// ========================== TOUCH ==========================
+let touchStartPos = { x: 0, y: 0 };
+let touchStartTime = 0;
+let touchMoved = false;
+let touchLongPress = null;
+let touchDidLongPress = false;
+let lastTapTime = 0;
+let lastTapId = null;
+let tapPending = false;
+let tapPendingTimer = null;
+
+renderer.domElement.addEventListener('touchstart', e => {
+  cancelCameraTweenForUserInput();
+  if (e.touches.length !== 1) return;
+  const t = e.touches[0];
+  touchStartPos = { x: t.clientX, y: t.clientY };
+  touchStartTime = Date.now();
+  touchMoved = false;
+  touchDidLongPress = false;
+  clearTimeout(touchLongPress);
+  touchLongPress = setTimeout(() => {
+    if (!touchMoved) {
+      updatePointer(t.clientX, t.clientY);
+      const hit = hitTest();
+      if (hit && hit.entry) {
+        showTooltipAt(hit.entry, t.clientX, t.clientY);
+        touchDidLongPress = true;
+      }
+    }
+  }, 600);
+}, { passive: true });
+
+renderer.domElement.addEventListener('touchmove', e => {
+  touchMoved = true;
+  clearTimeout(touchLongPress);
+}, { passive: true });
+
+renderer.domElement.addEventListener('touchend', e => {
+  clearTimeout(touchLongPress);
+  hideTooltip();
+  if (touchDidLongPress || touchMoved) return;
+  const dt = Date.now() - touchStartTime;
+  if (dt > 300) return;
+  if (!e.changedTouches.length) return;
+  const t = e.changedTouches[0];
+  const dx = t.clientX - touchStartPos.x;
+  const dy = t.clientY - touchStartPos.y;
+  if (Math.abs(dx) > 15 || Math.abs(dy) > 15) return;
+  updatePointer(t.clientX, t.clientY);
+  const hit = hitTest();
+  const id = hit ? hit.id : null;
+  const now = Date.now();
+
+  // Double tap detection: delay single tap to check for double tap
+  if (tapPending && lastTapId === id && now - lastTapTime < 400) {
+    // Double tap confirmed
+    clearTimeout(tapPendingTimer);
+    tapPending = false;
+    if (id) showKnowledgeChain(id);
+    lastTapTime = 0;
+    lastTapId = null;
+    e.preventDefault();
+    return;
+  }
+
+  // First tap: wait briefly for possible second tap
+  tapPending = true;
+  lastTapTime = now;
+  lastTapId = id;
+  clearTimeout(tapPendingTimer);
+  tapPendingTimer = setTimeout(() => {
+    tapPending = false;
+    if (id) { selectStar(id); } else { deselectStar(); }
+  }, 300);
+  e.preventDefault();
+}, { passive: false });
+
+// ========================== SELECTION ==========================
+function getConnectedIds(id) {
+  const conns = connMap.get(id) || [];
+  const connectedIds = new Set();
+  conns.forEach(c => {
+    const otherId = c.fromId === id ? c.toId : c.fromId;
+    connectedIds.add(otherId);
+  });
+  return connectedIds;
+}
+
+function getSortedRelatedList(id) {
+  const conns = connMap.get(id) || [];
+  const related = [];
+  const seen = new Set();
+  conns.forEach(c => {
+    const otherId = c.fromId === id ? c.toId : c.fromId;
+    if (seen.has(otherId)) return;
+    seen.add(otherId);
+    const otherStar = starById.get(otherId);
+    if (!otherStar) return;
+    const typeLabels = ['前置知识', '后续知识', '平行关联', '历史启发', '跨模块', '跨学科'];
+    let relType = 0;
+    if (c.type === 0) {
+      relType = c.fromId === id ? 1 : 0;
+    } else if (c.type === 1) relType = 1;
+    else if (c.type === 2) relType = 2;
+    else if (c.type === 3) relType = 3;
+    else if (c.type === 4) relType = 4;
+    else if (c.type === 5) relType = 5;
+    let arrow = '↔';
+    if (c.type === 0) {
+      arrow = c.fromId === id ? '→' : '←';
+    } else if (c.type === 1) {
+      arrow = '→';
+    }
+    related.push({ id: otherId, name: otherStar.name, module: otherStar.module, type: relType, typeLabel: typeLabels[relType] || '关联', arrow });
+  });
+  related.sort((a, b) => a.type - b.type);
+  return related;
+}
+
+function activateGlowLines(id) {
+  const glowArr = glowLineGeo.attributes.glowProgress.array;
+  const trailSiz = trailPointsGeo.attributes.size.array;
+  lineDataMap.forEach(ld => {
+    if (ld.glowActive) {
+      const r = connToRange[ld.idx];
+      for (let s = 0; s < r.segmentCount * 2; s++) glowArr[r.glow + s] = 0;
+      for (let j = 0; j < r.trailCount; j++) trailSiz[r.trail + j] = 0;
+      ld.glowActive = false; ld.glowProgress = 0;
+    }
+  });
+  glowLineGeo.attributes.glowProgress.needsUpdate = true;
+  trailPointsGeo.attributes.size.needsUpdate = true;
+
+  lineDataMap.forEach(ld => {
+    if (ld.from.id === id || ld.to.id === id) {
+      ld.glowActive = true; ld.glowProgress = 0;
+      const r = connToRange[ld.idx];
+      for (let j = 0; j < r.trailCount; j++) trailSiz[r.trail + j] = (r.trailCount - j) / r.trailCount * 6;
+      trailPointsGeo.attributes.size.needsUpdate = true;
+      // Use delta-time driven tween
+      const tween = createTween({
+        duration: 800,
+        easing: Easing.cubicInOut,
+        onUpdate: (p) => {
+          ld.glowProgress = p;
+          for (let s = 0; s < r.segmentCount; s++) {
+            const strandT = s / Math.max(1, r.segmentCount - 1);
+            const wave = Math.max(0, 1 - Math.abs(strandT - p) * 3.2);
+            const v = Math.max(p * 0.22, wave);
+            glowArr[r.glow + s * 2] = v;
+            glowArr[r.glow + s * 2 + 1] = v;
+          }
+          glowLineGeo.attributes.glowProgress.needsUpdate = true;
+        }
+      });
+      AnimEngine.add(tween);
+    }
+  });
+}
+
+function updateStarDimAndSizes(startDims, startSizes, targetDims, targetSizes, duration) {
+  const tween = createTween({
+    duration: duration || 400,
+    easing: Easing.quadOut,
+    onUpdate: (t) => {
+      starData.forEach((entry, sid) => {
+        const idx = entry.pointIndex;
+        if (startDims[sid] !== undefined) {
+          starDimFactors[idx] = startDims[sid] + (targetDims[sid] - startDims[sid]) * t;
+        }
+        if (startSizes[sid] !== undefined) {
+          starSizes[idx] = startSizes[sid] + (targetSizes[sid] - startSizes[sid]) * t;
+        }
+      });
+      starGeo.attributes.dimFactor.needsUpdate = true;
+      starGeo.attributes.size.needsUpdate = true;
+    }
+  });
+  AnimEngine.add(tween);
+}
+
+function getModuleHubId(mod) {
+  let best = null;
+  let bestScore = -Infinity;
+  starById.forEach(star => {
+    if (star.module !== mod) return;
+    const entry = starData.get(star.id);
+    const conn = connCounts ? (connCounts.get(star.id) || 0) : 0;
+    const levelWeight = Math.max(0, 6 - (star.starLevel || 3)) * 4;
+    const sizeWeight = entry ? entry.defaultSize * 0.4 : 0;
+    const score = conn * 10 + levelWeight + sizeWeight;
+    if (score > bestScore) {
+      bestScore = score;
+      best = star.id;
+    }
+  });
+  return best;
+}
+
+function setModuleEmphasis(mod) {
+  currentModuleHubId = mod === 'all' ? null : getModuleHubId(mod);
+  const targetDims = {};
+  const targetSizes = {};
+  const startDims = {};
+  const startSizes = {};
+  starData.forEach((entry, sid) => {
+    const idx = entry.pointIndex;
+    startDims[sid] = starDimFactors[idx];
+    startSizes[sid] = starSizes[idx];
+    if (mod === 'all') {
+      targetDims[sid] = entry.tierBright;
+      targetSizes[sid] = entry.defaultSize;
+    } else if (entry.star.module === mod) {
+      const isHub = sid === currentModuleHubId;
+      targetDims[sid] = isHub ? 1.85 : Math.max(entry.tierBright, 1.08);
+      targetSizes[sid] = entry.defaultSize * (isHub ? 1.55 : 1.0);
+    } else {
+      targetDims[sid] = 0.08;
+      targetSizes[sid] = Math.max(1.1, entry.defaultSize * 0.28);
+    }
+  });
+  updateStarDimAndSizes(startDims, startSizes, targetDims, targetSizes, 450);
+
+  const la = darkLineGeo.attributes.lineAlpha.array;
+  lineDataMap.forEach(ld => {
+    const inModule = mod === 'all' || (ld.from.module === mod && ld.to.module === mod);
+    const target = mod === 'all' ? 0.13 : (inModule ? 0.52 : 0.025);
+    const r = connToRange[ld.idx];
+    for (let s = 0; s < r.segmentCount * 2; s++) la[r.dark + s] = target;
+    ld._targetAlpha = target;
+    ld.glowActive = inModule && mod !== 'all' && ld.from.module === ld.to.module;
+  });
+  darkLineGeo.attributes.lineAlpha.needsUpdate = true;
+  networkGroup.userData.rotationSpeed = mod === 'all' ? 0.00012 : 0.00003;
+  updateLearnedGlows();
+}
+
+function getModuleCameraPose(mod) {
+  const stars = [];
+  starById.forEach(star => { if (star.module === mod) stars.push(star); });
+  if (!stars.length) return getOverviewCameraPose();
+
+  networkGroup.updateMatrixWorld(true);
+  const center = new THREE.Vector3();
+  const worldPositions = stars.map(star => new THREE.Vector3(star.x, star.y, star.z).applyMatrix4(networkGroup.matrixWorld));
+  worldPositions.forEach(pos => center.add(pos));
+  center.multiplyScalar(1 / stars.length);
+
+  let radius = 60;
+  worldPositions.forEach(pos => {
+    const dist = center.distanceTo(pos);
+    if (dist > radius) radius = dist;
+  });
+  const fitFactor = window.innerWidth < 900 ? 2.05 : 1.68;
+  const distance = Math.min(520, Math.max(190, radius * fitFactor));
+  const lateral = center.clone().sub(visualCenterStar ? new THREE.Vector3(visualCenterStar.x, visualCenterStar.y, visualCenterStar.z).applyMatrix4(networkGroup.matrixWorld) : new THREE.Vector3());
+  lateral.y = 0;
+  if (lateral.lengthSq() < 1) lateral.set(1, 0, 0);
+  lateral.normalize();
+  const moduleIndex = Math.max(0, ['力学', '热学', '光学', '电磁学', '能量', '数学'].indexOf(mod));
+  const angle = moduleIndex * Math.PI * 0.42 + Math.PI * 0.16;
+  const orbital = new THREE.Vector3(Math.cos(angle), 0.22, Math.sin(angle)).normalize();
+  const viewDir = lateral.multiplyScalar(0.55).add(orbital.multiplyScalar(0.85)).normalize();
+  return {
+    pos: center.clone().add(viewDir.multiplyScalar(distance)),
+    target: center
+  };
+}
+
+function updateLabels() {
+  if (!labelItems.length) return;
+  const halfW = window.innerWidth * 0.5;
+  const halfH = window.innerHeight * 0.5;
+  const cameraDir = new THREE.Vector3();
+  camera.getWorldDirection(cameraDir);
+  labelItems.forEach(item => {
+    const projected = item.world.clone().applyMatrix4(networkGroup.matrixWorld).project(camera);
+    const visible = projected.z > -1 && projected.z < 1;
+    const x = (projected.x * halfW) + halfW;
+    const y = (-projected.y * halfH) + halfH;
+    const entry = starData.get(item.id);
+    const idx = entry ? entry.pointIndex : -1;
+    const dim = idx >= 0 ? starDimFactors[idx] : 1;
+    const isActive = item.id === selectedId || item.id === hoveredId || selectedConnectedIds.has(item.id);
+    const isModuleHub = item.id === currentModuleHubId;
+    const connCount = connCounts ? (connCounts.get(item.id) || 0) : 0;
+    const hubConnected = hubStarId ? getConnectedIds(hubStarId).has(item.id) : false;
+    const showByDefault = item.id === hubStarId || isModuleHub || item.tier === 'core' || connCount >= Math.max(4, hubConnCount * 0.34) || hubConnected;
+    const showInCurrentModule = currentModule !== 'all' && entry && entry.star.module === currentModule && (item.tier !== 'extension' || dim > 0.5);
+    item.label.style.transform = `translate(${x}px,${y}px) translate(-50%,-50%)`;
+    item.label.style.display = visible && (showByDefault || showInCurrentModule || isActive || selectedId) ? 'block' : 'none';
+    item.label.classList.toggle('active', item.id === selectedId || item.id === hoveredId || isModuleHub);
+    item.label.classList.toggle('dim', dim < 0.2 && !isActive);
+    const baseOpacity = item.id === hubStarId || isModuleHub ? 1 : item.tier === 'core' ? 0.92 : item.tier === 'basic' ? 0.62 : 0.28;
+    item.label.style.fontSize = isModuleHub ? '28px' : '';
+    item.label.style.opacity = isActive ? '1' : String(Math.max(0.08, Math.min(baseOpacity, dim * baseOpacity)));
+  });
+}
+
+function highlightConnections(id, highlight) {
+  const connectedIds = highlight ? getConnectedIds(id) : new Set();
+  selectedConnectedIds = connectedIds;
+
+  const targetDims = {};
+  const targetSizes = {};
+  const startDims = {};
+  const startSizes = {};
+  starData.forEach((entry, sid) => {
+    const idx = entry.pointIndex;
+    startDims[sid] = starDimFactors[idx];
+    startSizes[sid] = starSizes[idx];
+    if (!highlight) {
+      targetDims[sid] = entry.tierBright;
+      targetSizes[sid] = entry.defaultSize;
+    } else if (sid === id) {
+      targetDims[sid] = 1.8;
+      targetSizes[sid] = entry.defaultSize * 1.5;
+    } else if (connectedIds.has(sid)) {
+      targetDims[sid] = 1.2;
+      targetSizes[sid] = entry.defaultSize * 1.2;
+    } else {
+      targetDims[sid] = 0.05;
+      targetSizes[sid] = 0.5;
+    }
+  });
+  updateStarDimAndSizes(startDims, startSizes, targetDims, targetSizes, 400);
+
+  // Line opacities
+  lineDataMap.forEach(ld => {
+  if (!highlight) {
+      ld._targetAlpha = 0.13;
+    } else if (ld.from.id === id || ld.to.id === id) {
+      ld._targetAlpha = 0.52;
+    } else {
+      ld._targetAlpha = 0.035;
+    }
+  });
+
+  networkGroup.userData.rotationSpeed = highlight ? 0.00003 : 0.00012;
+}
+
+function createFlyTween(startPos, startTarget, targetPos, lookAtPos, duration) {
+  const tween = createTween({
+    duration,
+    easing: Easing.cubicInOut,
+    onUpdate: (t) => {
+      camera.position.lerpVectors(startPos, targetPos, t);
+      controls.target.lerpVectors(startTarget, lookAtPos, t);
+      controls.update();
+    },
+    onComplete: () => {},
+    onCancel: () => {}
+  });
+  return tween;
+}
+
+function cancelCameraTweenForUserInput() {
+  if (orbitTween) {
+    orbitTween.cancel();
+    orbitTween = null;
+  }
+  controls.enabled = true;
+}
+
+function flyCameraToNode(targetStar, duration, bezierOffset) {
+  if (orbitTween) { orbitTween.cancel(); orbitTween = null; }
+  const startPos = camera.position.clone();
+  const startTarget = controls.target.clone();
+  const sideOffset = panel && panel.classList.contains('visible') ? -70 : -40;
+  const targetPos = new THREE.Vector3(
+    targetStar.x + sideOffset + (bezierOffset ? bezierOffset[0] : 0),
+    targetStar.y + 38 + (bezierOffset ? bezierOffset[1] : 0),
+    targetStar.z + 155 + (bezierOffset ? bezierOffset[2] : 0)
+  );
+  const center = new THREE.Vector3(targetStar.x, targetStar.y, targetStar.z);
+  controls.autoRotate = false;
+  if (bezierOffset) {
+    const mid = new THREE.Vector3().addVectors(startPos, targetPos).multiplyScalar(0.5);
+    mid.y += 60;
+    const tween = createTween({
+      duration: duration || 1200,
+      easing: Easing.cubicInOut,
+      onUpdate: (t) => {
+        const t1 = 1 - t;
+        camera.position.set(
+          t1*t1*t1*startPos.x + 3*t1*t1*t*mid.x + 3*t1*t*t*mid.x + t*t*t*targetPos.x,
+          t1*t1*t1*startPos.y + 3*t1*t1*t*mid.y + 3*t1*t*t*mid.y + t*t*t*targetPos.y,
+          t1*t1*t1*startPos.z + 3*t1*t1*t*mid.z + 3*t1*t*t*mid.z + t*t*t*targetPos.z
+        );
+        controls.target.lerpVectors(startTarget, center, t);
+        controls.update();
+      },
+      onComplete: () => { orbitTween = null; },
+      onCancel: () => {}
+    });
+    orbitTween = tween;
+    AnimEngine.add(tween);
+  } else {
+    const tween = createFlyTween(startPos, startTarget, targetPos, center, duration);
+    orbitTween = tween;
+    AnimEngine.add(tween);
+  }
+}
+
+function flyToCameraTarget(targetPos, lookAtPos, duration) {
+  if (orbitTween) { orbitTween.cancel(); orbitTween = null; }
+  controls.autoRotate = false;
+  const startPos = camera.position.clone();
+  const startTarget = controls.target.clone();
+  const tween = createTween({
+    duration: duration || 800,
+    easing: Easing.cubicInOut,
+    onUpdate: (t) => {
+      camera.position.lerpVectors(startPos, targetPos, t);
+      controls.target.lerpVectors(startTarget, lookAtPos, t);
+      controls.update();
+    },
+    onComplete: () => { orbitTween = null; },
+    onCancel: () => {}
+  });
+  orbitTween = tween;
+  AnimEngine.add(tween);
+}
+
+function selectStar(id, flyOptions) {
+  if (selectedId === id) {
+    const sameEntry = starData.get(id);
+    if (sameEntry) showInfoPanel(sameEntry.star);
+    return;
+  }
+  const previousId = selectedId;
+  if (previousId) clearSelectionState(previousId, { resetCamera: false, hidePanel: false });
+  selectedId = id;
+  const entry = starData.get(id);
+  if (!entry) return;
+  const { pointIndex, star, defaultSize, color } = entry;
+
+  star._glowBurst = 0;
+  star._glowPhase = 1;
+  
+  highlightConnections(id, true);
+
+  setTimeout(() => activateGlowLines(id), 150);
+
+  focusRelatedList = getSortedRelatedList(id);
+  focusRelatedIndex = -1;
+
+  setTimeout(() => {
+    if (selectedId === id) {
+      flyCameraToNode(star, flyOptions && flyOptions.duration || 920,
+        flyOptions && flyOptions.bezierOffset);
+    }
+  }, 50);
+
+  document.getElementById('focusBadge').style.display = 'inline';
+  applySelectedGoldState(id);
+  showInfoPanel(star);
+  updateStarCount();
+}
+
+function navigateRelated(direction) {
+  if (focusRelatedList.length === 0 || !selectedId) return;
+  focusRelatedIndex += direction;
+  if (focusRelatedIndex < 0) focusRelatedIndex = focusRelatedList.length - 1;
+  if (focusRelatedIndex >= focusRelatedList.length) focusRelatedIndex = 0;
+  const target = focusRelatedList[focusRelatedIndex];
+  if (target) {
+    const d = direction > 0 ? 1 : -1;
+    const targetStar = starById.get(target.id);
+    if (!targetStar) return;
+    selectStar(targetStar.id, {
+      bezierOffset: [d * 45, 24, d * 18],
+      duration: 820
+    });
+  }
+}
+
+function clearSelectionState(prevId, options) {
+  options = options || {};
+  if (!selectedId) return;
+  hideTooltip();
+  const entry = starData.get(prevId);
+  if (entry) {
+    const { pointIndex, star, defaultSize, color } = entry;
+    star._glowPhase = 0;
+    star._glowBurst = 0;
+    burstFactors[entry.pointIndex] = 1;
+    starGeo.attributes.burstFactor.needsUpdate = true;
+  }
+  const glowArr = glowLineGeo.attributes.glowProgress.array;
+  const trailSiz = trailPointsGeo.attributes.size.array;
+  lineDataMap.forEach(ld => {
+    if (ld.glowActive) {
+      const r = connToRange[ld.idx];
+      for (let s = 0; s < r.segmentCount * 2; s++) glowArr[r.glow + s] = 0;
+      for (let j = 0; j < r.trailCount; j++) trailSiz[r.trail + j] = 0;
+      ld.glowActive = false;
+      ld.glowProgress = 0;
+    }
+  });
+  glowLineGeo.attributes.glowProgress.needsUpdate = true;
+  trailPointsGeo.attributes.size.needsUpdate = true;
+
+  if (options.restoreConnections !== false) highlightConnections(prevId, false);
+  selectedConnectedIds.clear();
+  focusRelatedList = [];
+  focusRelatedIndex = -1;
+  selectedId = null;
+  updateLearnedGlows();
+  if (options.resetCamera !== false) {
+    const pose = getOverviewCameraPose();
+    flyToCameraTarget(pose.pos, pose.target, 950);
+    controls.autoRotate = true;
+  }
+  document.getElementById('focusBadge').style.display = 'none';
+  if (options.hidePanel !== false) hideInfoPanel();
+  updateStarCount();
+}
+
+function deselectStar() {
+  if (!selectedId) return;
+  clearSelectionState(selectedId, { resetCamera: true, hidePanel: true });
+}
+
+function getOverviewCameraPose() {
+  const center = visualCenterStar || { x: 0, y: 0, z: 0 };
+  return {
+    pos: new THREE.Vector3(center.x + 20, center.y + 42, center.z + 285),
+    target: new THREE.Vector3(center.x, center.y, center.z)
+  };
+}
+
+// ========================== HOVER ==========================
+let hoverThrottleCounter = 0;
+function checkHover() {
+  if (isTouchDevice) return;
+  hoverThrottleCounter++;
+  if (hoverThrottleCounter % 4 !== 0) return;
+  const hit = hitTest();
+  if (hit && hit.entry) {
+    const { idx, id, entry } = hit;
+    if (!entry) { hideTooltip(); return; }
+    if (selectedId && id !== selectedId && !selectedConnectedIds.has(id)) {
+      hideTooltip();
+      return;
+    }
+    const pos = new THREE.Vector3(starPositions[idx*3], starPositions[idx*3+1], starPositions[idx*3+2]);
+    pos.project(camera);
+    const x = (pos.x * 0.5 + 0.5) * window.innerWidth;
+    const y = (-pos.y * 0.5 + 0.5) * window.innerHeight;
+    showTooltipAt(entry, x, y);
+    hoveredId = id;
+    if (hoveredId !== selectedId) {
+      entry.star._hoverActive = true;
+      entry.star._hoverFadeVal = 1.0;
+      entry.star._hoverFadeOut = false;
+    }
+  } else {
+    if (hoveredId && hoveredId !== selectedId) {
+      const prevEntry = starData.get(hoveredId);
+      if (prevEntry) prevEntry.star._hoverFadeOut = true;
+    }
+    hoveredId = null;
+    hideTooltip();
+  }
+}
+
+// ========================== INFO PANEL ==========================
+panel = document.getElementById('info-panel');
+panelIcon = document.getElementById('panelIcon');
+panelTitle = document.getElementById('panelTitle');
+panelMeta = document.getElementById('panelMeta');
+panelDef = document.getElementById('panelDef');
+panelFormula = document.getElementById('panelFormula');
+panelFormulaWrap = document.getElementById('panelFormulaWrap');
+panelThinking = document.getElementById('panelThinking');
+panelThinkingWrap = document.getElementById('panelThinkingWrap');
+panelApps = document.getElementById('panelApps');
+panelExam = document.getElementById('panelExam');
+panelRelated = document.getElementById('panelRelated');
+panelCross = document.getElementById('panelCross');
+panelCrossWrap = document.getElementById('panelCrossWrap');
+panelHistory = document.getElementById('panelHistory');
+panelHistoryWrap = document.getElementById('panelHistoryWrap');
+panelMistakes = document.getElementById('panelMistakes');
+panelMistakesWrap = document.getElementById('panelMistakesWrap');
+panelConfuse = document.getElementById('panelConfuse');
+panelConfuseWrap = document.getElementById('panelConfuseWrap');
+panelChain = document.getElementById('panelChain');
+panelChainWrap = document.getElementById('panelChainWrap');
+panelScenes = document.getElementById('panelScenes');
+learnBtn = document.getElementById('learnBtn');
+panelClose = document.getElementById('panelClose');
+
+panelClose.addEventListener('click', deselectStar);
+
+document.querySelectorAll('#info-panel .section h3').forEach(function(title, index) {
+  var steps = ['01 概念', '02 错因', '03 公式', '04 思维', '05 易混', '06 应用', '07 考点', '08 故事', '09 跨学科', '10 发展', '11 脉络'];
+  title.setAttribute('data-step', steps[index] || '');
+});
+
+function renderFormula(str) {
+  return str.replace(/([\w\u4e00-\u9fff\u03c1\u03b7\u0394\u03c0\u03bb\u03a3\u03a9\u03b8]+)\/([\w\u4e00-\u9fff\u03c1\u03b7\u0394\u03c0\u03bb\u03a3\u03a9\u03b8\u00d7%\u00b2\u00b3\u00b2\u2081\u2082\u2083\u2084]+)/g,
+    '<span class="frac"><span class="num">\$1</span><span class="den">\$2</span></span>');
+}
+
+const SI_UNIT_DEFS = {
+  W有: { name: '有用功', unit: 'J' }, W总: { name: '总功', unit: 'J' }, W: { name: '功', unit: 'J' },
+  F向上: { name: '向上的压力', unit: 'N' }, F向下: { name: '向下的压力', unit: 'N' }, F拉: { name: '拉力', unit: 'N' }, F浮: { name: '浮力', unit: 'N' }, F合: { name: '合力', unit: 'N' }, F: { name: '力', unit: 'N' },
+  G: { name: '重力', unit: 'N' }, s: { name: '距离', unit: 'm' }, v_avg: { name: '平均速度', unit: 'm/s' }, v: { name: '速度', unit: 'm/s' }, t: { name: '时间', unit: 's' },
+  m: { name: '质量', unit: 'kg' }, V排: { name: '排开液体体积', unit: 'm³' }, V: { name: '体积', unit: 'm³' }, ρ液: { name: '液体密度', unit: 'kg/m³' }, ρ: { name: '密度', unit: 'kg/m³' },
+  p0: { name: '标准大气压', unit: 'Pa' }, p: { name: '压强', unit: 'Pa' }, S: { name: '受力面积', unit: 'm²' }, h: { name: '高度/深度', unit: 'm' }, g: { name: '重力加速度', unit: 'N/kg' },
+  P: { name: '功率/电功率', unit: 'W' }, Ek: { name: '动能', unit: 'J' }, Ep: { name: '重力势能', unit: 'J' }, E机械: { name: '机械能', unit: 'J' }, E: { name: '能量', unit: 'J' }, η: { name: '机械效率', unit: '1 或 %' },
+  L: { name: '力臂', unit: 'm' }, R: { name: '电阻', unit: 'Ω' }, U: { name: '电压', unit: 'V' }, I: { name: '电流', unit: 'A' }, Q: { name: '热量/电热', unit: 'J' },
+  c: { name: '光速/比热容', unit: 'm/s 或 J/(kg·℃)' }, Δt: { name: '温度变化量', unit: '℃' }, f: { name: '频率/焦距', unit: 'Hz 或 m' }, T: { name: '周期', unit: 's' }, λ: { name: '波长', unit: 'm' }, q: { name: '电荷量', unit: 'C' }, n: { name: '绳子股数', unit: '1' }
+};
+
+function mergeFormulaUnitsFromThinking(units, thinking) {
+  (thinking && thinking.variables ? thinking.variables : []).forEach(function(v) {
+    if (!v.symbol) return;
+    units[v.symbol] = {
+      name: v.name || (SI_UNIT_DEFS[v.symbol] && SI_UNIT_DEFS[v.symbol].name) || '物理量',
+      unit: (SI_UNIT_DEFS[v.symbol] && SI_UNIT_DEFS[v.symbol].unit) || v.unit || 'SI单位'
+    };
+  });
+  return units;
+}
+
+function findFormulaSymbols(formula, thinking) {
+  const units = mergeFormulaUnitsFromThinking(Object.assign({}, SI_UNIT_DEFS), thinking);
+  const occupied = new Array(formula.length).fill(false);
+  const hits = [];
+  Object.keys(units).sort(function(a, b) { return b.length - a.length; }).forEach(function(symbol) {
+    let from = 0;
+    while (from < formula.length) {
+      const at = formula.indexOf(symbol, from);
+      if (at < 0) break;
+      const end = at + symbol.length;
+      if (!occupied.slice(at, end).some(Boolean)) {
+        hits.push({ symbol: symbol, index: at, name: units[symbol].name, unit: units[symbol].unit });
+        for (let i = at; i < end; i++) occupied[i] = true;
+      }
+      from = end;
+    }
+  });
+  return hits.sort(function(a, b) { return a.index - b.index; });
+}
+
+function renderFormulaUnits(formula, thinking) {
+  const symbols = findFormulaSymbols(formula, thinking);
+  if (!symbols.length) return '<div class="formula-tip">请统一换算为国际制单位后再代入公式。</div>';
+  return '<div class="formula-units">' + symbols.map(function(item) {
+    return '<div class="formula-unit"><strong>' + item.symbol + ' · ' + item.name + '</strong><span>SI单位：' + item.unit + '</span></div>';
+  }).join('') + '</div>' +
+  '<div class="formula-tip">代入计算前，先把每个物理量统一换算成上面的国际制单位。</div>';
+}
+
+function renderThinking(thinking) {
+  if (!thinking) {
+    panelThinkingWrap.style.display = 'none';
+    panelThinking.innerHTML = '';
+    return;
+  }
+  panelThinkingWrap.style.display = 'block';
+  const chain = (thinking.reasoning_path || []).map(function(step, idx, arr) {
+    return '<span class="thinking-chip">' + step + '</span>' + (idx < arr.length - 1 ? '<span class="thinking-arrow"><i class="fas fa-arrow-right"></i></span>' : '');
+  }).join('');
+  const variables = (thinking.variables || []).slice(0, 6).map(function(v) {
+    return '<div class="thinking-mini"><strong>' + v.symbol + ' · ' + v.name + '</strong><span>' + (v.unit ? '单位：' + v.unit + '<br>' : '') + v.meaning + '</span></div>';
+  }).join('');
+  const measurement = (thinking.measurement || []).slice(0, 4).map(function(m) {
+    return '<div><strong>' + m.quantity + '｜' + m.tool + '</strong><br>' + m.reading + (m.errors && m.errors.length ? '<br><span style="color:rgba(255,215,102,.86)">误差：' + m.errors.join('、') + '</span>' : '') + '</div>';
+  }).join('');
+  const rules = (thinking.rules || []).slice(0, 4).map(function(rule) { return '<div>' + rule + '</div>'; }).join('');
+  const confusions = (thinking.confusions || []).slice(0, 3).map(function(item) { return '<div>' + item + '</div>'; }).join('');
+  const transfer = (thinking.transfer || []).slice(0, 3).map(function(item) { return '<div>' + item + '</div>'; }).join('');
+  const nextQuestions = (thinking.next_questions || []).slice(0, 3).map(function(item) { return '<div>' + item + '</div>'; }).join('');
+  panelThinking.innerHTML =
+    '<div class="thinking-focus"><i class="fas fa-circle-question"></i> ' + thinking.question + '</div>' +
+    '<div class="thinking-model"><strong>核心模型：</strong>' + thinking.core_model + '</div>' +
+    (chain ? '<div><h4 style="margin:0 0 7px;color:rgba(225,233,246,.84);font-size:12px;letter-spacing:.6px">推理路径</h4><div class="thinking-chain">' + chain + '</div></div>' : '') +
+    (variables ? '<div><h4 style="margin:0 0 7px;color:rgba(225,233,246,.84);font-size:12px;letter-spacing:.6px">变量地图</h4><div class="thinking-grid">' + variables + '</div></div>' : '') +
+    (measurement ? '<div><h4 style="margin:0 0 7px;color:rgba(225,233,246,.84);font-size:12px;letter-spacing:.6px">测量与误差</h4><div class="thinking-list">' + measurement + '</div></div>' : '') +
+    (rules ? '<div><h4 style="margin:0 0 7px;color:rgba(225,233,246,.84);font-size:12px;letter-spacing:.6px">思维规则</h4><div class="thinking-list">' + rules + '</div></div>' : '') +
+    (confusions ? '<div><h4 style="margin:0 0 7px;color:rgba(225,233,246,.84);font-size:12px;letter-spacing:.6px">易混辨析</h4><div class="thinking-list">' + confusions + '</div></div>' : '') +
+    (transfer ? '<div><h4 style="margin:0 0 7px;color:rgba(225,233,246,.84);font-size:12px;letter-spacing:.6px">应用迁移</h4><div class="thinking-list">' + transfer + '</div></div>' : '') +
+    (nextQuestions ? '<div><h4 style="margin:0 0 7px;color:rgba(225,233,246,.84);font-size:12px;letter-spacing:.6px">后续追问</h4><div class="thinking-list">' + nextQuestions + '</div></div>' : '');
+}
+
+function bindJump(el, targetId) {
+  if (!el || !targetId || targetId === selectedId || !starById.has(targetId)) return;
+  el.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    selectStar(targetId);
+  });
+}
+
+function renderMistakes(star) {
+  panelMistakes.innerHTML = '';
+  const items = (star.mistakes || []).filter(Boolean);
+  if (!items.length) {
+    panelMistakesWrap.style.display = 'none';
+    return;
+  }
+  panelMistakesWrap.style.display = 'block';
+  items.forEach(function(text) {
+    const div = document.createElement('div');
+    div.className = 'mistake-item';
+    div.textContent = text;
+    panelMistakes.appendChild(div);
+  });
+}
+
+function renderConfuse(star) {
+  panelConfuse.innerHTML = '';
+  const pairs = confuseByNodeId.get(star.id) || [];
+  if (!pairs.length) {
+    panelConfuseWrap.style.display = 'none';
+    return;
+  }
+  panelConfuseWrap.style.display = 'block';
+  pairs.forEach(function(pair) {
+    const card = document.createElement('div');
+    card.className = 'confuse-card';
+    const leftId = pair.idA || '';
+    const rightId = pair.idB || '';
+    const leftStar = starById.get(leftId);
+    const rightStar = starById.get(rightId);
+    card.innerHTML =
+      '<div class="pair">' +
+        '<div class="side' + (leftStar ? ' clickable' : '') + '" data-jump="' + leftId + '"><strong>' + pair.conceptA + '</strong><span>' + (pair.exampleA || '') + '</span></div>' +
+        '<div class="side' + (rightStar ? ' clickable' : '') + '" data-jump="' + rightId + '"><strong>' + pair.conceptB + '</strong><span>' + (pair.exampleB || '') + '</span></div>' +
+      '</div>' +
+      '<div class="diff">' + (pair.coreDifference || '') + '</div>';
+    card.querySelectorAll('.side.clickable').forEach(function(side) {
+      bindJump(side, side.getAttribute('data-jump'));
+    });
+    panelConfuse.appendChild(card);
+  });
+}
+
+function renderLifeScenes(star) {
+  panelScenes.innerHTML = '';
+  const scenes = lifeByNodeId.get(star.id) || [];
+  scenes.forEach(function(scene) {
+    const div = document.createElement('div');
+    div.className = 'scene-item';
+    div.innerHTML = '<strong>' + scene.name + '</strong><span>' + (scene.description || '') + (scene.principle ? '<br>原理：' + scene.principle : '') + '</span>';
+    panelScenes.appendChild(div);
+  });
+}
+
+function renderKnowledgeChainPanel(star) {
+  panelChain.innerHTML = '';
+  const chains = chainsByNodeId.get(star.id) || [];
+  if (!chains.length) {
+    panelChainWrap.style.display = 'none';
+    return;
+  }
+  panelChainWrap.style.display = 'block';
+  chains.forEach(function(chain) {
+    const title = document.createElement('div');
+    title.style.cssText = 'font-size:12px;color:rgba(236,241,250,.7);margin:4px 0 2px';
+    title.textContent = chain.name || '知识发展链';
+    panelChain.appendChild(title);
+    const row = document.createElement('div');
+    row.className = 'chain-row';
+    (chain.nodes || []).forEach(function(nid, idx) {
+      const node = starById.get(nid);
+      if (!node) return;
+      if (idx > 0) {
+        const arrow = document.createElement('span');
+        arrow.className = 'chain-arrow';
+        arrow.innerHTML = '<i class="fas fa-arrow-right"></i>';
+        row.appendChild(arrow);
+      }
+      const step = document.createElement('div');
+      const unlearned = !isLearned(nid);
+      step.className = 'chain-step' + (nid === star.id ? ' current' : '') + (unlearned && nid !== star.id ? ' unlearned' : '');
+      step.innerHTML = '<strong>' + (nid === star.id ? '当前' : (unlearned ? '待复查' : '已学')) + '</strong>' + node.name;
+      bindJump(step, nid);
+      row.appendChild(step);
+    });
+    panelChain.appendChild(row);
+  });
+  const btn = document.createElement('button');
+  btn.className = 'diag-btn';
+  btn.type = 'button';
+  btn.textContent = '在星图中高亮这条发展链';
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    showKnowledgeChain(star.id);
+  });
+  panelChain.appendChild(btn);
+}
+
+function showInfoPanel(star) {
+  const color = MOD_COLORS[star.module] || '#6ee7ff';
+  const modCN = { '\u529b\u5b66':'\u725b\u987f\u5ea7','\u70ed\u5b66':'\u706b\u7130\u5ea7','\u5149\u5b66':'\u68f1\u955c\u5ea7','\u7535\u78c1\u5b66':'\u95ea\u7535\u5ea7','\u80fd\u91cf':'\u80fd\u91cf\u73af' };
+  const gradeStr = '\u7b2c' + star.grade + '\u5e74\u7ea7';
+  const diffStr = '\u2b50'.repeat(star.difficulty);
+
+  panelIcon.style.background = color + '22';
+  panelIcon.style.color = color;
+  panelIcon.textContent = '\u2726';
+  panelTitle.textContent = star.name;
+  panelMeta.innerHTML = '\u000a    <span style="color:' + color + '">\u25cf ' + star.module + ' \u00b7 ' + (modCN[star.module]||'') + '</span>\u000a    <span>' + star.chapter + '</span>\u000a    <span>' + gradeStr + '</span>\u000a    <span>' + diffStr + '</span>\u000a  ';
+  panel.querySelectorAll('.panel-summary').forEach(function(el) { el.remove(); });
+  panelMeta.insertAdjacentHTML('afterend',
+    '<div class="panel-summary">' +
+    '<div class="summary-card"><strong>模块</strong><span>' + star.module + '</span></div>' +
+    '<div class="summary-card"><strong>章节</strong><span>' + star.chapter + '</span></div>' +
+    '<div class="summary-card"><strong>难度</strong><span>' + diffStr + '</span></div>' +
+    '</div>');
+  panelDef.parentElement.classList.add('concept-card');
+  panelDef.textContent = star.definition || '\u6682\u65e0\u5b9a\u4e49';
+  renderMistakes(star);
+  if (star.formula) {
+    panelFormulaWrap.style.display = 'block';
+    panelFormula.innerHTML = renderFormula(star.formula) + renderFormulaUnits(star.formula, star.thinking);
+  } else {
+    panelFormulaWrap.style.display = 'none';
+  }
+  renderThinking(star.thinking);
+  renderConfuse(star);
+  panelApps.innerHTML = '';
+  if (star.applications && star.applications.length > 0) {
+    star.applications.forEach(function(app) {
+      if (app) {
+        var li = document.createElement('li');
+        li.textContent = app;
+        panelApps.appendChild(li);
+      }
+    });
+  } else {
+    var li = document.createElement('li');
+    li.textContent = '\u6682\u65e0\u5e94\u7528\u6848\u4f8b';
+    panelApps.appendChild(li);
+  }
+  renderLifeScenes(star);
+  var freqMap = {1:'\u6781\u5c11',2:'\u8f83\u5c11',3:'\u4e00\u822c',4:'\u8f83\u591a',5:'\u9891\u7e41'};
+  panelExam.textContent = '\u51fa\u73b0\u9891\u7387\uff1a' + (freqMap[star.examFreq]||'\u4e00\u822c') + ' \u2003\u9898\u578b\uff1a' + ((star.examTypes || []).join('\u3001') || '\u672a\u7edf\u8ba1');
+  if (star.historyScientist) {
+    var sParts = star.historyScientist.split(',');
+    var scientist = sParts[0].trim();
+    var year = sParts[1] ? sParts[1].trim() : (star.historyYear || '').trim();
+    var story = '';
+    if (scientist.indexOf('\u725b\u987f') >= 0) story = '\u725b\u987f\u5728\u4f3d\u5229\u7565\u7b49\u4eba\u7814\u7a76\u57fa\u7840\u4e0a\uff0c\u4e8e1687\u5e74\u53d1\u8868\u300a\u81ea\u7136\u54f2\u5b66\u7684\u6570\u5b66\u539f\u7406\u300b\uff0c\u7cfb\u7edf\u603b\u7ed3\u4e86\u7ecf\u5178\u529b\u5b66\u4f53\u7cfb\u3002';
+    else if (scientist.indexOf('\u7126\u800c') >= 0) story = '\u7126\u800c\u7ecf\u8fc7\u8fd430\u5e74\u7684\u5b9e\u9a8c\u7814\u7a76\uff0c\u4e8e1840\u5e74\u4ee3\u7cbe\u786e\u6d4b\u5b9a\u4e86\u70ed\u529f\u5f53\u91cf\uff0c\u4e3a\u80fd\u91cf\u5b88\u6052\u5b9a\u5f8b\u7684\u5efa\u7acb\u5960\u5b9a\u4e86\u57fa\u7840\u3002';
+    else if (scientist.indexOf('\u6cd5\u62c9\u7b2c') >= 0) story = '\u6cd5\u62c9\u7b2c\u4e8e1831\u5e74\u901a\u8fc7\u5b9e\u9a8c\u53d1\u73b0\u7535\u78c1\u611f\u5e94\u73b0\u8c61\uff0c\u5f00\u542f\u4e86\u7535\u6c14\u5316\u65f6\u4ee3\u3002';
+    else if (scientist.indexOf('\u5965\u65af\u7279') >= 0) story = '\u5965\u65af\u7279\u4e8e1820\u5e74\u5076\u7136\u53d1\u73b0\u7535\u6d41\u7684\u78c1\u6548\u5e94\uff0c\u9996\u6b21\u63ed\u793a\u4e86\u7535\u4e0e\u78c1\u7684\u8054\u7cfb\u3002';
+    else if (scientist.indexOf('\u6b27\u59c6') >= 0) story = '\u6b27\u59c6\u7ecf\u8fc7\u5341\u5e74\u52aa\u529b\uff0c\u4e8e1826\u5e74\u901a\u8fc7\u5b9e\u9a8c\u603b\u7ed3\u51fa\u7535\u6d41\u3001\u7535\u538b\u3001\u7535\u963b\u4e09\u8005\u5173\u7cfb\u7684\u6b27\u59c6\u5b9a\u5f8b\u3002';
+    else if (scientist.indexOf('\u9ea6\u514b\u65af\u97e6') >= 0 || scientist.indexOf('\u8d6b\u5179') >= 0) story = '\u9ea6\u514b\u65af\u97e6\u4e8e1864\u5e74\u5efa\u7acb\u7535\u78c1\u573a\u7406\u8bba\uff0c\u8d6b\u5179\u4e8e1887\u5e74\u5b9e\u9a8c\u8bc1\u5b9e\u4e86\u7535\u78c1\u6ce2\u7684\u5b58\u5728\u3002';
+    else if (scientist.indexOf('\u7231\u56e0\u65af\u5766') >= 0) story = '\u7231\u56e0\u65af\u5766\u4e8e1905\u5e74\u63d0\u51fa\u72ed\u4e49\u76f8\u5bf9\u8bba\uff0c\u8d28\u80fd\u65b9\u7a0bE=mc\u00b2\u63ed\u793a\u4e86\u6838\u80fd\u7684\u6765\u6e90\u3002';
+    else if (scientist.indexOf('\u74e6\u7279') >= 0) story = '\u74e6\u7279\u4e8e18\u4e16\u7eaa\u6539\u826f\u84b8\u6c7d\u673a\uff0c\u5c06\u70ed\u80fd\u9ad8\u6548\u8f6c\u5316\u4e3a\u673a\u68b0\u80fd\uff0c\u63a8\u52a8\u4e86\u5de5\u4e1a\u9769\u547d\u3002';
+    else if (scientist.indexOf('\u5e15\u65af\u5361') >= 0) story = '\u5e15\u65af\u5361\u4e8e17\u4e16\u7eaa\u7814\u7a76\u6db2\u4f53\u538b\u5f3a\uff0c\u53d1\u73b0\u4e86\u8457\u540d\u7684\u5e15\u65af\u5361\u5b9a\u5f8b\uff0c\u5e76\u53d1\u660e\u4e86\u8ba1\u7b97\u5668\u3002';
+    else if (scientist.indexOf('\u6258\u91cc\u62c6\u5229') >= 0) story = '\u6258\u91cc\u62c6\u5229\u4e8e1643\u5e74\u901a\u8fc7\u5b9e\u9a8c\u9996\u6b21\u51c6\u786e\u6d4b\u91cf\u4e86\u5927\u6c14\u538b\u503c\uff0c\u8bc1\u660e\u4e86\u771f\u7a7a\u7684\u5b58\u5728\u3002';
+    else if (scientist.indexOf('\u963f\u57fa\u7c73\u5fb7') >= 0) story = '\u963f\u57fa\u7c73\u5fb7\u5728\u6d74\u7f38\u4e2d\u53d1\u73b0\u4e86\u6d6e\u529b\u5b9a\u5f8b\uff0c\u5e76\u558a\u51fa\u4e86\u201c\u5c24\u91cc\u5361\uff01\u201d\uff08\u6211\u53d1\u73b0\u4e86\uff01\uff09\u3002';
+    else if (scientist.indexOf('\u58a8\u5b50') >= 0) story = '\u58a8\u5b50\u4e8e\u516c\u5143\u524d4\u4e16\u7eaa\u5728\u300a\u58a8\u7ecf\u300b\u4e2d\u8bb0\u8f7d\u4e86\u5149\u7684\u76f4\u7ebf\u4f20\u64ad\u548c\u5c0f\u5b54\u6210\u50cf\uff0c\u6bd4\u897f\u65b9\u65e9\u4e00\u5343\u591a\u5e74\u3002';
+    else if (scientist.indexOf('\u65af\u6d85\u5c14') >= 0) story = '\u65af\u6d85\u5c14\u4e8e1621\u5e74\u901a\u8fc7\u5b9e\u9a8c\u53d1\u73b0\u4e86\u5149\u7684\u6298\u5c04\u5b9a\u5f8b\uff0c\u53c8\u79f0\u65af\u6d85\u5c14\u5b9a\u5f8b\u3002';
+    else if (scientist.indexOf('\u80e1\u514b') >= 0) story = '\u80e1\u514b\u4e8e1660\u5e74\u901a\u8fc7\u5f39\u7c27\u5b9e\u9a8c\u53d1\u73b0\u4e86\u5f39\u6027\u5b9a\u5f8b\uff0c\u4e3a\u6750\u6599\u529b\u5b66\u5960\u5b9a\u4e86\u57fa\u7840\u3002';
+    else if (scientist.indexOf('\u6cf0\u52d2\u65af') >= 0) story = '\u6cf0\u52d2\u65af\u4e8e\u516c\u5143\u524d6\u4e16\u7eaa\u89c2\u5bdf\u5230\u6469\u64e6\u540e\u7684\u7425\u73c0\u80fd\u5438\u5f15\u8f7b\u5c0f\u7269\u4f53\uff0c\u662f\u9759\u7535\u7814\u7a76\u7684\u5f00\u7aef\u3002';
+    else if (scientist.indexOf('\u8fc8\u5c14') >= 0 || scientist.indexOf('\u4ea5\u59c6\u970d\u5179') >= 0) story = '\u8fc8\u5c14\u3001\u4ea5\u59c6\u970d\u5179\u7b49\u591a\u4f4d\u79d1\u5b66\u5bb6\u901a\u8fc7\u4e0d\u540c\u9014\u5f84\u72ec\u7acb\u53d1\u73b0\u4e86\u80fd\u91cf\u5b88\u6052\u5b9a\u5f8b\u3002';
+    else if (scientist.indexOf('\u8d6b\u66ff\u5c14') >= 0) story = '\u8d6b\u66ff\u5c14\u4e8e1800\u5e74\u901a\u8fc7\u6e29\u5ea6\u8ba1\u53d1\u73b0\u4e86\u7ea2\u5916\u7ebf\u3002';
+    else if (scientist.indexOf('\u91cc\u7279') >= 0) story = '\u91cc\u7279\u4e8e1801\u5e74\u53d1\u73b0\u4e86\u7d2b\u5916\u7ebf\uff0c\u6269\u5c55\u4e86\u4eba\u4eec\u5bf9\u5149\u6ce2\u8c31\u7684\u8ba4\u77e5\u3002';
+    panelHistoryWrap.style.display = 'block';
+    var histHtml = '<strong style="color:' + color + '">' + scientist + '</strong>';
+    if (year) histHtml += '\uff08' + year + '\uff09';
+    histHtml += '\uff1a' + (story || '\u4e3a\u7269\u7406\u5b66\u53d1\u5c55\u505a\u51fa\u4e86\u91cd\u8981\u8d21\u732e\u3002');
+    panelHistory.innerHTML = histHtml;
+  } else {
+    panelHistoryWrap.style.display = 'none';
+  }
+  panelCross.innerHTML = '';
+  var SUBJ_COLORS = {'\u6570\u5b66':'#3742fa','\u751f\u7269':'#2ed573','\u5316\u5b66':'#ff4757','\u5730\u7406':'#ff7f50','\u5de5\u7a0b':'#8e44ad','\u827a\u672f':'#e84393','\u5386\u53f2':'#9b59b6'};
+  var SUBJ_ICONS = {'\u6570\u5b66':'fa-calculator','\u751f\u7269':'fa-dna','\u5316\u5b66':'fa-flask','\u5730\u7406':'fa-earth-asia','\u5de5\u7a0b':'fa-gear','\u827a\u672f':'fa-palette','\u5386\u53f2':'fa-landmark'};
+  if (star.crossDiscipline && star.crossDiscipline.length > 0) {
+    panelCrossWrap.style.display = 'block';
+    star.crossDiscipline.forEach(function(cd) {
+      var tag = document.createElement('span');
+      tag.className = cd.targetId ? 'tag clickable' : 'tag';
+      var sc = SUBJ_COLORS[cd.subject] || '#8e44ad';
+      tag.style.cssText = 'border-color:' + sc + ';color:' + sc + ';background:' + sc + '11';
+      tag.innerHTML = '<i class="fas ' + (SUBJ_ICONS[cd.subject] || 'fa-link') + '"></i> ' + cd.subject + ' \u00b7 ' + cd.concept;
+      if (cd.targetId) {
+        tag.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          selectStar(cd.targetId);
+        });
+      }
+      panelCross.appendChild(tag);
+    });
+  } else {
+    panelCrossWrap.style.display = 'none';
+  }
+  renderKnowledgeChainPanel(star);
+  panelRelated.innerHTML = '';
+  var conns = connMap.get(star.id) || [];
+  var typeLabels = ['\u524d\u7f6e\u77e5\u8bc6', '\u540e\u7eed\u77e5\u8bc6', '\u5e73\u884c\u5173\u8054', '\u5386\u53f2\u542f\u53d1', '\u8de8\u6a21\u5757\u5173\u8054', '\u8de8\u5b66\u79d1\u5173\u8054'];
+  var typeDescriptions = [
+    '先理解这些概念，再学习当前知识点会更顺。',
+    '掌握当前知识点后，可以继续学习这些内容。',
+    '与当前知识点处在同一层级，常用于比较、迁移或共同解题。',
+    '科学发展中的来源、实验或思想线索。',
+    '连接到其他物理模块，帮助建立综合题思路。',
+    '连接数学、生物、化学等学科中的相近概念。'
+  ];
+  var typeIcons = ['fa-arrow-up', 'fa-arrow-down', 'fa-arrows-left-right', 'fa-clock-rotate', 'fa-share-nodes', 'fa-link'];
+  var typeColors = ['#6ee7ff', '#ffd700', '#2ed573', '#a55eea', '#ff6b6b', '#ff7f50'];
+  var seenIds = new Set();
+  var relatedByType = {};
+  conns.forEach(function(c) {
+    var otherId = c.fromId === star.id ? c.toId : c.fromId;
+    if (seenIds.has(otherId)) return;
+    seenIds.add(otherId);
+    var rs = starById.get(otherId);
+    if (!rs) return;
+    var groupIdx = 2;
+    if (c.type === 0) {
+      groupIdx = c.fromId === star.id ? 1 : 0;
+    } else if (c.type === 1) groupIdx = 1;
+    else if (c.type === 2) groupIdx = 2;
+    else if (c.type === 3) groupIdx = 3;
+    else if (c.type === 4) groupIdx = 4;
+    else if (c.type === 5) groupIdx = 5;
+    if (!relatedByType[groupIdx]) relatedByType[groupIdx] = [];
+    relatedByType[groupIdx].push(rs);
+  });
+  var totalRelated = 0;
+  var firstPrereq = null;
+  var firstFollow = null;
+  var firstParallel = null;
+  if (star.prerequisites && star.prerequisites.length) firstPrereq = starById.get(star.prerequisites[0].trim());
+  if (star.followUps && star.followUps.length) firstFollow = starById.get(star.followUps[0].trim());
+  typeLabels.forEach(function(label, gi) {
+    var items = relatedByType[gi] || [];
+    if (items.length === 0) return;
+    if (gi === 2 && !firstParallel) firstParallel = items[0];
+    totalRelated += items.length;
+    var c = typeColors[gi];
+    var group = document.createElement('div');
+    group.className = 'related-group';
+    group.style.borderLeftColor = c;
+    var header = document.createElement('div');
+    header.className = 'related-group-header';
+    header.style.color = c;
+    header.innerHTML = '<i class="fas ' + typeIcons[gi] + '"></i> ' + label + ' <span style="margin-left:auto;opacity:0.5">' + items.length + '</span>';
+    group.appendChild(header);
+    var desc = document.createElement('div');
+    desc.className = 'related-group-desc';
+    desc.textContent = typeDescriptions[gi] || '';
+    group.appendChild(desc);
+    items.forEach(function(rs) {
+      if (!rs) return;
+      var mc = MOD_COLORS[rs.module] || '#888';
+      var item = document.createElement('div');
+      item.className = 'related-item';
+      item.innerHTML = '<span class="dot" style="background:' + mc + '"></span><span>' + rs.name + '</span><span class="mod-label">' + rs.module + '</span>';
+      item.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); selectStar(rs.id); });
+      group.appendChild(item);
+    });
+    panelRelated.appendChild(group);
+  });
+  if (totalRelated > 0) {
+    var path = document.createElement('div');
+    path.className = 'learning-path';
+    function pathNodeHtml(kind, label, target) {
+      var clickable = target && target.id;
+      return '<div class="path-node' + (kind === 'current' ? ' current' : '') + (clickable ? ' clickable' : '') + '"' + (clickable ? ' data-target-id="' + target.id + '"' : '') + '><strong>' + label + '</strong><span>' + (target ? target.name : (label === '先学' ? '无明确前置' : label === '同层比较' ? '暂无' : '无明确后续')) + '</span></div>';
+    }
+    path.innerHTML =
+      pathNodeHtml('normal', '先学', firstPrereq) +
+      '<div class="path-arrow"><i class="fas fa-arrow-right"></i></div>' +
+      pathNodeHtml('current', '当前', { id: star.id, name: star.name }) +
+      pathNodeHtml('normal', '同层比较', firstParallel) +
+      '<div class="path-arrow"><i class="fas fa-arrow-right"></i></div>' +
+      pathNodeHtml('normal', '后续', firstFollow);
+    path.querySelectorAll('.path-node.clickable').forEach(function(node) {
+      node.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        selectStar(node.dataset.targetId);
+      });
+    });
+    panelRelated.insertBefore(path, panelRelated.firstChild);
+  }
+  if (totalRelated === 0) {
+    var empty = document.createElement('div');
+    empty.style.cssText = 'font-size:13px;color:var(--text-dim);text-align:center;padding:8px';
+    empty.textContent = '\u2726 \u6b64\u77e5\u8bc6\u70b9\u6682\u65e0\u5173\u8054';
+    panelRelated.appendChild(empty);
+  }
+  var navBar = document.createElement('div');
+  navBar.className = 'nav-bar';
+  if (totalRelated > 0) {
+    var prevBtn = document.createElement('button');
+    prevBtn.className = 'nav-btn';
+    prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i> \u4e0a\u4e00\u4e2a';
+    prevBtn.onclick = function(e) { e.stopPropagation(); navigateRelated(-1); };
+    var counter = document.createElement('span');
+    counter.className = 'nav-counter';
+    counter.innerHTML = '<span style="color:var(--text-sec)">\u5171</span> ' + totalRelated + ' <span style="color:var(--text-sec)">\u4e2a\u5173\u8054</span>';
+    var nextBtn = document.createElement('button');
+    nextBtn.className = 'nav-btn';
+    nextBtn.innerHTML = '\u4e0b\u4e00\u4e2a <i class="fas fa-chevron-right"></i>';
+    nextBtn.onclick = function(e) { e.stopPropagation(); navigateRelated(1); };
+    navBar.appendChild(prevBtn);
+    navBar.appendChild(counter);
+    navBar.appendChild(nextBtn);
+    panelRelated.appendChild(navBar);
+  }
+  var learned = getLearned()[star.id];
+  learnBtn.innerHTML = learned ? '<i class="fas fa-check-circle"></i> \u5df2\u5b66\u4e60' : '<i class="far fa-circle"></i> \u6807\u8bb0\u4e3a\u5df2\u5b66\u4e60';
+  learnBtn.className = 'learn-btn' + (learned ? ' learned' : '');
+  learnBtn.onclick = function() { toggleLearned(star.id); };
+  panel.classList.add('visible');
+}
+
+function hideInfoPanel() {
+  panel.classList.remove('visible');
+}
+
+// ========================== LEARNED ==========================
+function toggleLearned(id) {
+  const data = getLearned();
+  data[id] = !data[id];
+  saveLearned(data);
+  if (data[id]) {
+    learnBtn.innerHTML = '<i class="fas fa-check-circle"></i> 已学习';
+    learnBtn.className = 'learn-btn learned';
+  } else {
+    learnBtn.innerHTML = '<i class="far fa-circle"></i> 标记为已学习';
+    learnBtn.className = 'learn-btn';
+  }
+  updateLearnedGlows();
+  if (selectedId && starById.get(selectedId)) renderKnowledgeChainPanel(starById.get(selectedId));
+}
+
+function updateLearnedGlows() {
+  starData.forEach((entry, id) => {
+    const learned = isLearned(id);
+    const isModuleHub = id === currentModuleHubId;
+    const color = id === selectedId ? new THREE.Color('#ffd766') : isModuleHub ? new THREE.Color('#fff4bf') : learned ? new THREE.Color('#d8b35a') : (MOD_COLORS[entry.star.module] || new THREE.Color(0xffffff));
+    const idx = entry.pointIndex * 3;
+    starColors[idx] = color.r;
+    starColors[idx + 1] = color.g;
+    starColors[idx + 2] = color.b;
+    const labelItem = labelItems.find(item => item.id === id);
+    if (labelItem) labelItem.label.style.color = id === selectedId ? '#ffd766' : isModuleHub ? '#fff4bf' : learned ? '#d8b35a' : (entry.tier === 'core' ? '#fff' : color.getStyle());
+  });
+  starGeo.attributes.color.needsUpdate = true;
+  starGeo.attributes.customColor.needsUpdate = true;
+}
+updateLearnedGlows();
+
+function applySelectedGoldState(id) {
+  updateLearnedGlows();
+  const entry = starData.get(id);
+  if (!entry) return;
+  const idx = entry.pointIndex * 3;
+  const gold = new THREE.Color('#ffd766');
+  starColors[idx] = gold.r;
+  starColors[idx + 1] = gold.g;
+  starColors[idx + 2] = gold.b;
+  burstFactors[entry.pointIndex] = Math.max(burstFactors[entry.pointIndex], 2.2);
+  starGeo.attributes.color.needsUpdate = true;
+  starGeo.attributes.customColor.needsUpdate = true;
+  starGeo.attributes.burstFactor.needsUpdate = true;
+}
+
+// ========================== KNOWLEDGE CHAIN ==========================
+function showKnowledgeChain(id) {
+  const entry = starData.get(id);
+  if (!entry) return;
+  const chainIds = collectDiagnosticChainIds(id);
+
+  const startDims = {};
+  const startSizes = {};
+  const targetDims = {};
+  const targetSizes = {};
+  starData.forEach((entry, sid) => {
+    const idx = entry.pointIndex;
+    startDims[sid] = starDimFactors[idx];
+    startSizes[sid] = starSizes[idx];
+    if (chainIds.has(sid)) {
+      targetDims[sid] = 1.4;
+      targetSizes[sid] = entry.defaultSize * 1.3;
+    } else if (sid !== id) {
+      targetDims[sid] = 0.12;
+      targetSizes[sid] = Math.max(1.2, entry.defaultSize * 0.22);
+    } else {
+      targetDims[sid] = 1.6;
+      targetSizes[sid] = entry.defaultSize * 1.45;
+    }
+  });
+  updateStarDimAndSizes(startDims, startSizes, targetDims, targetSizes, 500);
+
+  const la = darkLineGeo.attributes.lineAlpha.array;
+  lineDataMap.forEach(ld => {
+    const v = (chainIds.has(ld.from.id) && chainIds.has(ld.to.id)) ? 0.8 : 0.05;
+    const r = connToRange[ld.idx];
+    for (let s = 0; s < r.segmentCount * 2; s++) la[r.dark + s] = v;
+  });
+  darkLineGeo.attributes.lineAlpha.needsUpdate = true;
+
+  const orderedChain = (chainsByNodeId.get(id) || [])[0];
+  const names = [];
+  if (orderedChain) {
+    orderedChain.nodes.forEach(function(cid) {
+      const s = starById.get(cid);
+      if (s) names.push(s.name);
+    });
+  } else {
+    chainIds.forEach(cid => {
+      const s = starById.get(cid);
+      if (s) names.push(s.name);
+    });
+  }
+  tooltip.textContent = names.length ? ('知识发展链: ' + names.join(' → ')) : '暂无配置的知识发展链';
+  tooltip.style.left = '50%';
+  tooltip.style.top = '60px';
+  tooltip.style.transform = 'translateX(-50%)';
+  tooltip.classList.add('visible');
+
+  setTimeout(() => {
+    if (selectedId) {
+      highlightConnections(selectedId, true);
+    } else {
+      highlightConnections(id, false);
+      const la = darkLineGeo.attributes.lineAlpha.array;
+      la.fill(0.13);
+      darkLineGeo.attributes.lineAlpha.needsUpdate = true;
+    }
+    tooltip.classList.remove('visible');
+  }, 3000);
+}
+
+// ========================== SEARCH ==========================
+searchTrigger = document.getElementById('searchTrigger');
+searchOverlay = document.getElementById('search-overlay');
+searchInput = document.getElementById('searchInput');
+searchResults = document.getElementById('searchResults');
+
+searchTrigger.addEventListener('click', () => {
+  searchOverlay.classList.add('open');
+  setTimeout(() => searchInput.focus(), 100);
+});
+
+searchOverlay.addEventListener('click', (e) => {
+  if (e.target === searchOverlay) {
+    searchOverlay.classList.remove('open');
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    searchOverlay.classList.remove('open');
+    if (selectedId) deselectStar();
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    searchOverlay.classList.add('open');
+    setTimeout(() => searchInput.focus(), 100);
+  }
+});
+
+// Debounced search for better performance
+let searchTimeout = null;
+searchInput.addEventListener('input', () => {
+  if (searchTimeout) clearTimeout(searchTimeout);
+  
+  searchTimeout = setTimeout(() => {
+    const qRaw = searchInput.value.trim();
+    const q = qRaw.toLowerCase();
+    if (!qRaw) { searchResults.innerHTML = '<div class="empty">输入关键词、现象或易混说法搜索</div>'; return; }
+    function hit(text) {
+      if (!text) return false;
+      const s = String(text);
+      return s.indexOf(qRaw) >= 0 || s.toLowerCase().indexOf(q) >= 0;
+    }
+
+    const results = [];
+    starById.forEach((star, id) => {
+      let score = 0;
+      let hint = star.module + ' · ' + star.chapter;
+      if (hit(star.name)) { score += 10; }
+      if (hit(star.chapter)) score += 5;
+      if (hit(star.definition)) score += 3;
+      if (hit(star.historyScientist)) score += 2;
+      (star.applications || []).forEach(function(app) { if (hit(app)) { score += 6; hint = '应用：' + app; } });
+      (star.mistakes || []).forEach(function(m) { if (hit(m)) { score += 8; hint = '错因：' + m; } });
+      (lifeByNodeId.get(id) || []).forEach(function(scene) {
+        if (hit(scene.name) || hit(scene.description) || hit(scene.principle)) {
+          score += 8;
+          hint = '现象：' + (scene.name || scene.description);
+        }
+      });
+      (confuseByNodeId.get(id) || []).forEach(function(pair) {
+        if (hit(pair.conceptA) || hit(pair.conceptB) || hit(pair.coreDifference) || hit(pair.exampleA) || hit(pair.exampleB)) {
+          score += 8;
+          hint = '易混：' + pair.conceptA + ' / ' + pair.conceptB;
+        }
+      });
+      if (star.thinking) {
+        (star.thinking.confusions || []).forEach(function(c) { if (hit(c)) { score += 5; hint = '辨析：' + c; } });
+        (star.thinking.transfer || []).forEach(function(c) { if (hit(c)) { score += 4; hint = '迁移：' + c; } });
+      }
+      const words = qRaw.split(/\s+/);
+      words.forEach(word => {
+        if (word.length > 1 && star.name.indexOf(word) >= 0) score += 4;
+      });
+      if (score > 0) results.push({ star, score, hint });
+    });
+    
+    // Sort by relevance score
+    results.sort((a, b) => b.score - a.score);
+    const top = results.slice(0, 20);
+
+    if (top.length === 0) {
+      searchResults.innerHTML = '<div class="empty">未找到相关知识点</div>';
+      return;
+    }
+
+    searchResults.innerHTML = '';
+    top.forEach(item => {
+      const star = item.star;
+      const div = document.createElement('div');
+      div.className = 'result-item';
+      const color = MOD_COLORS[star.module] || '#888';
+      div.innerHTML = `
+        <span class="dot" style="background:${color}"></span>
+        <span class="name">${star.name}</span>
+        <span class="mod">${item.hint || (star.module + ' · ' + star.chapter)}</span>
+      `;
+      div.addEventListener('click', () => {
+        searchOverlay.classList.remove('open');
+        searchInput.value = '';
+        searchResults.innerHTML = '<div class="empty">输入关键词搜索知识点</div>';
+        flyToStar(star);
+      });
+      searchResults.appendChild(div);
+    });
+  }, 200); // 200ms debounce
+});
+
+// ========================== FLY TO ==========================
+function flyToStar(star) {
+  const mod = star.module;
+  moduleBtns.forEach(b => b.classList.toggle('active', b.dataset.module === mod));
+  sidebarBtns.forEach(b => b.classList.toggle('active', b.dataset.module === mod));
+  selectStar(star.id);
+}
+
+function flyToModule(mod) {
+  selectedConnectedIds.clear();
+  setModuleEmphasis(mod);
+  const pose = getModuleCameraPose(mod);
+  flyToCameraTarget(pose.pos, pose.target, 900);
+}
+
+function flyToOverview() {
+  selectedConnectedIds.clear();
+  setModuleEmphasis('all');
+  const pose = getOverviewCameraPose();
+  flyToCameraTarget(pose.pos, pose.target, 1100);
+}
+
+// ========================== MODULE NAVIGATION ==========================
+const moduleBtns = document.querySelectorAll('.module-btn');
+const sidebarBtns = document.querySelectorAll('#sidebar .s-btn');
+
+let currentModule = 'all';
+
+function setActiveModule(mod) {
+  currentModule = mod;
+  if (selectedId) clearSelectionState(selectedId, { resetCamera: false, hidePanel: true, restoreConnections: false });
+  moduleBtns.forEach(b => b.classList.toggle('active', b.dataset.module === mod));
+  sidebarBtns.forEach(b => b.classList.toggle('active', b.dataset.module === mod));
+  if (mod === 'all') {
+    flyToOverview();
+  } else {
+    flyToModule(mod);
+  }
+}
+
+moduleBtns.forEach(btn => {
+  btn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); setActiveModule(btn.dataset.module); });
+});
+sidebarBtns.forEach(btn => {
+  btn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); setActiveModule(btn.dataset.module); });
+});
+document.getElementById('logoBtn').addEventListener('click', () => {
+  setActiveModule('all');
+  if (selectedId) deselectStar();
+});
+
+// Help button handler
+const helpBtn = document.getElementById('helpBtn');
+const helpPanel = document.getElementById('helpPanel');
+if (helpBtn && helpPanel) {
+  helpBtn.addEventListener('click', () => {
+    helpPanel.classList.toggle('visible');
+  });
+  
+  // Close help panel when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!helpPanel.contains(e.target) && !helpBtn.contains(e.target)) {
+      helpPanel.classList.remove('visible');
+    }
+  });
+}
+
+// Export/Import button handlers
+const exportBtn = document.getElementById('exportBtn');
+const importBtn = document.getElementById('importBtn');
+const importFile = document.getElementById('importFile');
+
+if (exportBtn) {
+  exportBtn.addEventListener('click', () => {
+    stateManager.exportData();
+    // Show feedback
+    const originalText = exportBtn.innerHTML;
+    exportBtn.innerHTML = '<i class="fas fa-check"></i>';
+    setTimeout(() => { exportBtn.innerHTML = originalText; }, 2000);
+  });
+}
+
+if (importBtn && importFile) {
+  importBtn.addEventListener('click', () => {
+    importFile.click();
+  });
+  
+  importFile.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    try {
+      await stateManager.importData(file);
+      // Show success feedback
+      const originalText = importBtn.innerHTML;
+      importBtn.innerHTML = '<i class="fas fa-check"></i>';
+      setTimeout(() => { importBtn.innerHTML = originalText; }, 2000);
+    } catch (error) {
+      console.error('Import failed:', error);
+      alert('导入失败: ' + error.message);
+    }
+    
+    // Reset file input
+    importFile.value = '';
+  });
+}
+
+// ========================== STAR COUNT ==========================
+function updateStarCount() {
+  const total = starById.size;
+  const learned = getLearned();
+  const learnedCount = Object.values(learned).filter(v => v).length;
+  document.getElementById('starCount').textContent = `✦ ${learnedCount}/${total} 已学习`;
+}
+updateStarCount();
+
+// ========================== PERFORMANCE MONITOR ==========================
+const performanceMonitor = {
+  fps: 0,
+  frameCount: 0,
+  lastTime: performance.now(),
+  memoryUsage: 0,
+
+  update: function() {
+    this.frameCount++;
+    const currentTime = performance.now();
+    const deltaTime = currentTime - this.lastTime;
+
+    if (deltaTime >= 1000) {
+      this.fps = Math.round((this.frameCount * 1000) / deltaTime);
+      this.frameCount = 0;
+      this.lastTime = currentTime;
+
+      if (performance.memory) {
+        this.memoryUsage = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
+      }
+
+      if (this.fps < 30) {
+        console.warn(`✦ Performance: ${this.fps} FPS, ${this.memoryUsage}MB memory`);
+      }
+    }
+  },
+
+  getStats: function() {
+    return {
+      fps: this.fps,
+      memory: this.memoryUsage,
+      triangles: renderer.info.render.triangles,
+      drawCalls: renderer.info.render.calls
+    };
+  }
+};
+
+// ========================== ANIMATION LOOP ==========================
+function animate() {
+  requestAnimationFrame(animate);
+
+  performanceMonitor.update();
+  const { dt, elapsed } = AnimEngine.tick();
+
+  const uTime = elapsed * 0.5;
+  starMat.uniforms.uTime.value = uTime;
+  if (glowLayers.mid) glowLayers.mid.material.uniforms.uTime.value = uTime;
+  if (glowLayers.outer) glowLayers.outer.material.uniforms.uTime.value = uTime;
+
+  const tPos = trailPointsGeo.attributes.position.array;
+  let trailNeedsUpdate = false;
+  for (let li = 0; li < lineDataMap.length; li++) {
+    const ld = lineDataMap[li];
+    if (ld.glowActive) {
+      const r = connToRange[ld.idx];
+      const base = r.trail * 3;
+      for (let j = 0; j < r.trailCount; j++) {
+        const p = (ld.glowProgress + j / r.trailCount) % 1;
+        tPos[base + j*3] = ld.from.x + (ld.to.x - ld.from.x) * p;
+        tPos[base + j*3 + 1] = ld.from.y + (ld.to.y - ld.from.y) * p;
+        tPos[base + j*3 + 2] = ld.from.z + (ld.to.z - ld.from.z) * p;
+      }
+      trailNeedsUpdate = true;
+    }
+  }
+  if (trailNeedsUpdate) trailPointsGeo.attributes.position.needsUpdate = true;
+
+  if (selectedId) {
+    const entry = starData.get(selectedId);
+    if (entry && entry.star._glowPhase) {
+      const s = entry.star;
+      if (s._glowPhase === 1) {
+        s._glowBurst += dt * 8;
+        if (s._glowBurst >= 1) { s._glowBurst = 1; s._glowPhase = 2; }
+      } else if (s._glowPhase === 2) {
+        s._glowBurst -= dt * 4;
+        if (s._glowBurst <= 0.5) { s._glowBurst = 0.5; s._glowPhase = 3; }
+      } else if (s._glowPhase === 3) {
+        s._glowBurst = 0.5 + 0.1 * Math.sin(uTime * 3);
+      }
+      const burst = 1 + s._glowBurst;
+      const idx = entry.pointIndex;
+      burstFactors[idx] = burst;
+      starGeo.attributes.burstFactor.needsUpdate = true;
+    }
+  }
+
+  const la = darkLineGeo.attributes.lineAlpha.array;
+  let alphaNeedsUpdate = false;
+  for (let li = 0; li < lineDataMap.length; li++) {
+    const ld = lineDataMap[li];
+    if (ld._targetAlpha !== undefined) {
+      const r = connToRange[ld.idx];
+      const cur = la[r.dark];
+      const next = expSmooth(cur, ld._targetAlpha, 0.12, dt);
+      if (Math.abs(next - cur) > 0.001) {
+        for (let s = 0; s < r.segmentCount * 2; s++) la[r.dark + s] = next;
+        alphaNeedsUpdate = true;
+      } else {
+        for (let s = 0; s < r.segmentCount * 2; s++) la[r.dark + s] = ld._targetAlpha;
+      }
+    }
+  }
+  if (alphaNeedsUpdate) darkLineGeo.attributes.lineAlpha.needsUpdate = true;
+
+  // Update flow particles
+  updateFlowParticles(dt);
+
+  checkHover();
+  starData.forEach((entry, sid) => {
+    if (sid === selectedId) return;
+    const idx = entry.pointIndex;
+    const target = sid === hoveredId ? 1.45 : 1;
+    burstFactors[idx] = expSmooth(burstFactors[idx], target, 0.16, dt);
+  });
+  starGeo.attributes.burstFactor.needsUpdate = true;
+
+  const nebRot = uTime * 0.01;
+  nebulas.forEach((n, i) => {
+    if (n) {
+      n.position.x += Math.sin(nebRot + i) * 0.004;
+      n.position.y += Math.cos(nebRot + i * 0.7) * 0.002;
+    }
+  });
+
+  controls.update();
+  updateLabels();
+  composer.render();
+}
+
+animate();
+
+updateLoad(100, '探索即将开始');
+setTimeout(() => {
+  document.getElementById('loading').classList.add('hidden');
+}, 600);
+
+// ===== 学情可视化整合：concept_id 深链 =====
+const integrationParams = new URLSearchParams(window.location.search);
+const requestedConceptId = String(integrationParams.get('concept_id') || '').trim();
+if (requestedConceptId) {
+  setTimeout(() => {
+    const targetEntry = starData && starData.get(requestedConceptId);
+    if (targetEntry) {
+      selectStar(requestedConceptId, { duration: 680 });
+      document.title = targetEntry.star.name + ' | 物理知识宇宙';
+    } else {
+      console.warn('[integration] 未找到 concept_id:', requestedConceptId);
+    }
+  }, 760);
+}
+
+// ========================== KEYBOARD ==========================
+document.addEventListener('keydown', (e) => {
+  // Module shortcuts (1-6)
+  if (e.key >= '1' && e.key <= '6') {
+    const btns = document.querySelectorAll('.module-btn');
+    const idx = parseInt(e.key) - 1;
+    if (btns[idx]) btns[idx].click();
+  }
+  
+  // Reset view (R)
+  if (e.key === 'r' || e.key === 'R') {
+    setActiveModule('all');
+    if (selectedId) deselectStar();
+  }
+  
+  // Navigate related (Arrow keys)
+  if ((e.key === 'ArrowLeft' || e.key === 'ArrowUp') && selectedId) {
+    e.preventDefault();
+    navigateRelated(-1);
+  }
+  if ((e.key === 'ArrowRight' || e.key === 'ArrowDown') && selectedId) {
+    e.preventDefault();
+    navigateRelated(1);
+  }
+  
+  // Search (Ctrl/Cmd + F)
+  if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+    e.preventDefault();
+    searchOverlay.classList.add('open');
+    setTimeout(() => searchInput.focus(), 100);
+  }
+  
+  // Escape to close panels
+  if (e.key === 'Escape') {
+    if (searchOverlay.classList.contains('open')) {
+      searchOverlay.classList.remove('open');
+    } else if (panel && panel.classList.contains('visible')) {
+      panel.classList.remove('visible');
+      if (selectedId) deselectStar();
+    }
+  }
+  
+  // Quick actions
+  if (e.key === 'h' || e.key === 'H') {
+    // Toggle help/shortcuts panel
+    const helpPanel = document.getElementById('helpPanel');
+    if (helpPanel) {
+      helpPanel.classList.toggle('visible');
+    }
+  }
+  
+  if (e.key === 'f' || e.key === 'F') {
+    // Focus on selected planet
+    if (selectedId) {
+      const entry = starData.get(selectedId);
+      if (entry) {
+        flyToStar(entry.star);
+      }
+    }
+  }
+  
+  if (e.key === 'd' || e.key === 'D') {
+    // Deselect current
+    if (selectedId) {
+      deselectStar();
+    }
+  }
+  
+  if (e.key === 's' || e.key === 'S') {
+    // Toggle star info panel
+    if (selectedId) {
+      const entry = starData.get(selectedId);
+      if (entry) {
+        showInfoPanel(entry.star);
+      }
+    }
+  }
+  
+  // Number keys for quick module selection
+  if (e.key === '0') {
+    setActiveModule('all');
+  }
+});
+
+// ========================== CONSOLE EXPOSE ==========================
+window.__PKU = { starById, starMap, connMap, MODULES, selectStar, deselectStar,
+  flyToModule, flyToOverview, flyToStar, setActiveModule, getCurrentModule: () => currentModule,
+  connDataArr, lineDataMap, performanceMonitor };
+console.log(`✦ 物理知识宇宙 loaded | ${starById.size} stars, ${connDataArr.length} connections`);
+
+})();
+</script>
+</body>
+</html>
