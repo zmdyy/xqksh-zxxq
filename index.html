@@ -1226,7 +1226,7 @@
             <summary>查看自动判定规则</summary>
             <ul>
                 <li><b>共性异常：</b>该题整体得分率低于当前“得分率阈值”，优先提示全班共性教学问题。</li>
-                <li><b>群体异常：</b>优先按成绩表已有等级分组；若只有一个等级或没有等级，再按 30% / 40% / 30% 相对分层。某组本题得分率比全体低至少 15 个百分点，且该组至少一半学生低于当前阈值时，判为群体异常。</li>
+                <li><b>群体异常：</b>优先按成绩表已有等级分组；若只有一个等级或没有等级，再按 30% / 40% / 30% 相对分层。在同一组内，学生本题得分率比该组平均低至少 30 个百分点视为异常学生；同组至少 3 人且达到该组 30% 才判为群体异常。若该组本题平均本身已低于当前阈值，则不判组内异常。</li>
                 <li><b>个体异常：</b>该题整体表现较好，但少数平时表现正常/较好的学生在此题明显失常，提示个别诊断价值。</li>
             </ul>
         </details>
@@ -5229,9 +5229,10 @@ function calculateCollectiveDiagnosis(fd, subjectName) {
             return;
         }
 
-        // 2) 群体异常：规则尽量简单。
-        // 该组本题得分率比全班本题得分率低 >= 15 个百分点，
-        // 且该组至少一半学生低于当前得分率阈值，则判为群体异常。
+        // 2) 群体异常：在同一等级/相对分层内部找“异常学生”。
+        // 学生本题得分率比所在组本题平均得分率低 >= 30 个百分点，视为该组内异常学生。
+        // 同组至少 3 人且异常学生占比 >= 30%，才形成群体异常。
+        // 如果该组本题平均得分率本身已经低于当前阈值，则不做“组内异常”判断。
         var bestGroup = null;
         tiers.forEach(function(tier) {
             var tierSet = new Set(tier.rows);
@@ -5239,11 +5240,25 @@ function calculateCollectiveDiagnosis(fd, subjectName) {
             if (qStudents.length < 3) return;
 
             var qRate = qStudents.reduce(function(a,b){ return a+b.rate; },0) / qStudents.length;
-            var gap = q.overallRate - qRate;
-            var affected = qStudents.filter(function(s) { return s.rate < threshold; });
-            var affectedShare = affected.length / qStudents.length;
+            if (qRate < threshold) return;
 
-            if (gap >= 0.15 && affectedShare >= 0.50) {
+            var affected = qStudents.filter(function(s) {
+                return qRate - s.rate >= 0.30;
+            }).map(function(s) {
+                return {
+                    row:s.row,
+                    name:s.name,
+                    className:s.className,
+                    score:s.score,
+                    rate:s.rate,
+                    baseline:qRate,
+                    gap:qRate - s.rate
+                };
+            }).sort(function(a,b) { return b.gap - a.gap; });
+
+            var affectedShare = affected.length / qStudents.length;
+            if (affected.length >= 3 && affectedShare >= 0.30) {
+                var avgGap = affected.reduce(function(sum,x){ return sum + x.gap; },0) / affected.length;
                 var candidate = {
                     type:'group',
                     title:q.title,
@@ -5253,14 +5268,17 @@ function calculateCollectiveDiagnosis(fd, subjectName) {
                     tierLabel:tier.label,
                     tierSource:tier.source || 'percentile',
                     tierRate:qRate,
-                    gap:gap,
+                    gap:avgGap,
                     affected:affected,
                     affectedCount:affected.length,
                     totalCount:qStudents.length,
                     mapping:mapping,
-                    note:tier.label + '本题得分率比全体低 ' + Math.round(gap*100) + ' 个百分点。'
+                    note:tier.label + '中有 ' + affected.length + ' 人本题明显低于该组平均水平。'
                 };
-                if (!bestGroup || candidate.gap > bestGroup.gap) bestGroup = candidate;
+                candidate.affectedShare = affectedShare;
+                if (!bestGroup || candidate.affectedShare > bestGroup.affectedShare || (candidate.affectedShare === bestGroup.affectedShare && candidate.gap > bestGroup.gap)) {
+                    bestGroup = candidate;
+                }
             }
         });
         if (bestGroup) {
@@ -5332,7 +5350,7 @@ function renderCollectiveDiagnosisCard(entry, fd, subjectName) {
     var typeLabel = entry.type === 'common' ? '共性异常' : entry.type === 'group' ? '群体异常' : '个体异常';
     var metric2 = '';
     if (entry.type === 'group') {
-        metric2 = '<div class="diagnosis-metric"><strong>异常群体</strong><span>' + escapeHtml(entry.tierLabel) + ' · ' + Math.round(entry.tierRate*100) + '%</span></div>';
+        metric2 = '<div class="diagnosis-metric"><strong>所在分组</strong><span>' + escapeHtml(entry.tierLabel) + ' · 组均' + Math.round(entry.tierRate*100) + '%</span></div>';
     } else {
         metric2 = '<div class="diagnosis-metric"><strong>异常学生</strong><span>' + entry.affectedCount + ' / ' + entry.totalCount + ' 人</span></div>';
     }
