@@ -1,6 +1,6 @@
 window.KNOWLEDGE_DB = {
-  "version": "2.0",
-  "update_date": "2026-09-13",
+  "version": "2.1",
+  "update_date": "2026-09-27",
   "total_count": 183,
   "modules": [
     "力学",
@@ -74,10 +74,13 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_motion_reference"
+        "mech_motion_reference",
+        "mech_time_measure",
+        "mech_length_measure"
       ],
       "follow_ups": [
-        "mech_uniform_motion"
+        "mech_uniform_motion",
+        "mech_variable_motion"
       ],
       "parallels": [],
       "cross_module": [],
@@ -122,9 +125,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "mech_motion_speed"
       ],
-      "follow_ups": [
-        "mech_variable_motion"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [
@@ -164,10 +165,11 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_uniform_motion"
+        "mech_motion_speed"
       ],
       "follow_ups": [
-        "mech_avg_speed"
+        "mech_avg_speed",
+        "mech_instant_speed"
       ],
       "parallels": [],
       "cross_module": [],
@@ -206,7 +208,9 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_variable_motion"
+        "mech_variable_motion",
+        "mech_time_measure",
+        "mech_length_measure"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -246,7 +250,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_avg_speed"
+        "mech_variable_motion"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -287,7 +291,8 @@ window.KNOWLEDGE_DB = {
       },
       "prerequisites": [],
       "follow_ups": [
-        "mech_length_measure"
+        "mech_motion_speed",
+        "mech_avg_speed"
       ],
       "parallels": [],
       "cross_module": [],
@@ -325,10 +330,12 @@ window.KNOWLEDGE_DB = {
           "实验题"
         ]
       },
-      "prerequisites": [
-        "mech_time_measure"
+      "prerequisites": [],
+      "follow_ups": [
+        "mech_motion_speed",
+        "mech_avg_speed",
+        "mech_density_measurement"
       ],
-      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [
@@ -369,7 +376,9 @@ window.KNOWLEDGE_DB = {
       },
       "prerequisites": [],
       "follow_ups": [
-        "mech_sound_propagation"
+        "mech_pitch",
+        "mech_loudness",
+        "mech_timbre"
       ],
       "parallels": [],
       "cross_module": [],
@@ -407,11 +416,10 @@ window.KNOWLEDGE_DB = {
           "选择题"
         ]
       },
-      "prerequisites": [
-        "mech_sound_production"
-      ],
+      "prerequisites": [],
       "follow_ups": [
-        "mech_sound_speed"
+        "mech_sound_speed",
+        "mech_noise_control"
       ],
       "parallels": [],
       "cross_module": [],
@@ -453,9 +461,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "mech_sound_propagation"
       ],
-      "follow_ups": [
-        "mech_pitch"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -493,10 +499,10 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_sound_speed"
+        "mech_sound_production"
       ],
       "follow_ups": [
-        "mech_loudness"
+        "mech_ultrasound_infrasound"
       ],
       "parallels": [],
       "cross_module": [],
@@ -537,11 +543,9 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_pitch"
+        "mech_sound_production"
       ],
-      "follow_ups": [
-        "mech_timbre"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -579,7 +583,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_loudness"
+        "mech_sound_production"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -659,7 +663,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_sound_speed"
+        "mech_pitch"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -700,7 +704,8 @@ window.KNOWLEDGE_DB = {
       },
       "prerequisites": [],
       "follow_ups": [
-        "mech_mass_measurement"
+        "mech_mass_measurement",
+        "mech_density"
       ],
       "parallels": [],
       "cross_module": [],
@@ -742,7 +747,7 @@ window.KNOWLEDGE_DB = {
         "mech_mass"
       ],
       "follow_ups": [
-        "mech_density"
+        "mech_density_measurement"
       ],
       "parallels": [],
       "cross_module": [],
@@ -783,10 +788,12 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_mass_measurement"
+        "mech_mass"
       ],
       "follow_ups": [
-        "mech_density_measurement"
+        "mech_density_measurement",
+        "mech_material_identification",
+        "mech_hollow_problem"
       ],
       "parallels": [],
       "cross_module": [],
@@ -829,11 +836,11 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_density"
+        "mech_density",
+        "mech_mass_measurement",
+        "mech_length_measure"
       ],
-      "follow_ups": [
-        "mech_material_identification"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -871,7 +878,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_density_measurement"
+        "mech_density"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -911,7 +918,8 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_density_measurement"
+        "mech_density_measurement",
+        "mech_density"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -959,7 +967,8 @@ window.KNOWLEDGE_DB = {
       },
       "prerequisites": [],
       "follow_ups": [
-        "mech_force_effects"
+        "mech_force_effects",
+        "mech_balanced_vs_interaction"
       ],
       "parallels": [],
       "cross_module": [],
@@ -1281,7 +1290,9 @@ window.KNOWLEDGE_DB = {
       ],
       "follow_ups": [
         "mech_balance_forces",
-        "mech_force_motion_state"
+        "mech_force_motion_state",
+        "mech_force_composition",
+        "mech_pressure_force"
       ],
       "parallels": [],
       "cross_module": [],
@@ -1331,7 +1342,8 @@ window.KNOWLEDGE_DB = {
         "mech_force_concept"
       ],
       "follow_ups": [
-        "mech_inertia"
+        "mech_inertia",
+        "mech_balance_forces"
       ],
       "parallels": [],
       "cross_module": [],
@@ -1378,9 +1390,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "mech_newton1"
       ],
-      "follow_ups": [
-        "mech_balance_forces"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -1421,7 +1431,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_inertia"
+        "mech_newton1"
       ],
       "follow_ups": [
         "mech_balanced_vs_interaction"
@@ -1462,7 +1472,8 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_balance_forces"
+        "mech_balance_forces",
+        "mech_force_concept"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -1548,7 +1559,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_balance_forces"
+        "mech_force_analysis"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -1588,7 +1599,8 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_force_gravity"
+        "mech_force_gravity",
+        "mech_force_analysis"
       ],
       "follow_ups": [
         "mech_pressure"
@@ -1641,7 +1653,9 @@ window.KNOWLEDGE_DB = {
         "mech_pressure_force"
       ],
       "follow_ups": [
-        "mech_liquid_pressure"
+        "mech_liquid_pressure",
+        "mech_atmospheric_pressure",
+        "mech_fluid_pressure"
       ],
       "parallels": [],
       "cross_module": [],
@@ -1693,9 +1707,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "mech_pressure"
       ],
-      "follow_ups": [
-        "mech_atmospheric_pressure"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -1741,7 +1753,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_liquid_pressure"
+        "mech_pressure"
       ],
       "follow_ups": [
         "mech_pressure_measure"
@@ -1793,9 +1805,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "mech_atmospheric_pressure"
       ],
-      "follow_ups": [
-        "mech_fluid_pressure"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -1839,7 +1849,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_pressure_measure"
+        "mech_pressure"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -2068,7 +2078,9 @@ window.KNOWLEDGE_DB = {
         "mech_archimedes"
       ],
       "follow_ups": [
-        "mech_浮力应用_轮船"
+        "mech_浮力应用_轮船",
+        "mech_浮力应用_潜水艇",
+        "mech_浮力应用_气球飞艇"
       ],
       "parallels": [],
       "cross_module": [],
@@ -2110,9 +2122,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "mech_float_sink_condition"
       ],
-      "follow_ups": [
-        "mech_浮力应用_潜水艇"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -2150,11 +2160,9 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_浮力应用_轮船"
+        "mech_float_sink_condition"
       ],
-      "follow_ups": [
-        "mech_浮力应用_气球飞艇"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -2192,7 +2200,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_浮力应用_潜水艇"
+        "mech_float_sink_condition"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -2289,9 +2297,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "mech_lever"
       ],
-      "follow_ups": [
-        "mech_滑轮"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -2331,9 +2337,7 @@ window.KNOWLEDGE_DB = {
           "计算题"
         ]
       },
-      "prerequisites": [
-        "mech_lever_balance"
-      ],
+      "prerequisites": [],
       "follow_ups": [
         "mech_滑轮组"
       ],
@@ -2377,9 +2381,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "mech_滑轮"
       ],
-      "follow_ups": [
-        "mech_inclined_plane"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -2416,9 +2418,7 @@ window.KNOWLEDGE_DB = {
           "选择题"
         ]
       },
-      "prerequisites": [
-        "mech_滑轮组"
-      ],
+      "prerequisites": [],
       "follow_ups": [],
       "parallels": [],
       "cross_module": [],
@@ -2503,7 +2503,8 @@ window.KNOWLEDGE_DB = {
         "mech_force_concept"
       ],
       "follow_ups": [
-        "mech_power"
+        "mech_power",
+        "mech_efficiency"
       ],
       "parallels": [],
       "cross_module": [],
@@ -2552,9 +2553,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "mech_work"
       ],
-      "follow_ups": [
-        "mech_efficiency"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -2596,7 +2595,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_power"
+        "mech_work"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -2808,7 +2807,12 @@ window.KNOWLEDGE_DB = {
       },
       "prerequisites": [],
       "follow_ups": [
-        "therm_thermometer"
+        "therm_thermometer",
+        "therm_melting_freezing",
+        "therm_汽化与液化",
+        "therm_升华与凝华",
+        "therm_热传递方向",
+        "therm_温度与分子运动"
       ],
       "parallels": [],
       "cross_module": [],
@@ -2850,9 +2854,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "therm_temperature"
       ],
-      "follow_ups": [
-        "therm_melting_freezing"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -2891,10 +2893,11 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "therm_thermometer"
+        "therm_temperature"
       ],
       "follow_ups": [
-        "therm_熔化吸热与凝固放热"
+        "therm_熔化吸热与凝固放热",
+        "therm_物态变化图像"
       ],
       "parallels": [],
       "cross_module": [],
@@ -2936,7 +2939,7 @@ window.KNOWLEDGE_DB = {
         "therm_melting_freezing"
       ],
       "follow_ups": [
-        "therm_汽化与液化"
+        "therm_物态变化中的能量转化"
       ],
       "parallels": [],
       "cross_module": [],
@@ -2975,10 +2978,12 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "therm_熔化吸热与凝固放热"
+        "therm_temperature"
       ],
       "follow_ups": [
-        "therm_蒸发与沸腾"
+        "therm_蒸发与沸腾",
+        "therm_液化方法",
+        "therm_物态变化中的能量转化"
       ],
       "parallels": [],
       "cross_module": [],
@@ -3021,7 +3026,9 @@ window.KNOWLEDGE_DB = {
         "therm_汽化与液化"
       ],
       "follow_ups": [
-        "therm_液化方法"
+        "therm_沸点与气压",
+        "therm_蒸发致冷",
+        "therm_物态变化图像"
       ],
       "parallels": [],
       "cross_module": [],
@@ -3060,7 +3067,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "therm_蒸发与沸腾"
+        "therm_汽化与液化"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -3100,9 +3107,11 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "therm_汽化与液化"
+        "therm_temperature"
       ],
-      "follow_ups": [],
+      "follow_ups": [
+        "therm_物态变化中的能量转化"
+      ],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -3141,7 +3150,8 @@ window.KNOWLEDGE_DB = {
       },
       "prerequisites": [],
       "follow_ups": [
-        "therm_分子热运动"
+        "therm_分子热运动",
+        "therm_分子间作用力"
       ],
       "parallels": [],
       "cross_module": [],
@@ -3183,7 +3193,8 @@ window.KNOWLEDGE_DB = {
         "therm_物质的构成"
       ],
       "follow_ups": [
-        "therm_扩散现象"
+        "therm_扩散现象",
+        "therm_internal_energy"
       ],
       "parallels": [],
       "cross_module": [],
@@ -3225,9 +3236,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "therm_分子热运动"
       ],
-      "follow_ups": [
-        "therm_分子间作用力"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -3265,7 +3274,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "therm_扩散现象"
+        "therm_物质的构成"
       ],
       "follow_ups": [
         "therm_internal_energy"
@@ -3310,10 +3319,12 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "therm_分子间作用力"
+        "therm_分子间作用力",
+        "therm_分子热运动"
       ],
       "follow_ups": [
-        "therm_改变内能的方式"
+        "therm_改变内能的方式",
+        "therm_热力学第一定律"
       ],
       "parallels": [],
       "cross_module": [],
@@ -3361,7 +3372,8 @@ window.KNOWLEDGE_DB = {
         "therm_internal_energy"
       ],
       "follow_ups": [
-        "therm_热量"
+        "therm_热传递",
+        "therm_热力学第一定律"
       ],
       "parallels": [],
       "cross_module": [],
@@ -3400,10 +3412,12 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "therm_改变内能的方式"
+        "therm_热传递"
       ],
       "follow_ups": [
-        "therm_热传递"
+        "therm_specific_heat",
+        "therm_heat_calculation",
+        "therm_calorific_value"
       ],
       "parallels": [],
       "cross_module": [],
@@ -3444,9 +3458,12 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "therm_热量"
+        "therm_改变内能的方式"
       ],
-      "follow_ups": [],
+      "follow_ups": [
+        "therm_热量",
+        "therm_热传递方向"
+      ],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -3487,10 +3504,12 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "therm_internal_energy"
+        "therm_internal_energy",
+        "therm_热量"
       ],
       "follow_ups": [
-        "therm_heat_calculation"
+        "therm_heat_calculation",
+        "therm_水的比热容"
       ],
       "parallels": [],
       "cross_module": [],
@@ -3531,11 +3550,10 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "therm_specific_heat"
+        "therm_specific_heat",
+        "therm_热量"
       ],
-      "follow_ups": [
-        "therm_水的比热容"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -3574,11 +3592,9 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "therm_heat_calculation"
+        "therm_specific_heat"
       ],
-      "follow_ups": [
-        "therm_calorific_value"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [
@@ -3622,7 +3638,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "therm_水的比热容"
+        "therm_热量"
       ],
       "follow_ups": [
         "therm_heat_engine"
@@ -3800,9 +3816,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "therm_熔点与凝固点"
       ],
-      "follow_ups": [
-        "therm_沸点与气压"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -3840,10 +3854,11 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "therm_晶体与非晶体"
+        "therm_蒸发与沸腾"
       ],
       "follow_ups": [
-        "therm_蒸发致冷"
+        "therm_蒸发致冷",
+        "therm_物态变化图像"
       ],
       "parallels": [],
       "cross_module": [],
@@ -3884,9 +3899,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "therm_蒸发与沸腾"
       ],
-      "follow_ups": [
-        "therm_物态变化中的能量转化"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -3924,7 +3937,9 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "therm_蒸发致冷"
+        "therm_熔化吸热与凝固放热",
+        "therm_汽化与液化",
+        "therm_升华与凝华"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -3965,7 +3980,10 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "therm_熔点与凝固点"
+        "therm_熔点与凝固点",
+        "therm_melting_freezing",
+        "therm_蒸发与沸腾",
+        "therm_沸点与气压"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -4098,11 +4116,11 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "therm_能量守恒定律_热学"
+        "therm_能量守恒定律_热学",
+        "therm_internal_energy",
+        "therm_改变内能的方式"
       ],
-      "follow_ups": [
-        "therm_热传递方向"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -4140,7 +4158,8 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "therm_热力学第一定律"
+        "therm_temperature",
+        "therm_热传递"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -4180,7 +4199,8 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "therm_分子热运动"
+        "therm_分子热运动",
+        "therm_temperature"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -4352,7 +4372,9 @@ window.KNOWLEDGE_DB = {
         "opt_light_source"
       ],
       "follow_ups": [
-        "opt_light_speed"
+        "opt_light_speed",
+        "opt_影子的形成",
+        "opt_小孔成像"
       ],
       "parallels": [],
       "cross_module": [],
@@ -4394,9 +4416,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "opt_rectilinear_propagation"
       ],
-      "follow_ups": [
-        "opt_影子的形成"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [
@@ -4436,7 +4456,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "opt_light_speed"
+        "opt_rectilinear_propagation"
       ],
       "follow_ups": [
         "opt_日食与月食"
@@ -4481,9 +4501,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "opt_影子的形成"
       ],
-      "follow_ups": [
-        "opt_小孔成像"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -4527,7 +4545,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "opt_日食与月食"
+        "opt_rectilinear_propagation"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -4572,7 +4590,9 @@ window.KNOWLEDGE_DB = {
         "opt_rectilinear_propagation"
       ],
       "follow_ups": [
-        "opt_镜面反射与漫反射"
+        "opt_镜面反射与漫反射",
+        "opt_平面镜成像",
+        "opt_球面镜"
       ],
       "parallels": [],
       "cross_module": [],
@@ -4613,9 +4633,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "opt_reflection_law"
       ],
-      "follow_ups": [
-        "opt_平面镜成像"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -4655,7 +4673,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "opt_镜面反射与漫反射"
+        "opt_reflection_law"
       ],
       "follow_ups": [
         "opt_平面镜应用"
@@ -4700,9 +4718,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "opt_平面镜成像"
       ],
-      "follow_ups": [
-        "opt_球面镜"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -4740,7 +4756,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "opt_平面镜应用"
+        "opt_reflection_law"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -4910,7 +4926,8 @@ window.KNOWLEDGE_DB = {
         "opt_rectilinear_propagation"
       ],
       "follow_ups": [
-        "opt_折射现象"
+        "opt_折射现象",
+        "opt_dispersion"
       ],
       "parallels": [],
       "cross_module": [],
@@ -4997,7 +5014,9 @@ window.KNOWLEDGE_DB = {
         "opt_折射现象"
       ],
       "follow_ups": [
-        "opt_凸透镜对光的作用"
+        "opt_凸透镜对光的作用",
+        "opt_凹透镜对光的作用",
+        "opt_眼镜与视力矫正"
       ],
       "parallels": [],
       "cross_module": [],
@@ -5040,7 +5059,7 @@ window.KNOWLEDGE_DB = {
         "opt_透镜"
       ],
       "follow_ups": [
-        "opt_凹透镜对光的作用"
+        "opt_眼镜与视力矫正"
       ],
       "parallels": [],
       "cross_module": [],
@@ -5080,9 +5099,11 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "opt_凸透镜对光的作用"
+        "opt_透镜"
       ],
-      "follow_ups": [],
+      "follow_ups": [
+        "opt_眼镜与视力矫正"
+      ],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -5167,7 +5188,9 @@ window.KNOWLEDGE_DB = {
         "opt_凸透镜对光的作用"
       ],
       "follow_ups": [
-        "opt_u_2f成像"
+        "opt_u_2f成像",
+        "opt_f_u_2f成像",
+        "opt_u_f成像"
       ],
       "parallels": [],
       "cross_module": [],
@@ -5209,9 +5232,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "opt_lens_imaging"
       ],
-      "follow_ups": [
-        "opt_f_u_2f成像"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -5250,11 +5271,9 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "opt_u_2f成像"
+        "opt_lens_imaging"
       ],
-      "follow_ups": [
-        "opt_u_f成像"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -5293,7 +5312,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "opt_f_u_2f成像"
+        "opt_lens_imaging"
       ],
       "follow_ups": [
         "opt_照相机"
@@ -5337,9 +5356,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "opt_u_2f成像"
       ],
-      "follow_ups": [
-        "opt_投影仪"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -5379,9 +5396,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "opt_f_u_2f成像"
       ],
-      "follow_ups": [
-        "opt_放大镜"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -5421,9 +5436,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "opt_u_f成像"
       ],
-      "follow_ups": [
-        "opt_眼镜与视力矫正"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -5462,7 +5475,9 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "opt_放大镜"
+        "opt_透镜",
+        "opt_凸透镜对光的作用",
+        "opt_凹透镜对光的作用"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -5510,10 +5525,10 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "opt_reflection_law"
+        "opt_refraction_law"
       ],
       "follow_ups": [
-        "opt_色光混合"
+        "opt_红外线与紫外线"
       ],
       "parallels": [],
       "cross_module": [],
@@ -5551,12 +5566,8 @@ window.KNOWLEDGE_DB = {
           "选择题"
         ]
       },
-      "prerequisites": [
-        "opt_dispersion"
-      ],
-      "follow_ups": [
-        "opt_物体的颜色"
-      ],
+      "prerequisites": [],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -5593,12 +5604,8 @@ window.KNOWLEDGE_DB = {
           "选择题"
         ]
       },
-      "prerequisites": [
-        "opt_色光混合"
-      ],
-      "follow_ups": [
-        "opt_红外线与紫外线"
-      ],
+      "prerequisites": [],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -5642,7 +5649,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "opt_物体的颜色"
+        "opt_dispersion"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -5822,7 +5829,10 @@ window.KNOWLEDGE_DB = {
         "elec_导体与绝缘体"
       ],
       "follow_ups": [
-        "elec_电路"
+        "elec_电路",
+        "elec_ohm_law",
+        "elec_joule_law",
+        "elec_磁场对电流的作用"
       ],
       "parallels": [],
       "cross_module": [],
@@ -5867,7 +5877,12 @@ window.KNOWLEDGE_DB = {
         "elec_current"
       ],
       "follow_ups": [
-        "elec_series_circuit"
+        "elec_series_circuit",
+        "elec_parallel_circuit",
+        "elec_voltage",
+        "elec_电流表",
+        "elec_电压表",
+        "elec_家庭电路"
       ],
       "parallels": [],
       "cross_module": [],
@@ -5910,7 +5925,7 @@ window.KNOWLEDGE_DB = {
         "elec_电路"
       ],
       "follow_ups": [
-        "elec_parallel_circuit"
+        "elec_串联电路特点"
       ],
       "parallels": [],
       "cross_module": [],
@@ -5950,10 +5965,11 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "elec_series_circuit"
+        "elec_电路"
       ],
       "follow_ups": [
-        "elec_电流表"
+        "elec_电流表",
+        "elec_并联电路特点"
       ],
       "parallels": [],
       "cross_module": [],
@@ -5992,10 +6008,12 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "elec_current"
+        "elec_current",
+        "elec_电路"
       ],
       "follow_ups": [
-        "elec_voltage"
+        "elec_伏安法测电阻",
+        "elec_电路故障分析"
       ],
       "parallels": [],
       "cross_module": [],
@@ -6042,10 +6060,11 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "elec_current"
+        "elec_电路"
       ],
       "follow_ups": [
-        "elec_电压表"
+        "elec_电压表",
+        "elec_ohm_law"
       ],
       "parallels": [],
       "cross_module": [],
@@ -6086,9 +6105,13 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "elec_voltage"
+        "elec_voltage",
+        "elec_电路"
       ],
-      "follow_ups": [],
+      "follow_ups": [
+        "elec_伏安法测电阻",
+        "elec_电路故障分析"
+      ],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -6137,7 +6160,9 @@ window.KNOWLEDGE_DB = {
         "elec_current"
       ],
       "follow_ups": [
-        "elec_影响电阻的因素"
+        "elec_影响电阻的因素",
+        "elec_ohm_law",
+        "elec_joule_law"
       ],
       "parallels": [],
       "cross_module": [],
@@ -6225,9 +6250,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "elec_影响电阻的因素"
       ],
-      "follow_ups": [
-        "elec_ohm_law"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -6274,7 +6297,9 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "elec_滑动变阻器"
+        "elec_current",
+        "elec_voltage",
+        "elec_resistance"
       ],
       "follow_ups": [
         "elec_伏安法测电阻"
@@ -6319,11 +6344,11 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "elec_ohm_law"
+        "elec_ohm_law",
+        "elec_电流表",
+        "elec_电压表"
       ],
-      "follow_ups": [
-        "elec_串联电路特点"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -6362,10 +6387,10 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "elec_伏安法测电阻"
+        "elec_series_circuit"
       ],
       "follow_ups": [
-        "elec_并联电路特点"
+        "elec_电路故障分析"
       ],
       "parallels": [],
       "cross_module": [],
@@ -6405,9 +6430,11 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "elec_串联电路特点"
+        "elec_parallel_circuit"
       ],
-      "follow_ups": [],
+      "follow_ups": [
+        "elec_电路故障分析"
+      ],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [
@@ -6448,7 +6475,10 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "elec_并联电路特点"
+        "elec_串联电路特点",
+        "elec_并联电路特点",
+        "elec_电流表",
+        "elec_电压表"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -6499,7 +6529,8 @@ window.KNOWLEDGE_DB = {
         "elec_voltage"
       ],
       "follow_ups": [
-        "elec_电能表"
+        "elec_电能表",
+        "elec_electric_power"
       ],
       "parallels": [],
       "cross_module": [],
@@ -6543,9 +6574,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "elec_electric_work"
       ],
-      "follow_ups": [
-        "elec_electric_power"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -6587,7 +6616,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "elec_电能表"
+        "elec_electric_work"
       ],
       "follow_ups": [
         "elec_额定功率与实际功率"
@@ -6632,9 +6661,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "elec_electric_power"
       ],
-      "follow_ups": [
-        "elec_joule_law"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -6681,7 +6708,8 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "elec_额定功率与实际功率"
+        "elec_current",
+        "elec_resistance"
       ],
       "follow_ups": [
         "elec_电热利用与防止"
@@ -6727,9 +6755,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "elec_joule_law"
       ],
-      "follow_ups": [
-        "elec_家庭电路"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -6768,10 +6794,11 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "elec_电热利用与防止"
+        "elec_电路"
       ],
       "follow_ups": [
-        "elec_安全用电"
+        "elec_安全用电",
+        "elec_测电笔"
       ],
       "parallels": [],
       "cross_module": [],
@@ -6814,7 +6841,7 @@ window.KNOWLEDGE_DB = {
         "elec_家庭电路"
       ],
       "follow_ups": [
-        "elec_测电笔"
+        "elec_触电急救"
       ],
       "parallels": [],
       "cross_module": [],
@@ -6853,7 +6880,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "elec_安全用电"
+        "elec_家庭电路"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -6894,7 +6921,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "elec_测电笔"
+        "elec_安全用电"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -6980,7 +7007,8 @@ window.KNOWLEDGE_DB = {
         "elec_磁现象"
       ],
       "follow_ups": [
-        "elec_地磁场"
+        "elec_地磁场",
+        "elec_磁场对电流的作用"
       ],
       "parallels": [],
       "cross_module": [],
@@ -7022,9 +7050,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "elec_magnetic_field"
       ],
-      "follow_ups": [
-        "elec_电流的磁效应"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -7155,9 +7181,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "elec_电磁铁"
       ],
-      "follow_ups": [
-        "elec_磁场对电流的作用"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -7196,7 +7220,8 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "elec_电流的磁效应"
+        "elec_magnetic_field",
+        "elec_current"
       ],
       "follow_ups": [
         "elec_electric_motor"
@@ -7291,7 +7316,8 @@ window.KNOWLEDGE_DB = {
         "elec_magnetic_field"
       ],
       "follow_ups": [
-        "elec_generator"
+        "elec_generator",
+        "elec_变压器"
       ],
       "parallels": [],
       "cross_module": [],
@@ -7422,7 +7448,8 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "elec_交流电"
+        "elec_交流电",
+        "elec_electromagnetic_induction"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -7467,9 +7494,7 @@ window.KNOWLEDGE_DB = {
           "填空题"
         ]
       },
-      "prerequisites": [
-        "elec_electromagnetic_induction"
-      ],
+      "prerequisites": [],
       "follow_ups": [],
       "parallels": [],
       "cross_module": [],
@@ -7518,9 +7543,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [],
-      "follow_ups": [
-        "energy_energy_classification"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -7560,11 +7583,11 @@ window.KNOWLEDGE_DB = {
           "填空题"
         ]
       },
-      "prerequisites": [
-        "energy_energy_conservation"
-      ],
+      "prerequisites": [],
       "follow_ups": [
-        "energy_solar_energy"
+        "energy_solar_energy",
+        "energy_nuclear_energy",
+        "energy_renewable_nonrenewable"
       ],
       "parallels": [],
       "cross_module": [],
@@ -7606,9 +7629,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "energy_energy_classification"
       ],
-      "follow_ups": [
-        "energy_nuclear_energy"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -7652,7 +7673,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "energy_solar_energy"
+        "energy_energy_classification"
       ],
       "follow_ups": [
         "energy_nuclear_fusion_fission"
@@ -7697,9 +7718,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "energy_nuclear_energy"
       ],
-      "follow_ups": [
-        "energy_renewable_nonrenewable"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -7738,7 +7757,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "energy_nuclear_fusion_fission"
+        "energy_energy_classification"
       ],
       "follow_ups": [
         "energy_energy_environment"
