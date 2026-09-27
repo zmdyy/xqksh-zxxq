@@ -858,7 +858,7 @@
     .diagnosis-head h3 { margin:0 0 5px;color:#1e3a5f;font-size:1.2em; }
     .diagnosis-head p { margin:0;color:#64748b;font-size:12px;line-height:1.6; }
     .diagnosis-scope { flex:0 0 auto;padding:6px 10px;border-radius:999px;background:#eef6ff;color:#315a80;font-size:12px;font-weight:700;white-space:nowrap; }
-    .diagnosis-lanes { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start; }
+    .diagnosis-lanes { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start; }
     .diagnosis-lane { min-width:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:hidden; }
     .diagnosis-lane-head { padding:10px 12px;border-bottom:1px solid #edf2f7; }
     .diagnosis-lane-head strong { display:block;font-size:14px;margin-bottom:3px; }
@@ -1226,8 +1226,7 @@
             <summary>查看自动判定规则</summary>
             <ul>
                 <li><b>共性异常：</b>该题整体得分率低于当前“得分率阈值”，优先提示全班共性教学问题。</li>
-                <li><b>群体异常：</b>优先按成绩表已有等级分组；若只有一个等级或没有等级，再按 30% / 40% / 30% 相对分层。在同一组内，学生本题得分率比该组平均低至少 30 个百分点视为异常学生；同组至少 3 人且达到该组 30% 才判为群体异常。若该组本题平均本身已低于当前阈值，则不判组内异常。</li>
-                <li><b>个体异常：</b>该题整体表现较好，但少数平时表现正常/较好的学生在此题明显失常，提示个别诊断价值。</li>
+                <li><b>个性异常：</b>同时参考“个人基准（除本题外其他小题平均得分率）”和“同层本题均值”。优先使用成绩表已有等级；没有等级时才按 30% / 40% / 30% 相对分层。A+、A 等级偏离达到 20 个百分点，A-、B± 等级达到 25 个百分点，C/D 及基础层达到 30 个百分点，即视为明显偏离。非共性题满足任一参照即可提示；已属于共性异常的题，需两个参照同时达到阈值，避免重复标记。</li>
             </ul>
         </details>
     </div>
@@ -5111,20 +5110,43 @@ function buildCollectiveQuestionModels(fd, subjectName) {
 }
 
 function buildCollectiveStudentBaselines(questions) {
-    var sums = new Map(), counts = new Map();
+    var stats = new Map();
     (questions || []).forEach(function(q) {
         q.students.forEach(function(s) {
             var row = s.row;
-            sums.set(row, (sums.get(row) || 0) + s.rate);
-            counts.set(row, (counts.get(row) || 0) + 1);
+            var current = stats.get(row) || { sum:0, count:0 };
+            current.sum += s.rate;
+            current.count += 1;
+            stats.set(row, current);
         });
     });
-    var base = new Map();
-    sums.forEach(function(sum, row) {
-        var c = counts.get(row) || 0;
-        base.set(row, c ? sum / c : null);
+    var averages = new Map();
+    stats.forEach(function(item, row) {
+        averages.set(row, item.count ? item.sum / item.count : null);
     });
-    return base;
+    return { averages:averages, stats:stats };
+}
+
+function getCollectiveStudentBaselineExcludingItem(stats, student) {
+    if (!stats || !student) return null;
+    var item = stats.get(student.row);
+    if (!item || item.count <= 1) return null;
+    var count = item.count - 1;
+    var sum = item.sum - student.rate;
+    return count > 0 ? sum / count : null;
+}
+
+function getCollectiveIndividualThreshold(tier) {
+    if (!tier) return 0.30;
+    if (tier.source === 'grade') {
+        var grade = String(tier.label || '').replace(/等级$/,'').trim().toUpperCase();
+        if (grade === 'A+' || grade === 'A') return 0.20;
+        if (grade === 'A-' || /^B[+-]?$/.test(grade)) return 0.25;
+        return 0.30;
+    }
+    if (tier.key === 'relative-high') return 0.20;
+    if (tier.key === 'relative-middle') return 0.25;
+    return 0.30;
 }
 
 function splitCollectiveAbilityTiers(fd, questions, baselines, subjectName) {
@@ -5169,11 +5191,11 @@ function splitCollectiveAbilityTiers(fd, questions, baselines, subjectName) {
                 source:'grade',
                 gradeField:gradeField
             };
-        }).filter(function(t) { return t.rows.length >= 3; });
+        }).filter(function(t) { return t.rows.length >= 1; });
 
-        // 只有至少两个有效等级组时，等级才具有“群体比较”意义。
-        // 例如全班都是 A 等级时，自动回退到 30% / 40% / 30% 相对分层。
-        if (gradeTiers.length >= 2) return gradeTiers;
+        // 只要存在真实等级就直接使用。即使全班都属于同一等级，
+        // “同等级本题均值”仍可作为个性异常的参照，不再强行回退到人为分层。
+        if (gradeTiers.length >= 1) return gradeTiers;
     }
 
     // 没有可比较的等级组时，回退到当前筛选范围内的 30% / 40% / 30% 相对分层。
@@ -5204,125 +5226,83 @@ function splitCollectiveAbilityTiers(fd, questions, baselines, subjectName) {
 function calculateCollectiveDiagnosis(fd, subjectName) {
     var threshold = Math.max(0, Math.min(1, (Number(collectiveThreshold) || 60) / 100));
     var questions = buildCollectiveQuestionModels(fd, subjectName);
-    var baselines = buildCollectiveStudentBaselines(questions);
+    var baselineInfo = buildCollectiveStudentBaselines(questions);
+    var baselines = baselineInfo.averages;
+    var baselineStats = baselineInfo.stats;
     var tiers = splitCollectiveAbilityTiers(fd, questions, baselines, subjectName);
-    var results = { common:[], group:[], individual:[], questions:questions };
+    var tierByRow = new Map();
+    tiers.forEach(function(tier) {
+        (tier.rows || []).forEach(function(row) { tierByRow.set(row, tier); });
+    });
+    var results = { common:[], individual:[], questions:questions };
 
     questions.forEach(function(q) {
         var lowStudents = q.students.filter(function(s) { return s.rate < threshold; });
         var mapping = qkGetMapping(q.title, q.scoreHeader, subjectName);
+        var isCommon = q.overallRate < threshold;
 
-        // 1) 共性异常：整体得分率低于教师当前阈值。优先级最高。
-        if (q.overallRate < threshold) {
+        if (isCommon) {
             results.common.push({
-                type:'common',
-                title:q.title,
-                scoreHeader:q.scoreHeader,
-                overallRate:q.overallRate,
-                fullScore:q.fullScore,
-                affected:lowStudents,
-                affectedCount:lowStudents.length,
-                totalCount:q.students.length,
-                mapping:mapping,
+                type:'common', title:q.title, scoreHeader:q.scoreHeader,
+                overallRate:q.overallRate, fullScore:q.fullScore,
+                affected:lowStudents, affectedCount:lowStudents.length,
+                totalCount:q.students.length, mapping:mapping,
                 note:'全体得分率低于当前阈值，优先作为共性教学问题处理。'
             });
-            return;
         }
 
-        // 2) 群体异常：在同一等级/相对分层内部找“异常学生”。
-        // 学生本题得分率比所在组本题平均得分率低 >= 30 个百分点，视为该组内异常学生。
-        // 同组至少 3 人且异常学生占比 >= 30%，才形成群体异常。
-        // 如果该组本题平均得分率本身已经低于当前阈值，则不做“组内异常”判断。
-        var bestGroup = null;
+        var tierRates = new Map();
         tiers.forEach(function(tier) {
-            var tierSet = new Set(tier.rows);
+            var tierSet = new Set(tier.rows || []);
             var qStudents = q.students.filter(function(s) { return tierSet.has(s.row); });
-            if (qStudents.length < 3) return;
-
-            var qRate = qStudents.reduce(function(a,b){ return a+b.rate; },0) / qStudents.length;
-            if (qRate < threshold) return;
-
-            var affected = qStudents.filter(function(s) {
-                return qRate - s.rate >= 0.30;
-            }).map(function(s) {
-                return {
-                    row:s.row,
-                    name:s.name,
-                    className:s.className,
-                    score:s.score,
-                    rate:s.rate,
-                    baseline:qRate,
-                    gap:qRate - s.rate
-                };
-            }).sort(function(a,b) { return b.gap - a.gap; });
-
-            var affectedShare = affected.length / qStudents.length;
-            if (affected.length >= 3 && affectedShare >= 0.30) {
-                var avgGap = affected.reduce(function(sum,x){ return sum + x.gap; },0) / affected.length;
-                var candidate = {
-                    type:'group',
-                    title:q.title,
-                    scoreHeader:q.scoreHeader,
-                    overallRate:q.overallRate,
-                    fullScore:q.fullScore,
-                    tierLabel:tier.label,
-                    tierSource:tier.source || 'percentile',
-                    tierRate:qRate,
-                    gap:avgGap,
-                    affected:affected,
-                    affectedCount:affected.length,
-                    totalCount:qStudents.length,
-                    mapping:mapping,
-                    note:tier.label + '中有 ' + affected.length + ' 人本题明显低于该组平均水平。'
-                };
-                candidate.affectedShare = affectedShare;
-                if (!bestGroup || candidate.affectedShare > bestGroup.affectedShare || (candidate.affectedShare === bestGroup.affectedShare && candidate.gap > bestGroup.gap)) {
-                    bestGroup = candidate;
-                }
+            if (qStudents.length >= 3) {
+                tierRates.set(tier.key, qStudents.reduce(function(sum,s){ return sum + s.rate; },0) / qStudents.length);
             }
         });
-        if (bestGroup) {
-            results.group.push(bestGroup);
-            return;
-        }
 
-        // 3) 个体异常：题目总体不差，但少数学生相对个人常态出现大幅下滑。
-        var goodQuestionFloor = Math.max(0.70, threshold + 0.10);
-        if (q.overallRate >= goodQuestionFloor) {
-            var anomalies = q.students.map(function(s) {
-                var b = baselines.get(s.row);
-                return { student:s, baseline:b, gap:(b !== null && b !== undefined ? b - s.rate : -Infinity) };
-            }).filter(function(x) {
-                if (x.baseline === null || x.baseline === undefined || !isFinite(x.baseline)) return false;
-                if (x.baseline < 0.65) return false;
-                var ceiling = Math.min(threshold, x.baseline - 0.35);
-                return x.student.rate <= ceiling;
-            }).sort(function(a,b) { return b.gap - a.gap; });
+        var anomalies = q.students.map(function(s) {
+            var tier = tierByRow.get(s.row) || null;
+            var deviationThreshold = getCollectiveIndividualThreshold(tier);
+            var personalBaseline = getCollectiveStudentBaselineExcludingItem(baselineStats, s);
+            var peerBaseline = tier && tierRates.has(tier.key) ? tierRates.get(tier.key) : null;
+            var personalGap = personalBaseline == null ? null : personalBaseline - s.rate;
+            var peerGap = peerBaseline == null ? null : peerBaseline - s.rate;
+            var personalHit = personalGap !== null && personalGap >= deviationThreshold;
+            var peerHit = peerGap !== null && peerGap >= deviationThreshold;
+            var hit = isCommon ? (personalHit && peerHit) : (personalHit || peerHit);
+            if (!hit) return null;
 
-            var rarityLimit = Math.max(2, Math.min(8, Math.ceil(q.students.length * 0.18)));
-            if (anomalies.length >= 1 && anomalies.length <= rarityLimit) {
-                results.individual.push({
-                    type:'individual',
-                    title:q.title,
-                    scoreHeader:q.scoreHeader,
-                    overallRate:q.overallRate,
-                    fullScore:q.fullScore,
-                    affected:anomalies.map(function(x) {
-                        var s = x.student;
-                        return { row:s.row, name:s.name, className:s.className, score:s.score, rate:s.rate, baseline:x.baseline, gap:x.gap };
-                    }),
-                    affectedCount:anomalies.length,
-                    totalCount:q.students.length,
-                    mapping:mapping,
-                    note:'该题总体表现正常，但少数学生相对个人常态出现明显失常。'
-                });
-            }
+            var reasons = [];
+            if (personalHit) reasons.push('个人');
+            if (peerHit) reasons.push('同层');
+            var severity = Math.max(personalGap === null ? -Infinity : personalGap, peerGap === null ? -Infinity : peerGap);
+            return {
+                row:s.row, name:s.name, className:s.className, score:s.score, rate:s.rate,
+                personalBaseline:personalBaseline, peerBaseline:peerBaseline,
+                personalGap:personalGap, peerGap:peerGap,
+                threshold:deviationThreshold,
+                tierLabel:tier ? tier.label : '',
+                tierSource:tier ? tier.source : '',
+                reason:reasons.join('+'), severity:severity
+            };
+        }).filter(Boolean).sort(function(a,b) { return b.severity - a.severity; });
+
+        if (anomalies.length) {
+            results.individual.push({
+                type:'individual', title:q.title, scoreHeader:q.scoreHeader,
+                overallRate:q.overallRate, fullScore:q.fullScore,
+                affected:anomalies, affectedCount:anomalies.length,
+                totalCount:q.students.length, severity:anomalies[0].severity,
+                mapping:mapping,
+                note:isCommon
+                    ? '该题同时属于共性异常；这里只保留同时明显偏离个人基准和同层水平的学生，避免重复标记。'
+                    : '按个人基准与同层水平识别明显偏离：A+/A 为20个百分点，A-/B层为25个百分点，C/D及基础层为30个百分点。'
+            });
         }
     });
 
     results.common.sort(function(a,b){ return a.overallRate - b.overallRate; });
-    results.group.sort(function(a,b){ return b.gap - a.gap; });
-    results.individual.sort(function(a,b){ return b.affectedCount - a.affectedCount || a.overallRate - b.overallRate; });
+    results.individual.sort(function(a,b){ return b.severity - a.severity || b.affectedCount - a.affectedCount || a.overallRate - b.overallRate; });
     return results;
 }
 
@@ -5347,20 +5327,14 @@ function collectiveDiagnosisKnowledgeHtml(entry, subjectName) {
 
 function renderCollectiveDiagnosisCard(entry, fd, subjectName) {
     var id = registerCollectiveDiagnosisContext(entry, fd, subjectName);
-    var typeLabel = entry.type === 'common' ? '共性异常' : entry.type === 'group' ? '群体异常' : '个体异常';
-    var metric2 = '';
-    if (entry.type === 'group') {
-        metric2 = '<div class="diagnosis-metric"><strong>所在分组</strong><span>' + escapeHtml(entry.tierLabel) + ' · 组均' + Math.round(entry.tierRate*100) + '%</span></div>';
-    } else {
-        metric2 = '<div class="diagnosis-metric"><strong>异常学生</strong><span>' + entry.affectedCount + ' / ' + entry.totalCount + ' 人</span></div>';
-    }
-    var studentsLabel = entry.type === 'group' ? entry.tierLabel + '重点学生' : '异常学生';
+    var typeLabel = entry.type === 'common' ? '共性异常' : '个性异常';
+    var metric2 = '<div class="diagnosis-metric"><strong>' + (entry.type === 'common' ? '低于阈值学生' : '个性异常学生') + '</strong><span>' + entry.affectedCount + ' / ' + entry.totalCount + ' 人</span></div>';
+    var studentsLabel = entry.type === 'common' ? '低于阈值学生' : '个性异常学生';
     return '<div class="diagnosis-card ' + entry.type + '">'
         + '<div class="diagnosis-card-top"><div class="diagnosis-card-title">' + escapeHtml(entry.title) + '</div><span class="diagnosis-badge">' + typeLabel + '</span></div>'
         + '<div class="diagnosis-metrics">'
         + '<div class="diagnosis-metric"><strong>全体得分率</strong><span>' + Math.round(entry.overallRate*100) + '%</span></div>'
-        + metric2
-        + '</div>'
+        + metric2 + '</div>'
         + '<div class="diagnosis-students"><b>' + escapeHtml(studentsLabel) + '：</b>' + collectiveDiagnosisStudentPreview(entry.affected) + '</div>'
         + collectiveDiagnosisKnowledgeHtml(entry, subjectName)
         + '<div class="diagnosis-actions"><button type="button" class="diagnosis-action-btn" data-diagnosis-context="' + id + '">查看异常学生</button></div>'
@@ -5397,8 +5371,7 @@ function renderCollectiveDiagnosis() {
 
     root.innerHTML =
         renderCollectiveDiagnosisLane('common','共性异常','很多学生都错：优先判断是否存在共性教学问题。',result.common,fd,subjectName)
-        + renderCollectiveDiagnosisLane('group','群体异常','某一成绩层集中失分：优先做分层补偿。',result.group,fd,subjectName)
-        + renderCollectiveDiagnosisLane('individual','个体异常','总体不差、少数学生失常：优先做个别诊断。',result.individual,fd,subjectName);
+        + renderCollectiveDiagnosisLane('individual','个性异常','相对个人基准或同层水平明显偏离：优先做个别诊断。',result.individual,fd,subjectName);
 
     qkBindButtons();
     bindCollectiveDiagnosisButtons();
@@ -5424,17 +5397,26 @@ function showCollectiveDiagnosisStudents(contextId) {
         showStudentListModal('提示','当前异常没有可列出的学生。');
         return;
     }
-    var title = '「' + escapeHtml(e.title) + '」' + (e.type === 'common' ? '共性异常' : e.type === 'group' ? e.tierLabel + '群体异常' : '个体异常');
+
+    var title = '「' + escapeHtml(e.title) + '」' + (e.type === 'common' ? '共性异常' : '个性异常');
     var html = '<div style="font-size:12px;color:#64748b;margin-bottom:8px;">' + escapeHtml(e.note || '') + '</div>';
-    var baselineLabel = e.type === 'group' ? '所在分组本题均值' : '个人常态';
-    html += '<div style="overflow:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr><th>#</th><th>姓名</th><th>班级</th><th>本题得分</th><th>满分</th><th>本题得分率</th><th>' + baselineLabel + '</th></tr></thead><tbody>';
+
+    if (e.type === 'common') {
+        html += '<div style="overflow:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr><th>#</th><th>姓名</th><th>班级</th><th>本题得分</th><th>满分</th><th>本题得分率</th></tr></thead><tbody>';
+        rows.forEach(function(x, i) {
+            html += '<tr><td>' + (i+1) + '</td><td>' + escapeHtml(x.name || '') + '</td><td>' + escapeHtml(x.className || '') + '</td><td>' + Number(x.score).toFixed(2).replace(/\.00$/,'') + '</td><td>' + e.fullScore + '</td><td>' + Math.round(Number(x.rate)*100) + '%</td></tr>';
+        });
+        html += '</tbody></table></div>';
+        showStudentListModal(title, html);
+        return;
+    }
+
+    html += '<div style="overflow:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr><th>#</th><th>姓名</th><th>班级</th><th>本题得分</th><th>满分</th><th>本题得分率</th><th>个人基准（除本题）</th><th>同层本题均值</th><th>判定依据</th></tr></thead><tbody>';
     rows.forEach(function(x, i) {
-        var baseline = x.baseline;
-        if ((baseline === null || baseline === undefined) && x.row) {
-            // 共性/群体名单没有逐项缓存 baseline 时不强行推断。
-            baseline = null;
-        }
-        html += '<tr><td>' + (i+1) + '</td><td>' + escapeHtml(x.name || '') + '</td><td>' + escapeHtml(x.className || '') + '</td><td>' + Number(x.score).toFixed(2).replace(/\.00$/,'') + '</td><td>' + e.fullScore + '</td><td>' + Math.round(Number(x.rate)*100) + '%</td><td>' + (baseline === null || baseline === undefined ? '-' : Math.round(baseline*100) + '%') + '</td></tr>';
+        var personalText = x.personalBaseline == null ? '-' : Math.round(x.personalBaseline*100) + '%';
+        var peerText = x.peerBaseline == null ? '-' : Math.round(x.peerBaseline*100) + '%' + (x.tierLabel ? '（' + escapeHtml(x.tierLabel) + '）' : '');
+        var reasonText = (x.reason || '明显偏离') + ' · 阈值' + Math.round((x.threshold || 0.30)*100) + '个百分点';
+        html += '<tr><td>' + (i+1) + '</td><td>' + escapeHtml(x.name || '') + '</td><td>' + escapeHtml(x.className || '') + '</td><td>' + Number(x.score).toFixed(2).replace(/\.00$/,'') + '</td><td>' + e.fullScore + '</td><td>' + Math.round(Number(x.rate)*100) + '%</td><td>' + personalText + '</td><td>' + peerText + '</td><td>' + escapeHtml(reasonText) + '</td></tr>';
     });
     html += '</tbody></table></div>';
     showStudentListModal(title, html);
