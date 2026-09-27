@@ -886,10 +886,22 @@
     .diagnosis-students b { color:#334155; }
     .diagnosis-knowledge { display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding-top:8px;border-top:1px dashed #e2e8f0;font-size:12px; }
     .diagnosis-knowledge-label { color:#64748b;font-weight:700; }
-    .diagnosis-actions { display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px; }
-    .diagnosis-action-btn { border:1px solid #cbd5e1;background:#fff;color:#334155;border-radius:7px;padding:5px 8px;font-size:11px;cursor:pointer; }
-    .diagnosis-action-btn:hover { background:#f8fafc;border-color:#94a3b8; }
-    .diagnosis-advice { color:#64748b;font-size:11px;line-height:1.45; }
+    .diagnosis-actions { display:flex;align-items:center;justify-content:flex-start;gap:8px;margin-top:9px; }
+    .diagnosis-action-btn {
+        border:1px solid #7aa7d8;
+        background:#eef6ff;
+        color:#1e4f7a;
+        border-radius:8px;
+        padding:7px 12px;
+        font-size:12px;
+        font-weight:800;
+        line-height:1.2;
+        white-space:nowrap;
+        flex:0 0 auto;
+        cursor:pointer;
+        box-shadow:0 2px 6px rgba(30,79,122,.10);
+    }
+    .diagnosis-action-btn:hover { background:#dbeafe;border-color:#4f86bd;color:#163f66;box-shadow:0 3px 9px rgba(30,79,122,.16); }
     .diagnosis-rule { margin-top:10px;border-top:1px solid #e5e7eb;padding-top:8px;font-size:12px;color:#64748b; }
     .diagnosis-rule summary { cursor:pointer;font-weight:700;color:#475569; }
     .diagnosis-rule ul { margin:7px 0 0 18px;line-height:1.7; }
@@ -1194,8 +1206,7 @@
     <div class="statistics-section analysis-anchor-section collective-diagnosis-section" id="collectiveDiagnosisSection" data-analysis-section="collectiveDiagnosisSection">
         <div class="diagnosis-head">
             <div>
-                <h3>🩺 小题异常诊断卡</h3>
-                <p>优先回答三个问题：哪道题异常、哪些学生异常、异常对应哪个知识点。</p>
+                <h3>小题异常诊断卡</h3>
             </div>
             <div class="diagnosis-scope" id="collectiveDiagnosisScope">等待数据</div>
         </div>
@@ -5279,12 +5290,6 @@ function collectiveDiagnosisKnowledgeHtml(entry, subjectName) {
 function renderCollectiveDiagnosisCard(entry, fd, subjectName) {
     var id = registerCollectiveDiagnosisContext(entry, fd, subjectName);
     var typeLabel = entry.type === 'common' ? '共性异常' : entry.type === 'group' ? '群体异常' : '个体异常';
-    var advice = entry.type === 'common'
-        ? '建议：优先检查教学共性、题目理解或核心概念。'
-        : entry.type === 'group'
-            ? '建议：按成绩层做针对性补偿，不必全班重复讲解。'
-            : '建议：进入学生个别诊断，避免把个体问题扩大为全班问题。';
-
     var metric2 = '';
     if (entry.type === 'group') {
         metric2 = '<div class="diagnosis-metric"><strong>异常群体</strong><span>' + escapeHtml(entry.tierLabel) + ' · ' + Math.round(entry.tierRate*100) + '%</span></div>';
@@ -5300,7 +5305,7 @@ function renderCollectiveDiagnosisCard(entry, fd, subjectName) {
         + '</div>'
         + '<div class="diagnosis-students"><b>' + escapeHtml(studentsLabel) + '：</b>' + collectiveDiagnosisStudentPreview(entry.affected) + '</div>'
         + collectiveDiagnosisKnowledgeHtml(entry, subjectName)
-        + '<div class="diagnosis-actions"><button type="button" class="diagnosis-action-btn" data-diagnosis-context="' + id + '">查看异常学生</button><span class="diagnosis-advice">' + escapeHtml(advice) + '</span></div>'
+        + '<div class="diagnosis-actions"><button type="button" class="diagnosis-action-btn" data-diagnosis-context="' + id + '">查看异常学生</button></div>'
         + '</div>';
 }
 
