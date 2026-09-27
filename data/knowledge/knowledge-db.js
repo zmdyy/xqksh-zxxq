@@ -969,7 +969,8 @@ window.KNOWLEDGE_DB = {
         "mech_force_effects",
         "mech_balanced_vs_interaction",
         "mech_newton1",
-        "mech_work"
+        "mech_work",
+        "mech_pressure_force"
       ],
       "parallels": [],
       "cross_module": [],
@@ -1290,8 +1291,7 @@ window.KNOWLEDGE_DB = {
       "follow_ups": [
         "mech_balance_forces",
         "mech_force_motion_state",
-        "mech_force_composition",
-        "mech_pressure_force"
+        "mech_force_composition"
       ],
       "parallels": [],
       "cross_module": [],
@@ -1601,7 +1601,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_force_analysis"
+        "mech_force_concept"
       ],
       "follow_ups": [
         "mech_pressure"
