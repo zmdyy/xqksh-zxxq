@@ -5425,22 +5425,25 @@ function showCollectiveDiagnosisStudents(contextId) {
         return;
     }
 
-    html += '<div style="overflow:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr><th>#</th><th>姓名</th><th>班级</th><th>本题得分</th><th>满分</th><th>本题得分率</th><th>个人基准（除本题）</th><th>同层本题均值</th><th>判定依据</th></tr></thead><tbody>';
+    html += '<div style="font-size:12px;color:#64748b;margin:4px 0 10px;">知识点历史基准仅在此前至少 <b>2次考试</b> 且累计至少 <b>3个可独立计分单元</b> 时计算；采用“总得分÷总满分”的分值加权方式。</div>';
+    html += '<div style="overflow:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr><th>#</th><th>姓名</th><th>班级</th><th>本题得分</th><th>满分</th><th>本题得分率</th><th>个人基准（除本题）</th><th>同层本题均值</th><th>知识点本次 vs 历史</th><th>判定依据</th></tr></thead><tbody>';
     rows.forEach(function(x, i) {
         var personalText = x.personalBaseline == null ? '-' : Math.round(x.personalBaseline*100) + '%';
         var peerText = x.peerBaseline == null ? '-' : Math.round(x.peerBaseline*100) + '%' + (x.tierLabel ? '（' + escapeHtml(x.tierLabel) + '）' : '');
+        var conceptHistory = qkRenderConceptHistoryForStudent(ctx, e, x);
         var reasonText = (x.reason || '明显偏离') + ' · 阈值' + Math.round((x.threshold || 0.30)*100) + '个百分点';
-        html += '<tr><td>' + (i+1) + '</td><td>' + escapeHtml(x.name || '') + '</td><td>' + escapeHtml(x.className || '') + '</td><td>' + Number(x.score).toFixed(2).replace(/\.00$/,'') + '</td><td>' + e.fullScore + '</td><td>' + Math.round(Number(x.rate)*100) + '%</td><td>' + personalText + '</td><td>' + peerText + '</td><td>' + escapeHtml(reasonText) + '</td></tr>';
+        html += '<tr><td>' + (i+1) + '</td><td>' + escapeHtml(x.name || '') + '</td><td>' + escapeHtml(x.className || '') + '</td><td>' + Number(x.score).toFixed(2).replace(/\.00$/,'') + '</td><td>' + e.fullScore + '</td><td>' + Math.round(Number(x.rate)*100) + '%</td><td>' + personalText + '</td><td>' + peerText + '</td><td>' + conceptHistory + '</td><td>' + escapeHtml(reasonText) + '</td></tr>';
     });
     html += '</tbody></table></div>';
     showStudentListModal(title, html);
 }
 
 // ============================================================
-//  P0：题目 → 知识点统一 concept_id
-//  每条映射严格只保存：exam_id + question_no + concept_id
+//  P0：题目 → 标准知识点（支持题目 → 子项 → concept_id）
+//  V2：兼容旧单知识点映射，同时支持 AI JSON 多子项标注与可计分绑定
 // ============================================================
 var qkEditorContext = null;
+var qkConceptScoreCache = new Map();
 
 function qkCatalog() {
     return (window.KNOWLEDGE_DB && Array.isArray(window.KNOWLEDGE_DB.data)) ? window.KNOWLEDGE_DB.data : [];
@@ -5707,6 +5710,7 @@ async function qkSaveCurrent() {
         if (typeof showToast === 'function') showToast('标注保存失败，请检查浏览器存储空间');
         return;
     }
+    qkConceptScoreCache.clear();
     qkCloseEditor();
     renderCollectiveDiagnosis();
     renderCollectiveTables();
@@ -5721,10 +5725,213 @@ async function qkClearCurrent() {
         if (typeof showToast === 'function') showToast('清除失败，请检查浏览器存储空间');
         return;
     }
+    qkConceptScoreCache.clear();
     qkCloseEditor();
     renderCollectiveDiagnosis();
     renderCollectiveTables();
 }
+function qkBuildCollectiveDataFromBatchSnapshot(batch) {
+    var students = (batch && batch.combinedStudentData) || [];
+    var subjectHeaders = (batch && batch.allSubjectHeaders) || [];
+    if (!students.length) return { headers:[], data:[], classField:'', nameField:'', fullScoreField:'', classList:[], subjectList:[], subjQMap:{}, fullScoreMap:{}, correctAnswerMap:{} };
+
+    var KNOWN_SUBJECTS = new Set(['语文','数学','英语','英语笔试','英语听力','物理','化学','生物','历史','地理','政治','道法','总分','理综','文综','道德与法治','思想政治']);
+    var META_NAMES = new Set(['学校','考号','学号','序号','准考证','编号','姓名','名字','班级','行政班','班名','行政班级','考生类型','考生类别','科类','文理','选科','类型','校名']);
+    var totalSubject = getTotalSubjectName(subjectHeaders) || (subjectHeaders.length ? subjectHeaders[0].name : '');
+    var headers = ['姓名','班级'];
+    var subjQMap = {}, subjectSet = new Set(), fullScoreMap = {}, correctAnswerMap = {};
+
+    subjectHeaders.forEach(function(sh) {
+        var sn = sh.name;
+        if (META_NAMES.has(sn)) return;
+        if (!KNOWN_SUBJECTS.has(sn) && !/[\u4e00-\u9fff]/.test(sn)) return;
+        if (sh.subScoreQuestionMap && Object.keys(sh.subScoreQuestionMap).length) {
+            subjectSet.add(sn);
+            subjQMap[sn] = sh.subScoreQuestionMap;
+            Object.entries(sh.subScoreQuestionMap).forEach(function(entry) {
+                var mapKey = entry[0], q = entry[1];
+                if (!q || !q.name) return;
+                var maxS = (q.maxScore != null && q.maxScore > 0) ? ('（' + q.maxScore + '分）') : '';
+                var hkey = sn + '_' + mapKey + maxS;
+                if (!headers.includes(hkey)) headers.push(hkey);
+                fullScoreMap[hkey] = q.maxScore != null && q.maxScore > 0 ? q.maxScore : null;
+                if (q.correctAnswer) correctAnswerMap[hkey] = String(q.correctAnswer).trim();
+                var akey = hkey + '_答案';
+                if (q.answerIndex !== -1 && !headers.includes(akey)) headers.push(akey);
+            });
+        } else if (KNOWN_SUBJECTS.has(sn) || sh.scoreIndex !== -1) {
+            subjectSet.add(sn);
+        }
+    });
+
+    subjectHeaders.forEach(function(sh) {
+        var sn = sh.name;
+        if (META_NAMES.has(sn)) return;
+        var scoreKey = sn + '_分数';
+        if (!headers.includes(scoreKey)) headers.push(scoreKey);
+        if (sh.gradeIndex !== -1) {
+            var gradeKey = sn + '_等级';
+            if (!headers.includes(gradeKey)) headers.push(gradeKey);
+        }
+    });
+
+    var data = students.map(function(stu) {
+        var row = { '姓名':stu.name, '班级':stu.class || '' };
+        Object.entries(subjQMap).forEach(function(subjectEntry) {
+            var sn = subjectEntry[0], qm = subjectEntry[1];
+            var subScores = stu.subjects && stu.subjects[sn] ? (stu.subjects[sn].subScores || {}) : {};
+            Object.entries(qm).forEach(function(qEntry) {
+                var mapKey=qEntry[0], q=qEntry[1];
+                if (!q || !q.name) return;
+                var maxS = (q.maxScore != null && q.maxScore > 0) ? ('（' + q.maxScore + '分）') : '';
+                var hkey = sn + '_' + mapKey + maxS;
+                var sq = subScores[q.name];
+                row[hkey] = sq ? sq.score : '';
+                row[hkey + '_答案'] = sq ? (sq.studentAnswer || '') : '';
+            });
+        });
+        subjectHeaders.forEach(function(sh) {
+            var sn = sh.name;
+            if (META_NAMES.has(sn)) return;
+            var sd = stu.subjects && stu.subjects[sn];
+            row[sn + '_分数'] = sd ? sd.score : '';
+            if (sh.gradeIndex !== -1) row[sn + '_等级'] = sd ? sd.grade : '';
+        });
+        return row;
+    });
+
+    return {
+        headers:headers,
+        data:data,
+        classField:'班级',
+        nameField:'姓名',
+        fullScoreField:totalSubject ? totalSubject + '_分数' : '',
+        classList:Array.from(new Set(data.map(function(r){ return r['班级']; }).filter(Boolean))),
+        subjectList:Array.from(subjectSet),
+        subjQMap:subjQMap,
+        fullScoreMap:fullScoreMap,
+        correctAnswerMap:correctAnswerMap
+    };
+}
+
+function qkFindStudentRowInSnapshot(fd, name, className) {
+    var rows = (fd && fd.data) || [];
+    var exact = rows.filter(function(r) {
+        return String(r[fd.nameField] || '') === String(name || '')
+            && String(r[fd.classField] || '') === String(className || '');
+    });
+    if (exact.length === 1) return exact[0];
+    var byName = rows.filter(function(r){ return String(r[fd.nameField] || '') === String(name || ''); });
+    return byName.length === 1 ? byName[0] : null;
+}
+
+function qkCollectStudentConceptScoresFromBatch(batch, studentName, className) {
+    if (!batch) return {};
+    var cacheKey = batch.id + '|' + String(studentName || '') + '|' + String(className || '');
+    if (qkConceptScoreCache.has(cacheKey)) return qkConceptScoreCache.get(cacheKey);
+
+    var fd = qkBuildCollectiveDataFromBatchSnapshot(batch);
+    var row = qkFindStudentRowInSnapshot(fd, studentName, className);
+    var result = {};
+    if (!row) {
+        qkConceptScoreCache.set(cacheKey, result);
+        return result;
+    }
+
+    var questions = buildCollectiveQuestionModels(fd, '');
+    var byQno = new Map(), byHeader = new Map();
+    questions.forEach(function(q) {
+        var subj = qkSubject('', q.scoreHeader || '');
+        var qno = qkQuestionNo(subj, q.title, q.scoreHeader || '');
+        byQno.set(qno, q);
+        if (q.scoreHeader) byHeader.set(q.scoreHeader, q);
+    });
+
+    var map = batch.questionConceptMap || {};
+    Object.keys(map).forEach(function(qno) {
+        var parts = qkNormalizeMappingParts(map[qno], qno, batch.id);
+        parts.forEach(function(p) {
+            if (!p.primary_concept_id || !p.score_eligible) return;
+            var scoreHeader = p.score_header || (parts.length === 1 && byQno.get(qno) ? byQno.get(qno).scoreHeader : '');
+            if (!scoreHeader) return;
+            var q = byHeader.get(scoreHeader) || byQno.get(qno);
+            var full = diagSafeNumber(fd.fullScoreMap[scoreHeader]);
+            if ((full === null || full <= 0) && q) full = diagSafeNumber(q.fullScore);
+            var score = diagSafeNumber(row[scoreHeader]);
+            if (score === null || full === null || full <= 0 || score < 0 || score > full) return;
+
+            var bucket = result[p.primary_concept_id] || { score:0, full:0, units:0 };
+            bucket.score += score;
+            bucket.full += full;
+            bucket.units += 1;
+            result[p.primary_concept_id] = bucket;
+        });
+    });
+
+    qkConceptScoreCache.set(cacheKey, result);
+    return result;
+}
+
+function qkGetHistoricalConceptPerformance(studentName, className, conceptId) {
+    var current = qkCurrentBatch();
+    if (!current || !conceptId) return { score:0, full:0, units:0, examCount:0, rate:null, sufficient:false };
+    var currentIndex = DataPool.batches.findIndex(function(b){ return b.id === current.id; });
+    var prior = currentIndex >= 0 ? DataPool.batches.slice(0,currentIndex) : DataPool.batches.filter(function(b){ return b.id !== current.id; });
+    var score=0, full=0, units=0, examCount=0;
+    prior.forEach(function(batch) {
+        var all = qkCollectStudentConceptScoresFromBatch(batch, studentName, className);
+        var item = all[conceptId];
+        if (!item || !item.full || !item.units) return;
+        score += item.score;
+        full += item.full;
+        units += item.units;
+        examCount += 1;
+    });
+    var rate = full > 0 ? score / full : null;
+    return {
+        score:score,
+        full:full,
+        units:units,
+        examCount:examCount,
+        rate:rate,
+        sufficient:examCount >= 2 && units >= 3
+    };
+}
+
+function qkRenderConceptHistoryForStudent(ctx, entry, studentEntry) {
+    if (!ctx || !entry || !studentEntry) return '-';
+    var parts = qkGetMappingParts(entry.title, entry.scoreHeader || '', ctx.subjectName || '').filter(function(p){ return !!p.primary_concept_id; });
+    if (!parts.length) return '<span style="color:#94a3b8;">未标注知识点</span>';
+
+    var lines = parts.map(function(p) {
+        var kp = qkCatalog().find(function(k){ return k.id === p.primary_concept_id; });
+        var name = kp ? kp.name : p.primary_concept_id;
+        if (!p.score_eligible) {
+            return '<div><b>' + escapeHtml(name) + '</b>：<span style="color:#b45309;">仅标签，缺少独立得分</span></div>';
+        }
+
+        var header = p.score_header || (parts.length === 1 ? entry.scoreHeader : '');
+        var full = header && ctx.fd && ctx.fd.fullScoreMap ? diagSafeNumber(ctx.fd.fullScoreMap[header]) : null;
+        if ((full === null || full <= 0) && header === entry.scoreHeader) full = diagSafeNumber(entry.fullScore);
+        var currentScore = header && studentEntry.row ? diagSafeNumber(studentEntry.row[header]) : null;
+        if (currentScore === null && header === entry.scoreHeader) currentScore = diagSafeNumber(studentEntry.score);
+        var currentRate = (currentScore !== null && full !== null && full > 0) ? currentScore / full : null;
+
+        var hist = qkGetHistoricalConceptPerformance(studentEntry.name, studentEntry.className, p.primary_concept_id);
+        var currentText = currentRate === null ? '本次无独立得分' : ('本次 ' + Math.round(currentRate*100) + '%');
+        if (!hist.sufficient) {
+            return '<div><b>' + escapeHtml(name) + '</b>：' + currentText
+                + '｜<span style="color:#64748b;">历史样本不足（' + hist.examCount + '次/' + hist.units + '单元）</span></div>';
+        }
+        var delta = currentRate === null ? null : currentRate - hist.rate;
+        var deltaText = delta === null ? '' : ('｜较历史' + (delta >= 0 ? '+' : '') + Math.round(delta*100) + '个百分点');
+        return '<div><b>' + escapeHtml(name) + '</b>：' + currentText
+            + '｜历史 ' + Math.round(hist.rate*100) + '%（' + hist.examCount + '次/' + hist.units + '单元）'
+            + deltaText + '</div>';
+    });
+    return '<div style="min-width:240px;line-height:1.55;">' + lines.join('') + '</div>';
+}
+
 function qkCurrentQuestionTemplates() {
     var fd = buildCollectiveDataFromCombined();
     var subjectName = getSelectedSubject();
@@ -5963,6 +6170,7 @@ async function qkImportAiAnnotationText(text) {
     staged.forEach(function(x){ map[x.question_no] = x.mapping; });
     var ok = await persistBatches();
     if (!ok) throw new Error('标注已解析，但保存失败，请检查浏览器存储空间');
+    qkConceptScoreCache.clear();
 
     var partCount = 0, eligibleCount = 0, tagOnlyCount = 0, lowCount = 0, unresolvedCount = 0;
     staged.forEach(function(x) {
