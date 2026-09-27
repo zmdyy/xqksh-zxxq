@@ -1,0 +1,1473 @@
+{
+  "schema": "physics-exam-concept-catalog",
+  "schema_version": "1.0",
+  "knowledge_db_version": "2.1",
+  "updated_at": "2026-09-27",
+  "concept_count": 180,
+  "usage_rules": [
+    "考试标注只能输出本词表中的 concept_id，不得自行创建新的 concept_id。",
+    "每个独立评分单元只选择一个 primary_concept_id；辅助涉及的知识点放入 related_concept_ids，不参与重复计分。",
+    "一道大题含多个小问、多个空或多个独立评分步骤时，应拆分为多个 part。",
+    "无法可靠判断时 primary_concept_id 填 null，并在 candidate_concept_ids 中最多给出3个候选。",
+    "名称相近时以 description 所描述的考查边界为准。"
+  ],
+  "excluded_from_annotation": [
+    {
+      "concept_id": "mech_newton1_core",
+      "canonical_concept_id": "mech_newton1",
+      "reason": "知识图谱展示节点，与考试标注节点重复"
+    },
+    {
+      "concept_id": "mech_archimedes_core",
+      "canonical_concept_id": "mech_archimedes",
+      "reason": "知识图谱展示节点，与考试标注节点重复"
+    },
+    {
+      "concept_id": "mech_balance_forces_core",
+      "canonical_concept_id": "mech_balance_forces",
+      "reason": "知识图谱展示节点，与考试标注节点重复"
+    }
+  ],
+  "concepts": [
+    {
+      "concept_id": "mech_motion_reference",
+      "name": "参照物",
+      "module": "力学",
+      "chapter": "机械运动",
+      "description": "判断物体运动时被选作标准的物体。选择不同参照物，运动描述不同。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_motion_speed",
+      "name": "速度",
+      "module": "力学",
+      "chapter": "机械运动",
+      "description": "路程与时间之比，描述运动快慢的物理量。",
+      "formula": "v=s/t"
+    },
+    {
+      "concept_id": "mech_uniform_motion",
+      "name": "匀速直线运动",
+      "module": "力学",
+      "chapter": "机械运动",
+      "description": "速度大小和方向都不变的直线运动。",
+      "formula": "s=vt"
+    },
+    {
+      "concept_id": "mech_variable_motion",
+      "name": "变速运动",
+      "module": "力学",
+      "chapter": "机械运动",
+      "description": "速度大小或方向变化的运动。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_avg_speed",
+      "name": "平均速度",
+      "module": "力学",
+      "chapter": "机械运动",
+      "description": "总路程与总时间之比，粗略描述变速运动。",
+      "formula": "v_avg=s_total/t_total"
+    },
+    {
+      "concept_id": "mech_instant_speed",
+      "name": "瞬时速度",
+      "module": "力学",
+      "chapter": "机械运动",
+      "description": "某一时刻或某一位置的速度。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_time_measure",
+      "name": "时间测量",
+      "module": "力学",
+      "chapter": "机械运动",
+      "description": "使用停表、秒表测量时间间隔。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_length_measure",
+      "name": "长度测量",
+      "module": "力学",
+      "chapter": "机械运动",
+      "description": "使用刻度尺测量长度，估读到分度值下一位。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_sound_production",
+      "name": "声音的产生",
+      "module": "力学",
+      "chapter": "声现象",
+      "description": "声音由物体振动产生，振动停止发声停止。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_sound_propagation",
+      "name": "声音的传播",
+      "module": "力学",
+      "chapter": "声现象",
+      "description": "声音需要通过介质传播，真空不能传声。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_sound_speed",
+      "name": "声速",
+      "module": "力学",
+      "chapter": "声现象",
+      "description": "声音在介质中的传播速度，固体最快气体最慢。",
+      "formula": "v=s/t"
+    },
+    {
+      "concept_id": "mech_pitch",
+      "name": "音调",
+      "module": "力学",
+      "chapter": "声现象",
+      "description": "声音的高低，由振动频率决定，频率越高音调越高。",
+      "formula": "f=1/T"
+    },
+    {
+      "concept_id": "mech_loudness",
+      "name": "响度",
+      "module": "力学",
+      "chapter": "声现象",
+      "description": "声音的大小，由振幅决定，振幅越大响度越大。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_timbre",
+      "name": "音色",
+      "module": "力学",
+      "chapter": "声现象",
+      "description": "声音的特色，由发声体材料和结构决定。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_noise_control",
+      "name": "噪声控制",
+      "module": "力学",
+      "chapter": "声现象",
+      "description": "在声源处、传播过程中、人耳处控制噪声。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_ultrasound_infrasound",
+      "name": "超声波次声波",
+      "module": "力学",
+      "chapter": "声现象",
+      "description": "超声波频率>20000Hz，次声波频率<20Hz，各有特殊应用。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_mass",
+      "name": "质量",
+      "module": "力学",
+      "chapter": "质量与密度",
+      "description": "物体所含物质的多少，是物体的基本属性。",
+      "formula": "m"
+    },
+    {
+      "concept_id": "mech_mass_measurement",
+      "name": "质量测量",
+      "module": "力学",
+      "chapter": "质量与密度",
+      "description": "使用天平测量质量，调节平衡螺母使横梁平衡。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_density",
+      "name": "密度",
+      "module": "力学",
+      "chapter": "质量与密度",
+      "description": "某种物质组成的物体质量与体积之比。",
+      "formula": "ρ=m/V"
+    },
+    {
+      "concept_id": "mech_density_measurement",
+      "name": "密度测量",
+      "module": "力学",
+      "chapter": "质量与密度",
+      "description": "用天平和量筒测量物质密度。",
+      "formula": "ρ=m/V"
+    },
+    {
+      "concept_id": "mech_material_identification",
+      "name": "物质鉴别",
+      "module": "力学",
+      "chapter": "质量与密度",
+      "description": "通过密度比较鉴别物质种类。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_hollow_problem",
+      "name": "空心问题",
+      "module": "力学",
+      "chapter": "质量与密度",
+      "description": "通过密度比较判断物体是否空心。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_force_concept",
+      "name": "力的概念",
+      "module": "力学",
+      "chapter": "力",
+      "description": "力是物体对物体的作用，施力物体和受力物体同时存在。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_force_effects",
+      "name": "力的作用效果",
+      "module": "力学",
+      "chapter": "力",
+      "description": "力可以改变物体的形状，也可以改变物体的运动状态。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_force_elements",
+      "name": "力的三要素",
+      "module": "力学",
+      "chapter": "力",
+      "description": "力的大小、方向和作用点称为力的三要素。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_force_diagram",
+      "name": "力的示意图",
+      "module": "力学",
+      "chapter": "力",
+      "description": "用带箭头线段表示力，线段起点表示作用点。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_force_gravity",
+      "name": "重力",
+      "module": "力学",
+      "chapter": "力",
+      "description": "由于地球吸引而使物体受到的力，方向竖直向下。",
+      "formula": "G=mg"
+    },
+    {
+      "concept_id": "mech_force_elastic",
+      "name": "弹力",
+      "module": "力学",
+      "chapter": "力",
+      "description": "物体发生弹性形变时产生的力。",
+      "formula": "F=kx"
+    },
+    {
+      "concept_id": "mech_friction",
+      "name": "摩擦力",
+      "module": "力学",
+      "chapter": "力",
+      "description": "两个接触面阻碍相对运动的力，分为静摩擦、滑动摩擦和滚动摩擦。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_force_analysis",
+      "name": "受力分析",
+      "module": "力学",
+      "chapter": "力",
+      "description": "对物体进行受力分析，画出受力示意图。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_newton1",
+      "name": "牛顿第一定律",
+      "module": "力学",
+      "chapter": "运动和力",
+      "description": "一切物体在没有受到力时，总保持静止或匀速直线运动状态。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_inertia",
+      "name": "惯性",
+      "module": "力学",
+      "chapter": "运动和力",
+      "description": "物体保持原来运动状态不变的性质，一切物体都有惯性。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_balance_forces",
+      "name": "二力平衡",
+      "module": "力学",
+      "chapter": "运动和力",
+      "description": "作用在同一物体上的两个力，大小相等、方向相反、同一直线。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_balanced_vs_interaction",
+      "name": "平衡力与相互作用力",
+      "module": "力学",
+      "chapter": "运动和力",
+      "description": "平衡力作用在同一物体，相互作用力作用在不同物体。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_force_motion_state",
+      "name": "力与运动状态",
+      "module": "力学",
+      "chapter": "运动和力",
+      "description": "力是改变物体运动状态的原因，不是维持运动的原因。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_force_composition",
+      "name": "同一直线二力合成",
+      "module": "力学",
+      "chapter": "运动和力",
+      "description": "同向相加，反向相减。",
+      "formula": "F=F1+F2或F=|F1-F2|"
+    },
+    {
+      "concept_id": "mech_pressure_force",
+      "name": "压力",
+      "module": "力学",
+      "chapter": "压强",
+      "description": "垂直作用在物体表面上的力。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_pressure",
+      "name": "压强",
+      "module": "力学",
+      "chapter": "压强",
+      "description": "物体所受压力与受力面积之比。",
+      "formula": "p=F/S"
+    },
+    {
+      "concept_id": "mech_liquid_pressure",
+      "name": "液体压强",
+      "module": "力学",
+      "chapter": "压强",
+      "description": "液体内部向各个方向都有压强，深度越大压强越大。",
+      "formula": "p=ρgh"
+    },
+    {
+      "concept_id": "mech_atmospheric_pressure",
+      "name": "大气压强",
+      "module": "力学",
+      "chapter": "压强",
+      "description": "大气对浸在其中的物体产生的压强。",
+      "formula": "p0=1.013×10^5Pa"
+    },
+    {
+      "concept_id": "mech_pressure_measure",
+      "name": "大气压测量",
+      "module": "力学",
+      "chapter": "压强",
+      "description": "托里拆利实验测量大气压值。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_fluid_pressure",
+      "name": "流体压强与流速",
+      "module": "力学",
+      "chapter": "压强",
+      "description": "流体流速越大的位置压强越小。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_communicating_vessels",
+      "name": "连通器",
+      "module": "力学",
+      "chapter": "压强",
+      "description": "上端开口下端连通的容器，液面高度相同。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_pascal_principle",
+      "name": "帕斯卡原理",
+      "module": "力学",
+      "chapter": "压强",
+      "description": "加在密闭液体上的压强大小不变地向各个方向传递。",
+      "formula": "F1/S1=F2/S2"
+    },
+    {
+      "concept_id": "mech_buoyancy_cause",
+      "name": "浮力产生原因",
+      "module": "力学",
+      "chapter": "浮力",
+      "description": "浸在液体中的物体上下表面压力差即为浮力。",
+      "formula": "F浮=F向上-F向下"
+    },
+    {
+      "concept_id": "mech_archimedes",
+      "name": "阿基米德原理",
+      "module": "力学",
+      "chapter": "浮力",
+      "description": "浸在液体中的物体所受浮力等于排开液体的重力。",
+      "formula": "F浮=ρ液gV排"
+    },
+    {
+      "concept_id": "mech_float_sink_condition",
+      "name": "物体浮沉条件",
+      "module": "力学",
+      "chapter": "浮力",
+      "description": "ρ物<ρ液漂浮，ρ物=ρ液悬浮，ρ物>ρ液下沉。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_浮力应用_轮船",
+      "name": "浮力应用·轮船",
+      "module": "力学",
+      "chapter": "浮力",
+      "description": "采用空心增大排开液体体积，从而增大浮力。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_浮力应用_潜水艇",
+      "name": "浮力应用·潜水艇",
+      "module": "力学",
+      "chapter": "浮力",
+      "description": "通过改变自身重量实现浮沉。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_浮力应用_气球飞艇",
+      "name": "浮力应用·气球飞艇",
+      "module": "力学",
+      "chapter": "浮力",
+      "description": "充入密度小于空气的气体获得浮力。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_lever",
+      "name": "杠杆",
+      "module": "力学",
+      "chapter": "简单机械",
+      "description": "在力作用下绕固定点转动的硬棒。",
+      "formula": ""
+    },
+    {
+      "concept_id": "mech_lever_balance",
+      "name": "杠杆平衡条件",
+      "module": "力学",
+      "chapter": "简单机械",
+      "description": "动力×动力臂=阻力×阻力臂。",
+      "formula": "F1L1=F2L2"
+    },
+    {
+      "concept_id": "mech_滑轮",
+      "name": "滑轮",
+      "module": "力学",
+      "chapter": "简单机械",
+      "description": "定滑轮不省力改变力的方向，动滑轮省一半力。",
+      "formula": "F=G/2(动滑轮)"
+    },
+    {
+      "concept_id": "mech_滑轮组",
+      "name": "滑轮组",
+      "module": "力学",
+      "chapter": "简单机械",
+      "description": "定滑轮和动滑轮组合，既省力又能改变力的方向。",
+      "formula": "F=G/n"
+    },
+    {
+      "concept_id": "mech_inclined_plane",
+      "name": "斜面",
+      "module": "力学",
+      "chapter": "简单机械",
+      "description": "斜面越长越省力，高度相同斜面越长所需拉力越小。",
+      "formula": "FL=Gh"
+    },
+    {
+      "concept_id": "mech_wheel_axle",
+      "name": "轮轴",
+      "module": "力学",
+      "chapter": "简单机械",
+      "description": "轮半径是轴半径的几倍，作用在轮上的力就是轴上的几分之一。",
+      "formula": "F1R=F2r"
+    },
+    {
+      "concept_id": "mech_work",
+      "name": "功",
+      "module": "力学",
+      "chapter": "功和功率",
+      "description": "力与在力的方向上移动距离的乘积。",
+      "formula": "W=Fs"
+    },
+    {
+      "concept_id": "mech_power",
+      "name": "功率",
+      "module": "力学",
+      "chapter": "功和功率",
+      "description": "功与做功所用时间之比，表示做功快慢。",
+      "formula": "P=W/t"
+    },
+    {
+      "concept_id": "mech_efficiency",
+      "name": "机械效率",
+      "module": "力学",
+      "chapter": "功和功率",
+      "description": "有用功与总功之比，η<1。",
+      "formula": "η=W有/W总×100%"
+    },
+    {
+      "concept_id": "mech_mechanical_energy",
+      "name": "机械能",
+      "module": "力学",
+      "chapter": "功和功率",
+      "description": "动能和势能统称为机械能。",
+      "formula": "E机械=Ek+Ep"
+    },
+    {
+      "concept_id": "therm_temperature",
+      "name": "温度",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "description": "表示物体冷热程度的物理量。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_thermometer",
+      "name": "温度计",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "description": "利用液体热胀冷缩的原理制成。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_melting_freezing",
+      "name": "熔化与凝固",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "description": "物质从固态变为液态（熔化）或从液态变为固态（凝固）。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_熔化吸热与凝固放热",
+      "name": "熔化吸热与凝固放热",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "description": "熔化过程吸收热量，凝固过程放出热量。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_汽化与液化",
+      "name": "汽化与液化",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "description": "物质从液态变为气态（汽化）或从气态变为液态（液化）。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_蒸发与沸腾",
+      "name": "蒸发与沸腾",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "description": "蒸发在任何温度下进行，沸腾在沸点进行。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_液化方法",
+      "name": "液化方法",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "description": "降低温度和压缩体积可使气体液化。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_升华与凝华",
+      "name": "升华与凝华",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "description": "物质从固态直接变为气态（升华）或从气态直接变为固态（凝华）。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_物质的构成",
+      "name": "物质的构成",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "description": "物质由分子、原子等微观粒子构成。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_分子热运动",
+      "name": "分子热运动",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "description": "一切物质的分子都在永不停息地做无规则运动。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_扩散现象",
+      "name": "扩散现象",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "description": "不同物质相互接触时彼此进入对方的现象。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_分子间作用力",
+      "name": "分子间作用力",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "description": "分子间同时存在引力和斥力。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_internal_energy",
+      "name": "内能",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "description": "物体内部所有分子热运动的动能和分子势能的总和。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_改变内能的方式",
+      "name": "改变内能的方式",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "description": "做功和热传递可以改变物体的内能。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_热量",
+      "name": "热量",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "description": "在热传递过程中传递的能量的多少。",
+      "formula": "Q"
+    },
+    {
+      "concept_id": "therm_热传递",
+      "name": "热传递",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "description": "热量从高温物体传向低温物体的过程。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_specific_heat",
+      "name": "比热容",
+      "module": "热学",
+      "chapter": "比热容与热量",
+      "description": "一定质量的某种物质温度升高1℃所吸收的热量。",
+      "formula": "c=Q/mΔt"
+    },
+    {
+      "concept_id": "therm_heat_calculation",
+      "name": "热量计算",
+      "module": "热学",
+      "chapter": "比热容与热量",
+      "description": "吸收或放出的热量与比热容、质量和温度变化有关。",
+      "formula": "Q=cmΔt"
+    },
+    {
+      "concept_id": "therm_水的比热容",
+      "name": "水的比热容",
+      "module": "热学",
+      "chapter": "比热容与热量",
+      "description": "水的比热容较大，常用于散热和保温。",
+      "formula": "c水=4.2×10^3J/(kg·℃)"
+    },
+    {
+      "concept_id": "therm_calorific_value",
+      "name": "热值",
+      "module": "热学",
+      "chapter": "比热容与热量",
+      "description": "燃料完全燃烧放出的热量与其质量之比。",
+      "formula": "q=Q/m"
+    },
+    {
+      "concept_id": "therm_heat_engine",
+      "name": "热机",
+      "module": "热学",
+      "chapter": "比热容与热量",
+      "description": "将内能转化为机械能的机器。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_heat_engine_efficiency",
+      "name": "热机效率",
+      "module": "热学",
+      "chapter": "比热容与热量",
+      "description": "热机所做的有用功与燃料完全燃烧放出的热量之比。",
+      "formula": "η=W有用/Q总"
+    },
+    {
+      "concept_id": "therm_熔点与凝固点",
+      "name": "熔点与凝固点",
+      "module": "热学",
+      "chapter": "物态变化中的能量",
+      "description": "晶体有固定的熔点和凝固点，非晶体没有。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_晶体与非晶体",
+      "name": "晶体与非晶体",
+      "module": "热学",
+      "chapter": "物态变化中的能量",
+      "description": "晶体有规则结构，非晶体没有规则结构。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_沸点与气压",
+      "name": "沸点与气压",
+      "module": "热学",
+      "chapter": "物态变化中的能量",
+      "description": "气压越高沸点越高，气压越低沸点越低。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_蒸发致冷",
+      "name": "蒸发致冷",
+      "module": "热学",
+      "chapter": "物态变化中的能量",
+      "description": "液体蒸发时要吸收热量，有制冷作用。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_物态变化中的能量转化",
+      "name": "物态变化中的能量转化",
+      "module": "热学",
+      "chapter": "物态变化中的能量",
+      "description": "物态变化伴随着能量的转移和转化。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_物态变化图像",
+      "name": "物态变化图像",
+      "module": "热学",
+      "chapter": "物态变化中的能量",
+      "description": "用温度-时间图像表示物态变化过程。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_自然界水循环",
+      "name": "自然界水循环",
+      "module": "热学",
+      "chapter": "物态变化中的能量",
+      "description": "水的三态变化构成了自然界的水循环。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_能量守恒定律_热学",
+      "name": "能量守恒定律(热学)",
+      "module": "热学",
+      "chapter": "热力学基础",
+      "description": "能量既不会凭空产生也不会凭空消失，只能从一种形式转化为另一种形式。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_热力学第一定律",
+      "name": "热力学第一定律",
+      "module": "热学",
+      "chapter": "热力学基础",
+      "description": "物体内能变化等于外界对物体做功与传热之和。",
+      "formula": "ΔU=W+Q"
+    },
+    {
+      "concept_id": "therm_热传递方向",
+      "name": "热传递方向",
+      "module": "热学",
+      "chapter": "热力学基础",
+      "description": "热量自发地从高温物体传向低温物体。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_温度与分子运动",
+      "name": "温度与分子运动",
+      "module": "热学",
+      "chapter": "热力学基础",
+      "description": "温度是分子热运动剧烈程度的标志。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_热膨胀",
+      "name": "热膨胀",
+      "module": "热学",
+      "chapter": "热力学基础",
+      "description": "一般物体温度升高时体积膨胀，温度降低时体积收缩。",
+      "formula": ""
+    },
+    {
+      "concept_id": "therm_相变潜热",
+      "name": "相变潜热",
+      "module": "热学",
+      "chapter": "热力学基础",
+      "description": "物态变化过程中吸收或放出的热量。",
+      "formula": "Q=mL"
+    },
+    {
+      "concept_id": "opt_light_source",
+      "name": "光源",
+      "module": "光学",
+      "chapter": "光的直线传播",
+      "description": "自身能够发光的物体叫做光源。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_rectilinear_propagation",
+      "name": "光的直线传播",
+      "module": "光学",
+      "chapter": "光的直线传播",
+      "description": "光在同种均匀介质中沿直线传播。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_light_speed",
+      "name": "光速",
+      "module": "光学",
+      "chapter": "光的直线传播",
+      "description": "光在真空中传播速度最快。",
+      "formula": "c=3×10^8m/s"
+    },
+    {
+      "concept_id": "opt_影子的形成",
+      "name": "影子的形成",
+      "module": "光学",
+      "chapter": "光的直线传播",
+      "description": "光沿直线传播遇到不透明物体时形成影子。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_日食与月食",
+      "name": "日食与月食",
+      "module": "光学",
+      "chapter": "光的直线传播",
+      "description": "日食是月球位于太阳和地球之间，月食是地球位于太阳和月球之间。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_小孔成像",
+      "name": "小孔成像",
+      "module": "光学",
+      "chapter": "光的直线传播",
+      "description": "小孔成倒立的实像，像的大小与物距和像距有关。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_reflection_law",
+      "name": "光的反射定律",
+      "module": "光学",
+      "chapter": "光的反射",
+      "description": "反射光线、入射光线和法线在同一平面内，反射角等于入射角。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_镜面反射与漫反射",
+      "name": "镜面反射与漫反射",
+      "module": "光学",
+      "chapter": "光的反射",
+      "description": "镜面反射在光滑表面发生，漫反射在粗糙表面发生，都遵循反射定律。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_平面镜成像",
+      "name": "平面镜成像",
+      "module": "光学",
+      "chapter": "光的反射",
+      "description": "平面镜成等大正立的虚像，像与物关于镜面对称。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_平面镜应用",
+      "name": "平面镜应用",
+      "module": "光学",
+      "chapter": "光的反射",
+      "description": "穿衣镜、潜望镜、牙医镜等利用平面镜成像。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_球面镜",
+      "name": "球面镜",
+      "module": "光学",
+      "chapter": "光的反射",
+      "description": "凹面镜会聚光线，凸面镜发散光线。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_凹面镜",
+      "name": "凹面镜",
+      "module": "光学",
+      "chapter": "光的反射",
+      "description": "凹面镜将平行光会聚于焦点，太阳灶应用此原理。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_凸面镜",
+      "name": "凸面镜",
+      "module": "光学",
+      "chapter": "光的反射",
+      "description": "凸面镜使平行光发散，视野更大，用于汽车后视镜。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_光路可逆性",
+      "name": "光路可逆性",
+      "module": "光学",
+      "chapter": "光的反射",
+      "description": "在反射和折射现象中光路是可逆的。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_refraction_law",
+      "name": "光的折射定律",
+      "module": "光学",
+      "chapter": "光的折射",
+      "description": "光从一种介质斜射入另一种介质时传播方向发生偏折。",
+      "formula": "n=sin i/sin r"
+    },
+    {
+      "concept_id": "opt_折射现象",
+      "name": "折射现象",
+      "module": "光学",
+      "chapter": "光的折射",
+      "description": "池水看起来变浅、筷子在水中弯折等。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_透镜",
+      "name": "透镜",
+      "module": "光学",
+      "chapter": "光的折射",
+      "description": "凸透镜中间厚边缘薄，凹透镜中间薄边缘厚。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_凸透镜对光的作用",
+      "name": "凸透镜对光的作用",
+      "module": "光学",
+      "chapter": "光的折射",
+      "description": "凸透镜对光有会聚作用，平行于主光轴的光会聚于焦点。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_凹透镜对光的作用",
+      "name": "凹透镜对光的作用",
+      "module": "光学",
+      "chapter": "光的折射",
+      "description": "凹透镜对光有发散作用，平行于主光轴的光发散后反向延长过焦点。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_生活中的透镜",
+      "name": "生活中的透镜",
+      "module": "光学",
+      "chapter": "光的折射",
+      "description": "放大镜是凸透镜，相机镜头是凸透镜组合。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_lens_imaging",
+      "name": "凸透镜成像规律",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "description": "物距不同，成像的性质（虚实、大小、正倒）不同。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_u_2f成像",
+      "name": "u>2f成像",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "description": "物体在二倍焦距以外，成倒立缩小的实像。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_f_u_2f成像",
+      "name": "f<u<2f成像",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "description": "物体在焦距和二倍焦距之间，成倒立放大的实像。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_u_f成像",
+      "name": "u<f成像",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "description": "物体在焦距以内，成正立放大的虚像。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_照相机",
+      "name": "照相机",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "description": "u>2f时成倒立缩小的实像，应用于照相机。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_投影仪",
+      "name": "投影仪",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "description": "f<u<2f时成倒立放大的实像，应用于投影仪。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_放大镜",
+      "name": "放大镜",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "description": "u<f时成正立放大的虚像，应用于放大镜。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_眼镜与视力矫正",
+      "name": "眼镜与视力矫正",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "description": "近视用凹透镜矫正，远视用凸透镜矫正。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_dispersion",
+      "name": "光的色散",
+      "module": "光学",
+      "chapter": "光的色散",
+      "description": "白光通过三棱镜分解为七种色光的现象。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_色光混合",
+      "name": "色光混合",
+      "module": "光学",
+      "chapter": "光的色散",
+      "description": "红、绿、蓝是色光的三原色。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_物体的颜色",
+      "name": "物体的颜色",
+      "module": "光学",
+      "chapter": "光的色散",
+      "description": "物体的颜色由它反射或透过的色光决定。",
+      "formula": ""
+    },
+    {
+      "concept_id": "opt_红外线与紫外线",
+      "name": "红外线与紫外线",
+      "module": "光学",
+      "chapter": "光的色散",
+      "description": "红外线热效应强，紫外线具有杀菌作用。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_charge",
+      "name": "电荷",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "自然界只有两种电荷：正电荷和负电荷。同种相斥，异种相吸。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_摩擦起电",
+      "name": "摩擦起电",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "用摩擦的方法使物体带电，实质是电子的转移。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_导体与绝缘体",
+      "name": "导体与绝缘体",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "容易导电的物体叫导体，不容易导电的物体叫绝缘体。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_current",
+      "name": "电流",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "电荷的定向移动形成电流，正电荷移动方向为电流方向。",
+      "formula": "I=Q/t"
+    },
+    {
+      "concept_id": "elec_电路",
+      "name": "电路",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "由电源、导线、开关和用电器组成的电流路径。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_series_circuit",
+      "name": "串联电路",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "各用电器依次相连，电流只有一条路径。",
+      "formula": "I=I1=I2,U=U1+U2"
+    },
+    {
+      "concept_id": "elec_parallel_circuit",
+      "name": "并联电路",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "各用电器并列相连，电流有多条路径。",
+      "formula": "I=I1+I2,U=U1=U2"
+    },
+    {
+      "concept_id": "elec_电流表",
+      "name": "电流表",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "测量电流的仪表，必须串联在电路中。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_voltage",
+      "name": "电压",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "电压是形成电流的原因，电源提供电压。",
+      "formula": "U"
+    },
+    {
+      "concept_id": "elec_电压表",
+      "name": "电压表",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "测量电压的仪表，必须并联在电路中。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_resistance",
+      "name": "电阻",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "导体对电流的阻碍作用，用R表示。",
+      "formula": "R=U/I"
+    },
+    {
+      "concept_id": "elec_影响电阻的因素",
+      "name": "影响电阻的因素",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "电阻与材料、长度、横截面积和温度有关。",
+      "formula": "R=ρL/S"
+    },
+    {
+      "concept_id": "elec_滑动变阻器",
+      "name": "滑动变阻器",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "通过改变接入电路中电阻丝的长度来改变电阻。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_ohm_law",
+      "name": "欧姆定律",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "导体中的电流与导体两端电压成正比，与导体电阻成反比。",
+      "formula": "I=U/R"
+    },
+    {
+      "concept_id": "elec_伏安法测电阻",
+      "name": "伏安法测电阻",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "用电压表和电流表测量电阻的方法。",
+      "formula": "R=U/I"
+    },
+    {
+      "concept_id": "elec_串联电路特点",
+      "name": "串联电路特点",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "串联电路总电阻等于各电阻之和，电流处处相等。",
+      "formula": "R=R1+R2,I=I1=I2"
+    },
+    {
+      "concept_id": "elec_并联电路特点",
+      "name": "并联电路特点",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "并联电路总电阻倒数等于各电阻倒数之和。",
+      "formula": "1/R=1/R1+1/R2"
+    },
+    {
+      "concept_id": "elec_电路故障分析",
+      "name": "电路故障分析",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "通过电表示数变化判断电路故障。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_electric_work",
+      "name": "电功",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "电流所做的功，即电能转化为其他形式能的多少。",
+      "formula": "W=UIt"
+    },
+    {
+      "concept_id": "elec_电能表",
+      "name": "电能表",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "测量用电器消耗电能多少的仪表。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_electric_power",
+      "name": "电功率",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "电流在单位时间内所做的功。",
+      "formula": "P=UI"
+    },
+    {
+      "concept_id": "elec_额定功率与实际功率",
+      "name": "额定功率与实际功率",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "用电器在额定电压下正常工作时的功率。",
+      "formula": "P额=U额I额"
+    },
+    {
+      "concept_id": "elec_joule_law",
+      "name": "焦耳定律",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "电流通过导体产生的热量与电流平方、电阻和通电时间成正比。",
+      "formula": "Q=I²Rt"
+    },
+    {
+      "concept_id": "elec_电热利用与防止",
+      "name": "电热利用与防止",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "电热器（利用）和散热设计（防止）。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_家庭电路",
+      "name": "家庭电路",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "由进户线、电能表、总开关、保险装置等组成。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_安全用电",
+      "name": "安全用电",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "不接触低压带电体，不靠近高压带电体。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_测电笔",
+      "name": "测电笔",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "辨别火线和零线的工具。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_触电急救",
+      "name": "触电急救",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "迅速切断电源，用绝缘体将触电者与带电体分离。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_磁现象",
+      "name": "磁现象",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "磁体具有吸引铁钴镍的性质，磁极间同名相斥异名相吸。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_magnetic_field",
+      "name": "磁场",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "磁体周围存在的一种特殊物质，对放入其中的磁体产生力的作用。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_地磁场",
+      "name": "地磁场",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "地球周围存在的磁场，地磁北极在地理南极附近。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_电流的磁效应",
+      "name": "电流的磁效应",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "通电导体周围存在磁场，磁场方向与电流方向有关。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_电磁铁",
+      "name": "电磁铁",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "插入铁芯的通电螺线管，磁性有无和强弱可控制。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_电磁继电器",
+      "name": "电磁继电器",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "利用电磁铁控制工作电路通断的开关。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_磁场对电流的作用",
+      "name": "磁场对电流的作用",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "通电导体在磁场中受到力的作用，力方向与电流和磁场方向有关。",
+      "formula": "F=BIL"
+    },
+    {
+      "concept_id": "elec_electric_motor",
+      "name": "电动机",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "利用通电线圈在磁场中受力转动的原理制成。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_electromagnetic_induction",
+      "name": "电磁感应现象",
+      "module": "电磁学",
+      "chapter": "电磁感应",
+      "description": "闭合电路的一部分导体在磁场中做切割磁感线运动时产生感应电流。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_generator",
+      "name": "发电机",
+      "module": "电磁学",
+      "chapter": "电磁感应",
+      "description": "利用电磁感应原理将机械能转化为电能。",
+      "formula": ""
+    },
+    {
+      "concept_id": "elec_交流电",
+      "name": "交流电",
+      "module": "电磁学",
+      "chapter": "电磁感应",
+      "description": "电流方向周期性变化的电流，我国交流电频率50Hz。",
+      "formula": "f=50Hz,T=0.02s"
+    },
+    {
+      "concept_id": "elec_变压器",
+      "name": "变压器",
+      "module": "电磁学",
+      "chapter": "电磁感应",
+      "description": "利用电磁感应原理改变交流电压的装置。",
+      "formula": "U1/U2=n1/n2"
+    },
+    {
+      "concept_id": "elec_电磁波",
+      "name": "电磁波",
+      "module": "电磁学",
+      "chapter": "电磁感应",
+      "description": "变化的电流在空间产生电磁波，传播不需要介质。",
+      "formula": "c=λf"
+    },
+    {
+      "concept_id": "energy_energy_conservation",
+      "name": "能量守恒定律",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "description": "能量既不会凭空产生也不会凭空消失，只能从一种形式转化为另一种形式或从一个物体转移到另一个物体。",
+      "formula": "E守恒"
+    },
+    {
+      "concept_id": "energy_energy_classification",
+      "name": "能源分类",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "description": "按来源分为一次能源和二次能源，按能否再生分为可再生能源和不可再生能源。",
+      "formula": ""
+    },
+    {
+      "concept_id": "energy_solar_energy",
+      "name": "太阳能",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "description": "太阳是巨大的核聚变反应堆，太阳辐射能是地球上能量的主要来源。",
+      "formula": ""
+    },
+    {
+      "concept_id": "energy_nuclear_energy",
+      "name": "核能",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "description": "原子核发生变化时释放的巨大能量。",
+      "formula": "E=mc²"
+    },
+    {
+      "concept_id": "energy_nuclear_fusion_fission",
+      "name": "核聚变与核裂变",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "description": "核裂变是重核分裂，核聚变是轻核聚合。",
+      "formula": ""
+    },
+    {
+      "concept_id": "energy_renewable_nonrenewable",
+      "name": "可再生与不可再生",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "description": "可再生能源可循环利用，不可再生能源用后短期内无法恢复。",
+      "formula": ""
+    },
+    {
+      "concept_id": "energy_energy_environment",
+      "name": "能源与环境",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "description": "化石能源的使用带来环境污染问题，发展清洁能源是方向。",
+      "formula": ""
+    },
+    {
+      "concept_id": "energy_sustainable_可持续发展",
+      "name": "可持续发展",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "description": "满足当代需求又不损害后代满足其需求的能力的发展方式。",
+      "formula": ""
+    },
+    {
+      "concept_id": "math_unit_conversion",
+      "name": "单位换算",
+      "module": "数学",
+      "chapter": "物理计算支撑",
+      "description": "同一物理量可用不同单位表示，换算时乘或除相应进率。代入物理公式前，须先把各量统一到国际制单位。",
+      "formula": "1km/h=1/3.6 m/s"
+    },
+    {
+      "concept_id": "math_power_notation",
+      "name": "次方与科学计数法",
+      "module": "数学",
+      "chapter": "物理计算支撑",
+      "description": "aⁿ 表示 n 个 a 相乘；科学计数法把很大或很小的数写成 a×10ⁿ（1≤a<10）。平方、立方分别对应面积、体积单位的进率。",
+      "formula": "a×10^n"
+    },
+    {
+      "concept_id": "math_linear_graph",
+      "name": "一次函数图像",
+      "module": "数学",
+      "chapter": "物理计算支撑",
+      "description": "形如 y=kx+b 的关系，图像是一条直线。b=0 时为正比例函数，图像过原点，斜率 k 表示因变量随自变量变化的快慢。",
+      "formula": "y=kx+b"
+    },
+    {
+      "concept_id": "math_inverse_graph",
+      "name": "反比例函数图像",
+      "module": "数学",
+      "chapter": "物理计算支撑",
+      "description": "形如 y=k/x（k≠0）的关系，图像是双曲线。物理题通常只取第一象限：一个量增大时另一个量减小，乘积保持不变。",
+      "formula": "y=k/x"
+    }
+  ]
+}
