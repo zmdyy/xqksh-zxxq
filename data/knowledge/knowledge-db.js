@@ -918,7 +918,6 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_density_measurement",
         "mech_density"
       ],
       "follow_ups": [],
@@ -968,7 +967,9 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [],
       "follow_ups": [
         "mech_force_effects",
-        "mech_balanced_vs_interaction"
+        "mech_balanced_vs_interaction",
+        "mech_newton1",
+        "mech_work"
       ],
       "parallels": [],
       "cross_module": [],
@@ -1341,7 +1342,8 @@ window.KNOWLEDGE_DB = {
       ],
       "follow_ups": [
         "mech_inertia",
-        "mech_balance_forces"
+        "mech_balance_forces",
+        "mech_force_motion_state"
       ],
       "parallels": [],
       "cross_module": [],
@@ -1429,7 +1431,8 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_newton1"
+        "mech_newton1",
+        "mech_force_analysis"
       ],
       "follow_ups": [
         "mech_balanced_vs_interaction"
@@ -1516,7 +1519,8 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_newton1"
+        "mech_newton1",
+        "mech_force_analysis"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -1652,7 +1656,8 @@ window.KNOWLEDGE_DB = {
       "follow_ups": [
         "mech_liquid_pressure",
         "mech_atmospheric_pressure",
-        "mech_fluid_pressure"
+        "mech_fluid_pressure",
+        "mech_pascal_principle"
       ],
       "parallels": [],
       "cross_module": [],
@@ -1705,7 +1710,8 @@ window.KNOWLEDGE_DB = {
         "mech_pressure"
       ],
       "follow_ups": [
-        "mech_buoyancy_cause"
+        "mech_buoyancy_cause",
+        "mech_communicating_vessels"
       ],
       "parallels": [],
       "cross_module": [],
@@ -1980,7 +1986,6 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_pressure",
         "mech_liquid_pressure"
       ],
       "follow_ups": [
@@ -2297,7 +2302,9 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "mech_lever"
       ],
-      "follow_ups": [],
+      "follow_ups": [
+        "mech_wheel_axle"
+      ],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -2635,9 +2642,7 @@ window.KNOWLEDGE_DB = {
           "填空题"
         ]
       },
-      "prerequisites": [
-        "mech_work"
-      ],
+      "prerequisites": [],
       "follow_ups": [],
       "parallels": [],
       "cross_module": [],
@@ -2812,7 +2817,8 @@ window.KNOWLEDGE_DB = {
         "therm_汽化与液化",
         "therm_升华与凝华",
         "therm_热传递方向",
-        "therm_温度与分子运动"
+        "therm_温度与分子运动",
+        "therm_热膨胀"
       ],
       "parallels": [],
       "cross_module": [],
@@ -3194,7 +3200,8 @@ window.KNOWLEDGE_DB = {
       ],
       "follow_ups": [
         "therm_扩散现象",
-        "therm_internal_energy"
+        "therm_internal_energy",
+        "therm_温度与分子运动"
       ],
       "parallels": [],
       "cross_module": [],
@@ -3324,7 +3331,8 @@ window.KNOWLEDGE_DB = {
       ],
       "follow_ups": [
         "therm_改变内能的方式",
-        "therm_热力学第一定律"
+        "therm_热力学第一定律",
+        "therm_能量守恒定律_热学"
       ],
       "parallels": [],
       "cross_module": [],
@@ -3775,7 +3783,8 @@ window.KNOWLEDGE_DB = {
         "therm_melting_freezing"
       ],
       "follow_ups": [
-        "therm_晶体与非晶体"
+        "therm_晶体与非晶体",
+        "therm_物态变化图像"
       ],
       "parallels": [],
       "cross_module": [],
@@ -4592,7 +4601,8 @@ window.KNOWLEDGE_DB = {
       "follow_ups": [
         "opt_镜面反射与漫反射",
         "opt_平面镜成像",
-        "opt_球面镜"
+        "opt_球面镜",
+        "opt_光路可逆性"
       ],
       "parallels": [],
       "cross_module": [],
@@ -4758,7 +4768,9 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "opt_reflection_law"
       ],
-      "follow_ups": [],
+      "follow_ups": [
+        "opt_凸面镜"
+      ],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -5016,7 +5028,8 @@ window.KNOWLEDGE_DB = {
       "follow_ups": [
         "opt_凸透镜对光的作用",
         "opt_凹透镜对光的作用",
-        "opt_眼镜与视力矫正"
+        "opt_眼镜与视力矫正",
+        "opt_lens_imaging"
       ],
       "parallels": [],
       "cross_module": [],
@@ -5185,7 +5198,8 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "opt_凸透镜对光的作用"
+        "opt_凸透镜对光的作用",
+        "opt_透镜"
       ],
       "follow_ups": [
         "opt_u_2f成像",
@@ -5828,7 +5842,8 @@ window.KNOWLEDGE_DB = {
         "elec_电路",
         "elec_ohm_law",
         "elec_joule_law",
-        "elec_磁场对电流的作用"
+        "elec_磁场对电流的作用",
+        "elec_电流的磁效应"
       ],
       "parallels": [],
       "cross_module": [],
@@ -6060,7 +6075,8 @@ window.KNOWLEDGE_DB = {
       ],
       "follow_ups": [
         "elec_电压表",
-        "elec_ohm_law"
+        "elec_ohm_law",
+        "elec_electric_work"
       ],
       "parallels": [],
       "cross_module": [],
@@ -7004,7 +7020,8 @@ window.KNOWLEDGE_DB = {
       ],
       "follow_ups": [
         "elec_地磁场",
-        "elec_磁场对电流的作用"
+        "elec_磁场对电流的作用",
+        "elec_electromagnetic_induction"
       ],
       "parallels": [],
       "cross_module": [],
