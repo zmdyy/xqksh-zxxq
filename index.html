@@ -828,6 +828,23 @@
     #errorNotebookBody .error-item-card {
         padding: 14px 12px !important;
     }
+
+    /* ── 题目—知识点轻量标注 V1 ─────────── */
+    .qk-toolbar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:8px 0 10px; padding:8px 10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; }
+    .qk-status { font-size:12px; color:#475569; padding:3px 7px; background:#fff; border:1px solid #e2e8f0; border-radius:999px; }
+    .qk-main-badge { display:inline-block; max-width:170px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:3px 7px; border-radius:999px; font-size:12px; background:#e8f1ff; color:#1e3a5f; border:1px solid #cbdcf5; vertical-align:middle; }
+    .qk-main-badge.empty { background:#f8fafc; color:#94a3b8; border-color:#e2e8f0; }
+    .qk-edit-btn { padding:4px 8px; border:1px solid #cbd5e1; background:#fff; color:#334155; border-radius:5px; cursor:pointer; font-size:12px; }
+    .qk-edit-btn:hover { border-color:#1e3a5f; color:#1e3a5f; background:#f8fafc; }
+    #qkEditorOverlay { display:none; position:fixed; inset:0; background:rgba(15,23,42,.48); z-index:10020; align-items:center; justify-content:center; padding:18px; box-sizing:border-box; }
+    #qkEditorPanel { width:min(92vw,620px); max-height:88vh; overflow:auto; background:#fff; border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,.25); padding:18px 20px; box-sizing:border-box; }
+    #qkEditorPanel h3 { margin:0 0 4px; color:#1e3a5f; }
+    .qk-editor-meta { font-size:12px; color:#64748b; margin-bottom:14px; }
+    .qk-field { display:block; margin:10px 0; font-size:13px; font-weight:700; color:#334155; }
+    .qk-field input { display:block; width:100%; margin-top:5px; box-sizing:border-box; padding:8px 9px; border:1px solid #cbd5e1; border-radius:6px; font:inherit; font-weight:400; }
+    .qk-hint { font-size:12px; color:#64748b; line-height:1.55; margin-top:4px; }
+    .qk-suggestion { display:none; margin:10px 0; padding:9px 10px; background:#fffbeb; border-left:3px solid #f59e0b; font-size:12px; line-height:1.6; }
+    .qk-editor-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:16px; padding-top:12px; border-top:1px solid #e2e8f0; }
     </style>
 </head>
 <body>
@@ -1137,16 +1154,23 @@
                 <button class="filter-btn" id="applyCollectiveThresholdBtn" style="padding:4px 8px;font-size:12px;margin-left:4px;">应用</button>
             </div>
         </div>
+        <div class="qk-toolbar">
+            <span id="qkCatalogStatus" class="qk-status">知识点库：加载中…</span>
+            <span id="qkTagStatus" class="qk-status">本批次已标注 0 题</span>
+            <button type="button" class="filter-btn" id="qkExportBtn">导出标签库</button>
+            <button type="button" class="filter-btn" id="qkImportBtn">导入标签库</button>
+            <input type="file" id="qkImportFile" accept=".json,application/json" style="display:none;">
+        </div>
         <div style="font-size:15px;font-weight:bold;color:#2980b9;margin-bottom:4px;" id="allStatsTitle"></div>
         <div class="scroll-container" style="max-height:320px;">
             <table id="questionStatsTable"><thead><tr>
-                <th>题目</th><th>分值表头</th><th>得分均值</th><th>最高分</th><th>最低分</th><th>标准答案</th><th>选项分布</th><th>得分率(%)</th>
+                <th>题目</th><th>分值表头</th><th>主知识点</th><th>标签</th><th>得分均值</th><th>最高分</th><th>最低分</th><th>标准答案</th><th>选项分布</th><th>得分率(%)</th>
             </tr></thead><tbody></tbody></table>
         </div>
         <div style="font-size:15px;font-weight:bold;color:#e74c3c;margin-top:16px;margin-bottom:4px;" id="lowStatsTitle"></div>
         <div class="scroll-container" style="max-height:160px;">
             <table id="lowStatsTable"><thead><tr>
-                <th>题目</th><th>分值表头</th><th>得分均值</th><th>最高分</th><th>最低分</th><th>标准答案</th><th>选项分布</th><th>得分率(%)</th>
+                <th>题目</th><th>分值表头</th><th>主知识点</th><th>标签</th><th>得分均值</th><th>最高分</th><th>最低分</th><th>标准答案</th><th>选项分布</th><th>得分率(%)</th>
             </tr></thead><tbody></tbody></table>
         </div>
     </div>
@@ -1844,8 +1868,36 @@
             </div>
         </div>
     </div>
+
+    <div id="qkEditorOverlay" aria-hidden="true">
+        <div id="qkEditorPanel">
+            <h3>题目知识点标注</h3>
+            <div class="qk-editor-meta" id="qkEditorMeta"></div>
+            <div class="qk-suggestion" id="qkHistorySuggestion"></div>
+            <label class="qk-field">主知识点（原则上只选 1 个）
+                <input id="qkMainInput" list="qkKnowledgeOptions" placeholder="输入知识点名称搜索">
+            </label>
+            <label class="qk-field">关联知识点 1（可选）
+                <input id="qkRelatedInput1" list="qkKnowledgeOptions" placeholder="确有诊断意义时再补">
+            </label>
+            <label class="qk-field">关联知识点 2（可选）
+                <input id="qkRelatedInput2" list="qkKnowledgeOptions" placeholder="最多补 2 个">
+            </label>
+            <label class="qk-field">候选错误模型（可选）
+                <input id="qkErrorModelInput" placeholder="如：把液体深度作为浮力决定因素">
+            </label>
+            <div class="qk-hint">这里只记录教师的“题目→知识属性”判断。单题错误不会直接判定学生存在稳定误概念；后续还要结合诊断微题、理由、置信度和跨题一致性。</div>
+            <datalist id="qkKnowledgeOptions"></datalist>
+            <div class="qk-editor-actions">
+                <button type="button" class="qk-edit-btn" id="qkClearBtn">清除本题标签</button>
+                <button type="button" class="qk-edit-btn" id="qkCancelBtn">取消</button>
+                <button type="button" class="upload-btn small" id="qkSaveBtn">保存标签</button>
+            </div>
+        </div>
+    </div>
 </div>
 
+<script src="data/knowledge/knowledge-db.js"></script>
 <script>
 // ============================================================
 //  全局数据池
@@ -4937,6 +4989,221 @@ function getCollectiveFilteredData() {
     return { ...cd, data: cd.data.filter(r => r[cd.classField] == sc) };
 }
 
+
+// ============================================================
+//  题目—知识点轻量标注 V1
+//  目标：一个主知识点；必要时补 1-2 个关联知识点/候选错误模型；
+//       标签按批次保存到浏览器，并支持 JSON 导入/导出。
+// ============================================================
+const QUESTION_KNOWLEDGE_STORAGE_KEY = 'questionKnowledgeMapV1';
+var QuestionKnowledgeMap = {};
+var qkEditorContext = null;
+
+function qkLoadMap() {
+    try {
+        var raw = localStorage.getItem(QUESTION_KNOWLEDGE_STORAGE_KEY);
+        QuestionKnowledgeMap = raw ? JSON.parse(raw) : {};
+        if (!QuestionKnowledgeMap || typeof QuestionKnowledgeMap !== 'object' || Array.isArray(QuestionKnowledgeMap)) QuestionKnowledgeMap = {};
+    } catch(e) { QuestionKnowledgeMap = {}; }
+}
+function qkSaveMap() {
+    try { localStorage.setItem(QUESTION_KNOWLEDGE_STORAGE_KEY, JSON.stringify(QuestionKnowledgeMap)); return true; }
+    catch(e) { if (typeof showToast === 'function') showToast('标签保存失败：浏览器存储空间不足'); return false; }
+}
+function qkCatalog() {
+    return (window.KNOWLEDGE_DB && Array.isArray(window.KNOWLEDGE_DB.data)) ? window.KNOWLEDGE_DB.data : [];
+}
+function qkDisplay(kp) {
+    if (!kp) return '';
+    var tail = [kp.module, kp.chapter].filter(Boolean).join('·');
+    return kp.name + (tail ? '｜' + tail : '');
+}
+function qkResolve(value) {
+    var v = String(value || '').trim();
+    if (!v) return null;
+    var list = qkCatalog();
+    return list.find(function(k){ return qkDisplay(k) === v; })
+        || list.find(function(k){ return k.id === v; })
+        || list.find(function(k){ return k.name === v; })
+        || null;
+}
+function qkCurrentBatchLabel() {
+    var b = DataPool.getCurrentBatch ? DataPool.getCurrentBatch() : null;
+    if (b && b.label) return String(b.label);
+    var input = document.getElementById('newBatchName');
+    return input && input.value.trim() ? input.value.trim() : '未保存批次';
+}
+function qkKey(subject, questionTitle, scoreHeader) {
+    return [qkCurrentBatchLabel(), String(subject || '全部科目'), String(scoreHeader || questionTitle || '')].join('::');
+}
+function qkFindHistory(subject, questionTitle, scoreHeader, currentKey) {
+    var arr = Object.keys(QuestionKnowledgeMap).map(function(k){ return QuestionKnowledgeMap[k]; }).filter(Boolean);
+    return arr.filter(function(m) {
+        if (m.key === currentKey || !m.mainKnowledgeId) return false;
+        return String(m.subject || '') === String(subject || '')
+            && (String(m.scoreHeader || '') === String(scoreHeader || '') || String(m.questionTitle || '') === String(questionTitle || ''));
+    }).sort(function(a,b){ return String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')); })[0] || null;
+}
+function qkRenderCell(questionTitle, scoreHeader, subject) {
+    var key = qkKey(subject, questionTitle, scoreHeader);
+    var m = QuestionKnowledgeMap[key];
+    var label = m && m.mainKnowledgeName ? m.mainKnowledgeName : '未标注';
+    return '<span class="qk-main-badge' + (m && m.mainKnowledgeId ? '' : ' empty') + '" title="' + escapeHtml(label) + '">' + escapeHtml(label) + '</span>';
+}
+function qkRenderAction(questionTitle, scoreHeader, subject) {
+    var key = qkKey(subject, questionTitle, scoreHeader);
+    return '<button type="button" class="qk-edit-btn"'
+        + ' data-qk-key="' + escapeHtml(key) + '"'
+        + ' data-qk-question="' + escapeHtml(questionTitle || '') + '"'
+        + ' data-qk-score="' + escapeHtml(scoreHeader || '') + '"'
+        + ' data-qk-subject="' + escapeHtml(subject || '') + '">编辑</button>';
+}
+function qkBindButtons() {
+    document.querySelectorAll('.qk-edit-btn[data-qk-key]').forEach(function(btn) {
+        btn.onclick = function() {
+            qkOpenEditor({
+                key: btn.getAttribute('data-qk-key') || '',
+                questionTitle: btn.getAttribute('data-qk-question') || '',
+                scoreHeader: btn.getAttribute('data-qk-score') || '',
+                subject: btn.getAttribute('data-qk-subject') || ''
+            });
+        };
+    });
+}
+function qkPopulateDatalist() {
+    var dl = document.getElementById('qkKnowledgeOptions');
+    if (!dl) return;
+    dl.innerHTML = qkCatalog().map(function(k){ return '<option value="' + escapeHtml(qkDisplay(k)) + '"></option>'; }).join('');
+}
+function qkOpenEditor(ctx) {
+    qkEditorContext = ctx;
+    var old = QuestionKnowledgeMap[ctx.key] || {};
+    document.getElementById('qkEditorMeta').textContent = qkCurrentBatchLabel() + ' · ' + (ctx.subject || '未限定科目') + ' · ' + (ctx.questionTitle || ctx.scoreHeader || '题目');
+    var main = old.mainKnowledgeId ? qkCatalog().find(function(k){ return k.id === old.mainKnowledgeId; }) : null;
+    var rel1 = old.relatedKnowledgeIds && old.relatedKnowledgeIds[0] ? qkCatalog().find(function(k){ return k.id === old.relatedKnowledgeIds[0]; }) : null;
+    var rel2 = old.relatedKnowledgeIds && old.relatedKnowledgeIds[1] ? qkCatalog().find(function(k){ return k.id === old.relatedKnowledgeIds[1]; }) : null;
+    document.getElementById('qkMainInput').value = main ? qkDisplay(main) : '';
+    document.getElementById('qkRelatedInput1').value = rel1 ? qkDisplay(rel1) : '';
+    document.getElementById('qkRelatedInput2').value = rel2 ? qkDisplay(rel2) : '';
+    document.getElementById('qkErrorModelInput').value = old.candidateErrorModel || '';
+    var suggestion = qkFindHistory(ctx.subject, ctx.questionTitle, ctx.scoreHeader, ctx.key);
+    var box = document.getElementById('qkHistorySuggestion');
+    if (suggestion && !old.mainKnowledgeId) {
+        box.style.display = 'block';
+        box.innerHTML = '历史同题号/同表头曾标注为：<b>' + escapeHtml(suggestion.mainKnowledgeName || '') + '</b>。这只是复用提示，不会自动沿用。 '
+            + '<button type="button" class="qk-edit-btn" id="qkUseHistoryBtn">沿用此标签</button>';
+        setTimeout(function(){
+            var b=document.getElementById('qkUseHistoryBtn');
+            if(b) b.onclick=function(){
+                var kp=qkCatalog().find(function(k){ return k.id===suggestion.mainKnowledgeId; });
+                if(kp) document.getElementById('qkMainInput').value=qkDisplay(kp);
+                (suggestion.relatedKnowledgeIds || []).slice(0,2).forEach(function(id,i){
+                    var r=qkCatalog().find(function(k){ return k.id===id; });
+                    if(r) document.getElementById(i===0?'qkRelatedInput1':'qkRelatedInput2').value=qkDisplay(r);
+                });
+                document.getElementById('qkErrorModelInput').value=suggestion.candidateErrorModel || '';
+            };
+        },0);
+    } else { box.style.display = 'none'; box.innerHTML = ''; }
+    var ov = document.getElementById('qkEditorOverlay');
+    ov.style.display = 'flex'; ov.setAttribute('aria-hidden','false');
+}
+function qkCloseEditor() {
+    var ov = document.getElementById('qkEditorOverlay');
+    if (ov) { ov.style.display = 'none'; ov.setAttribute('aria-hidden','true'); }
+    qkEditorContext = null;
+}
+function qkSaveCurrent() {
+    if (!qkEditorContext) return;
+    var main = qkResolve(document.getElementById('qkMainInput').value);
+    if (!main) { if (typeof showToast === 'function') showToast('请选择知识点库中的主知识点'); return; }
+    var related = [qkResolve(document.getElementById('qkRelatedInput1').value), qkResolve(document.getElementById('qkRelatedInput2').value)]
+        .filter(function(k){ return k && k.id !== main.id; });
+    var uniq = [];
+    related.forEach(function(k){ if (!uniq.some(function(x){return x.id===k.id;})) uniq.push(k); });
+    QuestionKnowledgeMap[qkEditorContext.key] = {
+        key: qkEditorContext.key,
+        schemaVersion: 1,
+        batchLabel: qkCurrentBatchLabel(),
+        subject: qkEditorContext.subject,
+        questionTitle: qkEditorContext.questionTitle,
+        scoreHeader: qkEditorContext.scoreHeader,
+        mainKnowledgeId: main.id,
+        mainKnowledgeName: main.name,
+        relatedKnowledgeIds: uniq.slice(0,2).map(function(k){return k.id;}),
+        relatedKnowledgeNames: uniq.slice(0,2).map(function(k){return k.name;}),
+        candidateErrorModel: document.getElementById('qkErrorModelInput').value.trim(),
+        teacherConfirmed: true,
+        updatedAt: new Date().toISOString()
+    };
+    qkSaveMap();
+    qkCloseEditor();
+    renderCollectiveTables();
+    if (typeof showToast === 'function') showToast('已保存题目知识点标签');
+}
+function qkClearCurrent() {
+    if (!qkEditorContext) return;
+    delete QuestionKnowledgeMap[qkEditorContext.key];
+    qkSaveMap();
+    qkCloseEditor();
+    renderCollectiveTables();
+}
+function qkUpdateToolbar() {
+    var cat = document.getElementById('qkCatalogStatus');
+    if (cat) cat.textContent = '知识点库：' + qkCatalog().length + ' 个';
+    var status = document.getElementById('qkTagStatus');
+    if (status) {
+        var prefix = qkCurrentBatchLabel() + '::';
+        var count = Object.keys(QuestionKnowledgeMap).filter(function(k){ return k.indexOf(prefix) === 0 && QuestionKnowledgeMap[k] && QuestionKnowledgeMap[k].mainKnowledgeId; }).length;
+        status.textContent = '本批次已标注 ' + count + ' 题';
+    }
+}
+function qkExport() {
+    var payload = {
+        schemaVersion: 1,
+        catalogVersion: window.KNOWLEDGE_DB ? window.KNOWLEDGE_DB.version : '',
+        catalogUpdated: window.KNOWLEDGE_DB ? window.KNOWLEDGE_DB.update_date : '',
+        exportedAt: new Date().toISOString(),
+        mappings: Object.values(QuestionKnowledgeMap)
+    };
+    var blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json;charset=utf-8'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '题目知识点标签库_' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(a.href); },1000);
+}
+function qkImport(file) {
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function() {
+        try {
+            var obj = JSON.parse(reader.result);
+            var arr = Array.isArray(obj) ? obj : (Array.isArray(obj.mappings) ? obj.mappings : []);
+            var n = 0;
+            arr.forEach(function(m){ if (m && m.key && m.mainKnowledgeId) { QuestionKnowledgeMap[m.key] = m; n++; } });
+            qkSaveMap(); renderCollectiveTables(); qkUpdateToolbar();
+            if (typeof showToast === 'function') showToast('已导入 ' + n + ' 条题目知识点标签');
+        } catch(e) { if (typeof showToast === 'function') showToast('导入失败：JSON 格式不正确'); }
+    };
+    reader.readAsText(file,'utf-8');
+}
+function qkInit() {
+    qkLoadMap();
+    qkPopulateDatalist();
+    qkUpdateToolbar();
+    var save=document.getElementById('qkSaveBtn'), cancel=document.getElementById('qkCancelBtn'), clear=document.getElementById('qkClearBtn');
+    if(save) save.onclick=qkSaveCurrent;
+    if(cancel) cancel.onclick=qkCloseEditor;
+    if(clear) clear.onclick=qkClearCurrent;
+    var ov=document.getElementById('qkEditorOverlay');
+    if(ov) ov.addEventListener('click',function(e){ if(e.target===ov) qkCloseEditor(); });
+    var eb=document.getElementById('qkExportBtn'); if(eb) eb.onclick=qkExport;
+    var ib=document.getElementById('qkImportBtn'); if(ib) ib.onclick=function(){ document.getElementById('qkImportFile').click(); };
+    var fi=document.getElementById('qkImportFile'); if(fi) fi.onchange=function(){ qkImport(this.files && this.files[0]); this.value=''; };
+}
+setTimeout(qkInit,0);
+
 function renderCollectiveTables() {
     const fd = getCollectiveFilteredData();
     const sc = document.getElementById('collectiveClassFilter').value;
@@ -4947,8 +5214,8 @@ function renderCollectiveTables() {
     document.getElementById('lowStatsTitle').innerHTML = `低于阈值题目（<b>${escapeHtml(ct)}${escapeHtml(subjTitle)}</b>，阈=${collectiveThreshold}%）`;
 
     if (!fd.headers.length || !fd.data.length) {
-        document.querySelector('#questionStatsTable tbody').innerHTML = '<tr><td colspan="8">暂无小题分数数据</td></tr>';
-        document.querySelector('#lowStatsTable tbody').innerHTML = '<tr><td colspan="8">暂无数据</td></tr>';
+        document.querySelector('#questionStatsTable tbody').innerHTML = '<tr><td colspan="10">暂无小题分数数据</td></tr>';
+        document.querySelector('#lowStatsTable tbody').innerHTML = '<tr><td colspan="10">暂无数据</td></tr>';
         return;
     }
     var hc = utilSplitHeaderCols(fd.headers);
@@ -4974,11 +5241,15 @@ function renderCollectiveTables() {
         var escapedT = escapeHtml(t);
         var attrSafeT = t.replace(/'/g,"\\'");
         const correctAnswer = fd.correctAnswerMap[item.scoreHeader] || '-';
-        const tr = `<tr${isLow?' class="highlight"':''}><td><a href="#" onclick="showQuestionLowStudents('${attrSafeT}');return false;" style="color:inherit;text-decoration:none;display:block;" title="点击查看低分学生">${escapedT}</a></td><td>${escapeHtml(item.scoreHeader||'')}</td><td>${avgStr}</td><td>${max}</td><td>${min}</td><td>${escapeHtml(correctAnswer)}</td><td>${wrongDist}</td><td>${rate==='-'?'-':rate+'%'}</td></tr>`;
+        const knowledgeCell = qkRenderCell(t, item.scoreHeader || '', ss);
+        const knowledgeAction = qkRenderAction(t, item.scoreHeader || '', ss);
+        const tr = `<tr${isLow?' class="highlight"':''}><td><a href="#" onclick="showQuestionLowStudents('${attrSafeT}');return false;" style="color:inherit;text-decoration:none;display:block;" title="点击查看低分学生">${escapedT}</a></td><td>${escapeHtml(item.scoreHeader||'')}</td><td>${knowledgeCell}</td><td>${knowledgeAction}</td><td>${avgStr}</td><td>${max}</td><td>${min}</td><td>${escapeHtml(correctAnswer)}</td><td>${wrongDist}</td><td>${rate==='-'?'-':rate+'%'}</td></tr>`;
         allRows.push(tr); if (isLow) lowRows.push(tr);
     });
-    document.querySelector('#questionStatsTable tbody').innerHTML = allRows.join('') || '<tr><td colspan="8">无数据</td></tr>';
-    document.querySelector('#lowStatsTable tbody').innerHTML = lowRows.length ? lowRows.join('') : '<tr><td colspan="8" style="color:#aaa;">无低于阈值的题目</td></tr>';
+    document.querySelector('#questionStatsTable tbody').innerHTML = allRows.join('') || '<tr><td colspan="10">无数据</td></tr>';
+    document.querySelector('#lowStatsTable tbody').innerHTML = lowRows.length ? lowRows.join('') : '<tr><td colspan="10" style="color:#aaa;">无低于阈值的题目</td></tr>';
+    qkBindButtons();
+    qkUpdateToolbar();
 }
 
 function renderCollectiveRankBar() {

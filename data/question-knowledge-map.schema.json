@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "QuestionKnowledgeMappingV1",
+  "type": "object",
+  "required": [
+    "key",
+    "batchLabel",
+    "questionTitle",
+    "mainKnowledgeId",
+    "teacherConfirmed",
+    "updatedAt"
+  ],
+  "properties": {
+    "key": {
+      "type": "string"
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "batchLabel": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "questionTitle": {
+      "type": "string"
+    },
+    "scoreHeader": {
+      "type": "string"
+    },
+    "mainKnowledgeId": {
+      "type": "string"
+    },
+    "mainKnowledgeName": {
+      "type": "string"
+    },
+    "relatedKnowledgeIds": {
+      "type": "array",
+      "maxItems": 2,
+      "items": {
+        "type": "string"
+      }
+    },
+    "relatedKnowledgeNames": {
+      "type": "array",
+      "maxItems": 2,
+      "items": {
+        "type": "string"
+      }
+    },
+    "candidateErrorModel": {
+      "type": "string"
+    },
+    "teacherConfirmed": {
+      "type": "boolean"
+    },
+    "updatedAt": {
+      "type": "string"
+    }
+  }
+}
