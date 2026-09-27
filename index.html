@@ -847,7 +847,54 @@
     .qk-hint { font-size:12px; color:#64748b; line-height:1.55; margin-top:4px; }
     .qk-suggestion { display:none; margin:10px 0; padding:9px 10px; background:#fffbeb; border-left:3px solid #f59e0b; font-size:12px; line-height:1.6; }
     .qk-editor-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:16px; padding-top:12px; border-top:1px solid #e2e8f0; }
-    </style>
+    
+    /* ===== 小题异常诊断卡 ===== */
+    .collective-diagnosis-section {
+        border:1px solid #dbe6f2;
+        background:linear-gradient(180deg,#fbfdff 0%,#f7fafc 100%);
+        box-shadow:0 8px 28px rgba(30,58,95,.06);
+    }
+    .diagnosis-head { display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px; }
+    .diagnosis-head h3 { margin:0 0 5px;color:#1e3a5f;font-size:1.2em; }
+    .diagnosis-head p { margin:0;color:#64748b;font-size:12px;line-height:1.6; }
+    .diagnosis-scope { flex:0 0 auto;padding:6px 10px;border-radius:999px;background:#eef6ff;color:#315a80;font-size:12px;font-weight:700;white-space:nowrap; }
+    .diagnosis-summary { display:flex;gap:8px;flex-wrap:wrap;margin:12px 0; }
+    .diagnosis-summary-chip { display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:9px;border:1px solid #e2e8f0;background:#fff;font-size:12px;color:#475569; }
+    .diagnosis-summary-chip strong { font-size:15px;color:#0f172a; }
+    .diagnosis-lanes { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start; }
+    .diagnosis-lane { min-width:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:hidden; }
+    .diagnosis-lane-head { padding:10px 12px;border-bottom:1px solid #edf2f7; }
+    .diagnosis-lane-head strong { display:block;font-size:14px;margin-bottom:3px; }
+    .diagnosis-lane-head span { display:block;font-size:11px;line-height:1.45;color:#64748b; }
+    .diagnosis-lane.common .diagnosis-lane-head { background:#fff5f5; }
+    .diagnosis-lane.group .diagnosis-lane-head { background:#fffbeb; }
+    .diagnosis-lane.individual .diagnosis-lane-head { background:#eff6ff; }
+    .diagnosis-list { padding:8px;display:grid;gap:8px;max-height:560px;overflow:auto; }
+    .diagnosis-empty { padding:22px 12px;text-align:center;color:#94a3b8;font-size:12px;line-height:1.65; }
+    .diagnosis-card { border:1px solid #e5eaf0;border-radius:10px;padding:10px;background:#fff;box-shadow:0 2px 8px rgba(15,23,42,.035); }
+    .diagnosis-card-top { display:flex;align-items:flex-start;gap:8px; }
+    .diagnosis-card-title { flex:1;min-width:0;font-weight:800;color:#1e293b;font-size:13px;line-height:1.4;word-break:break-word; }
+    .diagnosis-badge { flex:0 0 auto;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:800;white-space:nowrap; }
+    .diagnosis-card.common .diagnosis-badge { background:#fee2e2;color:#b91c1c; }
+    .diagnosis-card.group .diagnosis-badge { background:#fef3c7;color:#92400e; }
+    .diagnosis-card.individual .diagnosis-badge { background:#dbeafe;color:#1d4ed8; }
+    .diagnosis-metrics { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:8px 0; }
+    .diagnosis-metric { background:#f8fafc;border-radius:7px;padding:6px 7px;min-width:0; }
+    .diagnosis-metric strong { display:block;font-size:10px;color:#64748b;margin-bottom:2px; }
+    .diagnosis-metric span { display:block;font-size:12px;font-weight:800;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+    .diagnosis-students { margin:7px 0;font-size:12px;line-height:1.55;color:#475569; }
+    .diagnosis-students b { color:#334155; }
+    .diagnosis-knowledge { display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding-top:8px;border-top:1px dashed #e2e8f0;font-size:12px; }
+    .diagnosis-knowledge-label { color:#64748b;font-weight:700; }
+    .diagnosis-actions { display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px; }
+    .diagnosis-action-btn { border:1px solid #cbd5e1;background:#fff;color:#334155;border-radius:7px;padding:5px 8px;font-size:11px;cursor:pointer; }
+    .diagnosis-action-btn:hover { background:#f8fafc;border-color:#94a3b8; }
+    .diagnosis-advice { color:#64748b;font-size:11px;line-height:1.45; }
+    .diagnosis-rule { margin-top:10px;border-top:1px solid #e5e7eb;padding-top:8px;font-size:12px;color:#64748b; }
+    .diagnosis-rule summary { cursor:pointer;font-weight:700;color:#475569; }
+    .diagnosis-rule ul { margin:7px 0 0 18px;line-height:1.7; }
+    @media(max-width:980px){ .diagnosis-lanes{grid-template-columns:1fr;} .diagnosis-list{max-height:none;} }
+</style>
 </head>
 <body>
 <div class="container">
@@ -1135,7 +1182,8 @@
     <div class="analysis-nav-layout" data-analysis-nav="collective">
         <nav class="analysis-section-nav" aria-label="小题分析章节导航">
             <div class="analysis-section-nav-title">小题分析</div>
-            <button type="button" class="analysis-nav-item active" data-analysis-target="collectiveQuestionSection">小题统计</button>
+            <button type="button" class="analysis-nav-item active" data-analysis-target="collectiveDiagnosisSection">诊断卡</button>
+            <button type="button" class="analysis-nav-item" data-analysis-target="collectiveQuestionSection">小题统计</button>
             <button type="button" class="analysis-nav-item" data-analysis-target="collectiveLevelSection">等级分析</button>
             <button type="button" class="analysis-nav-item" data-analysis-target="collectiveRankSection">名次区间分析</button>
             <button type="button" class="analysis-nav-item" data-analysis-target="collectiveStudentSection">学生查询</button>
@@ -1143,7 +1191,14 @@
             <button type="button" class="analysis-nav-item analysis-nav-top" data-analysis-top="true">↑ 回到顶部</button>
         </nav>
         <div class="analysis-content">
-    <div class="statistics-section analysis-anchor-section" id="collectiveQuestionSection" data-analysis-section="collectiveQuestionSection">
+    <div class="statistics-section analysis-anchor-section collective-diagnosis-section" id="collectiveDiagnosisSection" data-analysis-section="collectiveDiagnosisSection">
+        <div class="diagnosis-head">
+            <div>
+                <h3>🩺 小题异常诊断卡</h3>
+                <p>优先回答三个问题：哪道题异常、哪些学生异常、异常对应哪个知识点。</p>
+            </div>
+            <div class="diagnosis-scope" id="collectiveDiagnosisScope">等待数据</div>
+        </div>
         <div class="filter-stats-bar">
             <div class="filter-bar-item"><span class="filter-bar-label">筛选班级：</span>
                 <select id="collectiveClassFilter" class="filter-bar-select"></select>
@@ -1156,6 +1211,21 @@
                 <button class="filter-btn" id="applyCollectiveThresholdBtn" style="padding:4px 8px;font-size:12px;margin-left:4px;">应用</button>
             </div>
         </div>
+        <div class="diagnosis-summary" id="collectiveDiagnosisSummary"></div>
+        <div class="diagnosis-lanes" id="collectiveDiagnosisCards">
+            <div class="diagnosis-empty" style="grid-column:1/-1;">请先加载含小题得分的数据。</div>
+        </div>
+        <details class="diagnosis-rule">
+            <summary>查看自动判定规则</summary>
+            <ul>
+                <li><b>共性异常：</b>该题整体得分率低于当前“得分率阈值”，优先提示全班共性教学问题。</li>
+                <li><b>群体异常：</b>整体未达到共性异常，但某一成绩层学生在该题的表现比该层平时水平明显低（默认差值≥15个百分点），提示分层教学问题。</li>
+                <li><b>个体异常：</b>该题整体表现较好，但少数平时表现正常/较好的学生在此题明显失常，提示个别诊断价值。</li>
+            </ul>
+        </details>
+    </div>
+
+    <div class="statistics-section analysis-anchor-section" id="collectiveQuestionSection" data-analysis-section="collectiveQuestionSection">
         <div class="qk-toolbar">
             <span id="qkCatalogStatus" class="qk-status">知识点库：加载中…</span>
             <span id="qkTagStatus" class="qk-status">请先保存考试批次</span>
@@ -4903,6 +4973,7 @@ function renderCollectiveAll() {
     }
     renderCollectiveClassFilter();
     renderCollectiveSubjectFilter();
+    renderCollectiveDiagnosis();
     renderCollectiveTables();
     renderCollectiveRankBar();
     document.getElementById('rankedAnalysisResult').innerHTML = '';
@@ -4983,6 +5054,341 @@ function getCollectiveFilteredData() {
     return { ...cd, data: cd.data.filter(r => r[cd.classField] == sc) };
 }
 
+
+// ============================================================
+//  P0+：小题异常诊断卡（规则透明，不做 AI 推断）
+//  目标：哪道题异常 → 哪些学生异常 → 对应哪个 concept_id
+// ============================================================
+var collectiveDiagnosisContexts = {};
+var collectiveDiagnosisSeq = 0;
+
+function diagSafeNumber(v) {
+    if (v === null || v === undefined || String(v).trim() === '') return null;
+    var n = Number(v);
+    return isFinite(n) ? n : null;
+}
+
+function buildCollectiveQuestionModels(fd, subjectName) {
+    var hc = utilSplitHeaderCols(fd.headers || []);
+    var qd = utilBuildQuestionDict(hc.scoreCols, hc.ansCols, fd, subjectName);
+    var questions = [];
+    Object.keys(qd).forEach(function(title) {
+        var item = qd[title];
+        var full = Number(item.fullScore);
+        if (item.scoreIdx == null || !isFinite(full) || full <= 0) return;
+        var header = fd.headers[item.scoreIdx];
+        var students = [];
+        (fd.data || []).forEach(function(row) {
+            var score = diagSafeNumber(row[header]);
+            if (score === null || score < 0 || score > full) return;
+            students.push({
+                row: row,
+                name: String(row[fd.nameField] || ''),
+                className: String(row[fd.classField] || ''),
+                score: score,
+                rate: score / full
+            });
+        });
+        if (!students.length) return;
+        var avgRate = students.reduce(function(sum, x) { return sum + x.rate; }, 0) / students.length;
+        questions.push({
+            title: title,
+            item: item,
+            scoreHeader: item.scoreHeader || header,
+            fullScore: full,
+            students: students,
+            overallRate: avgRate
+        });
+    });
+    return questions;
+}
+
+function buildCollectiveStudentBaselines(questions) {
+    var sums = new Map(), counts = new Map();
+    (questions || []).forEach(function(q) {
+        q.students.forEach(function(s) {
+            var row = s.row;
+            sums.set(row, (sums.get(row) || 0) + s.rate);
+            counts.set(row, (counts.get(row) || 0) + 1);
+        });
+    });
+    var base = new Map();
+    sums.forEach(function(sum, row) {
+        var c = counts.get(row) || 0;
+        base.set(row, c ? sum / c : null);
+    });
+    return base;
+}
+
+function splitCollectiveAbilityTiers(fd, questions, baselines, subjectName) {
+    var rows = (fd.data || []).slice();
+    if (rows.length < 9) return [];
+    var subjectScoreField = subjectName ? subjectName + '_分数' : '';
+    var rankRows = rows.map(function(row) {
+        var total = subjectScoreField ? diagSafeNumber(row[subjectScoreField]) : null;
+        var baseline = baselines.get(row);
+        var rankValue = total !== null ? total : (baseline !== null && baseline !== undefined ? baseline : -Infinity);
+        return { row: row, rankValue: rankValue };
+    }).filter(function(x) { return isFinite(x.rankValue); });
+    if (rankRows.length < 9) return [];
+    rankRows.sort(function(a,b) { return b.rankValue - a.rankValue; });
+    var n = rankRows.length;
+    var highN = Math.max(3, Math.round(n * 0.30));
+    var lowN = Math.max(3, Math.round(n * 0.30));
+    if (highN + lowN >= n) {
+        highN = Math.max(2, Math.floor(n / 3));
+        lowN = highN;
+    }
+    return [
+        { key:'high', label:'高分段', rows:rankRows.slice(0, highN).map(function(x){ return x.row; }) },
+        { key:'middle', label:'中等段', rows:rankRows.slice(highN, n - lowN).map(function(x){ return x.row; }) },
+        { key:'low', label:'基础段', rows:rankRows.slice(n - lowN).map(function(x){ return x.row; }) }
+    ].filter(function(t) { return t.rows.length >= 3; });
+}
+
+function calculateCollectiveDiagnosis(fd, subjectName) {
+    var threshold = Math.max(0, Math.min(1, (Number(collectiveThreshold) || 60) / 100));
+    var questions = buildCollectiveQuestionModels(fd, subjectName);
+    var baselines = buildCollectiveStudentBaselines(questions);
+    var tiers = splitCollectiveAbilityTiers(fd, questions, baselines, subjectName);
+    var results = { common:[], group:[], individual:[], questions:questions };
+
+    questions.forEach(function(q) {
+        var lowStudents = q.students.filter(function(s) { return s.rate < threshold; });
+        var mapping = qkGetMapping(q.title, q.scoreHeader, subjectName);
+
+        // 1) 共性异常：整体得分率低于教师当前阈值。优先级最高。
+        if (q.overallRate < threshold) {
+            results.common.push({
+                type:'common',
+                title:q.title,
+                scoreHeader:q.scoreHeader,
+                overallRate:q.overallRate,
+                fullScore:q.fullScore,
+                affected:lowStudents,
+                affectedCount:lowStudents.length,
+                totalCount:q.students.length,
+                mapping:mapping,
+                note:'全体得分率低于当前阈值，优先作为共性教学问题处理。'
+            });
+            return;
+        }
+
+        // 2) 群体异常：某一成绩层相对该层自身平均水平显著下滑。
+        var bestGroup = null;
+        tiers.forEach(function(tier) {
+            var tierSet = new Set(tier.rows);
+            var qStudents = q.students.filter(function(s) { return tierSet.has(s.row); });
+            if (qStudents.length < 3) return;
+
+            var baselineVals = qStudents.map(function(s) { return baselines.get(s.row); }).filter(function(v) { return v !== null && v !== undefined && isFinite(v); });
+            if (baselineVals.length < 3) return;
+            var baselineRate = baselineVals.reduce(function(a,b){ return a+b; },0) / baselineVals.length;
+            var qRate = qStudents.reduce(function(a,b){ return a+b.rate; },0) / qStudents.length;
+            var gap = baselineRate - qRate;
+            var affected = qStudents.filter(function(s) {
+                var b = baselines.get(s.row);
+                return s.rate < threshold || (b !== null && b !== undefined && b - s.rate >= 0.25);
+            });
+            var affectedShare = affected.length / qStudents.length;
+
+            if (gap >= 0.15 && affectedShare >= 0.35) {
+                var candidate = {
+                    type:'group',
+                    title:q.title,
+                    scoreHeader:q.scoreHeader,
+                    overallRate:q.overallRate,
+                    fullScore:q.fullScore,
+                    tierLabel:tier.label,
+                    tierRate:qRate,
+                    tierBaseline:baselineRate,
+                    gap:gap,
+                    affected:affected,
+                    affectedCount:affected.length,
+                    totalCount:qStudents.length,
+                    mapping:mapping,
+                    note:tier.label + '在本题相对自身常态下降 ' + Math.round(gap*100) + ' 个百分点。'
+                };
+                if (!bestGroup || candidate.gap > bestGroup.gap) bestGroup = candidate;
+            }
+        });
+        if (bestGroup) {
+            results.group.push(bestGroup);
+            return;
+        }
+
+        // 3) 个体异常：题目总体不差，但少数学生相对个人常态出现大幅下滑。
+        var goodQuestionFloor = Math.max(0.70, threshold + 0.10);
+        if (q.overallRate >= goodQuestionFloor) {
+            var anomalies = q.students.map(function(s) {
+                var b = baselines.get(s.row);
+                return { student:s, baseline:b, gap:(b !== null && b !== undefined ? b - s.rate : -Infinity) };
+            }).filter(function(x) {
+                if (x.baseline === null || x.baseline === undefined || !isFinite(x.baseline)) return false;
+                if (x.baseline < 0.65) return false;
+                var ceiling = Math.min(threshold, x.baseline - 0.35);
+                return x.student.rate <= ceiling;
+            }).sort(function(a,b) { return b.gap - a.gap; });
+
+            var rarityLimit = Math.max(2, Math.min(8, Math.ceil(q.students.length * 0.18)));
+            if (anomalies.length >= 1 && anomalies.length <= rarityLimit) {
+                results.individual.push({
+                    type:'individual',
+                    title:q.title,
+                    scoreHeader:q.scoreHeader,
+                    overallRate:q.overallRate,
+                    fullScore:q.fullScore,
+                    affected:anomalies.map(function(x) {
+                        var s = x.student;
+                        return { row:s.row, name:s.name, className:s.className, score:s.score, rate:s.rate, baseline:x.baseline, gap:x.gap };
+                    }),
+                    affectedCount:anomalies.length,
+                    totalCount:q.students.length,
+                    mapping:mapping,
+                    note:'该题总体表现正常，但少数学生相对个人常态出现明显失常。'
+                });
+            }
+        }
+    });
+
+    results.common.sort(function(a,b){ return a.overallRate - b.overallRate; });
+    results.group.sort(function(a,b){ return b.gap - a.gap; });
+    results.individual.sort(function(a,b){ return b.affectedCount - a.affectedCount || a.overallRate - b.overallRate; });
+    return results;
+}
+
+function registerCollectiveDiagnosisContext(entry, fd, subjectName) {
+    var id = 'diag-' + (++collectiveDiagnosisSeq);
+    collectiveDiagnosisContexts[id] = { entry:entry, fd:fd, subjectName:subjectName || '' };
+    return id;
+}
+
+function collectiveDiagnosisStudentPreview(affected) {
+    var names = (affected || []).map(function(x){ return x.name || (x.student && x.student.name) || ''; }).filter(Boolean);
+    if (!names.length) return '暂无明确名单';
+    var head = names.slice(0,4).map(escapeHtml).join('、');
+    return head + (names.length > 4 ? ' 等' + names.length + '人' : '');
+}
+
+function collectiveDiagnosisKnowledgeHtml(entry, subjectName) {
+    var cell = qkRenderCell(entry.title, entry.scoreHeader || '', subjectName);
+    var action = qkRenderAction(entry.title, entry.scoreHeader || '', subjectName);
+    return '<div class="diagnosis-knowledge"><span class="diagnosis-knowledge-label">对应知识点：</span>' + cell + action + '</div>';
+}
+
+function renderCollectiveDiagnosisCard(entry, fd, subjectName) {
+    var id = registerCollectiveDiagnosisContext(entry, fd, subjectName);
+    var typeLabel = entry.type === 'common' ? '共性异常' : entry.type === 'group' ? '群体异常' : '个体异常';
+    var advice = entry.type === 'common'
+        ? '建议：优先检查教学共性、题目理解或核心概念。'
+        : entry.type === 'group'
+            ? '建议：按成绩层做针对性补偿，不必全班重复讲解。'
+            : '建议：进入学生个别诊断，避免把个体问题扩大为全班问题。';
+
+    var metric2 = '';
+    if (entry.type === 'group') {
+        metric2 = '<div class="diagnosis-metric"><strong>异常群体</strong><span>' + escapeHtml(entry.tierLabel) + ' · ' + Math.round(entry.tierRate*100) + '%</span></div>';
+    } else {
+        metric2 = '<div class="diagnosis-metric"><strong>异常学生</strong><span>' + entry.affectedCount + ' / ' + entry.totalCount + ' 人</span></div>';
+    }
+    var studentsLabel = entry.type === 'group' ? entry.tierLabel + '重点学生' : '异常学生';
+    return '<div class="diagnosis-card ' + entry.type + '">'
+        + '<div class="diagnosis-card-top"><div class="diagnosis-card-title">' + escapeHtml(entry.title) + '</div><span class="diagnosis-badge">' + typeLabel + '</span></div>'
+        + '<div class="diagnosis-metrics">'
+        + '<div class="diagnosis-metric"><strong>全体得分率</strong><span>' + Math.round(entry.overallRate*100) + '%</span></div>'
+        + metric2
+        + '</div>'
+        + '<div class="diagnosis-students"><b>' + escapeHtml(studentsLabel) + '：</b>' + collectiveDiagnosisStudentPreview(entry.affected) + '</div>'
+        + collectiveDiagnosisKnowledgeHtml(entry, subjectName)
+        + '<div class="diagnosis-actions"><button type="button" class="diagnosis-action-btn" data-diagnosis-context="' + id + '">查看异常学生</button><span class="diagnosis-advice">' + escapeHtml(advice) + '</span></div>'
+        + '</div>';
+}
+
+function renderCollectiveDiagnosisLane(type, title, desc, list, fd, subjectName) {
+    var body = list.length
+        ? list.map(function(entry){ return renderCollectiveDiagnosisCard(entry, fd, subjectName); }).join('')
+        : '<div class="diagnosis-empty">当前筛选范围内暂未识别到' + title + '。</div>';
+    return '<section class="diagnosis-lane ' + type + '">'
+        + '<div class="diagnosis-lane-head"><strong>' + title + ' · ' + list.length + '题</strong><span>' + desc + '</span></div>'
+        + '<div class="diagnosis-list">' + body + '</div></section>';
+}
+
+function renderCollectiveDiagnosis() {
+    var root = document.getElementById('collectiveDiagnosisCards');
+    var summary = document.getElementById('collectiveDiagnosisSummary');
+    var scope = document.getElementById('collectiveDiagnosisScope');
+    if (!root || !summary || !scope) return;
+
+    collectiveDiagnosisContexts = {};
+    var fd = getCollectiveFilteredData();
+    var subjectName = getSelectedSubject();
+    var classValue = document.getElementById('collectiveClassFilter').value;
+    var classText = classValue ? (/班$/.test(classValue) ? classValue : classValue + '班') : '全部班级';
+    scope.textContent = classText + ' · ' + (subjectName || '全部科目') + ' · 阈值' + collectiveThreshold + '%';
+
+    if (!fd.headers.length || !fd.data.length) {
+        summary.innerHTML = '';
+        root.innerHTML = '<div class="diagnosis-empty" style="grid-column:1/-1;">暂无可诊断的小题数据。</div>';
+        return;
+    }
+
+    var result = calculateCollectiveDiagnosis(fd, subjectName);
+    var total = result.common.length + result.group.length + result.individual.length;
+    var mapped = 0;
+    [result.common,result.group,result.individual].forEach(function(list) {
+        list.forEach(function(x) { if (x.mapping && x.mapping.concept_id) mapped++; });
+    });
+
+    summary.innerHTML =
+        '<div class="diagnosis-summary-chip">识别异常题 <strong>' + total + '</strong></div>'
+        + '<div class="diagnosis-summary-chip">共性 <strong>' + result.common.length + '</strong></div>'
+        + '<div class="diagnosis-summary-chip">群体 <strong>' + result.group.length + '</strong></div>'
+        + '<div class="diagnosis-summary-chip">个体 <strong>' + result.individual.length + '</strong></div>'
+        + '<div class="diagnosis-summary-chip">已关联知识点 <strong>' + mapped + '/' + total + '</strong></div>';
+
+    root.innerHTML =
+        renderCollectiveDiagnosisLane('common','共性异常','很多学生都错：优先判断是否存在共性教学问题。',result.common,fd,subjectName)
+        + renderCollectiveDiagnosisLane('group','群体异常','某一成绩层集中失分：优先做分层补偿。',result.group,fd,subjectName)
+        + renderCollectiveDiagnosisLane('individual','个体异常','总体不差、少数学生失常：优先做个别诊断。',result.individual,fd,subjectName);
+
+    qkBindButtons();
+    bindCollectiveDiagnosisButtons();
+}
+
+function bindCollectiveDiagnosisButtons() {
+    document.querySelectorAll('[data-diagnosis-context]').forEach(function(btn) {
+        btn.onclick = function() {
+            showCollectiveDiagnosisStudents(btn.getAttribute('data-diagnosis-context'));
+        };
+    });
+}
+
+function showCollectiveDiagnosisStudents(contextId) {
+    var ctx = collectiveDiagnosisContexts[contextId];
+    if (!ctx) {
+        showStudentListModal('提示','诊断数据已更新，请重新查看诊断卡。');
+        return;
+    }
+    var e = ctx.entry;
+    var rows = e.affected || [];
+    if (!rows.length) {
+        showStudentListModal('提示','当前异常没有可列出的学生。');
+        return;
+    }
+    var title = '「' + escapeHtml(e.title) + '」' + (e.type === 'common' ? '共性异常' : e.type === 'group' ? e.tierLabel + '群体异常' : '个体异常');
+    var html = '<div style="font-size:12px;color:#64748b;margin-bottom:8px;">' + escapeHtml(e.note || '') + '</div>';
+    html += '<div style="overflow:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr><th>#</th><th>姓名</th><th>班级</th><th>本题得分</th><th>满分</th><th>本题得分率</th><th>个人常态</th></tr></thead><tbody>';
+    rows.forEach(function(x, i) {
+        var baseline = x.baseline;
+        if ((baseline === null || baseline === undefined) && x.row) {
+            // 共性/群体名单没有逐项缓存 baseline 时不强行推断。
+            baseline = null;
+        }
+        html += '<tr><td>' + (i+1) + '</td><td>' + escapeHtml(x.name || '') + '</td><td>' + escapeHtml(x.className || '') + '</td><td>' + Number(x.score).toFixed(2).replace(/\.00$/,'') + '</td><td>' + e.fullScore + '</td><td>' + Math.round(Number(x.rate)*100) + '%</td><td>' + (baseline === null || baseline === undefined ? '-' : Math.round(baseline*100) + '%') + '</td></tr>';
+    });
+    html += '</tbody></table></div>';
+    showStudentListModal(title, html);
+}
 
 // ============================================================
 //  P0：题目 → 知识点统一 concept_id
@@ -5131,6 +5537,7 @@ async function qkSaveCurrent() {
         return;
     }
     qkCloseEditor();
+    renderCollectiveDiagnosis();
     renderCollectiveTables();
     if (typeof showToast === 'function') showToast('已保存：' + qno + ' → ' + concept.name);
 }
@@ -5144,6 +5551,7 @@ async function qkClearCurrent() {
         return;
     }
     qkCloseEditor();
+    renderCollectiveDiagnosis();
     renderCollectiveTables();
 }
 function qkUpdateToolbar() {
@@ -7175,9 +7583,9 @@ document.getElementById('copyAnalysisBtn').addEventListener('click', function() 
 document.getElementById('crossExamBtn').addEventListener('click', renderCrossExamTop10);
 
 // Collective analysis
-document.getElementById('collectiveClassFilter').addEventListener('change', () => { renderCollectiveTables(); renderCollectiveRankBar(); document.getElementById('rankedAnalysisResult').innerHTML = ''; document.getElementById('levelAnalysisResult').innerHTML = ''; clearCollectiveQuestionGroupContexts('rank'); clearCollectiveQuestionGroupContexts('level'); document.getElementById('collectiveStudentQueryResult').innerHTML = ''; document.getElementById('questionStudentsResult').style.display = 'none'; });
-document.getElementById('collectiveSubjectFilter').addEventListener('change', () => { renderCollectiveTables(); renderCollectiveRankBar(); renderScoreDistChart(); document.getElementById('rankedAnalysisResult').innerHTML = ''; document.getElementById('levelAnalysisResult').innerHTML = ''; clearCollectiveQuestionGroupContexts('rank'); clearCollectiveQuestionGroupContexts('level'); document.getElementById('collectiveStudentQueryResult').innerHTML = ''; populateLevelCheckboxes(); document.getElementById('questionStudentsResult').style.display = 'none'; });
-document.getElementById('applyCollectiveThresholdBtn').addEventListener('click', () => { collectiveThreshold = +document.getElementById('collectiveThresholdInput').value || 0; renderCollectiveTables(); });
+document.getElementById('collectiveClassFilter').addEventListener('change', () => { renderCollectiveDiagnosis(); renderCollectiveTables(); renderCollectiveRankBar(); document.getElementById('rankedAnalysisResult').innerHTML = ''; document.getElementById('levelAnalysisResult').innerHTML = ''; clearCollectiveQuestionGroupContexts('rank'); clearCollectiveQuestionGroupContexts('level'); document.getElementById('collectiveStudentQueryResult').innerHTML = ''; document.getElementById('questionStudentsResult').style.display = 'none'; });
+document.getElementById('collectiveSubjectFilter').addEventListener('change', () => { renderCollectiveDiagnosis(); renderCollectiveTables(); renderCollectiveRankBar(); renderScoreDistChart(); document.getElementById('rankedAnalysisResult').innerHTML = ''; document.getElementById('levelAnalysisResult').innerHTML = ''; clearCollectiveQuestionGroupContexts('rank'); clearCollectiveQuestionGroupContexts('level'); document.getElementById('collectiveStudentQueryResult').innerHTML = ''; populateLevelCheckboxes(); document.getElementById('questionStudentsResult').style.display = 'none'; });
+document.getElementById('applyCollectiveThresholdBtn').addEventListener('click', () => { collectiveThreshold = +document.getElementById('collectiveThresholdInput').value || 0; renderCollectiveDiagnosis(); renderCollectiveTables(); });
 document.getElementById('collectiveRankApplyBtn').addEventListener('click', renderRankedAnalysis);
 document.getElementById('levelApplyBtn').addEventListener('click', renderLevelAnalysis);
 document.getElementById('clearCollectiveStudentBtn').addEventListener('click', () => { document.getElementById('collectiveStudentQueryInput').value = ''; document.getElementById('collectiveStudentQueryResult').innerHTML = ''; hideStudentSuggest(document.getElementById('collectiveStudentSuggest')); });
