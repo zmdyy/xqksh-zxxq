@@ -6167,14 +6167,22 @@ async function qkImportAiAnnotationText(text) {
     });
 
     var stagedQnos = new Set();
-    var scoreHeaderOwners = {};
     staged.forEach(function(x) {
         if (stagedQnos.has(x.question_no)) errors.push('导入文件中 question_no 重复：' + x.question_no);
         stagedQnos.add(x.question_no);
-        x.mapping.parts.forEach(function(p) {
-            if (!p.score_eligible || !p.score_header) return;
+    });
+
+    // 在“本次导入 + 当前批次已有标注”的合并结果上检查，防止局部重新导入造成跨题重复计分。
+    var mergedForValidation = {};
+    Object.keys(map).forEach(function(qno){ mergedForValidation[qno] = map[qno]; });
+    staged.forEach(function(x){ mergedForValidation[x.question_no] = x.mapping; });
+    var scoreHeaderOwners = {};
+    Object.keys(mergedForValidation).forEach(function(qno) {
+        var parts = qkNormalizeMappingParts(mergedForValidation[qno], qno, b.id);
+        parts.forEach(function(p) {
+            if (!p.score_eligible || !p.score_header || !p.primary_concept_id) return;
             if (!scoreHeaderOwners[p.score_header]) scoreHeaderOwners[p.score_header] = [];
-            scoreHeaderOwners[p.score_header].push(x.question_no + '/' + p.part_id);
+            scoreHeaderOwners[p.score_header].push(qno + '/' + p.part_id + '→' + p.primary_concept_id);
         });
     });
     Object.keys(scoreHeaderOwners).forEach(function(header) {
