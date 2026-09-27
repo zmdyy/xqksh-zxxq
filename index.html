@@ -858,9 +858,6 @@
     .diagnosis-head h3 { margin:0 0 5px;color:#1e3a5f;font-size:1.2em; }
     .diagnosis-head p { margin:0;color:#64748b;font-size:12px;line-height:1.6; }
     .diagnosis-scope { flex:0 0 auto;padding:6px 10px;border-radius:999px;background:#eef6ff;color:#315a80;font-size:12px;font-weight:700;white-space:nowrap; }
-    .diagnosis-summary { display:flex;gap:8px;flex-wrap:wrap;margin:12px 0; }
-    .diagnosis-summary-chip { display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:9px;border:1px solid #e2e8f0;background:#fff;font-size:12px;color:#475569; }
-    .diagnosis-summary-chip strong { font-size:15px;color:#0f172a; }
     .diagnosis-lanes { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start; }
     .diagnosis-lane { min-width:0;border:1px solid #e2e8f0;border-radius:12px;background:#fff;overflow:hidden; }
     .diagnosis-lane-head { padding:10px 12px;border-bottom:1px solid #edf2f7; }
@@ -1222,7 +1219,6 @@
                 <button class="filter-btn" id="applyCollectiveThresholdBtn" style="padding:4px 8px;font-size:12px;margin-left:4px;">应用</button>
             </div>
         </div>
-        <div class="diagnosis-summary" id="collectiveDiagnosisSummary"></div>
         <div class="diagnosis-lanes" id="collectiveDiagnosisCards">
             <div class="diagnosis-empty" style="grid-column:1/-1;">请先加载含小题得分的数据。</div>
         </div>
@@ -5320,9 +5316,8 @@ function renderCollectiveDiagnosisLane(type, title, desc, list, fd, subjectName)
 
 function renderCollectiveDiagnosis() {
     var root = document.getElementById('collectiveDiagnosisCards');
-    var summary = document.getElementById('collectiveDiagnosisSummary');
     var scope = document.getElementById('collectiveDiagnosisScope');
-    if (!root || !summary || !scope) return;
+    if (!root || !scope) return;
 
     collectiveDiagnosisContexts = {};
     var fd = getCollectiveFilteredData();
@@ -5332,24 +5327,11 @@ function renderCollectiveDiagnosis() {
     scope.textContent = classText + ' · ' + (subjectName || '全部科目') + ' · 阈值' + collectiveThreshold + '%';
 
     if (!fd.headers.length || !fd.data.length) {
-        summary.innerHTML = '';
         root.innerHTML = '<div class="diagnosis-empty" style="grid-column:1/-1;">暂无可诊断的小题数据。</div>';
         return;
     }
 
     var result = calculateCollectiveDiagnosis(fd, subjectName);
-    var total = result.common.length + result.group.length + result.individual.length;
-    var mapped = 0;
-    [result.common,result.group,result.individual].forEach(function(list) {
-        list.forEach(function(x) { if (x.mapping && x.mapping.concept_id) mapped++; });
-    });
-
-    summary.innerHTML =
-        '<div class="diagnosis-summary-chip">识别异常题 <strong>' + total + '</strong></div>'
-        + '<div class="diagnosis-summary-chip">共性 <strong>' + result.common.length + '</strong></div>'
-        + '<div class="diagnosis-summary-chip">群体 <strong>' + result.group.length + '</strong></div>'
-        + '<div class="diagnosis-summary-chip">个体 <strong>' + result.individual.length + '</strong></div>'
-        + '<div class="diagnosis-summary-chip">已关联知识点 <strong>' + mapped + '/' + total + '</strong></div>';
 
     root.innerHTML =
         renderCollectiveDiagnosisLane('common','共性异常','很多学生都错：优先判断是否存在共性教学问题。',result.common,fd,subjectName)
