@@ -1096,7 +1096,9 @@ window.KNOWLEDGE_DB = {
         "mech_force_elements"
       ],
       "follow_ups": [
-        "mech_force_gravity"
+        "mech_force_gravity",
+        "mech_force_elastic",
+        "mech_friction"
       ],
       "parallels": [],
       "cross_module": [],
@@ -1145,9 +1147,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "mech_force_diagram"
       ],
-      "follow_ups": [
-        "mech_force_elastic"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [
@@ -1194,11 +1194,9 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_force_gravity"
+        "mech_force_diagram"
       ],
-      "follow_ups": [
-        "mech_friction"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [
@@ -1240,7 +1238,7 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_force_elastic"
+        "mech_force_diagram"
       ],
       "follow_ups": [
         "mech_force_analysis"
@@ -1599,7 +1597,6 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_force_gravity",
         "mech_force_analysis"
       ],
       "follow_ups": [
@@ -1707,7 +1704,9 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "mech_pressure"
       ],
-      "follow_ups": [],
+      "follow_ups": [
+        "mech_buoyancy_cause"
+      ],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -1981,7 +1980,8 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_pressure"
+        "mech_pressure",
+        "mech_liquid_pressure"
       ],
       "follow_ups": [
         "mech_archimedes"
@@ -5232,7 +5232,9 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "opt_lens_imaging"
       ],
-      "follow_ups": [],
+      "follow_ups": [
+        "opt_照相机"
+      ],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -5314,9 +5316,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "opt_lens_imaging"
       ],
-      "follow_ups": [
-        "opt_照相机"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -5741,9 +5741,7 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "elec_charge"
       ],
-      "follow_ups": [
-        "elec_导体与绝缘体"
-      ],
+      "follow_ups": [],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -5780,9 +5778,7 @@ window.KNOWLEDGE_DB = {
           "选择题"
         ]
       },
-      "prerequisites": [
-        "elec_摩擦起电"
-      ],
+      "prerequisites": [],
       "follow_ups": [
         "elec_current"
       ],
