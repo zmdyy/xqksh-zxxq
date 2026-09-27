@@ -5502,15 +5502,50 @@ function qkAnnotationCatalog() {
     });
 }
 
+function qkNormalizeConceptLabel(value) {
+    return String(value || '').trim()
+        .toLowerCase()
+        .replace(/[（(]核心[）)]/g,'')
+        .replace(/[·•・_—–\-\s]/g,'')
+        .replace(/[：:，,。.;；]/g,'');
+}
+
 function qkNormalizeConceptId(value) {
     var raw = String(value || '').trim();
     if (!raw) return null;
     if (QK_ANNOTATION_ALIAS[raw]) raw = QK_ANNOTATION_ALIAS[raw];
+
     var catalog = qkAnnotationCatalog();
-    var byId = catalog.find(function(k){ return k.concept_id === raw; });
+    var rawLower = raw.toLowerCase();
+
+    // 1. 标准 concept_id：大小写容错，但不改变内部 canonical id。
+    var byId = catalog.find(function(k){ return String(k.concept_id).toLowerCase() === rawLower; });
     if (byId) return byId.concept_id;
+
+    // 2. 直接输出了标准中文名称时，允许唯一名称解析。
     var byName = catalog.filter(function(k){ return k.name === raw; });
     if (byName.length === 1) return byName[0].concept_id;
+
+    // 3. 常见大模型错误：根据模块前缀自行拼 ID，例如 elec_电阻、elec_串联电路。
+    //    只在“前缀合法 + 后半段可唯一对应标准知识点名称”时自动纠正，避免模糊猜测。
+    var m = raw.match(/^(mech|therm|opt|elec|energy|math)_(.+)$/i);
+    if (m) {
+        var prefix = m[1].toLowerCase();
+        var tailNorm = qkNormalizeConceptLabel(m[2]);
+        var moduleMap = { mech:'力学', therm:'热学', opt:'光学', elec:'电磁学', energy:'能量', math:'数学' };
+        var candidates = catalog.filter(function(k) {
+            return k.module === moduleMap[prefix] && qkNormalizeConceptLabel(k.name) === tailNorm;
+        });
+        if (candidates.length === 1) return candidates[0].concept_id;
+    }
+
+    // 4. 最后允许纯中文/带分隔符名称的唯一规范化匹配。
+    //    必须全词唯一命中，不做包含关系或相似度猜测。
+    var norm = qkNormalizeConceptLabel(raw);
+    if (/[一-鿿]/.test(raw) && norm) {
+        var normalizedNameMatches = catalog.filter(function(k){ return qkNormalizeConceptLabel(k.name) === norm; });
+        if (normalizedNameMatches.length === 1) return normalizedNameMatches[0].concept_id;
+    }
     return null;
 }
 
@@ -5977,7 +6012,7 @@ function qkBuildAiAnnotationPack() {
         },
         instructions:[
             '请阅读用户同时提供的试卷，并逐题标注知识点。',
-            '只能使用 concept_catalog 中给出的 concept_id，禁止自行创造或改写 concept_id。',
+            '只能逐字复制 concept_catalog 中已经存在的 concept_id，禁止根据知识点中文名称自行拼接、翻译、缩写或改写 ID。例如“电阻”必须复制 elec_resistance，绝不能写成 elec_电阻；“串联电路”必须复制 elec_series_circuit，绝不能写成 elec_串联电路。',
             'question_no 必须优先原样使用 exam_context.questions 中对应的 question_no，不要自行改题号。',
             '一道题含多个小问、多个空或多个独立评分步骤时，拆成多个 parts；每个独立评分单元只选一个 primary_concept_id。',
             '辅助涉及的知识点放入 related_concept_ids，不参与重复计分。',
@@ -6097,16 +6132,20 @@ async function qkImportAiAnnotationText(text) {
 
             var badRelated = [];
             var related = (Array.isArray(p.related_concept_ids) ? p.related_concept_ids : []).map(function(id) {
-                var n = qkNormalizeConceptId(id);
-                if (!n && String(id||'').trim()) badRelated.push(String(id));
+                var rawId = String(id || '').trim();
+                var n = qkNormalizeConceptId(rawId);
+                if (!n && rawId) badRelated.push(rawId);
+                if (n && rawId && n !== rawId) normalizedWarnings.push(rawId + '→' + n);
                 return n;
             }).filter(Boolean);
             if (badRelated.length) errors.push(target.question_no + '/' + (p.part_id || (pi+1)) + ' 存在无效 related_concept_ids：' + badRelated.join(','));
 
             var badCandidates = [];
             var candidates = (Array.isArray(p.candidate_concept_ids) ? p.candidate_concept_ids : []).slice(0,3).map(function(id) {
-                var n = qkNormalizeConceptId(id);
-                if (!n && String(id||'').trim()) badCandidates.push(String(id));
+                var rawId = String(id || '').trim();
+                var n = qkNormalizeConceptId(rawId);
+                if (!n && rawId) badCandidates.push(rawId);
+                if (n && rawId && n !== rawId) normalizedWarnings.push(rawId + '→' + n);
                 return n;
             }).filter(Boolean);
             if (badCandidates.length) errors.push(target.question_no + '/' + (p.part_id || (pi+1)) + ' 存在无效 candidate_concept_ids：' + badCandidates.join(','));
@@ -6239,6 +6278,14 @@ async function qkImportAiAnnotationFile(file) {
         showToast('AI知识点标注导入完成：' + result.questionCount + '题，' + result.partCount + '个子项；其中' + result.eligibleCount + '个可用于知识点计分');
         if (result.tagOnlyCount) {
             setTimeout(function(){ showToast(result.tagOnlyCount + '个子项因缺少独立评分列，仅作为知识点标签，不会拆分计分'); }, 300);
+        }
+        if (result.normalizedWarnings && result.normalizedWarnings.length) {
+            setTimeout(function(){
+                showStudentListModal('AI知识点ID已自动纠正',
+                    '<div style="text-align:left;line-height:1.7;">本次发现大模型自行拼写的知识点ID，已按标准词表唯一匹配并自动纠正，不影响导入：<br><br>'
+                    + result.normalizedWarnings.map(function(x){ return '• ' + escapeHtml(x); }).join('<br>')
+                    + '<br><br><span style="color:#64748b;">后续重新下载的AI标注包已加强提示，要求模型逐字复制标准 concept_id。</span></div>');
+            }, 500);
         }
     } catch(e) {
         console.error(e);
