@@ -847,6 +847,15 @@
     .qk-hint { font-size:12px; color:#64748b; line-height:1.55; margin-top:4px; }
     .qk-suggestion { display:none; margin:10px 0; padding:9px 10px; background:#fffbeb; border-left:3px solid #f59e0b; font-size:12px; line-height:1.6; }
     .qk-editor-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:16px; padding-top:12px; border-top:1px solid #e2e8f0; }
+    .qk-badge-stack { display:flex; flex-wrap:wrap; gap:4px; align-items:center; min-width:130px; }
+    .qk-part-label { font-size:10px; opacity:.76; margin-right:3px; }
+    .qk-score-mark { font-size:10px; margin-left:3px; }
+    .qk-score-mark.eligible { color:#15803d; }
+    .qk-score-mark.tagonly { color:#b45309; }
+    .qk-ai-btn { padding:5px 9px; border:1px solid #bfd3ea; background:#fff; color:#315a80; border-radius:6px; cursor:pointer; font-size:12px; }
+    .qk-ai-btn:hover { background:#eef6ff; border-color:#6d99c5; }
+    .qk-import-status.warn { color:#9a5b13; border-color:#f4d49b; background:#fffaf0; }
+    .qk-import-status.ok { color:#166534; border-color:#bbdfc3; background:#f3fff5; }
     
     /* ===== 小题异常诊断卡 ===== */
     .collective-diagnosis-section {
@@ -1235,18 +1244,23 @@
         <div class="qk-toolbar">
             <span id="qkCatalogStatus" class="qk-status">知识点库：加载中…</span>
             <span id="qkTagStatus" class="qk-status">请先保存考试批次</span>
+            <span id="qkAiImportStatus" class="qk-status qk-import-status">AI标注：未导入</span>
+            <button type="button" class="qk-ai-btn" id="qkDownloadAiPackBtn">↓ 下载AI知识点标注包</button>
+            <button type="button" class="qk-ai-btn" id="qkImportAiMappingBtn">↑ 导入AI标注JSON</button>
+            <input type="file" id="qkImportAiMappingInput" accept=".json,application/json,text/plain" style="display:none;">
+            <a class="filter-btn" href="data/knowledge/exam-annotation-catalog.json" target="_blank" rel="noopener" style="text-decoration:none;">标准词表</a>
             <a class="filter-btn" href="knowledge/index.html" target="_blank" rel="noopener" style="text-decoration:none;">✦ 打开知识星球</a>
         </div>
         <div style="font-size:15px;font-weight:bold;color:#2980b9;margin-bottom:4px;" id="allStatsTitle"></div>
         <div class="scroll-container" style="max-height:320px;">
             <table id="questionStatsTable"><thead><tr>
-                <th>题目</th><th>分值表头</th><th>主知识点</th><th>操作</th><th>得分均值</th><th>最高分</th><th>最低分</th><th>标准答案</th><th>选项分布</th><th>得分率(%)</th>
+                <th>题目</th><th>分值表头</th><th>知识点标注</th><th>操作</th><th>得分均值</th><th>最高分</th><th>最低分</th><th>标准答案</th><th>选项分布</th><th>得分率(%)</th>
             </tr></thead><tbody></tbody></table>
         </div>
         <div style="font-size:15px;font-weight:bold;color:#e74c3c;margin-top:16px;margin-bottom:4px;" id="lowStatsTitle"></div>
         <div class="scroll-container" style="max-height:160px;">
             <table id="lowStatsTable"><thead><tr>
-                <th>题目</th><th>分值表头</th><th>主知识点</th><th>操作</th><th>得分均值</th><th>最高分</th><th>最低分</th><th>标准答案</th><th>选项分布</th><th>得分率(%)</th>
+                <th>题目</th><th>分值表头</th><th>知识点标注</th><th>操作</th><th>得分均值</th><th>最高分</th><th>最低分</th><th>标准答案</th><th>选项分布</th><th>得分率(%)</th>
             </tr></thead><tbody></tbody></table>
         </div>
     </div>
@@ -1952,7 +1966,7 @@
             <label class="qk-field">主知识点（concept_id）
                 <input id="qkMainInput" list="qkKnowledgeOptions" placeholder="输入知识点名称搜索">
             </label>
-            <div class="qk-hint">V1 只保存三个字段：考试ID（exam_id）＋题号（question_no）＋主知识点ID（concept_id）。concept_id 与知识星球节点 id 完全一致，不做 AI 自动识别，也不在这里判断误概念。</div>
+            <div class="qk-hint">手工标注作为补充入口：保存后会把当前题作为“整题单知识点”记录。推荐先下载 AI 知识点标注包，让大模型按标准词表拆分小问/空并输出 JSON，再回到这里导入。已有多子项标注如需修改，优先重新导入修订后的 JSON，避免误覆盖。</div>
             <datalist id="qkKnowledgeOptions"></datalist>
             <div class="qk-editor-actions">
                 <button type="button" class="qk-edit-btn" id="qkClearBtn">清除本题标注</button>
@@ -5464,42 +5478,151 @@ function qkBatchMap(createIfMissing) {
     if ((!b.questionConceptMap || typeof b.questionConceptMap !== 'object' || Array.isArray(b.questionConceptMap)) && createIfMissing) b.questionConceptMap = {};
     return b.questionConceptMap || null;
 }
-function qkGetMapping(questionTitle, scoreHeader, subject) {
+
+var QK_ANNOTATION_EXCLUDED = new Set(['mech_newton1_core','mech_archimedes_core','mech_balance_forces_core']);
+var QK_ANNOTATION_ALIAS = {
+    mech_newton1_core:'mech_newton1',
+    mech_archimedes_core:'mech_archimedes',
+    mech_balance_forces_core:'mech_balance_forces'
+};
+
+function qkAnnotationCatalog() {
+    return qkCatalog().filter(function(k){ return !QK_ANNOTATION_EXCLUDED.has(k.id); }).map(function(k){
+        return {
+            concept_id:k.id,
+            name:k.name,
+            module:k.module || '',
+            chapter:k.chapter || '',
+            description:String(k.core_definition || '').trim(),
+            formula:(k.formula && k.formula !== '无') ? k.formula : ''
+        };
+    });
+}
+
+function qkNormalizeConceptId(value) {
+    var raw = String(value || '').trim();
+    if (!raw) return null;
+    if (QK_ANNOTATION_ALIAS[raw]) raw = QK_ANNOTATION_ALIAS[raw];
+    var catalog = qkAnnotationCatalog();
+    var byId = catalog.find(function(k){ return k.concept_id === raw; });
+    if (byId) return byId.concept_id;
+    var byName = catalog.filter(function(k){ return k.name === raw; });
+    if (byName.length === 1) return byName[0].concept_id;
+    return null;
+}
+
+function qkNormalizeMappingParts(mapping, qno, examId) {
+    if (!mapping || typeof mapping !== 'object') return [];
+    if (mapping.exam_id && examId && mapping.exam_id !== examId) return [];
+    if (mapping.question_no && qno && mapping.question_no !== qno) return [];
+
+    if (Array.isArray(mapping.parts)) {
+        return mapping.parts.map(function(p, idx) {
+            if (!p || typeof p !== 'object') return null;
+            var primary = qkNormalizeConceptId(p.primary_concept_id || p.concept_id || '');
+            var related = Array.isArray(p.related_concept_ids) ? p.related_concept_ids.map(qkNormalizeConceptId).filter(Boolean) : [];
+            var candidates = Array.isArray(p.candidate_concept_ids) ? p.candidate_concept_ids.map(qkNormalizeConceptId).filter(Boolean).slice(0,3) : [];
+            return {
+                part_id:String(p.part_id || ((qno || 'q') + '/p' + (idx+1))),
+                part_label:String(p.part_label || p.label || (mapping.parts.length === 1 ? '整题' : '子项' + (idx+1))),
+                primary_concept_id:primary,
+                related_concept_ids:Array.from(new Set(related.filter(function(id){ return id !== primary; }))),
+                candidate_concept_ids:Array.from(new Set(candidates.filter(function(id){ return id !== primary; }))).slice(0,3),
+                confidence:String(p.confidence || 'unknown').toLowerCase(),
+                score_header:p.score_header ? String(p.score_header) : '',
+                score_eligible:p.score_eligible === true,
+                source:p.source || mapping.source || ''
+            };
+        }).filter(Boolean);
+    }
+
+    // V1 旧批次兼容：exam_id + question_no + concept_id
+    var legacy = qkNormalizeConceptId(mapping.concept_id || '');
+    if (!legacy) return [];
+    return [{
+        part_id:qno || mapping.question_no || 'whole',
+        part_label:'整题',
+        primary_concept_id:legacy,
+        related_concept_ids:[],
+        candidate_concept_ids:[],
+        confidence:'legacy',
+        score_header:'',
+        score_eligible:true,
+        source:'legacy'
+    }];
+}
+
+function qkGetMappingParts(questionTitle, scoreHeader, subject) {
     var b = qkCurrentBatch();
     var map = qkBatchMap(false);
-    if (!b || !map) return null;
+    if (!b || !map) return [];
     var qno = qkQuestionNo(subject, questionTitle, scoreHeader);
     var m = map[qno];
-    if (!m) return null;
-    if (m.exam_id !== b.id || m.question_no !== qno || !m.concept_id) return null;
-    return m;
+    return qkNormalizeMappingParts(m, qno, b.id);
+}
+
+function qkGetMapping(questionTitle, scoreHeader, subject) {
+    var b = qkCurrentBatch();
+    if (!b) return null;
+    var qno = qkQuestionNo(subject, questionTitle, scoreHeader);
+    var parts = qkGetMappingParts(questionTitle, scoreHeader, subject);
+    var p = parts.find(function(x){ return !!x.primary_concept_id; });
+    if (!p) return null;
+    return {
+        exam_id:b.id,
+        question_no:qno,
+        concept_id:p.primary_concept_id,
+        part_id:p.part_id,
+        part_label:p.part_label
+    };
 }
 function qkKnowledgeUrl(mapping) {
     if (!mapping || !mapping.concept_id) return 'knowledge/index.html';
     return 'knowledge/index.html?concept_id=' + encodeURIComponent(mapping.concept_id)
         + '&exam_id=' + encodeURIComponent(mapping.exam_id || '')
-        + '&question_no=' + encodeURIComponent(mapping.question_no || '');
+        + '&question_no=' + encodeURIComponent(mapping.question_no || '')
+        + '&part_id=' + encodeURIComponent(mapping.part_id || '');
 }
 function qkRenderCell(questionTitle, scoreHeader, subject) {
     var b = qkCurrentBatch();
     if (!b) return '<span class="qk-main-badge empty" title="先保存当前考试批次后再标注">请先保存批次</span>';
-    var m = qkGetMapping(questionTitle, scoreHeader, subject);
-    if (!m) return '<span class="qk-main-badge empty">未标注</span>';
-    var kp = qkCatalog().find(function(k){ return k.id === m.concept_id; });
-    var label = kp ? kp.name : m.concept_id;
-    return '<a class="qk-main-badge link" target="_blank" rel="noopener" href="' + escapeHtml(qkKnowledgeUrl(m)) + '" title="进入知识星球：' + escapeHtml(m.concept_id) + '">' + escapeHtml(label) + ' ↗</a>';
+    var qno = qkQuestionNo(subject, questionTitle, scoreHeader);
+    var parts = qkGetMappingParts(questionTitle, scoreHeader, subject);
+    if (!parts.length) return '<span class="qk-main-badge empty">未标注</span>';
+
+    var html = parts.map(function(p) {
+        if (!p.primary_concept_id) {
+            var candidates = (p.candidate_concept_ids || []).map(function(id) {
+                var kp = qkCatalog().find(function(k){ return k.id === id; });
+                return kp ? kp.name : id;
+            }).join(' / ');
+            return '<span class="qk-main-badge empty" title="待确认候选：' + escapeHtml(candidates || '无') + '">'
+                + '<span class="qk-part-label">' + escapeHtml(p.part_label || '') + '</span>待确认</span>';
+        }
+        var kp = qkCatalog().find(function(k){ return k.id === p.primary_concept_id; });
+        var label = kp ? kp.name : p.primary_concept_id;
+        var mark = p.score_eligible
+            ? '<span class="qk-score-mark eligible" title="可用于知识点得分统计">✓可计分</span>'
+            : '<span class="qk-score-mark tagonly" title="只有整题分或缺少独立评分单元，仅作为知识点标签，不拆分计分">仅标签</span>';
+        var mapping = { exam_id:b.id, question_no:qno, concept_id:p.primary_concept_id, part_id:p.part_id };
+        return '<a class="qk-main-badge link" target="_blank" rel="noopener" href="' + escapeHtml(qkKnowledgeUrl(mapping)) + '" title="'
+            + escapeHtml((p.part_label || '') + ' · ' + p.primary_concept_id) + '">'
+            + (parts.length > 1 ? '<span class="qk-part-label">' + escapeHtml(p.part_label || '') + '</span>' : '')
+            + escapeHtml(label) + ' ↗' + mark + '</a>';
+    }).join('');
+    return '<div class="qk-badge-stack">' + html + '</div>';
 }
 function qkRenderAction(questionTitle, scoreHeader, subject) {
     var b = qkCurrentBatch();
     var subj = qkSubject(subject, scoreHeader);
     var qno = qkQuestionNo(subj, questionTitle, scoreHeader);
     if (!b) return '<button type="button" class="qk-edit-btn" disabled title="请先保存考试批次">标注</button>';
-    var m = qkGetMapping(questionTitle, scoreHeader, subj);
+    var m = qkGetMappingParts(questionTitle, scoreHeader, subj);
     return '<button type="button" class="qk-edit-btn"'
         + ' data-qk-question="' + escapeHtml(questionTitle || '') + '"'
         + ' data-qk-score="' + escapeHtml(scoreHeader || '') + '"'
         + ' data-qk-subject="' + escapeHtml(subj) + '"'
-        + ' data-qk-number="' + escapeHtml(qno) + '">' + (m ? '修改' : '标注') + '</button>';
+        + ' data-qk-number="' + escapeHtml(qno) + '">' + (m.length ? '修改' : '标注') + '</button>';
 }
 function qkBindButtons() {
     document.querySelectorAll('.qk-edit-btn[data-qk-number]').forEach(function(btn) {
@@ -5528,8 +5651,11 @@ function qkOpenEditor(ctx) {
     qkEditorContext = ctx;
     var map = qkBatchMap(true);
     var old = map[ctx.questionNo] || null;
-    document.getElementById('qkEditorMeta').textContent = '考试ID：' + b.id + ' · 题号：' + ctx.questionNo;
-    var oldConcept = old && old.concept_id ? qkCatalog().find(function(k){ return k.id === old.concept_id; }) : null;
+    var oldParts = qkNormalizeMappingParts(old, ctx.questionNo, b.id);
+    document.getElementById('qkEditorMeta').textContent = '考试ID：' + b.id + ' · 题号：' + ctx.questionNo
+        + (oldParts.length > 1 ? ' · 当前已有 ' + oldParts.length + ' 个AI子项（手工保存将改为整题单知识点）' : '');
+    var firstPrimary = oldParts.find(function(p){ return !!p.primary_concept_id; });
+    var oldConcept = firstPrimary ? qkCatalog().find(function(k){ return k.id === firstPrimary.primary_concept_id; }) : null;
     document.getElementById('qkMainInput').value = oldConcept ? qkDisplay(oldConcept) : '';
     var ov = document.getElementById('qkEditorOverlay');
     ov.style.display = 'flex';
@@ -5561,7 +5687,20 @@ async function qkSaveCurrent() {
     map[qno] = {
         exam_id: b.id,
         question_no: qno,
-        concept_id: concept.id
+        schema_version:'2.0',
+        source:'teacher',
+        annotated_at:new Date().toISOString(),
+        parts:[{
+            part_id:qno,
+            part_label:'整题',
+            primary_concept_id:concept.id,
+            related_concept_ids:[],
+            candidate_concept_ids:[],
+            confidence:'teacher',
+            score_header:qkEditorContext.scoreHeader || '',
+            score_eligible:true,
+            source:'teacher'
+        }]
     };
     var ok = await persistBatches();
     if (!ok) {
@@ -5586,9 +5725,294 @@ async function qkClearCurrent() {
     renderCollectiveDiagnosis();
     renderCollectiveTables();
 }
+function qkCurrentQuestionTemplates() {
+    var fd = buildCollectiveDataFromCombined();
+    var subjectName = getSelectedSubject();
+    var questions = buildCollectiveQuestionModels(fd, subjectName);
+    return questions.map(function(q) {
+        var subj = qkSubject(subjectName, q.scoreHeader || '');
+        return {
+            question_no:qkQuestionNo(subj, q.title, q.scoreHeader || ''),
+            question_title:q.title,
+            subject:subj,
+            score_header:q.scoreHeader || '',
+            full_score:q.fullScore
+        };
+    });
+}
+
+function qkDownloadJsonFile(filename, data) {
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+}
+
+function qkBuildAiAnnotationPack() {
+    var b = qkCurrentBatch();
+    if (!b) return null;
+    var catalog = qkAnnotationCatalog();
+    var questions = qkCurrentQuestionTemplates();
+    return {
+        schema:'physics-exam-concept-annotation-pack',
+        schema_version:'1.0',
+        knowledge_db_version:(window.KNOWLEDGE_DB && window.KNOWLEDGE_DB.version) || '2.1',
+        exam_context:{
+            exam_id:b.id,
+            exam_label:b.label || '',
+            subject:getSelectedSubject() || '全部科目',
+            questions:questions
+        },
+        instructions:[
+            '请阅读用户同时提供的试卷，并逐题标注知识点。',
+            '只能使用 concept_catalog 中给出的 concept_id，禁止自行创造或改写 concept_id。',
+            'question_no 必须优先原样使用 exam_context.questions 中对应的 question_no，不要自行改题号。',
+            '一道题含多个小问、多个空或多个独立评分步骤时，拆成多个 parts；每个独立评分单元只选一个 primary_concept_id。',
+            '辅助涉及的知识点放入 related_concept_ids，不参与重复计分。',
+            '如果一个题号在成绩数据中只有一个整题 score_header，但试卷内需要拆成多个 parts，各 part 的 score_header 必须留空；不要把同一个整题分重复分配给多个知识点。',
+            '如果成绩数据本身已有独立子题 score_header，可原样复制到对应 part.score_header。',
+            '无法可靠判断时 primary_concept_id 设为 null，并在 candidate_concept_ids 中最多给出3个候选；不要猜测。',
+            'confidence 只能填写 high、medium、low。',
+            '最终只输出一个可直接解析的 JSON 对象，不要附加解释文字、Markdown代码围栏或其他内容。'
+        ],
+        output_schema:{
+            schema:'physics-exam-concept-mapping',
+            schema_version:'1.0',
+            exam_id:b.id,
+            knowledge_db_version:(window.KNOWLEDGE_DB && window.KNOWLEDGE_DB.version) || '2.1',
+            questions:[{
+                question_no:'必须复制 exam_context.questions 中的 question_no',
+                parts:[{
+                    part_id:'例如 12-1 / 12-第1空；同题内唯一',
+                    part_label:'例如 第1空 / (1) / 步骤2',
+                    primary_concept_id:'concept_catalog 中的 concept_id；不确定可为 null',
+                    related_concept_ids:[],
+                    candidate_concept_ids:[],
+                    confidence:'high | medium | low',
+                    score_header:'只有该part对应独立成绩列时才复制精确score_header，否则留空'
+                }]
+            }]
+        },
+        concept_catalog:catalog
+    };
+}
+
+function qkDownloadAiAnnotationPack() {
+    var b = qkCurrentBatch();
+    if (!b) {
+        showToast('请先保存考试批次，再下载AI标注包');
+        return;
+    }
+    var pack = qkBuildAiAnnotationPack();
+    if (!pack || !pack.exam_context.questions.length) {
+        showToast('当前没有可用于标注的小题数据');
+        return;
+    }
+    var safeLabel = String(b.label || b.id).replace(/[\\/:*?"<>|]+/g,'_');
+    qkDownloadJsonFile('AI知识点标注包_' + safeLabel + '.json', pack);
+    showToast('已生成AI知识点标注包：' + pack.concept_catalog.length + '个标准知识点');
+}
+
+function qkNormalizeQuestionLookupKey(v) {
+    return String(v || '').trim()
+        .replace(/[（]/g,'(').replace(/[）]/g,')')
+        .replace(/\s+/g,'')
+        .replace(/[：:]/g,'');
+}
+
+function qkResolveImportedQuestion(externalQno, templates) {
+    var raw = String(externalQno || '').trim();
+    if (!raw) return null;
+    var exact = templates.find(function(t){ return t.question_no === raw; });
+    if (exact) return exact;
+    var n = qkNormalizeQuestionLookupKey(raw);
+    var matches = templates.filter(function(t) {
+        var full = qkNormalizeQuestionLookupKey(t.question_no);
+        var leaf = qkNormalizeQuestionLookupKey(String(t.question_no).split('/').pop());
+        var title = qkNormalizeQuestionLookupKey(t.question_title);
+        return full === n || leaf === n || title === n;
+    });
+    return matches.length === 1 ? matches[0] : null;
+}
+
+function qkStripJsonWrapper(text) {
+    var s = String(text || '').replace(/^\uFEFF/,'').trim();
+    var m = s.match(/^\`\`\`(?:json)?\s*([\s\S]*?)\s*\`\`\`$/i);
+    return m ? m[1].trim() : s;
+}
+
+async function qkImportAiAnnotationText(text) {
+    var b = qkCurrentBatch();
+    if (!b) throw new Error('请先保存考试批次');
+    var data;
+    try { data = JSON.parse(qkStripJsonWrapper(text)); }
+    catch(e) { throw new Error('JSON无法解析：' + e.message); }
+
+    if (!data || data.schema !== 'physics-exam-concept-mapping' || !Array.isArray(data.questions)) {
+        throw new Error('文件格式不符合 physics-exam-concept-mapping 1.0');
+    }
+    if (data.exam_id && data.exam_id !== b.id) {
+        throw new Error('该标注文件属于其他考试批次（exam_id 不一致）');
+    }
+
+    var templates = qkCurrentQuestionTemplates();
+    if (!templates.length) throw new Error('当前批次没有可匹配的小题数据');
+    var knownHeaders = new Set(templates.map(function(t){ return t.score_header; }).filter(Boolean));
+    var allowed = new Set(qkAnnotationCatalog().map(function(k){ return k.concept_id; }));
+    var map = qkBatchMap(true);
+    var staged = [];
+    var errors = [];
+    var normalizedWarnings = [];
+
+    data.questions.forEach(function(q, qi) {
+        var target = qkResolveImportedQuestion(q && q.question_no, templates);
+        if (!target) {
+            errors.push('第' + (qi+1) + '条 question_no 无法唯一匹配：' + String(q && q.question_no || ''));
+            return;
+        }
+        var rawParts = Array.isArray(q.parts) && q.parts.length ? q.parts : [];
+        if (!rawParts.length) {
+            errors.push(target.question_no + ' 没有 parts');
+            return;
+        }
+
+        var prepared = rawParts.map(function(p, pi) {
+            p = p || {};
+            var rawPrimary = p.primary_concept_id == null ? '' : String(p.primary_concept_id).trim();
+            var primary = rawPrimary ? qkNormalizeConceptId(rawPrimary) : null;
+            if (rawPrimary && !primary) errors.push(target.question_no + '/' + (p.part_id || (pi+1)) + ' 的 primary_concept_id 不在标准词表：' + rawPrimary);
+            if (rawPrimary && primary && primary !== rawPrimary) normalizedWarnings.push(rawPrimary + '→' + primary);
+
+            var badRelated = [];
+            var related = (Array.isArray(p.related_concept_ids) ? p.related_concept_ids : []).map(function(id) {
+                var n = qkNormalizeConceptId(id);
+                if (!n && String(id||'').trim()) badRelated.push(String(id));
+                return n;
+            }).filter(Boolean);
+            if (badRelated.length) errors.push(target.question_no + '/' + (p.part_id || (pi+1)) + ' 存在无效 related_concept_ids：' + badRelated.join(','));
+
+            var badCandidates = [];
+            var candidates = (Array.isArray(p.candidate_concept_ids) ? p.candidate_concept_ids : []).slice(0,3).map(function(id) {
+                var n = qkNormalizeConceptId(id);
+                if (!n && String(id||'').trim()) badCandidates.push(String(id));
+                return n;
+            }).filter(Boolean);
+            if (badCandidates.length) errors.push(target.question_no + '/' + (p.part_id || (pi+1)) + ' 存在无效 candidate_concept_ids：' + badCandidates.join(','));
+
+            var confidence = String(p.confidence || 'unknown').toLowerCase();
+            if (!['high','medium','low','unknown'].includes(confidence)) confidence = 'unknown';
+            var requestedHeader = p.score_header ? String(p.score_header).trim() : '';
+            if (requestedHeader && !knownHeaders.has(requestedHeader)) {
+                errors.push(target.question_no + '/' + (p.part_id || (pi+1)) + ' 的 score_header 不存在于当前成绩数据：' + requestedHeader);
+            }
+            return {
+                part_id:String(p.part_id || (target.question_no + '/p' + (pi+1))),
+                part_label:String(p.part_label || p.label || (rawParts.length === 1 ? '整题' : '子项' + (pi+1))),
+                primary_concept_id:primary,
+                related_concept_ids:Array.from(new Set(related.filter(function(id){ return id !== primary; }))),
+                candidate_concept_ids:Array.from(new Set(candidates.filter(function(id){ return id !== primary; }))).slice(0,3),
+                confidence:confidence,
+                requested_score_header:requestedHeader
+            };
+        });
+
+        var assignedHeaders = prepared.map(function(p) {
+            if (p.requested_score_header) return p.requested_score_header;
+            return prepared.length === 1 ? target.score_header : '';
+        });
+        var headerCounts = {};
+        assignedHeaders.filter(Boolean).forEach(function(h){ headerCounts[h] = (headerCounts[h] || 0) + 1; });
+
+        var parts = prepared.map(function(p, pi) {
+            var scoreHeader = assignedHeaders[pi] || '';
+            var eligible = !!scoreHeader && headerCounts[scoreHeader] === 1;
+            return {
+                part_id:p.part_id,
+                part_label:p.part_label,
+                primary_concept_id:p.primary_concept_id,
+                related_concept_ids:p.related_concept_ids,
+                candidate_concept_ids:p.candidate_concept_ids,
+                confidence:p.confidence,
+                score_header:scoreHeader,
+                score_eligible:eligible,
+                source:'ai_import'
+            };
+        });
+        staged.push({
+            question_no:target.question_no,
+            mapping:{
+                exam_id:b.id,
+                question_no:target.question_no,
+                schema_version:'2.0',
+                source:'ai_import',
+                annotated_at:new Date().toISOString(),
+                parts:parts
+            }
+        });
+    });
+
+    if (errors.length) {
+        throw new Error('导入已停止，发现 ' + errors.length + ' 个问题：\n' + errors.slice(0,12).join('\n') + (errors.length > 12 ? '\n……' : ''));
+    }
+
+    staged.forEach(function(x){ map[x.question_no] = x.mapping; });
+    var ok = await persistBatches();
+    if (!ok) throw new Error('标注已解析，但保存失败，请检查浏览器存储空间');
+
+    var partCount = 0, eligibleCount = 0, tagOnlyCount = 0, lowCount = 0, unresolvedCount = 0;
+    staged.forEach(function(x) {
+        x.mapping.parts.forEach(function(p) {
+            partCount++;
+            if (p.score_eligible) eligibleCount++; else tagOnlyCount++;
+            if (p.confidence === 'low') lowCount++;
+            if (!p.primary_concept_id) unresolvedCount++;
+        });
+    });
+
+    var status = document.getElementById('qkAiImportStatus');
+    if (status) {
+        status.className = 'qk-status qk-import-status ' + ((lowCount || unresolvedCount || tagOnlyCount) ? 'warn' : 'ok');
+        status.textContent = 'AI标注：' + staged.length + '题 / ' + partCount + '子项'
+            + ' · 可计分' + eligibleCount + ' · 仅标签' + tagOnlyCount
+            + (unresolvedCount ? ' · 待确认' + unresolvedCount : '');
+    }
+    qkUpdateToolbar();
+    renderCollectiveDiagnosis();
+    renderCollectiveTables();
+
+    return {
+        questionCount:staged.length,
+        partCount:partCount,
+        eligibleCount:eligibleCount,
+        tagOnlyCount:tagOnlyCount,
+        lowCount:lowCount,
+        unresolvedCount:unresolvedCount,
+        normalizedWarnings:Array.from(new Set(normalizedWarnings))
+    };
+}
+
+async function qkImportAiAnnotationFile(file) {
+    if (!file) return;
+    try {
+        var result = await qkImportAiAnnotationText(await file.text());
+        showToast('AI知识点标注导入完成：' + result.questionCount + '题，' + result.partCount + '个子项；其中' + result.eligibleCount + '个可用于知识点计分');
+        if (result.tagOnlyCount) {
+            setTimeout(function(){ showToast(result.tagOnlyCount + '个子项因缺少独立评分列，仅作为知识点标签，不会拆分计分'); }, 300);
+        }
+    } catch(e) {
+        console.error(e);
+        showStudentListModal('AI知识点标注导入失败','<div style="text-align:left;white-space:pre-wrap;line-height:1.65;">' + escapeHtml(e.message || String(e)) + '</div>');
+    }
+}
+
 function qkUpdateToolbar() {
     var cat = document.getElementById('qkCatalogStatus');
-    if (cat) cat.textContent = '知识点库：' + qkCatalog().length + ' 个 · concept_id = 节点 id';
+    if (cat) cat.textContent = '知识图谱：' + qkCatalog().length + ' 节点 · 考试标注词表：' + qkAnnotationCatalog().length + ' 项';
     var status = document.getElementById('qkTagStatus');
     if (status) {
         var b = qkCurrentBatch();
@@ -5596,14 +6020,19 @@ function qkUpdateToolbar() {
             status.textContent = '请先保存考试批次';
         } else {
             var map = qkBatchMap(false) || {};
-            var count = Object.keys(map).filter(function(qno) {
-                var m = map[qno];
-                return m && m.exam_id === b.id && m.question_no === qno && !!m.concept_id;
-            }).length;
-            status.textContent = '考试ID：' + b.id + ' · 已标注 ' + count + ' 题';
+            var questionCount = 0, partCount = 0;
+            Object.keys(map).forEach(function(qno) {
+                var parts = qkNormalizeMappingParts(map[qno], qno, b.id);
+                if (parts.length) {
+                    questionCount++;
+                    partCount += parts.length;
+                }
+            });
+            status.textContent = '考试ID：' + b.id + ' · 已标注 ' + questionCount + ' 题 / ' + partCount + ' 子项';
         }
     }
 }
+
 function qkInit() {
     qkPopulateDatalist();
     qkUpdateToolbar();
@@ -5613,6 +6042,18 @@ function qkInit() {
     if(save) save.onclick=qkSaveCurrent;
     if(cancel) cancel.onclick=qkCloseEditor;
     if(clear) clear.onclick=qkClearCurrent;
+
+    var downloadPack=document.getElementById('qkDownloadAiPackBtn');
+    var importBtn=document.getElementById('qkImportAiMappingBtn');
+    var importInput=document.getElementById('qkImportAiMappingInput');
+    if(downloadPack) downloadPack.onclick=qkDownloadAiAnnotationPack;
+    if(importBtn && importInput) importBtn.onclick=function(){ importInput.click(); };
+    if(importInput) importInput.onchange=function(){
+        var file=importInput.files && importInput.files[0];
+        importInput.value='';
+        if(file) qkImportAiAnnotationFile(file);
+    };
+
     var ov=document.getElementById('qkEditorOverlay');
     if(ov) ov.addEventListener('click',function(e){ if(e.target===ov) qkCloseEditor(); });
 }
