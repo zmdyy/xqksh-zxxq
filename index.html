@@ -1226,7 +1226,7 @@
             <summary>查看自动判定规则</summary>
             <ul>
                 <li><b>共性异常：</b>该题整体得分率低于当前“得分率阈值”，优先提示全班共性教学问题。</li>
-                <li><b>群体异常：</b>优先按成绩表已有等级（如 A/B/C/D）分组；没有等级数据时才按 30% / 40% / 30% 做相对分层。某一组在该题的表现比该组平时水平明显低（默认差值≥15个百分点）时，提示群体异常。</li>
+                <li><b>群体异常：</b>优先按成绩表已有等级分组；若只有一个等级或没有等级，再按 30% / 40% / 30% 相对分层。某组本题得分率比全体低至少 15 个百分点，且该组至少一半学生低于当前阈值时，判为群体异常。</li>
                 <li><b>个体异常：</b>该题整体表现较好，但少数平时表现正常/较好的学生在此题明显失常，提示个别诊断价值。</li>
             </ul>
         </details>
@@ -5171,10 +5171,12 @@ function splitCollectiveAbilityTiers(fd, questions, baselines, subjectName) {
             };
         }).filter(function(t) { return t.rows.length >= 3; });
 
-        if (gradeTiers.length) return gradeTiers;
+        // 只有至少两个有效等级组时，等级才具有“群体比较”意义。
+        // 例如全班都是 A 等级时，自动回退到 30% / 40% / 30% 相对分层。
+        if (gradeTiers.length >= 2) return gradeTiers;
     }
 
-    // 没有可用等级时，才回退到当前筛选范围内的 30% / 40% / 30% 相对分层。
+    // 没有可比较的等级组时，回退到当前筛选范围内的 30% / 40% / 30% 相对分层。
     if (rows.length < 9) return [];
     var subjectScoreField = subjectName ? subjectName + '_分数' : '';
     var rankRows = rows.map(function(row) {
@@ -5227,25 +5229,21 @@ function calculateCollectiveDiagnosis(fd, subjectName) {
             return;
         }
 
-        // 2) 群体异常：某一成绩层相对该层自身平均水平显著下滑。
+        // 2) 群体异常：规则尽量简单。
+        // 该组本题得分率比全班本题得分率低 >= 15 个百分点，
+        // 且该组至少一半学生低于当前得分率阈值，则判为群体异常。
         var bestGroup = null;
         tiers.forEach(function(tier) {
             var tierSet = new Set(tier.rows);
             var qStudents = q.students.filter(function(s) { return tierSet.has(s.row); });
             if (qStudents.length < 3) return;
 
-            var baselineVals = qStudents.map(function(s) { return baselines.get(s.row); }).filter(function(v) { return v !== null && v !== undefined && isFinite(v); });
-            if (baselineVals.length < 3) return;
-            var baselineRate = baselineVals.reduce(function(a,b){ return a+b; },0) / baselineVals.length;
             var qRate = qStudents.reduce(function(a,b){ return a+b.rate; },0) / qStudents.length;
-            var gap = baselineRate - qRate;
-            var affected = qStudents.filter(function(s) {
-                var b = baselines.get(s.row);
-                return s.rate < threshold || (b !== null && b !== undefined && b - s.rate >= 0.25);
-            });
+            var gap = q.overallRate - qRate;
+            var affected = qStudents.filter(function(s) { return s.rate < threshold; });
             var affectedShare = affected.length / qStudents.length;
 
-            if (gap >= 0.15 && affectedShare >= 0.35) {
+            if (gap >= 0.15 && affectedShare >= 0.50) {
                 var candidate = {
                     type:'group',
                     title:q.title,
@@ -5255,13 +5253,12 @@ function calculateCollectiveDiagnosis(fd, subjectName) {
                     tierLabel:tier.label,
                     tierSource:tier.source || 'percentile',
                     tierRate:qRate,
-                    tierBaseline:baselineRate,
                     gap:gap,
                     affected:affected,
                     affectedCount:affected.length,
                     totalCount:qStudents.length,
                     mapping:mapping,
-                    note:tier.label + '在本题相对自身常态下降 ' + Math.round(gap*100) + ' 个百分点。'
+                    note:tier.label + '本题得分率比全体低 ' + Math.round(gap*100) + ' 个百分点。'
                 };
                 if (!bestGroup || candidate.gap > bestGroup.gap) bestGroup = candidate;
             }
