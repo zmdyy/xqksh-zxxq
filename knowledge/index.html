@@ -1818,9 +1818,10 @@ rawConns.forEach((c, i) => {
   const dep = type <= 1 ? 'strong' : type <= 3 ? 'medium' : 'weak';
   const speeds = { strong: 1.0, medium: 0.7, weak: 0.5 };
   const isHubStrand = hubStarId && (from.id === hubStarId || to.id === hubStarId);
-  const baseOpacityByType = [0.095, 0.070, 0.036, 0.028, 0.018, 0.012];
-  const baseOpacity = baseOpacityByType[type] !== undefined ? baseOpacityByType[type] : 0.03;
-  const opacity = Math.min(0.13, baseOpacity * (isHubStrand ? 1.12 : 1.0));
+  // 总览态轻微增亮：保持明显低于点击后的聚焦态。
+  const baseOpacityByType = [0.115, 0.082, 0.044, 0.034, 0.022, 0.015];
+  const baseOpacity = baseOpacityByType[type] !== undefined ? baseOpacityByType[type] : 0.036;
+  const opacity = Math.min(0.16, baseOpacity * (isHubStrand ? 1.15 : 1.0));
   const strand = makeStrandPoints(from, to, i + type * 0.37, 10);
 
   const dS = darkPos.length / 3;
@@ -2361,7 +2362,7 @@ function setModuleEmphasis(mod) {
   lineDataMap.forEach(ld => {
     const inModule = mod === 'all' || (ld.from.module === mod && ld.to.module === mod);
     const target = mod === 'all'
-      ? ld.darkAlpha
+      ? Math.min(0.18, ld.darkAlpha * 1.22)
       : (inModule ? Math.min(0.42, Math.max(0.22, ld.darkAlpha * 4.2)) : 0.008);
     const r = connToRange[ld.idx];
     for (let s = 0; s < r.segmentCount * 2; s++) la[r.dark + s] = target;
@@ -2485,8 +2486,8 @@ function updateLabels() {
     c.item.label.style.transform = `translate(${c.x}px,${c.y}px) translate(-50%,-50%)`;
     c.item.label.style.display = 'block';
     c.item.label.style.fontSize = c.isModuleHub ? '27px' : '';
-    const baseOpacity = c.isModuleHub ? 1 : c.item.tier === 'core' ? 0.94 : c.item.tier === 'basic' ? 0.72 : 0.48;
-    c.item.label.style.opacity = c.isActive ? '1' : String(Math.max(0.12, Math.min(baseOpacity, c.dim * baseOpacity)));
+    const baseOpacity = c.isModuleHub ? 1 : c.item.tier === 'core' ? 0.96 : c.item.tier === 'basic' ? 0.78 : 0.54;
+    c.item.label.style.opacity = c.isActive ? '1' : String(Math.max(0.16, Math.min(baseOpacity, c.dim * baseOpacity)));
     placed.push(c.box);
   });
 }
