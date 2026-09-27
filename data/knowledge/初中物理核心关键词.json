@@ -1,0 +1,421 @@
+{
+  "physicsKeywords": [
+    // 力学模块（25个）
+    {
+      "keyword": "力",
+      "explanation": "物体对物体的作用，力不能脱离物体而存在",
+      "icon": "fa-hand-fist",
+      "module": "力学"
+    },
+    {
+      "keyword": "重力",
+      "explanation": "由于地球的吸引而使物体受到的力，方向竖直向下",
+      "icon": "fa-arrow-down",
+      "module": "力学"
+    },
+    {
+      "keyword": "弹力",
+      "explanation": "物体发生弹性形变时产生的力，如拉力、压力、支持力",
+      "icon": "fa-spring",
+      "module": "力学"
+    },
+    {
+      "keyword": "摩擦力",
+      "explanation": "两个相互接触的物体发生相对运动时，在接触面上产生的阻碍相对运动的力",
+      "icon": "fa-hand-paper",
+      "module": "力学"
+    },
+    {
+      "keyword": "牛顿第一定律",
+      "explanation": "一切物体在没有受到力的作用时，总保持静止状态或匀速直线运动状态",
+      "icon": "fa-scale-balanced",
+      "module": "力学"
+    },
+    {
+      "keyword": "惯性",
+      "explanation": "物体保持原来运动状态不变的性质，是物体的固有属性",
+      "icon": "fa-forward",
+      "module": "力学"
+    },
+    {
+      "keyword": "二力平衡",
+      "explanation": "一个物体在两个力的作用下保持静止或匀速直线运动状态，这两个力大小相等、方向相反、作用在同一直线上",
+      "icon": "fa-balance-scale",
+      "module": "力学"
+    },
+    {
+      "keyword": "压强",
+      "explanation": "物体所受压力的大小与受力面积之比，公式：p=F/S",
+      "icon": "fa-compress",
+      "module": "力学"
+    },
+    {
+      "keyword": "液体压强",
+      "explanation": "液体内部向各个方向都有压强，压强随深度的增加而增大，同一深度向各个方向压强相等",
+      "icon": "fa-water",
+      "module": "力学"
+    },
+    {
+      "keyword": "大气压强",
+      "explanation": "大气对浸在它里面的物体产生的压强，著名实验：马德堡半球实验",
+      "icon": "fa-cloud",
+      "module": "力学"
+    },
+    {
+      "keyword": "浮力",
+      "explanation": "浸在液体或气体中的物体受到向上的力，方向竖直向上",
+      "icon": "fa-arrow-up-from-water",
+      "module": "力学"
+    },
+    {
+      "keyword": "阿基米德原理",
+      "explanation": "浸在液体中的物体受到的浮力大小等于它排开的液体所受的重力",
+      "icon": "fa-bath",
+      "module": "力学"
+    },
+    {
+      "keyword": "功",
+      "explanation": "力与在力的方向上移动的距离的乘积，公式：W=Fs",
+      "icon": "fa-hammer",
+      "module": "力学"
+    },
+    {
+      "keyword": "功率",
+      "explanation": "单位时间内所做的功，表示做功的快慢，公式：P=W/t",
+      "icon": "fa-bolt",
+      "module": "力学"
+    },
+    {
+      "keyword": "机械效率",
+      "explanation": "有用功跟总功的比值，总是小于1，公式：η=W有用/W总×100%",
+      "icon": "fa-percent",
+      "module": "力学"
+    },
+    {
+      "keyword": "杠杆",
+      "explanation": "一根在力的作用下能绕着固定点转动的硬棒",
+      "icon": "fa-wrench",
+      "module": "力学"
+    },
+    {
+      "keyword": "支点",
+      "explanation": "杠杆绕着转动的固定点",
+      "icon": "fa-circle-dot",
+      "module": "力学"
+    },
+    {
+      "keyword": "动力臂",
+      "explanation": "从支点到动力作用线的距离",
+      "icon": "fa-ruler",
+      "module": "力学"
+    },
+    {
+      "keyword": "阻力臂",
+      "explanation": "从支点到阻力作用线的距离",
+      "icon": "fa-ruler-horizontal",
+      "module": "力学"
+    },
+    {
+      "keyword": "滑轮",
+      "explanation": "周边有槽、能绕轴转动的轮子，分为定滑轮和动滑轮",
+      "icon": "fa-circle-notch",
+      "module": "力学"
+    },
+    {
+      "keyword": "定滑轮",
+      "explanation": "轴的位置固定不动的滑轮，不省力但能改变力的方向",
+      "icon": "fa-circle",
+      "module": "力学"
+    },
+    {
+      "keyword": "动滑轮",
+      "explanation": "轴的位置随被拉物体一起运动的滑轮，能省一半力但不能改变力的方向",
+      "icon": "fa-circle-up",
+      "module": "力学"
+    },
+    {
+      "keyword": "动能",
+      "explanation": "物体由于运动而具有的能，与物体的质量和速度有关",
+      "icon": "fa-person-running",
+      "module": "力学"
+    },
+    {
+      "keyword": "重力势能",
+      "explanation": "物体由于被举高而具有的能，与物体的质量和高度有关",
+      "icon": "fa-mountain",
+      "module": "力学"
+    },
+    {
+      "keyword": "弹性势能",
+      "explanation": "物体由于发生弹性形变而具有的能，与弹性形变的大小有关",
+      "icon": "fa-rubber",
+      "module": "力学"
+    },
+
+    // 热学模块（12个）
+    {
+      "keyword": "温度",
+      "explanation": "表示物体冷热程度的物理量，单位：摄氏度(℃)",
+      "icon": "fa-temperature-half",
+      "module": "热学"
+    },
+    {
+      "keyword": "熔化",
+      "explanation": "物质从固态变成液态的过程，需要吸热",
+      "icon": "fa-snowflake",
+      "module": "热学"
+    },
+    {
+      "keyword": "凝固",
+      "explanation": "物质从液态变成固态的过程，需要放热",
+      "icon": "fa-icicles",
+      "module": "热学"
+    },
+    {
+      "keyword": "汽化",
+      "explanation": "物质从液态变成气态的过程，需要吸热，分为蒸发和沸腾",
+      "icon": "fa-cloud-rain",
+      "module": "热学"
+    },
+    {
+      "keyword": "液化",
+      "explanation": "物质从气态变成液态的过程，需要放热",
+      "icon": "fa-droplet",
+      "module": "热学"
+    },
+    {
+      "keyword": "升华",
+      "explanation": "物质从固态直接变成气态的过程，需要吸热",
+      "icon": "fa-wind",
+      "module": "热学"
+    },
+    {
+      "keyword": "凝华",
+      "explanation": "物质从气态直接变成固态的过程，需要放热",
+      "icon": "fa-snowflake-o",
+      "module": "热学"
+    },
+    {
+      "keyword": "内能",
+      "explanation": "物体内部所有分子热运动的动能和分子势能的总和",
+      "icon": "fa-fire",
+      "module": "热学"
+    },
+    {
+      "keyword": "比热容",
+      "explanation": "单位质量的某种物质温度升高1℃所吸收的热量，是物质的一种特性",
+      "icon": "fa-thermometer",
+      "module": "热学"
+    },
+    {
+      "keyword": "热传递",
+      "explanation": "热量从高温物体传到低温物体的过程，方式：传导、对流、辐射",
+      "icon": "fa-arrows-left-right",
+      "module": "热学"
+    },
+    {
+      "keyword": "热值",
+      "explanation": "单位质量的某种燃料完全燃烧所放出的热量",
+      "icon": "fa-gas-pump",
+      "module": "热学"
+    },
+    {
+      "keyword": "热机",
+      "explanation": "把内能转化为机械能的机器，如内燃机",
+      "icon": "fa-engine",
+      "module": "热学"
+    },
+
+    // 光学模块（10个）
+    {
+      "keyword": "光的直线传播",
+      "explanation": "光在同种均匀介质中沿直线传播，如影子、小孔成像",
+      "icon": "fa-minus",
+      "module": "光学"
+    },
+    {
+      "keyword": "光的反射",
+      "explanation": "光射到物体表面时，有一部分光会被物体表面反射回去",
+      "icon": "fa-mirror",
+      "module": "光学"
+    },
+    {
+      "keyword": "镜面反射",
+      "explanation": "平行光射到光滑表面上，反射光仍然平行",
+      "icon": "fa-square",
+      "module": "光学"
+    },
+    {
+      "keyword": "漫反射",
+      "explanation": "平行光射到粗糙表面上，反射光向各个方向",
+      "icon": "fa-square-o",
+      "module": "光学"
+    },
+    {
+      "keyword": "光的折射",
+      "explanation": "光从一种介质斜射入另一种介质时，传播方向发生偏折",
+      "icon": "fa-angle-double-right",
+      "module": "光学"
+    },
+    {
+      "keyword": "凸透镜",
+      "explanation": "中间厚、边缘薄的透镜，对光有会聚作用",
+      "icon": "fa-circle-o",
+      "module": "光学"
+    },
+    {
+      "keyword": "凹透镜",
+      "explanation": "中间薄、边缘厚的透镜，对光有发散作用",
+      "icon": "fa-circle-thin",
+      "module": "光学"
+    },
+    {
+      "keyword": "焦点",
+      "explanation": "平行于主光轴的光经凸透镜折射后会聚的点",
+      "icon": "fa-dot-circle-o",
+      "module": "光学"
+    },
+    {
+      "keyword": "焦距",
+      "explanation": "焦点到光心的距离",
+      "icon": "fa-ruler-vertical",
+      "module": "光学"
+    },
+    {
+      "keyword": "光的色散",
+      "explanation": "白光通过三棱镜后被分解成各种颜色的光的现象",
+      "icon": "fa-rainbow",
+      "module": "光学"
+    },
+
+    // 电磁学模块（15个）
+    {
+      "keyword": "电荷",
+      "explanation": "物体具有吸引轻小物体的性质，就说物体带了电，分为正电荷和负电荷",
+      "icon": "fa-plug",
+      "module": "电磁学"
+    },
+    {
+      "keyword": "电流",
+      "explanation": "电荷的定向移动形成电流，方向：正电荷定向移动的方向",
+      "icon": "fa-bolt",
+      "module": "电磁学"
+    },
+    {
+      "keyword": "电压",
+      "explanation": "使电路中形成电流的原因，单位：伏特(V)",
+      "icon": "fa-battery-full",
+      "module": "电磁学"
+    },
+    {
+      "keyword": "电阻",
+      "explanation": "导体对电流的阻碍作用，是导体本身的一种性质",
+      "icon": "fa-resistor",
+      "module": "电磁学"
+    },
+    {
+      "keyword": "欧姆定律",
+      "explanation": "导体中的电流跟导体两端的电压成正比，跟导体的电阻成反比，公式：I=U/R",
+      "icon": "fa-calculator",
+      "module": "电磁学"
+    },
+    {
+      "keyword": "串联电路",
+      "explanation": "用电器依次连接的电路，电流只有一条路径",
+      "icon": "fa-chain",
+      "module": "电磁学"
+    },
+    {
+      "keyword": "并联电路",
+      "explanation": "用电器并列连接的电路，电流有多条路径",
+      "icon": "fa-code-fork",
+      "module": "电磁学"
+    },
+    {
+      "keyword": "电功",
+      "explanation": "电流所做的功，公式：W=UIt",
+      "icon": "fa-plug-circle-bolt",
+      "module": "电磁学"
+    },
+    {
+      "keyword": "电功率",
+      "explanation": "单位时间内电流所做的功，表示电流做功的快慢，公式：P=UI",
+      "icon": "fa-tachometer-alt",
+      "module": "电磁学"
+    },
+    {
+      "keyword": "焦耳定律",
+      "explanation": "电流通过导体产生的热量跟电流的二次方成正比，跟导体的电阻成正比，跟通电时间成正比",
+      "icon": "fa-fire-alt",
+      "module": "电磁学"
+    },
+    {
+      "keyword": "磁场",
+      "explanation": "磁体周围存在的一种看不见、摸不着的物质，能使磁针偏转",
+      "icon": "fa-magnet",
+      "module": "电磁学"
+    },
+    {
+      "keyword": "磁感线",
+      "explanation": "为了形象地描述磁场而假想的曲线，从磁体的N极出发，回到S极",
+      "icon": "fa-wave-square",
+      "module": "电磁学"
+    },
+    {
+      "keyword": "电磁感应",
+      "explanation": "闭合电路的一部分导体在磁场中做切割磁感线运动时，导体中就会产生电流",
+      "icon": "fa-plug-circle-check",
+      "module": "电磁学"
+    },
+    {
+      "keyword": "电动机",
+      "explanation": "利用通电导体在磁场中受力运动的原理制成，将电能转化为机械能",
+      "icon": "fa-fan",
+      "module": "电磁学"
+    },
+    {
+      "keyword": "发电机",
+      "explanation": "利用电磁感应原理制成，将机械能转化为电能",
+      "icon": "fa-solar-panel",
+      "module": "电磁学"
+    },
+
+    // 能量模块（6个）
+    {
+      "keyword": "能量",
+      "explanation": "物体能够对外做功，表示这个物体具有能量",
+      "icon": "fa-sun",
+      "module": "能量"
+    },
+    {
+      "keyword": "能量守恒定律",
+      "explanation": "能量既不会凭空产生，也不会凭空消失，它只会从一种形式转化为另一种形式，或者从一个物体转移到另一个物体，而能量的总量保持不变",
+      "icon": "fa-infinity",
+      "module": "能量"
+    },
+    {
+      "keyword": "一次能源",
+      "explanation": "直接从自然界获取的能源，如煤炭、石油、太阳能",
+      "icon": "fa-tree",
+      "module": "能量"
+    },
+    {
+      "keyword": "二次能源",
+      "explanation": "由一次能源经过加工转换得到的能源，如电能、汽油",
+      "icon": "fa-battery-half",
+      "module": "能量"
+    },
+    {
+      "keyword": "可再生能源",
+      "explanation": "可以在自然界里源源不断地得到的能源，如太阳能、风能",
+      "icon": "fa-recycle",
+      "module": "能量"
+    },
+    {
+      "keyword": "不可再生能源",
+      "explanation": "在短期内不能从自然界得到补充的能源，如煤炭、石油、天然气",
+      "icon": "fa-oil-can",
+      "module": "能量"
+    }
+  ]
+}

@@ -1,0 +1,8013 @@
+{
+  "version": "2.0",
+  "update_date": "2026-09-13",
+  "total_count": 183,
+  "modules": [
+    "力学",
+    "热学",
+    "光学",
+    "电磁学",
+    "能量",
+    "数学"
+  ],
+  "data": [
+    {
+      "id": "mech_motion_reference",
+      "name": "参照物",
+      "module": "力学",
+      "chapter": "机械运动",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "判断物体运动时被选作标准的物体。选择不同参照物，运动描述不同。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "判断车辆是否运动",
+        "选择参照物描述运动状态"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -12,
+      "y": 15,
+      "z": 38,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_motion_speed",
+      "name": "速度",
+      "module": "力学",
+      "chapter": "机械运动",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "路程与时间之比，描述运动快慢的物理量。",
+      "formula": "v=s/t",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "交通区间测速",
+        "跑步比赛计时",
+        "车速表实时显示"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "mech_motion_reference"
+      ],
+      "follow_ups": [
+        "mech_uniform_motion"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [
+        "math_unit_conversion",
+        "math_linear_graph",
+        "math_inverse_graph"
+      ],
+      "tags": [],
+      "x": 0,
+      "y": 0,
+      "z": 70,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_uniform_motion",
+      "name": "匀速直线运动",
+      "module": "力学",
+      "chapter": "机械运动",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "速度大小和方向都不变的直线运动。",
+      "formula": "s=vt",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "高铁匀速行驶",
+        "传送带运送物品",
+        "理想化物理模型"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "mech_motion_speed"
+      ],
+      "follow_ups": [
+        "mech_variable_motion"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [
+        "math_linear_graph"
+      ],
+      "tags": [],
+      "x": 18,
+      "y": -10,
+      "z": 95,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_variable_motion",
+      "name": "变速运动",
+      "module": "力学",
+      "chapter": "机械运动",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "速度大小或方向变化的运动。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "汽车起步加速",
+        "紧急刹车减速",
+        "过山车运动变化"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "mech_uniform_motion"
+      ],
+      "follow_ups": [
+        "mech_avg_speed"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 35,
+      "y": 5,
+      "z": 115,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_avg_speed",
+      "name": "平均速度",
+      "module": "力学",
+      "chapter": "机械运动",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "总路程与总时间之比，粗略描述变速运动。",
+      "formula": "v_avg=s_total/t_total",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "全程旅途耗时估算",
+        "区间测速计算",
+        "马拉松配速"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "mech_variable_motion"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 50,
+      "y": 15,
+      "z": 130,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_instant_speed",
+      "name": "瞬时速度",
+      "module": "力学",
+      "chapter": "机械运动",
+      "difficulty": 2,
+      "grade": 8,
+      "core_definition": "某一时刻或某一位置的速度。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "汽车仪表盘",
+        "雷达测速枪",
+        "速度表指针"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "mech_avg_speed"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 60,
+      "y": -5,
+      "z": 140,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_time_measure",
+      "name": "时间测量",
+      "module": "力学",
+      "chapter": "机械运动",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "使用停表、秒表测量时间间隔。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "运动会计时",
+        "秒表测跑步",
+        "实验室停表计时"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "实验题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "mech_length_measure"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -30,
+      "y": 20,
+      "z": 55,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_length_measure",
+      "name": "长度测量",
+      "module": "力学",
+      "chapter": "机械运动",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "使用刻度尺测量长度，估读到分度值下一位。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "刻度尺测课桌高度",
+        "卷尺测房间长度",
+        "游标卡尺测精密零件"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "mech_time_measure"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [
+        "math_unit_conversion"
+      ],
+      "tags": [],
+      "x": -45,
+      "y": 25,
+      "z": 70,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_sound_production",
+      "name": "声音的产生",
+      "module": "力学",
+      "chapter": "声现象",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "声音由物体振动产生，振动停止发声停止。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "说话时声带振动",
+        "敲鼓鼓面振动",
+        "音叉发声实验"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "mech_sound_propagation"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -70,
+      "y": 60,
+      "z": 80,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_sound_propagation",
+      "name": "声音的传播",
+      "module": "力学",
+      "chapter": "声现象",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "声音需要通过介质传播，真空不能传声。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "打电话空气传声",
+        "潜水员听到岸上声音",
+        "铁轨传声"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "mech_sound_production"
+      ],
+      "follow_ups": [
+        "mech_sound_speed"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -80,
+      "y": 70,
+      "z": 110,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_sound_speed",
+      "name": "声速",
+      "module": "力学",
+      "chapter": "声现象",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "声音在介质中的传播速度，固体最快气体最慢。",
+      "formula": "v=s/t",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "先看到闪电后听到雷声",
+        "回声测距",
+        "声纳定位"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "mech_sound_propagation"
+      ],
+      "follow_ups": [
+        "mech_pitch"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -95,
+      "y": 80,
+      "z": 135,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_pitch",
+      "name": "音调",
+      "module": "力学",
+      "chapter": "声现象",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "声音的高低，由振动频率决定，频率越高音调越高。",
+      "formula": "f=1/T",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "弦乐器调音",
+        "女高音男低音",
+        "吹瓶发声高低不同"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "mech_sound_speed"
+      ],
+      "follow_ups": [
+        "mech_loudness"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [
+        "math_inverse_graph"
+      ],
+      "tags": [],
+      "x": -110,
+      "y": 90,
+      "z": 155,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_loudness",
+      "name": "响度",
+      "module": "力学",
+      "chapter": "声现象",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "声音的大小，由振幅决定，振幅越大响度越大。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "调节电视音量",
+        "喊话远近不同",
+        "扩音器放大声音"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "mech_pitch"
+      ],
+      "follow_ups": [
+        "mech_timbre"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -125,
+      "y": 75,
+      "z": 170,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_timbre",
+      "name": "音色",
+      "module": "力学",
+      "chapter": "声现象",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "声音的特色，由发声体材料和结构决定。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "辨别不同乐器",
+        "听声辨人",
+        "语音识别技术"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "mech_loudness"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -140,
+      "y": 60,
+      "z": 180,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_noise_control",
+      "name": "噪声控制",
+      "module": "力学",
+      "chapter": "声现象",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "在声源处、传播过程中、人耳处控制噪声。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "隔音玻璃降噪",
+        "消音器",
+        "戴耳塞防止噪音"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "mech_sound_propagation"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -60,
+      "y": 85,
+      "z": 95,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_ultrasound_infrasound",
+      "name": "超声波次声波",
+      "module": "力学",
+      "chapter": "声现象",
+      "difficulty": 2,
+      "grade": 8,
+      "core_definition": "超声波频率>20000Hz，次声波频率<20Hz，各有特殊应用。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "B超检查身体",
+        "声纳探测鱼群",
+        "次声波预警海啸"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "mech_sound_speed"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -150,
+      "y": 50,
+      "z": 190,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_mass",
+      "name": "质量",
+      "module": "力学",
+      "chapter": "质量与密度",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "物体所含物质的多少，是物体的基本属性。",
+      "formula": "m",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "称体重",
+        "食品标注净含量",
+        "物体所含物质的多少"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "mech_mass_measurement"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 35,
+      "y": -40,
+      "z": 95,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_mass_measurement",
+      "name": "质量测量",
+      "module": "力学",
+      "chapter": "质量与密度",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "使用天平测量质量，调节平衡螺母使横梁平衡。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "天平称物体质量",
+        "电子秤称重",
+        "实验室托盘天平"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "mech_mass"
+      ],
+      "follow_ups": [
+        "mech_density"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 50,
+      "y": -50,
+      "z": 115,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_density",
+      "name": "密度",
+      "module": "力学",
+      "chapter": "质量与密度",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "某种物质组成的物体质量与体积之比。",
+      "formula": "ρ=m/V",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "鉴别黄金真假",
+        "区分铁块和铝块",
+        "盐水浮鸡蛋实验"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "计算题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "mech_mass_measurement"
+      ],
+      "follow_ups": [
+        "mech_density_measurement"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [
+        "math_unit_conversion",
+        "math_power_notation",
+        "math_inverse_graph"
+      ],
+      "tags": [],
+      "x": 65,
+      "y": -60,
+      "z": 135,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "mech_density_measurement",
+      "name": "密度测量",
+      "module": "力学",
+      "chapter": "质量与密度",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "用天平和量筒测量物质密度。",
+      "formula": "ρ=m/V",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "测牛奶密度",
+        "测盐水密度",
+        "排液法测体积"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "mech_density"
+      ],
+      "follow_ups": [
+        "mech_material_identification"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 80,
+      "y": -70,
+      "z": 150,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_material_identification",
+      "name": "物质鉴别",
+      "module": "力学",
+      "chapter": "质量与密度",
+      "difficulty": 2,
+      "grade": 8,
+      "core_definition": "通过密度比较鉴别物质种类。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "鉴别宝石种类",
+        "检测牛奶是否掺水",
+        "判断金属材料"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "mech_density_measurement"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 95,
+      "y": -80,
+      "z": 160,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_hollow_problem",
+      "name": "空心问题",
+      "module": "力学",
+      "chapter": "质量与密度",
+      "difficulty": 2,
+      "grade": 8,
+      "core_definition": "通过密度比较判断物体是否空心。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "空心铁球判断",
+        "空心砖隔热",
+        "乒乓球空心"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "mech_density_measurement"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 105,
+      "y": -85,
+      "z": 165,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_force_concept",
+      "name": "力的概念",
+      "module": "力学",
+      "chapter": "力",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "力是物体对物体的作用，施力物体和受力物体同时存在。",
+      "formula": "无",
+      "units": "",
+      "history": {
+        "scientist": "牛顿",
+        "year": "1687",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "推桌子",
+        "拉弹簧",
+        "提水桶",
+        "手推桌子：手对桌子施加了力的作用，改变了桌子的运动状态",
+        "磁铁吸引铁钉：磁铁对铁钉施加了磁力作用，力可以不接触物体而存在"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "mech_force_effects"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -40,
+      "y": 30,
+      "z": -30,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_force_effects",
+      "name": "力的作用效果",
+      "module": "力学",
+      "chapter": "力",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "力可以改变物体的形状，也可以改变物体的运动状态。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "捏橡皮泥变形",
+        "踢足球改变方向",
+        "弹簧被拉长",
+        "捏橡皮泥：力可以改变物体的形状",
+        "踢足球：力可以改变物体的运动状态"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "mech_force_concept"
+      ],
+      "follow_ups": [
+        "mech_force_elements"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -55,
+      "y": 20,
+      "z": -50,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_force_elements",
+      "name": "力的三要素",
+      "module": "力学",
+      "chapter": "力",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "力的大小、方向和作用点称为力的三要素。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "推门位置影响开门",
+        "扳手越长越省力",
+        "拧螺丝不同位置"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "mech_force_effects"
+      ],
+      "follow_ups": [
+        "mech_force_diagram"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -70,
+      "y": 10,
+      "z": -65,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_force_diagram",
+      "name": "力的示意图",
+      "module": "力学",
+      "chapter": "力",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "用带箭头线段表示力，线段起点表示作用点。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "物理作图分析",
+        "工程受力分析",
+        "物理学标准画法"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "作图题"
+        ]
+      },
+      "prerequisites": [
+        "mech_force_elements"
+      ],
+      "follow_ups": [
+        "mech_force_gravity"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -85,
+      "y": 0,
+      "z": -75,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_force_gravity",
+      "name": "重力",
+      "module": "力学",
+      "chapter": "力",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "由于地球吸引而使物体受到的力，方向竖直向下。",
+      "formula": "G=mg",
+      "units": "",
+      "history": {
+        "scientist": "牛顿",
+        "year": "1687",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "重物自然下落",
+        "建筑铅垂线",
+        "水平仪找平",
+        "苹果落地：苹果受到地球的重力作用，方向竖直向下",
+        "瀑布流水：水受到重力作用，重力方向总是竖直向下"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "mech_force_diagram"
+      ],
+      "follow_ups": [
+        "mech_force_elastic"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [
+        "math_linear_graph"
+      ],
+      "tags": [],
+      "x": -100,
+      "y": -10,
+      "z": -85,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "mech_force_elastic",
+      "name": "弹力",
+      "module": "力学",
+      "chapter": "力",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "物体发生弹性形变时产生的力。",
+      "formula": "F=kx",
+      "units": "",
+      "history": {
+        "scientist": "胡克",
+        "year": "1660",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "弹簧伸长",
+        "橡皮筋拉伸",
+        "弓箭射箭",
+        "弹簧测力计：在弹性限度内，弹簧的伸长量与受到的拉力成正比",
+        "蹦床运动：蹦床发生弹性形变产生弹力，将人弹起"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "mech_force_gravity"
+      ],
+      "follow_ups": [
+        "mech_friction"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [
+        "math_linear_graph"
+      ],
+      "tags": [],
+      "x": -115,
+      "y": -20,
+      "z": -90,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_friction",
+      "name": "摩擦力",
+      "module": "力学",
+      "chapter": "力",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "两个接触面阻碍相对运动的力，分为静摩擦、滑动摩擦和滚动摩擦。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "鞋底花纹防滑",
+        "刹车减速",
+        "轮胎防滑链",
+        "鞋底花纹：通过增大接触面的粗糙程度来增大摩擦力，防止滑倒",
+        "自行车刹车：通过增大压力来增大摩擦力，使车轮停止转动"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "mech_force_elastic"
+      ],
+      "follow_ups": [
+        "mech_force_analysis"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -130,
+      "y": -30,
+      "z": -95,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "mech_force_analysis",
+      "name": "受力分析",
+      "module": "力学",
+      "chapter": "力",
+      "difficulty": 2,
+      "grade": 8,
+      "core_definition": "对物体进行受力分析，画出受力示意图。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "桥梁受力分析",
+        "物体平衡分析",
+        "工程结构设计"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "作图题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "mech_friction"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -145,
+      "y": -35,
+      "z": -100,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_newton1",
+      "name": "牛顿第一定律",
+      "module": "力学",
+      "chapter": "运动和力",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "一切物体在没有受到力时，总保持静止或匀速直线运动状态。",
+      "formula": "无",
+      "units": "",
+      "history": {
+        "scientist": "牛顿",
+        "year": "1687",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "滑冰停止蹬冰后滑行",
+        "汽车刹车后前行",
+        "理想实验推理",
+        "汽车急刹车：乘客具有惯性，要保持原来的运动状态",
+        "跳远助跑：利用惯性，使运动员跳得更远"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "mech_force_concept"
+      ],
+      "follow_ups": [
+        "mech_inertia"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -20,
+      "y": -50,
+      "z": -40,
+      "size": 12,
+      "color": "",
+      "brightness": 1.5,
+      "star_level": 1
+    },
+    {
+      "id": "mech_inertia",
+      "name": "惯性",
+      "module": "力学",
+      "chapter": "运动和力",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "物体保持原来运动状态不变的性质，一切物体都有惯性。",
+      "formula": "无",
+      "units": "",
+      "history": {
+        "scientist": "牛顿",
+        "year": "1687",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "乘车时身体前倾",
+        "刹车人向前倒",
+        "抖衣服除尘"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "mech_newton1"
+      ],
+      "follow_ups": [
+        "mech_balance_forces"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 0,
+      "y": -65,
+      "z": -55,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "mech_balance_forces",
+      "name": "二力平衡",
+      "module": "力学",
+      "chapter": "运动和力",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "作用在同一物体上的两个力，大小相等、方向相反、同一直线。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "静止的书本",
+        "匀速直线行驶的汽车",
+        "悬挂的电灯",
+        "静止的吊灯：吊灯受到的重力和绳子的拉力是一对平衡力",
+        "匀速行驶的汽车：汽车受到的牵引力和阻力是一对平衡力"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [
+        "mech_inertia"
+      ],
+      "follow_ups": [
+        "mech_balanced_vs_interaction"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 20,
+      "y": -75,
+      "z": -65,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "mech_balanced_vs_interaction",
+      "name": "平衡力与相互作用力",
+      "module": "力学",
+      "chapter": "运动和力",
+      "difficulty": 2,
+      "grade": 8,
+      "core_definition": "平衡力作用在同一物体，相互作用力作用在不同物体。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "书对桌压力与桌对书支持力",
+        "手推墙墙推手"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "mech_balance_forces"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 40,
+      "y": -85,
+      "z": -70,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_force_motion_state",
+      "name": "力与运动状态",
+      "module": "力学",
+      "chapter": "运动和力",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "力是改变物体运动状态的原因，不是维持运动的原因。",
+      "formula": "无",
+      "units": "",
+      "history": {
+        "scientist": "亚里士多德(前)",
+        "year": "牛顿(1687)",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "踢球改变方向",
+        "推车加速",
+        "刹车减速"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "mech_newton1"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -40,
+      "y": -40,
+      "z": -50,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_force_composition",
+      "name": "同一直线二力合成",
+      "module": "力学",
+      "chapter": "运动和力",
+      "difficulty": 2,
+      "grade": 8,
+      "core_definition": "同向相加，反向相减。",
+      "formula": "F=F1+F2或F=|F1-F2|",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "两人同向拉车",
+        "拔河比赛",
+        "方向相反力的合成"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "mech_balance_forces"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 55,
+      "y": -90,
+      "z": -68,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_pressure_force",
+      "name": "压力",
+      "module": "力学",
+      "chapter": "压强",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "垂直作用在物体表面上的力。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "人站立对地面有压力",
+        "书压桌面",
+        "图钉按入墙"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "mech_force_gravity"
+      ],
+      "follow_ups": [
+        "mech_pressure"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 65,
+      "y": 45,
+      "z": -85,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_pressure",
+      "name": "压强",
+      "module": "力学",
+      "chapter": "压强",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "物体所受压力与受力面积之比。",
+      "formula": "p=F/S",
+      "units": "",
+      "history": {
+        "scientist": "帕斯卡",
+        "year": "17世纪",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "滑雪板减小压强",
+        "图钉尖增大压强",
+        "坦克履带减小压强",
+        "菜刀磨锋利：通过减小受力面积来增大压强，更容易切开食物",
+        "坦克履带：通过增大受力面积来减小压强，防止坦克陷入泥土"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "mech_pressure_force"
+      ],
+      "follow_ups": [
+        "mech_liquid_pressure"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [
+        "math_power_notation",
+        "math_inverse_graph"
+      ],
+      "tags": [],
+      "x": 80,
+      "y": 55,
+      "z": -100,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "mech_liquid_pressure",
+      "name": "液体压强",
+      "module": "力学",
+      "chapter": "压强",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "液体内部向各个方向都有压强，深度越大压强越大。",
+      "formula": "p=ρgh",
+      "units": "",
+      "history": {
+        "scientist": "帕斯卡",
+        "year": "17世纪",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "水坝上窄下宽",
+        "潜水服耐压",
+        "水越深压强越大",
+        "大坝下宽上窄：液体压强随深度的增加而增大，底部需要承受更大的压强",
+        "潜水服：深水处压强很大，潜水服可以保护潜水员免受水压伤害"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "mech_pressure"
+      ],
+      "follow_ups": [
+        "mech_atmospheric_pressure"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 95,
+      "y": 65,
+      "z": -115,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "mech_atmospheric_pressure",
+      "name": "大气压强",
+      "module": "力学",
+      "chapter": "压强",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "大气对浸在其中的物体产生的压强。",
+      "formula": "p0=1.013×10^5Pa",
+      "units": "",
+      "history": {
+        "scientist": "托里拆利",
+        "year": "1643",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "吸盘挂钩",
+        "吸管喝饮料",
+        "瓶装矿泉水",
+        "吸管喝饮料：吸走吸管内的空气，大气压将饮料压入吸管",
+        "吸盘挂钩：挤出吸盘内的空气，大气压将吸盘紧紧压在墙上"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "mech_liquid_pressure"
+      ],
+      "follow_ups": [
+        "mech_pressure_measure"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [
+        "math_unit_conversion",
+        "math_power_notation"
+      ],
+      "tags": [],
+      "x": 110,
+      "y": 75,
+      "z": -125,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_pressure_measure",
+      "name": "大气压测量",
+      "module": "力学",
+      "chapter": "压强",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "托里拆利实验测量大气压值。",
+      "formula": "无",
+      "units": "",
+      "history": {
+        "scientist": "托里拆利",
+        "year": "1643",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "托里拆利实验",
+        "气压计",
+        "天气预报气压"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "mech_atmospheric_pressure"
+      ],
+      "follow_ups": [
+        "mech_fluid_pressure"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 125,
+      "y": 80,
+      "z": -130,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_fluid_pressure",
+      "name": "流体压强与流速",
+      "module": "力学",
+      "chapter": "压强",
+      "difficulty": 2,
+      "grade": 8,
+      "core_definition": "流体流速越大的位置压强越小。",
+      "formula": "无",
+      "units": "",
+      "history": {
+        "scientist": "伯努利",
+        "year": "1738",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "飞机机翼升力",
+        "火车站安全线",
+        "喷雾器原理"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "mech_pressure_measure"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 140,
+      "y": 85,
+      "z": -135,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_communicating_vessels",
+      "name": "连通器",
+      "module": "力学",
+      "chapter": "压强",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "上端开口下端连通的容器，液面高度相同。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "茶壶壶身壶嘴等高",
+        "水塔供水",
+        "船闸过船"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "mech_liquid_pressure"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 105,
+      "y": 45,
+      "z": -85,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_pascal_principle",
+      "name": "帕斯卡原理",
+      "module": "力学",
+      "chapter": "压强",
+      "difficulty": 2,
+      "grade": 8,
+      "core_definition": "加在密闭液体上的压强大小不变地向各个方向传递。",
+      "formula": "F1/S1=F2/S2",
+      "units": "",
+      "history": {
+        "scientist": "帕斯卡",
+        "year": "1653",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "液压千斤顶",
+        "汽车刹车系统",
+        "液压机"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "mech_pressure"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 150,
+      "y": 90,
+      "z": -138,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_buoyancy_cause",
+      "name": "浮力产生原因",
+      "module": "力学",
+      "chapter": "浮力",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "浸在液体中的物体上下表面压力差即为浮力。",
+      "formula": "F浮=F向上-F向下",
+      "units": "",
+      "history": {
+        "scientist": "阿基米德",
+        "year": "前3世纪",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "游泳时感到上浮",
+        "水中搬石头感觉轻",
+        "木块压入水中有浮力"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "mech_pressure"
+      ],
+      "follow_ups": [
+        "mech_archimedes"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 80,
+      "y": -45,
+      "z": -130,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_archimedes",
+      "name": "阿基米德原理",
+      "module": "力学",
+      "chapter": "浮力",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "浸在液体中的物体所受浮力等于排开液体的重力。",
+      "formula": "F浮=ρ液gV排",
+      "units": "",
+      "history": {
+        "scientist": "阿基米德",
+        "year": "前3世纪",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "轮船载货",
+        "曹冲称象",
+        "盐水选种",
+        "曹冲称象：物体漂浮时浮力等于重力，大象和石头排开水的体积相同，所以重量相同",
+        "密度计：密度计在不同液体中都漂浮，浮力等于重力，排开液体的体积与液体密度成反比"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "计算题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "mech_buoyancy_cause"
+      ],
+      "follow_ups": [
+        "mech_float_sink_condition"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 95,
+      "y": -55,
+      "z": -145,
+      "size": 12,
+      "color": "",
+      "brightness": 1.5,
+      "star_level": 1
+    },
+    {
+      "id": "mech_float_sink_condition",
+      "name": "物体浮沉条件",
+      "module": "力学",
+      "chapter": "浮力",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "ρ物<ρ液漂浮，ρ物=ρ液悬浮，ρ物>ρ液下沉。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "新鲜鸡蛋沉底加盐后浮起",
+        "潜艇浮沉",
+        "鱼鳔调节浮沉"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "mech_archimedes"
+      ],
+      "follow_ups": [
+        "mech_浮力应用_轮船"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 110,
+      "y": -65,
+      "z": -155,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "mech_浮力应用_轮船",
+      "name": "浮力应用·轮船",
+      "module": "力学",
+      "chapter": "浮力",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "采用空心增大排开液体体积，从而增大浮力。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "万吨巨轮浮在水面",
+        "渡船载客",
+        "航空母舰"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "mech_float_sink_condition"
+      ],
+      "follow_ups": [
+        "mech_浮力应用_潜水艇"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 125,
+      "y": -75,
+      "z": -160,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_浮力应用_潜水艇",
+      "name": "浮力应用·潜水艇",
+      "module": "力学",
+      "chapter": "浮力",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "通过改变自身重量实现浮沉。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "潜水艇下潜上浮",
+        "深海探测器",
+        "蛟龙号"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "mech_浮力应用_轮船"
+      ],
+      "follow_ups": [
+        "mech_浮力应用_气球飞艇"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 140,
+      "y": -85,
+      "z": -162,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_浮力应用_气球飞艇",
+      "name": "浮力应用·气球飞艇",
+      "module": "力学",
+      "chapter": "浮力",
+      "difficulty": 2,
+      "grade": 8,
+      "core_definition": "充入密度小于空气的气体获得浮力。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "热气球升空",
+        "气象探测气球",
+        "飞艇"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "mech_浮力应用_潜水艇"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 150,
+      "y": -92,
+      "z": -158,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_lever",
+      "name": "杠杆",
+      "module": "力学",
+      "chapter": "简单机械",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "在力作用下绕固定点转动的硬棒。",
+      "formula": "无",
+      "units": "",
+      "history": {
+        "scientist": "阿基米德",
+        "year": "前3世纪",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "跷跷板",
+        "撬棍撬石头",
+        "羊角锤拔钉",
+        "撬棍撬石头：撬棍是省力杠杆，动力臂大于阻力臂，省力但费距离",
+        "筷子夹菜：筷子是费力杠杆，动力臂小于阻力臂，费力但省距离"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "mech_lever_balance"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -80,
+      "y": -45,
+      "z": 120,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "mech_lever_balance",
+      "name": "杠杆平衡条件",
+      "module": "力学",
+      "chapter": "简单机械",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "动力×动力臂=阻力×阻力臂。",
+      "formula": "F1L1=F2L2",
+      "units": "",
+      "history": {
+        "scientist": "阿基米德",
+        "year": "前3世纪",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "天平称质量",
+        "秤杆称重",
+        "钳子省力"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "计算题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "mech_lever"
+      ],
+      "follow_ups": [
+        "mech_滑轮"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -95,
+      "y": -55,
+      "z": 140,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "mech_滑轮",
+      "name": "滑轮",
+      "module": "力学",
+      "chapter": "简单机械",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "定滑轮不省力改变力的方向，动滑轮省一半力。",
+      "formula": "F=G/2(动滑轮)",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "升旗定滑轮",
+        "起重机滑轮组",
+        "井边打水动滑轮",
+        "旗杆顶端的滑轮：定滑轮可以改变力的方向，使人在地面就能把旗子升上去",
+        "起重机：滑轮组结合了定滑轮和动滑轮的优点，既可以省力，又可以改变力的方向"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "mech_lever_balance"
+      ],
+      "follow_ups": [
+        "mech_滑轮组"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -110,
+      "y": -65,
+      "z": 155,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_滑轮组",
+      "name": "滑轮组",
+      "module": "力学",
+      "chapter": "简单机械",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "定滑轮和动滑轮组合，既省力又能改变力的方向。",
+      "formula": "F=G/n",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "起重机吊重物",
+        "电梯升降",
+        "塔吊"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "mech_滑轮"
+      ],
+      "follow_ups": [
+        "mech_inclined_plane"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -125,
+      "y": -75,
+      "z": 165,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_inclined_plane",
+      "name": "斜面",
+      "module": "力学",
+      "chapter": "简单机械",
+      "difficulty": 2,
+      "grade": 8,
+      "core_definition": "斜面越长越省力，高度相同斜面越长所需拉力越小。",
+      "formula": "FL=Gh",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "盘山公路",
+        "楼梯",
+        "螺丝钉螺纹"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "mech_滑轮组"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -140,
+      "y": -80,
+      "z": 170,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_wheel_axle",
+      "name": "轮轴",
+      "module": "力学",
+      "chapter": "简单机械",
+      "difficulty": 2,
+      "grade": 8,
+      "core_definition": "轮半径是轴半径的几倍，作用在轮上的力就是轴上的几分之一。",
+      "formula": "F1R=F2r",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "方向盘",
+        "门把手",
+        "水龙头旋钮"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "mech_lever_balance"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -150,
+      "y": -82,
+      "z": 168,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_work",
+      "name": "功",
+      "module": "力学",
+      "chapter": "功和功率",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "力与在力的方向上移动距离的乘积。",
+      "formula": "W=Fs",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "搬砖上楼做功",
+        "推车前进",
+        "起重机吊重物",
+        "搬桌子上楼：人对桌子施加了向上的力，桌子在力的方向上移动了距离，所以人对桌子做了功",
+        "推箱子：人对箱子施加了水平方向的力，箱子在力的方向上移动了距离，所以人对箱子做了功"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "mech_force_concept"
+      ],
+      "follow_ups": [
+        "mech_power"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 10,
+      "y": 95,
+      "z": -65,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "mech_power",
+      "name": "功率",
+      "module": "力学",
+      "chapter": "功和功率",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "功与做功所用时间之比，表示做功快慢。",
+      "formula": "P=W/t",
+      "units": "",
+      "history": {
+        "scientist": "瓦特",
+        "year": "18世纪",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "汽车发动机功率",
+        "电吹风功率",
+        "运动员输出功率",
+        "汽车马力：马力是功率的单位，功率越大，单位时间内做的功越多，加速能力越强",
+        "爬楼梯比赛：做的功相同，用时越短，功率越大"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "mech_work"
+      ],
+      "follow_ups": [
+        "mech_efficiency"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 25,
+      "y": 105,
+      "z": -80,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "mech_efficiency",
+      "name": "机械效率",
+      "module": "力学",
+      "chapter": "功和功率",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "有用功与总功之比，η<1。",
+      "formula": "η=W有/W总×100%",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "起重机效率",
+        "滑轮组效率",
+        "机械省力不省功",
+        "滑轮组提升重物：克服动滑轮重力和摩擦力做的功是额外功，机械效率总是小于1",
+        "机器保养：加润滑油可以减小摩擦力，从而减少额外功，提高机械效率"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "计算题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "mech_power"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 40,
+      "y": 115,
+      "z": -90,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_mechanical_energy",
+      "name": "机械能",
+      "module": "力学",
+      "chapter": "功和功率",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "动能和势能统称为机械能。",
+      "formula": "E机械=Ek+Ep",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "过山车势能转化动能",
+        "跳水",
+        "蹦极"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "mech_work"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -5,
+      "y": 110,
+      "z": -85,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "mech_newton1_core",
+      "name": "牛顿第一定律(核心)",
+      "module": "力学",
+      "chapter": "核心定律",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "力不是维持物体运动的原因，而是改变物体运动状态的原因。",
+      "formula": "无",
+      "units": "",
+      "history": {
+        "scientist": "牛顿",
+        "year": "1687",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "物体运动不需要力来维持",
+        "惯性定律基础",
+        "经典力学基石"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 0,
+      "y": 60,
+      "z": 0,
+      "size": 20,
+      "color": "",
+      "brightness": 1.5,
+      "star_level": 1
+    },
+    {
+      "id": "mech_archimedes_core",
+      "name": "阿基米德原理(核心)",
+      "module": "力学",
+      "chapter": "核心定律",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "浸在液体中的物体受到向上的浮力，浮力大小等于排开液体的重力。",
+      "formula": "F浮=ρ液gV排",
+      "units": "",
+      "history": {
+        "scientist": "阿基米德",
+        "year": "前3世纪",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "浮力计算基础",
+        "船舶设计原理",
+        "密度测量方法"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "计算题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -52,
+      "y": -30,
+      "z": 0,
+      "size": 20,
+      "color": "",
+      "brightness": 1.5,
+      "star_level": 1
+    },
+    {
+      "id": "mech_balance_forces_core",
+      "name": "二力平衡(核心)",
+      "module": "力学",
+      "chapter": "核心定律",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "平衡状态下的物体所受合力为零。",
+      "formula": "F合=0",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "平衡状态分析",
+        "静力学基础",
+        "工程结构稳定"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 52,
+      "y": -30,
+      "z": 0,
+      "size": 20,
+      "color": "",
+      "brightness": 1.5,
+      "star_level": 1
+    },
+    {
+      "id": "therm_temperature",
+      "name": "温度",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "表示物体冷热程度的物理量。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "体温计测体温",
+        "天气预报温度",
+        "空调设定温度",
+        "体温计：利用液体热胀冷缩的性质制成",
+        "天气预报：气温是指空气的冷热程度"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "therm_thermometer"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -15,
+      "y": 20,
+      "z": 60,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_thermometer",
+      "name": "温度计",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "利用液体热胀冷缩的原理制成。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "水银温度计",
+        "电子温度计",
+        "红外测温枪"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "therm_temperature"
+      ],
+      "follow_ups": [
+        "therm_melting_freezing"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 0,
+      "y": 10,
+      "z": 80,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_melting_freezing",
+      "name": "熔化与凝固",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "物质从固态变为液态（熔化）或从液态变为固态（凝固）。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "冰化成水",
+        "铁水铸成铁件",
+        "蜡烛熔化"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "therm_thermometer"
+      ],
+      "follow_ups": [
+        "therm_熔化吸热与凝固放热"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 15,
+      "y": 0,
+      "z": 95,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_熔化吸热与凝固放热",
+      "name": "熔化吸热与凝固放热",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "熔化过程吸收热量，凝固过程放出热量。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "冰镇饮料吸热",
+        "冬天菜窖放水防冻",
+        "冰淇淋制作"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "therm_melting_freezing"
+      ],
+      "follow_ups": [
+        "therm_汽化与液化"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 30,
+      "y": -10,
+      "z": 105,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_汽化与液化",
+      "name": "汽化与液化",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "物质从液态变为气态（汽化）或从气态变为液态（液化）。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "水烧开变成蒸汽",
+        "露水形成",
+        "冬天呼出白气"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "therm_熔化吸热与凝固放热"
+      ],
+      "follow_ups": [
+        "therm_蒸发与沸腾"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 45,
+      "y": -20,
+      "z": 110,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_蒸发与沸腾",
+      "name": "蒸发与沸腾",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "蒸发在任何温度下进行，沸腾在沸点进行。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "湿衣服晾干",
+        "烧开水",
+        "汗液蒸发降温"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "therm_汽化与液化"
+      ],
+      "follow_ups": [
+        "therm_液化方法"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 60,
+      "y": -25,
+      "z": 112,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_液化方法",
+      "name": "液化方法",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "difficulty": 2,
+      "grade": 7,
+      "core_definition": "降低温度和压缩体积可使气体液化。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "打火机液化石油气",
+        "液化天然气",
+        "氧气瓶"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "therm_蒸发与沸腾"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 75,
+      "y": -28,
+      "z": 108,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_升华与凝华",
+      "name": "升华与凝华",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "物质从固态直接变为气态（升华）或从气态直接变为固态（凝华）。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "干冰升华制冷",
+        "霜的形成",
+        "樟脑丸变小"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "therm_汽化与液化"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 90,
+      "y": -30,
+      "z": 100,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_物质的构成",
+      "name": "物质的构成",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "物质由分子、原子等微观粒子构成。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "水由水分子构成",
+        "金属由原子构成",
+        "显微镜下观察分子"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "therm_分子热运动"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -90,
+      "y": 30,
+      "z": 100,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_分子热运动",
+      "name": "分子热运动",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "一切物质的分子都在永不停息地做无规则运动。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "闻到花香",
+        "酒香不怕巷子深",
+        "炒菜放盐入味快"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "therm_物质的构成"
+      ],
+      "follow_ups": [
+        "therm_扩散现象"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -105,
+      "y": 20,
+      "z": 115,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_扩散现象",
+      "name": "扩散现象",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "不同物质相互接触时彼此进入对方的现象。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "墨水滴入水中扩散",
+        "扩撒现象",
+        "二氧化氮扩散"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "therm_分子热运动"
+      ],
+      "follow_ups": [
+        "therm_分子间作用力"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -120,
+      "y": 10,
+      "z": 125,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_分子间作用力",
+      "name": "分子间作用力",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "分子间同时存在引力和斥力。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "固体难拉伸",
+        "液体能流动",
+        "胶水粘合物体"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "therm_扩散现象"
+      ],
+      "follow_ups": [
+        "therm_internal_energy"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -135,
+      "y": 0,
+      "z": 130,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_internal_energy",
+      "name": "内能",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "物体内部所有分子热运动的动能和分子势能的总和。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "热水有内能",
+        "蒸气推动活塞",
+        "物体温度越高内能越大",
+        "搓手取暖：通过做功的方式增加手的内能",
+        "热水袋取暖：通过热传递的方式增加手的内能"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "therm_分子间作用力"
+      ],
+      "follow_ups": [
+        "therm_改变内能的方式"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -150,
+      "y": -10,
+      "z": 128,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "therm_改变内能的方式",
+      "name": "改变内能的方式",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "做功和热传递可以改变物体的内能。",
+      "formula": "无",
+      "units": "",
+      "history": {
+        "scientist": "焦耳",
+        "year": "1840",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "摩擦生热",
+        "暖气取暖",
+        "钻木取火"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "therm_internal_energy"
+      ],
+      "follow_ups": [
+        "therm_热量"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -160,
+      "y": -20,
+      "z": 120,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_热量",
+      "name": "热量",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "在热传递过程中传递的能量的多少。",
+      "formula": "Q",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "热传递中传递的能量",
+        "物体吸热升温",
+        "放热降温"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "therm_改变内能的方式"
+      ],
+      "follow_ups": [
+        "therm_热传递"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -165,
+      "y": -28,
+      "z": 108,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_热传递",
+      "name": "热传递",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "热量从高温物体传向低温物体的过程。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "暖气片供暖",
+        "太阳能热水器",
+        "保温杯保温",
+        "铁锅炒菜：通过传导的方式传递热量",
+        "暖气供暖：通过对流的方式传递热量"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "therm_热量"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -160,
+      "y": -38,
+      "z": 92,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_specific_heat",
+      "name": "比热容",
+      "module": "热学",
+      "chapter": "比热容与热量",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "一定质量的某种物质温度升高1℃所吸收的热量。",
+      "formula": "c=Q/mΔt",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "沿海地区昼夜温差小",
+        "沙漠昼夜温差大",
+        "水的比热容大",
+        "海边昼夜温差小：水的比热容比沙子大，吸收或放出相同的热量，水的温度变化小",
+        "汽车发动机用水冷却：水的比热容大，吸收相同的热量，温度升高得少，冷却效果好"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "therm_internal_energy"
+      ],
+      "follow_ups": [
+        "therm_heat_calculation"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [
+        "math_unit_conversion"
+      ],
+      "tags": [],
+      "x": -20,
+      "y": -70,
+      "z": 100,
+      "size": 12,
+      "color": "",
+      "brightness": 1.5,
+      "star_level": 1
+    },
+    {
+      "id": "therm_heat_calculation",
+      "name": "热量计算",
+      "module": "热学",
+      "chapter": "比热容与热量",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "吸收或放出的热量与比热容、质量和温度变化有关。",
+      "formula": "Q=cmΔt",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "烧水吸收热量计算",
+        "暖气供热计算",
+        "散热器设计"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "therm_specific_heat"
+      ],
+      "follow_ups": [
+        "therm_水的比热容"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -35,
+      "y": -80,
+      "z": 110,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "therm_水的比热容",
+      "name": "水的比热容",
+      "module": "热学",
+      "chapter": "比热容与热量",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "水的比热容较大，常用于散热和保温。",
+      "formula": "c水=4.2×10^3J/(kg·℃)",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "汽车水箱用水冷却",
+        "暖气用水作介质",
+        "海水调节气温"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "therm_heat_calculation"
+      ],
+      "follow_ups": [
+        "therm_calorific_value"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [
+        "math_unit_conversion",
+        "math_power_notation"
+      ],
+      "tags": [],
+      "x": -50,
+      "y": -90,
+      "z": 115,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_calorific_value",
+      "name": "热值",
+      "module": "热学",
+      "chapter": "比热容与热量",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "燃料完全燃烧放出的热量与其质量之比。",
+      "formula": "q=Q/m",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "汽油热值高",
+        "天然气的热值高",
+        "煤炭发电",
+        "天然气做饭：天然气的热值比煤高，相同质量的天然气燃烧放出的热量更多",
+        "火箭燃料：液态氢的热值大，相同质量的液态氢燃烧放出的热量多"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "therm_水的比热容"
+      ],
+      "follow_ups": [
+        "therm_heat_engine"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -65,
+      "y": -95,
+      "z": 112,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_heat_engine",
+      "name": "热机",
+      "module": "热学",
+      "chapter": "比热容与热量",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "将内能转化为机械能的机器。",
+      "formula": "无",
+      "units": "",
+      "history": {
+        "scientist": "瓦特",
+        "year": "18世纪",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "汽油机驱动汽车",
+        "柴油机驱动卡车",
+        "蒸汽机火车",
+        "汽车发动机：内燃机将燃料燃烧释放的内能转化为机械能",
+        "蒸汽机：蒸汽机将蒸汽的内能转化为机械能"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "therm_calorific_value"
+      ],
+      "follow_ups": [
+        "therm_heat_engine_efficiency"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -80,
+      "y": -100,
+      "z": 105,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_heat_engine_efficiency",
+      "name": "热机效率",
+      "module": "热学",
+      "chapter": "比热容与热量",
+      "difficulty": 2,
+      "grade": 9,
+      "core_definition": "热机所做的有用功与燃料完全燃烧放出的热量之比。",
+      "formula": "η=W有用/Q总",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "汽车发动机效率",
+        "提高燃油利用率",
+        "节能减排"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "therm_heat_engine"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -95,
+      "y": -102,
+      "z": 95,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_熔点与凝固点",
+      "name": "熔点与凝固点",
+      "module": "热学",
+      "chapter": "物态变化中的能量",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "晶体有固定的熔点和凝固点，非晶体没有。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "冰的熔点是0℃",
+        "铁的熔点高",
+        "焊锡熔点低"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "therm_melting_freezing"
+      ],
+      "follow_ups": [
+        "therm_晶体与非晶体"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 110,
+      "y": -15,
+      "z": -90,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_晶体与非晶体",
+      "name": "晶体与非晶体",
+      "module": "热学",
+      "chapter": "物态变化中的能量",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "晶体有规则结构，非晶体没有规则结构。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "冰是晶体",
+        "玻璃是非晶体",
+        "金属晶体结构"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "therm_熔点与凝固点"
+      ],
+      "follow_ups": [
+        "therm_沸点与气压"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 125,
+      "y": -5,
+      "z": -85,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_沸点与气压",
+      "name": "沸点与气压",
+      "module": "热学",
+      "chapter": "物态变化中的能量",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "气压越高沸点越高，气压越低沸点越低。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "高压锅蒸煮",
+        "高原煮饭难熟",
+        "气压越低沸点越低"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "therm_晶体与非晶体"
+      ],
+      "follow_ups": [
+        "therm_蒸发致冷"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 140,
+      "y": 5,
+      "z": -75,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_蒸发致冷",
+      "name": "蒸发致冷",
+      "module": "热学",
+      "chapter": "物态变化中的能量",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "液体蒸发时要吸收热量，有制冷作用。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "出汗降温",
+        "洒水降温",
+        "酒精擦身退烧"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "therm_蒸发与沸腾"
+      ],
+      "follow_ups": [
+        "therm_物态变化中的能量转化"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 150,
+      "y": 15,
+      "z": -62,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_物态变化中的能量转化",
+      "name": "物态变化中的能量转化",
+      "module": "热学",
+      "chapter": "物态变化中的能量",
+      "difficulty": 2,
+      "grade": 7,
+      "core_definition": "物态变化伴随着能量的转移和转化。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "蒸发吸热",
+        "凝固放热",
+        "物态变化伴随能量转移"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "therm_蒸发致冷"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 155,
+      "y": 25,
+      "z": -48,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_物态变化图像",
+      "name": "物态变化图像",
+      "module": "热学",
+      "chapter": "物态变化中的能量",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "用温度-时间图像表示物态变化过程。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "熔化曲线分析",
+        "凝固曲线",
+        "沸腾曲线判断"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "实验题",
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "therm_熔点与凝固点"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 160,
+      "y": 30,
+      "z": -35,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_自然界水循环",
+      "name": "自然界水循环",
+      "module": "热学",
+      "chapter": "物态变化中的能量",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "水的三态变化构成了自然界的水循环。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "江河湖海循环",
+        "降雨降雪",
+        "水循环维持生态"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "therm_物态变化中的能量转化"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 158,
+      "y": 20,
+      "z": -20,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_能量守恒定律_热学",
+      "name": "能量守恒定律(热学)",
+      "module": "热学",
+      "chapter": "热力学基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "能量既不会凭空产生也不会凭空消失，只能从一种形式转化为另一种形式。",
+      "formula": "无",
+      "units": "",
+      "history": {
+        "scientist": "迈尔",
+        "year": "1842;焦耳",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "热功当量实验",
+        "能量转化",
+        "永动机不可能"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "therm_internal_energy"
+      ],
+      "follow_ups": [
+        "therm_热力学第一定律"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 100,
+      "y": 70,
+      "z": -20,
+      "size": 12,
+      "color": "",
+      "brightness": 1.5,
+      "star_level": 1
+    },
+    {
+      "id": "therm_热力学第一定律",
+      "name": "热力学第一定律",
+      "module": "热学",
+      "chapter": "热力学基础",
+      "difficulty": 2,
+      "grade": 9,
+      "core_definition": "物体内能变化等于外界对物体做功与传热之和。",
+      "formula": "ΔU=W+Q",
+      "units": "",
+      "history": {
+        "scientist": "焦耳",
+        "year": "1840",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "压缩气体升温",
+        "膨胀降温",
+        "内能变化"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "therm_能量守恒定律_热学"
+      ],
+      "follow_ups": [
+        "therm_热传递方向"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 110,
+      "y": 80,
+      "z": -30,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_热传递方向",
+      "name": "热传递方向",
+      "module": "热学",
+      "chapter": "热力学基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "热量自发地从高温物体传向低温物体。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "热从高温传向低温",
+        "暖气供暖",
+        "冷气降温"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "therm_热力学第一定律"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 120,
+      "y": 85,
+      "z": -40,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_温度与分子运动",
+      "name": "温度与分子运动",
+      "module": "热学",
+      "chapter": "热力学基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "温度是分子热运动剧烈程度的标志。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "温度越高分子运动越剧烈",
+        "热汤分子运动快",
+        "冰水分子运动慢"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "therm_分子热运动"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 95,
+      "y": 55,
+      "z": -25,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_热膨胀",
+      "name": "热膨胀",
+      "module": "热学",
+      "chapter": "热力学基础",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "一般物体温度升高时体积膨胀，温度降低时体积收缩。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "夏天电线松弛",
+        "铁轨预留缝隙",
+        "水银温度计"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "therm_temperature"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 105,
+      "y": 45,
+      "z": -35,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "therm_相变潜热",
+      "name": "相变潜热",
+      "module": "热学",
+      "chapter": "热力学基础",
+      "difficulty": 2,
+      "grade": 9,
+      "core_definition": "物态变化过程中吸收或放出的热量。",
+      "formula": "Q=mL",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "冰融化吸热",
+        "水汽化吸热",
+        "相变储能材料"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "计算题",
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "therm_物态变化中的能量转化"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 130,
+      "y": 90,
+      "z": -50,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_light_source",
+      "name": "光源",
+      "module": "光学",
+      "chapter": "光的直线传播",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "自身能够发光的物体叫做光源。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "太阳发光",
+        "电灯照明",
+        "萤火虫发光"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "opt_rectilinear_propagation"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -60,
+      "y": 40,
+      "z": 50,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_rectilinear_propagation",
+      "name": "光的直线传播",
+      "module": "光学",
+      "chapter": "光的直线传播",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "光在同种均匀介质中沿直线传播。",
+      "formula": "无",
+      "units": "",
+      "history": {
+        "scientist": "墨子",
+        "year": "前4世纪",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "影子的形成",
+        "排队看齐",
+        "射击瞄准",
+        "影子的形成：光沿直线传播，遇到不透明物体时，在物体后面形成黑暗区域",
+        "小孔成像：光沿直线传播，通过小孔形成倒立的实像"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "opt_light_source"
+      ],
+      "follow_ups": [
+        "opt_light_speed"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -70,
+      "y": 30,
+      "z": 70,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_light_speed",
+      "name": "光速",
+      "module": "光学",
+      "chapter": "光的直线传播",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "光在真空中传播速度最快。",
+      "formula": "c=3×10^8m/s",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "光纤通信",
+        "雷达测距",
+        "光年天文学距离单位"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "opt_rectilinear_propagation"
+      ],
+      "follow_ups": [
+        "opt_影子的形成"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [
+        "math_power_notation"
+      ],
+      "tags": [],
+      "x": -80,
+      "y": 20,
+      "z": 85,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_影子的形成",
+      "name": "影子的形成",
+      "module": "光学",
+      "chapter": "光的直线传播",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "光沿直线传播遇到不透明物体时形成影子。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "日晷计时",
+        "皮影戏",
+        "手影游戏"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "opt_light_speed"
+      ],
+      "follow_ups": [
+        "opt_日食与月食"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -90,
+      "y": 10,
+      "z": 95,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_日食与月食",
+      "name": "日食与月食",
+      "module": "光学",
+      "chapter": "光的直线传播",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "日食是月球位于太阳和地球之间，月食是地球位于太阳和月球之间。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "日食观测",
+        "月食现象",
+        "天文现象解释"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "opt_影子的形成"
+      ],
+      "follow_ups": [
+        "opt_小孔成像"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -100,
+      "y": 0,
+      "z": 100,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_小孔成像",
+      "name": "小孔成像",
+      "module": "光学",
+      "chapter": "光的直线传播",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "小孔成倒立的实像，像的大小与物距和像距有关。",
+      "formula": "无",
+      "units": "",
+      "history": {
+        "scientist": "墨子",
+        "year": "前4世纪",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "树荫下光斑",
+        "针孔相机",
+        "日食观测小孔成像"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "实验题",
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "opt_日食与月食"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -110,
+      "y": -10,
+      "z": 100,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_reflection_law",
+      "name": "光的反射定律",
+      "module": "光学",
+      "chapter": "光的反射",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "反射光线、入射光线和法线在同一平面内，反射角等于入射角。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "镜子反射",
+        "潜望镜",
+        "角反射器"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "实验题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [
+        "opt_rectilinear_propagation"
+      ],
+      "follow_ups": [
+        "opt_镜面反射与漫反射"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -50,
+      "y": -30,
+      "z": 120,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "opt_镜面反射与漫反射",
+      "name": "镜面反射与漫反射",
+      "module": "光学",
+      "chapter": "光的反射",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "镜面反射在光滑表面发生，漫反射在粗糙表面发生，都遵循反射定律。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "黑板反光",
+        "电影屏幕",
+        "路面反光"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "opt_reflection_law"
+      ],
+      "follow_ups": [
+        "opt_平面镜成像"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -60,
+      "y": -40,
+      "z": 135,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_平面镜成像",
+      "name": "平面镜成像",
+      "module": "光学",
+      "chapter": "光的反射",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "平面镜成等大正立的虚像，像与物关于镜面对称。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "照镜子",
+        "舞蹈教室镜子",
+        "视力表用镜子"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "实验题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [
+        "opt_镜面反射与漫反射"
+      ],
+      "follow_ups": [
+        "opt_平面镜应用"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -70,
+      "y": -50,
+      "z": 145,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "opt_平面镜应用",
+      "name": "平面镜应用",
+      "module": "光学",
+      "chapter": "光的反射",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "穿衣镜、潜望镜、牙医镜等利用平面镜成像。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "穿衣镜",
+        "潜望镜",
+        "牙医反射镜"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "opt_平面镜成像"
+      ],
+      "follow_ups": [
+        "opt_球面镜"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -80,
+      "y": -60,
+      "z": 150,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_球面镜",
+      "name": "球面镜",
+      "module": "光学",
+      "chapter": "光的反射",
+      "difficulty": 2,
+      "grade": 7,
+      "core_definition": "凹面镜会聚光线，凸面镜发散光线。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "凹面镜聚光",
+        "凸面镜扩大视野",
+        "车灯反射镜"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "opt_平面镜应用"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -90,
+      "y": -70,
+      "z": 148,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_凹面镜",
+      "name": "凹面镜",
+      "module": "光学",
+      "chapter": "光的反射",
+      "difficulty": 2,
+      "grade": 7,
+      "core_definition": "凹面镜将平行光会聚于焦点，太阳灶应用此原理。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "太阳能灶",
+        "手电筒反光碗",
+        "卫星天线"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "opt_球面镜"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -100,
+      "y": -75,
+      "z": 142,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_凸面镜",
+      "name": "凸面镜",
+      "module": "光学",
+      "chapter": "光的反射",
+      "difficulty": 2,
+      "grade": 7,
+      "core_definition": "凸面镜使平行光发散，视野更大，用于汽车后视镜。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "汽车后视镜",
+        "路口反光镜",
+        "超市监控镜"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "opt_球面镜"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -110,
+      "y": -80,
+      "z": 132,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_光路可逆性",
+      "name": "光路可逆性",
+      "module": "光学",
+      "chapter": "光的反射",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "在反射和折射现象中光路是可逆的。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "相互看见",
+        "潜望镜光路",
+        "反射光线与入射光线互换"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "opt_reflection_law"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -40,
+      "y": -25,
+      "z": 110,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_refraction_law",
+      "name": "光的折射定律",
+      "module": "光学",
+      "chapter": "光的折射",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "光从一种介质斜射入另一种介质时传播方向发生偏折。",
+      "formula": "n=sin i/sin r",
+      "units": "",
+      "history": {
+        "scientist": "斯涅尔",
+        "year": "1621",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "池水看起来变浅",
+        "筷子在水中弯折",
+        "海市蜃楼"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "作图题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "opt_rectilinear_propagation"
+      ],
+      "follow_ups": [
+        "opt_折射现象"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -20,
+      "y": 30,
+      "z": -50,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "opt_折射现象",
+      "name": "折射现象",
+      "module": "光学",
+      "chapter": "光的折射",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "池水看起来变浅、筷子在水中弯折等。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "水中物体看起来偏移",
+        "彩虹形成",
+        "凸透镜成像"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "opt_refraction_law"
+      ],
+      "follow_ups": [
+        "opt_透镜"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -10,
+      "y": 40,
+      "z": -65,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_透镜",
+      "name": "透镜",
+      "module": "光学",
+      "chapter": "光的折射",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "凸透镜中间厚边缘薄，凹透镜中间薄边缘厚。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "放大镜是凸透镜",
+        "近视镜是凹透镜",
+        "显微镜物镜",
+        "放大镜：凸透镜成正立、放大的虚像",
+        "近视眼镜：近视眼镜是凹透镜，对光有发散作用，使像成在视网膜上"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [
+        "opt_折射现象"
+      ],
+      "follow_ups": [
+        "opt_凸透镜对光的作用"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 0,
+      "y": 50,
+      "z": -75,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "opt_凸透镜对光的作用",
+      "name": "凸透镜对光的作用",
+      "module": "光学",
+      "chapter": "光的折射",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "凸透镜对光有会聚作用，平行于主光轴的光会聚于焦点。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "放大镜聚光点火",
+        "太阳能聚光",
+        "投影仪镜头"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [
+        "opt_透镜"
+      ],
+      "follow_ups": [
+        "opt_凹透镜对光的作用"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 10,
+      "y": 60,
+      "z": -80,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_凹透镜对光的作用",
+      "name": "凹透镜对光的作用",
+      "module": "光学",
+      "chapter": "光的折射",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "凹透镜对光有发散作用，平行于主光轴的光发散后反向延长过焦点。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "近视眼镜",
+        "门镜猫眼",
+        "发散光线"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [
+        "opt_凸透镜对光的作用"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 20,
+      "y": 70,
+      "z": -82,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_生活中的透镜",
+      "name": "生活中的透镜",
+      "module": "光学",
+      "chapter": "光的折射",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "放大镜是凸透镜，相机镜头是凸透镜组合。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "手机摄像头",
+        "望远镜",
+        "显微镜"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "opt_透镜"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 30,
+      "y": 80,
+      "z": -80,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_lens_imaging",
+      "name": "凸透镜成像规律",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "物距不同，成像的性质（虚实、大小、正倒）不同。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "照相机原理",
+        "投影仪原理",
+        "放大镜原理",
+        "照相机：凸透镜成倒立、缩小的实像",
+        "投影仪：凸透镜成倒立、放大的实像"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "实验题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [
+        "opt_凸透镜对光的作用"
+      ],
+      "follow_ups": [
+        "opt_u_2f成像"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 20,
+      "y": -40,
+      "z": -70,
+      "size": 12,
+      "color": "",
+      "brightness": 1.5,
+      "star_level": 1
+    },
+    {
+      "id": "opt_u_2f成像",
+      "name": "u>2f成像",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "物体在二倍焦距以外，成倒立缩小的实像。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "照相机拍照",
+        "人眼成像",
+        "摄像机成像"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [
+        "opt_lens_imaging"
+      ],
+      "follow_ups": [
+        "opt_f_u_2f成像"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 30,
+      "y": -50,
+      "z": -80,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_f_u_2f成像",
+      "name": "f<u<2f成像",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "物体在焦距和二倍焦距之间，成倒立放大的实像。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "投影仪投影",
+        "幻灯机",
+        "电影放映机"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [
+        "opt_u_2f成像"
+      ],
+      "follow_ups": [
+        "opt_u_f成像"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 40,
+      "y": -60,
+      "z": -85,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_u_f成像",
+      "name": "u<f成像",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "物体在焦距以内，成正立放大的虚像。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "放大镜看字",
+        "显微镜目镜",
+        "老花镜"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [
+        "opt_f_u_2f成像"
+      ],
+      "follow_ups": [
+        "opt_照相机"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 50,
+      "y": -70,
+      "z": -85,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_照相机",
+      "name": "照相机",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "u>2f时成倒立缩小的实像，应用于照相机。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "手机拍照",
+        "数码相机",
+        "监控摄像头"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "opt_u_2f成像"
+      ],
+      "follow_ups": [
+        "opt_投影仪"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 60,
+      "y": -80,
+      "z": -82,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_投影仪",
+      "name": "投影仪",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "f<u<2f时成倒立放大的实像，应用于投影仪。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "教室投影",
+        "家庭投影",
+        "幻灯机"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "opt_f_u_2f成像"
+      ],
+      "follow_ups": [
+        "opt_放大镜"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 70,
+      "y": -90,
+      "z": -75,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_放大镜",
+      "name": "放大镜",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "u<f时成正立放大的虚像，应用于放大镜。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "看细小物体",
+        "放大镜聚焦",
+        "珠宝鉴定"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "opt_u_f成像"
+      ],
+      "follow_ups": [
+        "opt_眼镜与视力矫正"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 80,
+      "y": -100,
+      "z": -65,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_眼镜与视力矫正",
+      "name": "眼镜与视力矫正",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "近视用凹透镜矫正，远视用凸透镜矫正。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "近视配凹透镜",
+        "远视配凸透镜",
+        "隐形眼镜"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "opt_放大镜"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 90,
+      "y": -108,
+      "z": -52,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_dispersion",
+      "name": "光的色散",
+      "module": "光学",
+      "chapter": "光的色散",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "白光通过三棱镜分解为七种色光的现象。",
+      "formula": "无",
+      "units": "",
+      "history": {
+        "scientist": "牛顿",
+        "year": "1666",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "雨后彩虹",
+        "三棱镜分解白光",
+        "光盘彩色反光",
+        "彩虹：太阳光通过空气中的小水滴发生色散，分解成七种颜色的光",
+        "三棱镜分光：不同颜色的光在三棱镜中的折射程度不同"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "opt_reflection_law"
+      ],
+      "follow_ups": [
+        "opt_色光混合"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 80,
+      "y": 30,
+      "z": -10,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "opt_色光混合",
+      "name": "色光混合",
+      "module": "光学",
+      "chapter": "光的色散",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "红、绿、蓝是色光的三原色。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "彩色电视",
+        "LED屏幕",
+        "舞台灯光"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "opt_dispersion"
+      ],
+      "follow_ups": [
+        "opt_物体的颜色"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 90,
+      "y": 40,
+      "z": -5,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_物体的颜色",
+      "name": "物体的颜色",
+      "module": "光学",
+      "chapter": "光的色散",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "物体的颜色由它反射或透过的色光决定。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "红花反射红光",
+        "绿叶吸收其他色光",
+        "衣服颜色"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "opt_色光混合"
+      ],
+      "follow_ups": [
+        "opt_红外线与紫外线"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 100,
+      "y": 50,
+      "z": 3,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "opt_红外线与紫外线",
+      "name": "红外线与紫外线",
+      "module": "光学",
+      "chapter": "光的色散",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "红外线热效应强，紫外线具有杀菌作用。",
+      "formula": "无",
+      "units": "",
+      "history": {
+        "scientist": "赫歇尔",
+        "year": "1800(红外);里特",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "遥控器用红外线",
+        "验钞机用紫外线",
+        "消毒杀菌"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "opt_物体的颜色"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 110,
+      "y": 58,
+      "z": 10,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_charge",
+      "name": "电荷",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "自然界只有两种电荷：正电荷和负电荷。同种相斥，异种相吸。",
+      "formula": "无",
+      "units": "",
+      "history": {
+        "scientist": "泰勒斯",
+        "year": "前6世纪",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "静电现象",
+        "梳子吸头发",
+        "脱毛衣冒火花"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "elec_摩擦起电"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -50,
+      "y": -50,
+      "z": 60,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_摩擦起电",
+      "name": "摩擦起电",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "用摩擦的方法使物体带电，实质是电子的转移。",
+      "formula": "无",
+      "units": "",
+      "history": {
+        "scientist": "泰勒斯",
+        "year": "前6世纪",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "摩擦气球吸头发",
+        "塑料尺摩擦吸纸屑",
+        "静电复印"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "elec_charge"
+      ],
+      "follow_ups": [
+        "elec_导体与绝缘体"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -60,
+      "y": -60,
+      "z": 75,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_导体与绝缘体",
+      "name": "导体与绝缘体",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "容易导电的物体叫导体，不容易导电的物体叫绝缘体。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "铜线是导体",
+        "塑料皮是绝缘体",
+        "半导体硅材料"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "elec_摩擦起电"
+      ],
+      "follow_ups": [
+        "elec_current"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -70,
+      "y": -70,
+      "z": 85,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_current",
+      "name": "电流",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "电荷的定向移动形成电流，正电荷移动方向为电流方向。",
+      "formula": "I=Q/t",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "灯泡发光",
+        "电流表测电流",
+        "电路中的电子移动",
+        "电灯发光：电流通过灯丝，灯丝发热发光",
+        "电风扇转动：电流通过电动机，电动机将电能转化为机械能"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "elec_导体与绝缘体"
+      ],
+      "follow_ups": [
+        "elec_电路"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [
+        "math_linear_graph"
+      ],
+      "tags": [],
+      "x": -80,
+      "y": -80,
+      "z": 90,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "elec_电路",
+      "name": "电路",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "由电源、导线、开关和用电器组成的电流路径。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "手电筒电路",
+        "台灯电路",
+        "家庭电路布线"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [
+        "elec_current"
+      ],
+      "follow_ups": [
+        "elec_series_circuit"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -90,
+      "y": -90,
+      "z": 92,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_series_circuit",
+      "name": "串联电路",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "各用电器依次相连，电流只有一条路径。",
+      "formula": "I=I1=I2,U=U1+U2",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "圣诞树小彩灯串联",
+        "串联开关控制",
+        "老式彩灯"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "elec_电路"
+      ],
+      "follow_ups": [
+        "elec_parallel_circuit"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -100,
+      "y": -100,
+      "z": 90,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_parallel_circuit",
+      "name": "并联电路",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "各用电器并列相连，电流有多条路径。",
+      "formula": "I=I1+I2,U=U1=U2",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "家庭电器并联",
+        "教室灯并联",
+        "每个插座独立工作"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "elec_series_circuit"
+      ],
+      "follow_ups": [
+        "elec_电流表"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -110,
+      "y": -108,
+      "z": 85,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_电流表",
+      "name": "电流表",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "测量电流的仪表，必须串联在电路中。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "电流表测电流大小",
+        "实验室电流表",
+        "数字万用表"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "elec_current"
+      ],
+      "follow_ups": [
+        "elec_voltage"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -75,
+      "y": -55,
+      "z": 65,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_voltage",
+      "name": "电压",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "电压是形成电流的原因，电源提供电压。",
+      "formula": "U",
+      "units": "",
+      "history": {
+        "scientist": "伏特",
+        "year": "1800",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "电池提供电压",
+        "家庭电路电压220V",
+        "安全电压36V",
+        "干电池：干电池提供1.5V的电压，使电路中形成电流",
+        "家庭电路电压：220V的电压可以满足大多数家用电器的需求"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "elec_current"
+      ],
+      "follow_ups": [
+        "elec_电压表"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [
+        "math_linear_graph"
+      ],
+      "tags": [],
+      "x": -85,
+      "y": -45,
+      "z": 55,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "elec_电压表",
+      "name": "电压表",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "测量电压的仪表，必须并联在电路中。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "电压表测电压",
+        "家庭电路电压测量",
+        "电池电压检测"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "elec_voltage"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -95,
+      "y": -35,
+      "z": 48,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_resistance",
+      "name": "电阻",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "导体对电流的阻碍作用，用R表示。",
+      "formula": "R=U/I",
+      "units": "",
+      "history": {
+        "scientist": "欧姆",
+        "year": "1826",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "电阻器限流",
+        "导线有电阻",
+        "电热丝电阻大",
+        "滑动变阻器：通过改变接入电路的电阻丝长度来改变电阻，从而改变电流大小",
+        "电炉丝：电炉丝的电阻大，电流通过时产生大量的热"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "elec_current"
+      ],
+      "follow_ups": [
+        "elec_影响电阻的因素"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [
+        "math_linear_graph",
+        "math_inverse_graph"
+      ],
+      "tags": [],
+      "x": -20,
+      "y": -90,
+      "z": -80,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "elec_影响电阻的因素",
+      "name": "影响电阻的因素",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "电阻与材料、长度、横截面积和温度有关。",
+      "formula": "R=ρL/S",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "铜线比铁线电阻小",
+        "长导线比短导线电阻大",
+        "细导线比粗导线电阻大"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "elec_resistance"
+      ],
+      "follow_ups": [
+        "elec_滑动变阻器"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -30,
+      "y": -100,
+      "z": -90,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_滑动变阻器",
+      "name": "滑动变阻器",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "通过改变接入电路中电阻丝的长度来改变电阻。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "调光灯",
+        "音量旋钮",
+        "电位器调节"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "elec_影响电阻的因素"
+      ],
+      "follow_ups": [
+        "elec_ohm_law"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -40,
+      "y": -110,
+      "z": -95,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_ohm_law",
+      "name": "欧姆定律",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "导体中的电流与导体两端电压成正比，与导体电阻成反比。",
+      "formula": "I=U/R",
+      "units": "",
+      "history": {
+        "scientist": "欧姆",
+        "year": "1826",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "电路设计计算",
+        "电器电流计算",
+        "电阻元件选型",
+        "调光台灯：通过改变电路中的电阻来改变电流，从而改变灯泡的亮度",
+        "电流表和电压表：根据欧姆定律，通过测量电压和电阻可以计算出电流"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "计算题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "elec_滑动变阻器"
+      ],
+      "follow_ups": [
+        "elec_伏安法测电阻"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [
+        "math_linear_graph",
+        "math_inverse_graph"
+      ],
+      "tags": [],
+      "x": -50,
+      "y": -118,
+      "z": -96,
+      "size": 12,
+      "color": "",
+      "brightness": 1.5,
+      "star_level": 1
+    },
+    {
+      "id": "elec_伏安法测电阻",
+      "name": "伏安法测电阻",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "用电压表和电流表测量电阻的方法。",
+      "formula": "R=U/I",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "测灯泡电阻",
+        "测电阻丝电阻",
+        "伏安法实验"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "elec_ohm_law"
+      ],
+      "follow_ups": [
+        "elec_串联电路特点"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -60,
+      "y": -125,
+      "z": -92,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_串联电路特点",
+      "name": "串联电路特点",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "串联电路总电阻等于各电阻之和，电流处处相等。",
+      "formula": "R=R1+R2,I=I1=I2",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "串联分压",
+        "总电阻等于各电阻之和",
+        "电流处处相等"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "计算题",
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "elec_伏安法测电阻"
+      ],
+      "follow_ups": [
+        "elec_并联电路特点"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -70,
+      "y": -130,
+      "z": -85,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_并联电路特点",
+      "name": "并联电路特点",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "并联电路总电阻倒数等于各电阻倒数之和。",
+      "formula": "1/R=1/R1+1/R2",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "并联分流",
+        "家庭电路并联",
+        "总电阻小于各支路电阻"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "计算题",
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "elec_串联电路特点"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [
+        "math_inverse_graph"
+      ],
+      "tags": [],
+      "x": -80,
+      "y": -132,
+      "z": -75,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_电路故障分析",
+      "name": "电路故障分析",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "difficulty": 2,
+      "grade": 9,
+      "core_definition": "通过电表示数变化判断电路故障。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "灯泡不亮检修",
+        "电路短路排查",
+        "万用表检测故障"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "elec_并联电路特点"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -90,
+      "y": -130,
+      "z": -62,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_electric_work",
+      "name": "电功",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "电流所做的功，即电能转化为其他形式能的多少。",
+      "formula": "W=UIt",
+      "units": "",
+      "history": {
+        "scientist": "焦耳",
+        "year": "1840",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "电灯消耗电能",
+        "电风扇做功",
+        "电表计量用电",
+        "电能表：电能表记录电流所做的功，单位是千瓦时",
+        "电水壶烧水：电流通过电水壶的发热体做功，将电能转化为内能"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "elec_voltage"
+      ],
+      "follow_ups": [
+        "elec_电能表"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [
+        "math_unit_conversion"
+      ],
+      "tags": [],
+      "x": 50,
+      "y": -90,
+      "z": -110,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_电能表",
+      "name": "电能表",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "测量用电器消耗电能多少的仪表。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "家庭电表",
+        "智能电表",
+        "计量用电量"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "elec_electric_work"
+      ],
+      "follow_ups": [
+        "elec_electric_power"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 60,
+      "y": -98,
+      "z": -115,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_electric_power",
+      "name": "电功率",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "电流在单位时间内所做的功。",
+      "formula": "P=UI",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "灯泡功率标识",
+        "电吹风功率",
+        "空调功率",
+        "灯泡亮度：灯泡的实际功率越大，亮度越亮",
+        "空调耗电：电功率大的用电器，单位时间内消耗的电能多"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "计算题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "elec_电能表"
+      ],
+      "follow_ups": [
+        "elec_额定功率与实际功率"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 70,
+      "y": -105,
+      "z": -116,
+      "size": 12,
+      "color": "",
+      "brightness": 1.5,
+      "star_level": 1
+    },
+    {
+      "id": "elec_额定功率与实际功率",
+      "name": "额定功率与实际功率",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "用电器在额定电压下正常工作时的功率。",
+      "formula": "P额=U额I额",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "灯泡额定功率",
+        "电压变化时功率变化",
+        "电器铭牌参数"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "elec_electric_power"
+      ],
+      "follow_ups": [
+        "elec_joule_law"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 80,
+      "y": -110,
+      "z": -112,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_joule_law",
+      "name": "焦耳定律",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "电流通过导体产生的热量与电流平方、电阻和通电时间成正比。",
+      "formula": "Q=I²Rt",
+      "units": "",
+      "history": {
+        "scientist": "焦耳",
+        "year": "1840",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "电热毯",
+        "电饭煲",
+        "电炉丝发热",
+        "电暖气：电流通过电阻产生热量，将电能转化为内能",
+        "保险丝：保险丝的电阻大、熔点低，电流过大时产生的热量使保险丝熔断，保护电路"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "计算题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "elec_额定功率与实际功率"
+      ],
+      "follow_ups": [
+        "elec_电热利用与防止"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [
+        "math_power_notation"
+      ],
+      "tags": [],
+      "x": 90,
+      "y": -115,
+      "z": -105,
+      "size": 12,
+      "color": "",
+      "brightness": 1.5,
+      "star_level": 1
+    },
+    {
+      "id": "elec_电热利用与防止",
+      "name": "电热利用与防止",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "电热器（利用）和散热设计（防止）。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "电热水器",
+        "电脑散热风扇",
+        "电暖器"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "elec_joule_law"
+      ],
+      "follow_ups": [
+        "elec_家庭电路"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 100,
+      "y": -118,
+      "z": -95,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_家庭电路",
+      "name": "家庭电路",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "由进户线、电能表、总开关、保险装置等组成。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "家用电器供电",
+        "照明电路",
+        "插座接线"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "elec_电热利用与防止"
+      ],
+      "follow_ups": [
+        "elec_安全用电"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 110,
+      "y": -120,
+      "z": -82,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_安全用电",
+      "name": "安全用电",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "不接触低压带电体，不靠近高压带电体。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "不接触低压带电体",
+        "不靠近高压带电体",
+        "安全用电常识"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "elec_家庭电路"
+      ],
+      "follow_ups": [
+        "elec_测电笔"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 120,
+      "y": -118,
+      "z": -68,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_测电笔",
+      "name": "测电笔",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "辨别火线和零线的工具。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "辨别火线零线",
+        "检修电路工具",
+        "家庭用电安全"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "elec_安全用电"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 130,
+      "y": -114,
+      "z": -52,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_触电急救",
+      "name": "触电急救",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "迅速切断电源，用绝缘体将触电者与带电体分离。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "断开电源",
+        "心肺复苏",
+        "绝缘物分离触电者"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "elec_测电笔"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 138,
+      "y": -108,
+      "z": -38,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_磁现象",
+      "name": "磁现象",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "磁体具有吸引铁钴镍的性质，磁极间同名相斥异名相吸。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "磁铁吸铁钉",
+        "指南针指南",
+        "磁悬浮列车",
+        "指南针：地球是一个大磁体，指南针的N极指向地磁南极",
+        "磁悬浮列车：利用同名磁极相互排斥的原理，使列车悬浮起来"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "elec_magnetic_field"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 70,
+      "y": 70,
+      "z": -45,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_magnetic_field",
+      "name": "磁场",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "磁体周围存在的一种特殊物质，对放入其中的磁体产生力的作用。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "磁铁周围有磁场",
+        "小磁针指示磁场方向",
+        "磁场看不见摸不着"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [
+        "elec_磁现象"
+      ],
+      "follow_ups": [
+        "elec_地磁场"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 80,
+      "y": 80,
+      "z": -55,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "elec_地磁场",
+      "name": "地磁场",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "地球周围存在的磁场，地磁北极在地理南极附近。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "指南针指示南北",
+        "信鸽利用地磁场导航",
+        "地磁北极在地理南极附近"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "elec_magnetic_field"
+      ],
+      "follow_ups": [
+        "elec_电流的磁效应"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 90,
+      "y": 88,
+      "z": -62,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_电流的磁效应",
+      "name": "电流的磁效应",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "通电导体周围存在磁场，磁场方向与电流方向有关。",
+      "formula": "无",
+      "units": "",
+      "history": {
+        "scientist": "奥斯特",
+        "year": "1820",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "电磁铁",
+        "电铃",
+        "电磁起重机"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "elec_current"
+      ],
+      "follow_ups": [
+        "elec_电磁铁"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 100,
+      "y": 95,
+      "z": -65,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "elec_电磁铁",
+      "name": "电磁铁",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "插入铁芯的通电螺线管，磁性有无和强弱可控制。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "电磁起重机",
+        "电磁继电器",
+        "电磁选矿"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "elec_电流的磁效应"
+      ],
+      "follow_ups": [
+        "elec_电磁继电器"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 110,
+      "y": 100,
+      "z": -64,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_电磁继电器",
+      "name": "电磁继电器",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "利用电磁铁控制工作电路通断的开关。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "自动控制电路",
+        "温度继电器",
+        "水位自动控制"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "elec_电磁铁"
+      ],
+      "follow_ups": [
+        "elec_磁场对电流的作用"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 120,
+      "y": 102,
+      "z": -60,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_磁场对电流的作用",
+      "name": "磁场对电流的作用",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "通电导体在磁场中受到力的作用，力方向与电流和磁场方向有关。",
+      "formula": "F=BIL",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "电动机转动",
+        "扬声器发声",
+        "电流表指针偏转"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "elec_电流的磁效应"
+      ],
+      "follow_ups": [
+        "elec_electric_motor"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 130,
+      "y": 100,
+      "z": -52,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_electric_motor",
+      "name": "电动机",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "利用通电线圈在磁场中受力转动的原理制成。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "电动车电机",
+        "洗衣机电机",
+        "风扇电机",
+        "电风扇：利用通电导体在磁场中受力运动的原理，将电能转化为机械能",
+        "电动自行车：电动机将电能转化为机械能，带动车轮转动"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "elec_磁场对电流的作用"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 140,
+      "y": 95,
+      "z": -42,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_electromagnetic_induction",
+      "name": "电磁感应现象",
+      "module": "电磁学",
+      "chapter": "电磁感应",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "闭合电路的一部分导体在磁场中做切割磁感线运动时产生感应电流。",
+      "formula": "无",
+      "units": "",
+      "history": {
+        "scientist": "法拉第",
+        "year": "1831",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "发电机原理",
+        "动圈式话筒",
+        "电磁感应定律"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "实验题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "elec_magnetic_field"
+      ],
+      "follow_ups": [
+        "elec_generator"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 50,
+      "y": 110,
+      "z": 30,
+      "size": 12,
+      "color": "",
+      "brightness": 1.5,
+      "star_level": 1
+    },
+    {
+      "id": "elec_generator",
+      "name": "发电机",
+      "module": "电磁学",
+      "chapter": "电磁感应",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "利用电磁感应原理将机械能转化为电能。",
+      "formula": "无",
+      "units": "",
+      "history": {
+        "scientist": "法拉第",
+        "year": "1831",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "水力发电",
+        "风力发电",
+        "火力发电"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "elec_electromagnetic_induction"
+      ],
+      "follow_ups": [
+        "elec_交流电"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 60,
+      "y": 118,
+      "z": 38,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "elec_交流电",
+      "name": "交流电",
+      "module": "电磁学",
+      "chapter": "电磁感应",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "电流方向周期性变化的电流，我国交流电频率50Hz。",
+      "formula": "f=50Hz,T=0.02s",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "家庭用电交流电",
+        "220V 50Hz",
+        "交流发电机"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "elec_generator"
+      ],
+      "follow_ups": [
+        "elec_变压器"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 70,
+      "y": 124,
+      "z": 42,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_变压器",
+      "name": "变压器",
+      "module": "电磁学",
+      "chapter": "电磁感应",
+      "difficulty": 2,
+      "grade": 9,
+      "core_definition": "利用电磁感应原理改变交流电压的装置。",
+      "formula": "U1/U2=n1/n2",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "输电变压器",
+        "手机充电器",
+        "电压转换"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "elec_交流电"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 80,
+      "y": 128,
+      "z": 44,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "elec_电磁波",
+      "name": "电磁波",
+      "module": "电磁学",
+      "chapter": "电磁感应",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "变化的电流在空间产生电磁波，传播不需要介质。",
+      "formula": "c=λf",
+      "units": "",
+      "history": {
+        "scientist": "麦克斯韦",
+        "year": "1864;赫兹",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "手机通信",
+        "无线网络",
+        "蓝牙传输"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "elec_electromagnetic_induction"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [
+        "math_inverse_graph"
+      ],
+      "tags": [],
+      "x": 90,
+      "y": 130,
+      "z": 42,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "energy_energy_conservation",
+      "name": "能量守恒定律",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "能量既不会凭空产生也不会凭空消失，只能从一种形式转化为另一种形式或从一个物体转移到另一个物体。",
+      "formula": "E守恒",
+      "units": "",
+      "history": {
+        "scientist": "迈尔",
+        "year": "1842;焦耳",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "永动机不可能",
+        "能量转化实例",
+        "生态系统能量流动",
+        "滚摆运动：在只有动能和势能相互转化时，机械能的总量保持不变",
+        "摩擦生热：机械能转化为内能，能量的总量保持不变"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "energy_energy_classification"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 0,
+      "y": 50,
+      "z": 0,
+      "size": 20,
+      "color": "",
+      "brightness": 1.5,
+      "star_level": 1
+    },
+    {
+      "id": "energy_energy_classification",
+      "name": "能源分类",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "按来源分为一次能源和二次能源，按能否再生分为可再生能源和不可再生能源。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "煤炭是一次能源",
+        "电能是二次能源",
+        "太阳能是可再生能源",
+        "煤炭发电：煤炭直接从自然界获取，短期内不能再生",
+        "太阳能发电：太阳能直接从自然界获取，可以源源不断地得到"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "energy_energy_conservation"
+      ],
+      "follow_ups": [
+        "energy_solar_energy"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 70,
+      "y": 20,
+      "z": 0,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "energy_solar_energy",
+      "name": "太阳能",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "太阳是巨大的核聚变反应堆，太阳辐射能是地球上能量的主要来源。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "太阳能热水器",
+        "光伏发电",
+        "太阳能电池板"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "energy_energy_classification"
+      ],
+      "follow_ups": [
+        "energy_nuclear_energy"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 43,
+      "y": -56,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "energy_nuclear_energy",
+      "name": "核能",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "原子核发生变化时释放的巨大能量。",
+      "formula": "E=mc²",
+      "units": "",
+      "history": {
+        "scientist": "爱因斯坦",
+        "year": "1905",
+        "story": "",
+        "mistakes": ""
+      },
+      "key_experiments": [],
+      "applications": [
+        "核电站发电",
+        "核动力潜艇",
+        "原子弹"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "energy_solar_energy"
+      ],
+      "follow_ups": [
+        "energy_nuclear_fusion_fission"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 0,
+      "y": -80,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "energy_nuclear_fusion_fission",
+      "name": "核聚变与核裂变",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "核裂变是重核分裂，核聚变是轻核聚合。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "太阳核聚变",
+        "核电站核裂变",
+        "氢弹聚变"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "energy_nuclear_energy"
+      ],
+      "follow_ups": [
+        "energy_renewable_nonrenewable"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -43,
+      "y": -56,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "energy_renewable_nonrenewable",
+      "name": "可再生与不可再生",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "可再生能源可循环利用，不可再生能源用后短期内无法恢复。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "太阳能取之不尽",
+        "煤炭越用越少",
+        "水能可再生能源"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "energy_nuclear_fusion_fission"
+      ],
+      "follow_ups": [
+        "energy_energy_environment"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -70,
+      "y": 20,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "energy_energy_environment",
+      "name": "能源与环境",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "化石能源的使用带来环境污染问题，发展清洁能源是方向。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "化石能源污染",
+        "温室效应",
+        "发展清洁能源"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "energy_renewable_nonrenewable"
+      ],
+      "follow_ups": [
+        "energy_sustainable_可持续发展"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -43,
+      "y": 66,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "energy_sustainable_可持续发展",
+      "name": "可持续发展",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "difficulty": 2,
+      "grade": 9,
+      "core_definition": "满足当代需求又不损害后代满足其需求的能力的发展方式。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "节能减排",
+        "绿色能源",
+        "碳达峰碳中和"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "填空题",
+          "简答题"
+        ]
+      },
+      "prerequisites": [
+        "energy_energy_environment"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 43,
+      "y": 66,
+      "z": 0,
+      "size": 6,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "math_unit_conversion",
+      "name": "单位换算",
+      "module": "数学",
+      "chapter": "物理计算支撑",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "同一物理量可用不同单位表示，换算时乘或除相应进率。代入物理公式前，须先把各量统一到国际制单位。",
+      "formula": "1km/h=1/3.6 m/s",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "速度：km/h 与 m/s 互换",
+        "密度：g/cm³ 与 kg/m³ 互换（1g/cm³=10³kg/m³）",
+        "电能：1kW·h=3.6×10⁶J"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "计算题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "math_power_notation"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [
+        "物理计算支撑"
+      ],
+      "x": 100,
+      "y": 18,
+      "z": 22,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "math_power_notation",
+      "name": "次方与科学计数法",
+      "module": "数学",
+      "chapter": "物理计算支撑",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "aⁿ 表示 n 个 a 相乘；科学计数法把很大或很小的数写成 a×10ⁿ（1≤a<10）。平方、立方分别对应面积、体积单位的进率。",
+      "formula": "a×10^n",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "大气压 1.013×10⁵ Pa",
+        "水的比热容 4.2×10³ J/(kg·℃)",
+        "动能中的 v²、焦耳定律中的 I²"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "计算题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "math_unit_conversion"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [
+        "物理计算支撑"
+      ],
+      "x": 112,
+      "y": 28,
+      "z": 6,
+      "size": 8,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 3
+    },
+    {
+      "id": "math_linear_graph",
+      "name": "一次函数图像",
+      "module": "数学",
+      "chapter": "物理计算支撑",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "形如 y=kx+b 的关系，图像是一条直线。b=0 时为正比例函数，图像过原点，斜率 k 表示因变量随自变量变化的快慢。",
+      "formula": "y=kx+b",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "匀速运动 s-t 图像：过原点直线，斜率等于速度 v",
+        "匀速运动 v-t 图像：平行于时间轴的水平直线",
+        "弹力 F-x 图像：过原点直线，斜率等于劲度系数 k",
+        "重力 G-m 图像：过原点直线，斜率等于 g",
+        "定值电阻的 I-U 图像：过原点直线，斜率等于 1/R"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "图像题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [],
+      "parallels": [
+        "math_inverse_graph"
+      ],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [
+        "物理计算支撑"
+      ],
+      "x": 94,
+      "y": 8,
+      "z": -12,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    },
+    {
+      "id": "math_inverse_graph",
+      "name": "反比例函数图像",
+      "module": "数学",
+      "chapter": "物理计算支撑",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "形如 y=k/x（k≠0）的关系，图像是双曲线。物理题通常只取第一象限：一个量增大时另一个量减小，乘积保持不变。",
+      "formula": "y=k/x",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [
+        "路程一定时的 v-t 图像：反比例",
+        "质量一定时的 ρ-V 图像：反比例",
+        "压力一定时的 p-S 图像：反比例",
+        "电压一定时的 I-R 图像：反比例",
+        "频率与周期 f=1/T、波速一定时的 λ-f 关系"
+      ],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "图像题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [],
+      "parallels": [
+        "math_linear_graph"
+      ],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [
+        "物理计算支撑"
+      ],
+      "x": 108,
+      "y": -6,
+      "z": -24,
+      "size": 10,
+      "color": "",
+      "brightness": 1.0,
+      "star_level": 2
+    }
+  ]
+}
