@@ -1226,7 +1226,7 @@
             <summary>查看自动判定规则</summary>
             <ul>
                 <li><b>共性异常：</b>该题整体得分率低于当前“得分率阈值”，优先提示全班共性教学问题。</li>
-                <li><b>群体异常：</b>整体未达到共性异常，但某一成绩层学生在该题的表现比该层平时水平明显低（默认差值≥15个百分点），提示分层教学问题。</li>
+                <li><b>群体异常：</b>优先按成绩表已有等级（如 A/B/C/D）分组；没有等级数据时才按 30% / 40% / 30% 做相对分层。某一组在该题的表现比该组平时水平明显低（默认差值≥15个百分点）时，提示群体异常。</li>
                 <li><b>个体异常：</b>该题整体表现较好，但少数平时表现正常/较好的学生在此题明显失常，提示个别诊断价值。</li>
             </ul>
         </details>
@@ -5129,6 +5129,52 @@ function buildCollectiveStudentBaselines(questions) {
 
 function splitCollectiveAbilityTiers(fd, questions, baselines, subjectName) {
     var rows = (fd.data || []).slice();
+    if (!rows.length) return [];
+
+    // 优先使用系统已经导入的真实等级数据。
+    // 选择具体科目时使用“科目_等级”；未选科目时优先使用总分科目的等级。
+    var gradeField = '';
+    if (subjectName && fd.headers.indexOf(subjectName + '_等级') >= 0) {
+        gradeField = subjectName + '_等级';
+    } else if (!subjectName && fd.fullScoreField) {
+        var totalSubject = String(fd.fullScoreField).replace(/_分数$/, '');
+        if (totalSubject && fd.headers.indexOf(totalSubject + '_等级') >= 0) gradeField = totalSubject + '_等级';
+    }
+
+    if (gradeField) {
+        var gradeGroups = {};
+        rows.forEach(function(row) {
+            var raw = row[gradeField];
+            var grade = raw === null || raw === undefined ? '' : String(raw).trim();
+            if (!grade) return;
+            if (!gradeGroups[grade]) gradeGroups[grade] = [];
+            gradeGroups[grade].push(row);
+        });
+
+        var gradeOrder = ['A+','A','A-','B+','B','B-','C+','C','C-','D+','D','D-','E','F'];
+        var gradeLabels = Object.keys(gradeGroups).sort(function(a,b) {
+            var au = a.toUpperCase(), bu = b.toUpperCase();
+            var ia = gradeOrder.indexOf(au), ib = gradeOrder.indexOf(bu);
+            if (ia !== -1 && ib !== -1) return ia - ib;
+            if (ia !== -1) return -1;
+            if (ib !== -1) return 1;
+            return a.localeCompare(b, 'zh-CN', { numeric:true });
+        });
+
+        var gradeTiers = gradeLabels.map(function(grade) {
+            return {
+                key:'grade:' + grade,
+                label:grade + '等级',
+                rows:gradeGroups[grade],
+                source:'grade',
+                gradeField:gradeField
+            };
+        }).filter(function(t) { return t.rows.length >= 3; });
+
+        if (gradeTiers.length) return gradeTiers;
+    }
+
+    // 没有可用等级时，才回退到当前筛选范围内的 30% / 40% / 30% 相对分层。
     if (rows.length < 9) return [];
     var subjectScoreField = subjectName ? subjectName + '_分数' : '';
     var rankRows = rows.map(function(row) {
@@ -5147,9 +5193,9 @@ function splitCollectiveAbilityTiers(fd, questions, baselines, subjectName) {
         lowN = highN;
     }
     return [
-        { key:'high', label:'高分段', rows:rankRows.slice(0, highN).map(function(x){ return x.row; }) },
-        { key:'middle', label:'中等段', rows:rankRows.slice(highN, n - lowN).map(function(x){ return x.row; }) },
-        { key:'low', label:'基础段', rows:rankRows.slice(n - lowN).map(function(x){ return x.row; }) }
+        { key:'relative-high', label:'相对高分段', rows:rankRows.slice(0, highN).map(function(x){ return x.row; }), source:'percentile' },
+        { key:'relative-middle', label:'相对中等段', rows:rankRows.slice(highN, n - lowN).map(function(x){ return x.row; }), source:'percentile' },
+        { key:'relative-low', label:'相对基础段', rows:rankRows.slice(n - lowN).map(function(x){ return x.row; }), source:'percentile' }
     ].filter(function(t) { return t.rows.length >= 3; });
 }
 
@@ -5207,6 +5253,7 @@ function calculateCollectiveDiagnosis(fd, subjectName) {
                     overallRate:q.overallRate,
                     fullScore:q.fullScore,
                     tierLabel:tier.label,
+                    tierSource:tier.source || 'percentile',
                     tierRate:qRate,
                     tierBaseline:baselineRate,
                     gap:gap,
