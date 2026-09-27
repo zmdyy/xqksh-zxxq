@@ -6070,7 +6070,6 @@ async function qkImportAiAnnotationText(text) {
     var templates = qkCurrentQuestionTemplates();
     if (!templates.length) throw new Error('当前批次没有可匹配的小题数据');
     var knownHeaders = new Set(templates.map(function(t){ return t.score_header; }).filter(Boolean));
-    var allowed = new Set(qkAnnotationCatalog().map(function(k){ return k.concept_id; }));
     var map = qkBatchMap(true);
     var staged = [];
     var errors = [];
@@ -6088,6 +6087,7 @@ async function qkImportAiAnnotationText(text) {
             return;
         }
 
+        var seenPartIds = new Set();
         var prepared = rawParts.map(function(p, pi) {
             p = p || {};
             var rawPrimary = p.primary_concept_id == null ? '' : String(p.primary_concept_id).trim();
@@ -6117,8 +6117,11 @@ async function qkImportAiAnnotationText(text) {
             if (requestedHeader && !knownHeaders.has(requestedHeader)) {
                 errors.push(target.question_no + '/' + (p.part_id || (pi+1)) + ' 的 score_header 不存在于当前成绩数据：' + requestedHeader);
             }
+            var partId = String(p.part_id || (target.question_no + '/p' + (pi+1)));
+            if (seenPartIds.has(partId)) errors.push(target.question_no + ' 存在重复 part_id：' + partId);
+            seenPartIds.add(partId);
             return {
-                part_id:String(p.part_id || (target.question_no + '/p' + (pi+1))),
+                part_id:partId,
                 part_label:String(p.part_label || p.label || (rawParts.length === 1 ? '整题' : '子项' + (pi+1))),
                 primary_concept_id:primary,
                 related_concept_ids:Array.from(new Set(related.filter(function(id){ return id !== primary; }))),
@@ -6161,6 +6164,23 @@ async function qkImportAiAnnotationText(text) {
                 parts:parts
             }
         });
+    });
+
+    var stagedQnos = new Set();
+    var scoreHeaderOwners = {};
+    staged.forEach(function(x) {
+        if (stagedQnos.has(x.question_no)) errors.push('导入文件中 question_no 重复：' + x.question_no);
+        stagedQnos.add(x.question_no);
+        x.mapping.parts.forEach(function(p) {
+            if (!p.score_eligible || !p.score_header) return;
+            if (!scoreHeaderOwners[p.score_header]) scoreHeaderOwners[p.score_header] = [];
+            scoreHeaderOwners[p.score_header].push(x.question_no + '/' + p.part_id);
+        });
+    });
+    Object.keys(scoreHeaderOwners).forEach(function(header) {
+        if (scoreHeaderOwners[header].length > 1) {
+            errors.push('同一成绩列不能重复计入多个知识点：' + header + ' → ' + scoreHeaderOwners[header].join('、'));
+        }
     });
 
     if (errors.length) {
@@ -6222,21 +6242,45 @@ function qkUpdateToolbar() {
     var cat = document.getElementById('qkCatalogStatus');
     if (cat) cat.textContent = '知识图谱：' + qkCatalog().length + ' 节点 · 考试标注词表：' + qkAnnotationCatalog().length + ' 项';
     var status = document.getElementById('qkTagStatus');
-    if (status) {
-        var b = qkCurrentBatch();
-        if (!b) {
-            status.textContent = '请先保存考试批次';
-        } else {
-            var map = qkBatchMap(false) || {};
-            var questionCount = 0, partCount = 0;
-            Object.keys(map).forEach(function(qno) {
-                var parts = qkNormalizeMappingParts(map[qno], qno, b.id);
-                if (parts.length) {
-                    questionCount++;
-                    partCount += parts.length;
-                }
+    var aiStatus = document.getElementById('qkAiImportStatus');
+    var b = qkCurrentBatch();
+    if (!b) {
+        if (status) status.textContent = '请先保存考试批次';
+        if (aiStatus) {
+            aiStatus.className = 'qk-status qk-import-status';
+            aiStatus.textContent = 'AI标注：未导入';
+        }
+        return;
+    }
+
+    var map = qkBatchMap(false) || {};
+    var questionCount = 0, partCount = 0, aiQuestionCount = 0, aiPartCount = 0;
+    var eligibleCount = 0, tagOnlyCount = 0, unresolvedCount = 0, lowCount = 0;
+    Object.keys(map).forEach(function(qno) {
+        var parts = qkNormalizeMappingParts(map[qno], qno, b.id);
+        if (!parts.length) return;
+        questionCount++;
+        partCount += parts.length;
+        if (map[qno] && map[qno].source === 'ai_import') {
+            aiQuestionCount++;
+            aiPartCount += parts.length;
+            parts.forEach(function(p) {
+                if (p.score_eligible) eligibleCount++; else tagOnlyCount++;
+                if (!p.primary_concept_id) unresolvedCount++;
+                if (p.confidence === 'low') lowCount++;
             });
-            status.textContent = '考试ID：' + b.id + ' · 已标注 ' + questionCount + ' 题 / ' + partCount + ' 子项';
+        }
+    });
+    if (status) status.textContent = '考试ID：' + b.id + ' · 已标注 ' + questionCount + ' 题 / ' + partCount + ' 子项';
+    if (aiStatus) {
+        if (!aiQuestionCount) {
+            aiStatus.className = 'qk-status qk-import-status';
+            aiStatus.textContent = 'AI标注：未导入';
+        } else {
+            aiStatus.className = 'qk-status qk-import-status ' + ((tagOnlyCount || unresolvedCount || lowCount) ? 'warn' : 'ok');
+            aiStatus.textContent = 'AI标注：' + aiQuestionCount + '题 / ' + aiPartCount + '子项'
+                + ' · 可计分' + eligibleCount + ' · 仅标签' + tagOnlyCount
+                + (unresolvedCount ? ' · 待确认' + unresolvedCount : '');
         }
     }
 }
