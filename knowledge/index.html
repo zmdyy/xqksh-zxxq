@@ -23,7 +23,7 @@
   --bg:#090a0d;--glass:rgba(12,13,16,0.58);--glass-border:rgba(255,255,255,0.08);
   --text:#f0f0ec;--text-sec:rgba(240,240,236,0.62);--text-dim:rgba(240,240,236,0.34);
   --accent:#d9f7ff;--gold:#d8b35a;--radius:12px;
-  --力学:#cdd9ff;--声学:#9ee8d0;--热学:#f0a7b5;--光学:#e7d57a;--电磁学:#b9a6ee;--能量:#e4b06e;--数学:#9bb4ff;
+  --力学:#cdd9ff;--声学:#9ee8d0;--热学:#f0a7b5;--光学:#e7d57a;--电磁学:#b9a6ee;--能量:#e4b06e;--数学:#9bb4ff;--跨学科支撑:#8bd3c7;
   font-family:'Microsoft YaHei UI','Microsoft YaHei','Noto Sans SC','PingFang SC','Inter',sans-serif;color:var(--text);background:var(--bg);
   text-rendering:geometricPrecision;-webkit-font-smoothing:subpixel-antialiased;-moz-osx-font-smoothing:auto
 }
@@ -867,7 +867,8 @@ const MODULES = {
   光学: { color: '#ffdd00', pos: new THREE.Vector3(0, 0, 0), rotSpeed: 0.10, icon: 'fa-lightbulb', desc: '棱镜座' },
   电磁学: { color: '#bb77ff', pos: new THREE.Vector3(0, 0, 0), rotSpeed: 0.14, icon: 'fa-bolt', desc: '闪电座' },
   能量: { color: '#ff8800', pos: new THREE.Vector3(0, 0, 0), rotSpeed: 0.06, icon: 'fa-recycle', desc: '能量环' },
-  数学: { color: '#4d7cff', pos: new THREE.Vector3(0, 0, 0), rotSpeed: 0.07, icon: 'fa-calculator', desc: '坐标座' }
+  数学: { color: '#4d7cff', pos: new THREE.Vector3(0, 0, 0), rotSpeed: 0.07, icon: 'fa-calculator', desc: '坐标座' },
+  跨学科支撑: { color: '#45b8ac', pos: new THREE.Vector3(0, 0, 0), rotSpeed: 0.05, icon: 'fa-bridge', desc: '桥接座' }
 };
 const MODULE_KEYS = Object.keys(MODULES);
 
@@ -878,7 +879,8 @@ const MOD_COLORS = {
   '光学': new THREE.Color('#ffdd00'),
   '电磁学': new THREE.Color('#bb77ff'),
   '能量': new THREE.Color('#ff8800'),
-  '数学': new THREE.Color('#4d7cff')
+  '数学': new THREE.Color('#4d7cff'),
+  '跨学科支撑': new THREE.Color('#45b8ac')
 };
 const CONN_TYPE_MAP = { prerequisite:0, causal:1, parallel:2, historical:3, cross_module:4, cross_disciplinary:5, support:6, application:7, transformation:8 };
 
@@ -2400,7 +2402,7 @@ function getModuleCameraPose(mod) {
   lateral.y = 0;
   if (lateral.lengthSq() < 1) lateral.set(1, 0, 0);
   lateral.normalize();
-  const moduleIndex = Math.max(0, ['力学', '热学', '光学', '电磁学', '能量', '数学'].indexOf(mod));
+  const moduleIndex = Math.max(0, ['力学', '热学', '光学', '电磁学', '能量', '数学', '跨学科支撑'].indexOf(mod));
   const angle = moduleIndex * Math.PI * 0.42 + Math.PI * 0.16;
   const orbital = new THREE.Vector3(Math.cos(angle), 0.22, Math.sin(angle)).normalize();
   const viewDir = lateral.multiplyScalar(0.55).add(orbital.multiplyScalar(0.85)).normalize();
