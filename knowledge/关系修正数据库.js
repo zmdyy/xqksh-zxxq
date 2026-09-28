@@ -2282,6 +2282,1087 @@ window._RELATION_PATCH_DATA = (function() {
       "strength": 4,
       "note": "压力首先是一种力，理解压力需建立在力的基本概念之上。"
     }
+,
+    {
+      "from": "mech_frequency",
+      "to": "mech_pitch",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "mech_amplitude",
+      "to": "mech_loudness",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "mech_force_elastic",
+      "to": "mech_support_force",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "mech_force_elastic",
+      "to": "mech_tension_force",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "mech_friction",
+      "to": "mech_sliding_friction",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "mech_sliding_friction",
+      "to": "mech_friction_factors",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "mech_work",
+      "to": "mech_work_conditions",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "mech_useful_work",
+      "to": "mech_efficiency",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "mech_total_work",
+      "to": "mech_efficiency",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "mech_kinetic_energy",
+      "to": "mech_mechanical_energy",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "mech_gravitational_potential_energy",
+      "to": "mech_mechanical_energy",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "mech_elastic_potential_energy",
+      "to": "mech_mechanical_energy",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "mech_mechanical_energy",
+      "to": "mech_mechanical_energy_conversion",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "therm_物质的构成",
+      "to": "micro_atom",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "micro_atom",
+      "to": "micro_atomic_structure",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "micro_atomic_structure",
+      "to": "micro_nucleus",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "micro_atomic_structure",
+      "to": "micro_extranuclear_electron",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "micro_nucleus",
+      "to": "micro_proton",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "micro_nucleus",
+      "to": "micro_neutron",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "micro_extranuclear_electron",
+      "to": "micro_electron",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "micro_proton",
+      "to": "micro_atomic_neutrality",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "micro_electron",
+      "to": "micro_atomic_neutrality",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_charge",
+      "to": "elec_positive_charge",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_charge",
+      "to": "elec_negative_charge",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_positive_charge",
+      "to": "elec_charge_interaction",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_negative_charge",
+      "to": "elec_charge_interaction",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_charge_interaction",
+      "to": "elec_electroscope",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "micro_electron",
+      "to": "elec_electron_transfer",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_electron_transfer",
+      "to": "elec_摩擦起电",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_电路",
+      "to": "elec_current_direction",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_电路",
+      "to": "elec_closed_circuit",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_电路",
+      "to": "elec_open_circuit",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_电路",
+      "to": "elec_short_circuit",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_磁现象",
+      "to": "elec_magnetic_pole",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_magnetic_pole",
+      "to": "elec_magnetic_pole_interaction",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_magnetic_field",
+      "to": "elec_magnetic_field_lines",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_电流的磁效应",
+      "to": "elec_solenoid",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_solenoid",
+      "to": "elec_ampere_rule",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "opt_incident_ray",
+      "to": "opt_incidence_angle",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "opt_normal",
+      "to": "opt_incidence_angle",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "opt_reflected_ray",
+      "to": "opt_reflection_angle",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "opt_normal",
+      "to": "opt_reflection_angle",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "opt_incidence_angle",
+      "to": "opt_reflection_law",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "opt_reflection_angle",
+      "to": "opt_reflection_law",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "opt_透镜",
+      "to": "opt_focus",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "opt_focus",
+      "to": "opt_focal_length",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "opt_lens_imaging",
+      "to": "opt_object_distance",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "opt_lens_imaging",
+      "to": "opt_image_distance",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "energy_energy",
+      "to": "energy_energy_conversion",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "energy_energy",
+      "to": "energy_energy_transfer",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "energy_energy",
+      "to": "energy_energy_conservation",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "energy_efficiency",
+      "to": "mech_efficiency",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "energy_efficiency",
+      "to": "therm_heat_engine_efficiency",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "therm_热量",
+      "to": "therm_heat_engine_efficiency",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "mech_force_diagram",
+      "to": "mech_force_gravity",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "力的示意图用于表示该力的方向、作用点和大小，是受力分析中的表征工具。"
+    },
+    {
+      "from": "mech_force_diagram",
+      "to": "mech_force_elastic",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "力的示意图用于表示该力的方向、作用点和大小，是受力分析中的表征工具。"
+    },
+    {
+      "from": "mech_force_diagram",
+      "to": "mech_friction",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "力的示意图用于表示该力的方向、作用点和大小，是受力分析中的表征工具。"
+    },
+    {
+      "from": "mech_force_diagram",
+      "to": "mech_support_force",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "力的示意图用于表示该力的方向、作用点和大小，是受力分析中的表征工具。"
+    },
+    {
+      "from": "mech_force_diagram",
+      "to": "mech_tension_force",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "力的示意图用于表示该力的方向、作用点和大小，是受力分析中的表征工具。"
+    },
+    {
+      "from": "mech_force_diagram",
+      "to": "mech_pressure_force",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "力的示意图用于表示该力的方向、作用点和大小，是受力分析中的表征工具。"
+    },
+    {
+      "from": "mech_force_diagram",
+      "to": "mech_buoyancy",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "力的示意图用于表示该力的方向、作用点和大小，是受力分析中的表征工具。"
+    },
+    {
+      "from": "mech_support_force",
+      "to": "mech_force_analysis",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "该具体力是受力分析中需要识别和表示的常见力。"
+    },
+    {
+      "from": "mech_tension_force",
+      "to": "mech_force_analysis",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "该具体力是受力分析中需要识别和表示的常见力。"
+    },
+    {
+      "from": "mech_buoyancy",
+      "to": "mech_force_analysis",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "该具体力是受力分析中需要识别和表示的常见力。"
+    },
+    {
+      "from": "mech_buoyancy",
+      "to": "mech_buoyancy_cause",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "先建立浮力概念，再解释浮力由流体压力差产生。"
+    },
+    {
+      "from": "mech_buoyancy",
+      "to": "mech_archimedes",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "阿基米德原理定量描述浮力大小。"
+    },
+    {
+      "from": "mech_work",
+      "to": "mech_useful_work",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "有用功是总做功中实现目标的部分。"
+    },
+    {
+      "from": "mech_work",
+      "to": "mech_extra_work",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "额外功是总做功中因自重、摩擦等产生的部分。"
+    },
+    {
+      "from": "mech_work",
+      "to": "mech_total_work",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "总功统摄有用功与额外功。"
+    },
+    {
+      "from": "mech_useful_work",
+      "to": "mech_total_work",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "机械效率计算直接比较有用功与总功。"
+    },
+    {
+      "from": "mech_sound_production",
+      "to": "mech_frequency",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "发声体振动具有频率，频率决定音调。"
+    },
+    {
+      "from": "mech_sound_production",
+      "to": "mech_amplitude",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "发声体振动具有振幅，振幅影响响度。"
+    },
+    {
+      "from": "therm_物质的构成",
+      "to": "micro_atomic_structure",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "物质微观构成向下展开到原子结构。"
+    },
+    {
+      "from": "micro_atomic_neutrality",
+      "to": "elec_electron_transfer",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "理解原子电中性有助于解释得失电子后为何显正电或负电。"
+    },
+    {
+      "from": "elec_charge_conservation",
+      "to": "elec_electron_transfer",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "摩擦起电中电荷没有被创造，只发生电子转移。"
+    },
+    {
+      "from": "elec_charge",
+      "to": "elec_charge_quantity",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "电荷量描述物体所带电荷的多少。"
+    },
+    {
+      "from": "elec_charge",
+      "to": "elec_charged_body_property",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "带电体吸引轻小物体是判断带电的常见现象依据。"
+    },
+    {
+      "from": "elec_摩擦起电",
+      "to": "elec_glass_silk_friction",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "丝绸摩擦玻璃棒是两种电荷教学中的典型实验。"
+    },
+    {
+      "from": "elec_摩擦起电",
+      "to": "elec_rubber_fur_friction",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "毛皮摩擦橡胶棒是两种电荷教学中的典型实验。"
+    },
+    {
+      "from": "elec_electron_transfer",
+      "to": "elec_glass_silk_friction",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "玻璃棒失电子显正电，丝绸得电子显负电。"
+    },
+    {
+      "from": "elec_electron_transfer",
+      "to": "elec_rubber_fur_friction",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "橡胶棒得电子显负电，毛皮失电子显正电。"
+    },
+    {
+      "from": "elec_电路",
+      "to": "elec_closed_circuit",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "通路是电路的一种基本状态。"
+    },
+    {
+      "from": "elec_电路",
+      "to": "elec_open_circuit",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "断路是电路的一种基本状态。"
+    },
+    {
+      "from": "elec_电路",
+      "to": "elec_short_circuit",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "短路是电路连接中的异常状态。"
+    },
+    {
+      "from": "elec_magnetic_field_lines",
+      "to": "elec_ampere_rule",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "安培定则判断通电螺线管磁场方向，与磁感线方向表示相衔接。"
+    },
+    {
+      "from": "elec_ampere_rule",
+      "to": "elec_电磁铁",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "电磁铁的N、S极判断依赖通电螺线管及安培定则。"
+    },
+    {
+      "from": "opt_reflection_law",
+      "to": "opt_incident_ray",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "反射定律的基本几何要素。"
+    },
+    {
+      "from": "opt_reflection_law",
+      "to": "opt_reflected_ray",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "反射定律的基本几何要素。"
+    },
+    {
+      "from": "opt_reflection_law",
+      "to": "opt_normal",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "入射角和反射角均以法线为基准。"
+    },
+    {
+      "from": "opt_lens_imaging",
+      "to": "opt_real_image",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "凸透镜成像需要区分实像和虚像。"
+    },
+    {
+      "from": "opt_lens_imaging",
+      "to": "opt_virtual_image",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "凸透镜成像需要区分实像和虚像。"
+    },
+    {
+      "from": "opt_focal_length",
+      "to": "opt_object_distance",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "物距与焦距的相对大小决定凸透镜成像情形。"
+    },
+    {
+      "from": "opt_focal_length",
+      "to": "opt_image_distance",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "焦距、物距、像距共同描述透镜成像。"
+    },
+    {
+      "from": "opt_object_distance",
+      "to": "opt_u_2f成像",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "不同物距区间对应不同凸透镜成像规律。"
+    },
+    {
+      "from": "opt_focal_length",
+      "to": "opt_u_2f成像",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "物距与焦距的比较决定该成像区间。"
+    },
+    {
+      "from": "opt_object_distance",
+      "to": "opt_f_u_2f成像",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "不同物距区间对应不同凸透镜成像规律。"
+    },
+    {
+      "from": "opt_focal_length",
+      "to": "opt_f_u_2f成像",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "物距与焦距的比较决定该成像区间。"
+    },
+    {
+      "from": "opt_object_distance",
+      "to": "opt_u_f成像",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "不同物距区间对应不同凸透镜成像规律。"
+    },
+    {
+      "from": "opt_focal_length",
+      "to": "opt_u_f成像",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "物距与焦距的比较决定该成像区间。"
+    },
+    {
+      "from": "energy_energy",
+      "to": "mech_mechanical_energy",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "机械能是能量的一种形式。"
+    },
+    {
+      "from": "energy_energy",
+      "to": "therm_internal_energy",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "内能是能量的一种形式。"
+    },
+    {
+      "from": "energy_energy",
+      "to": "elec_electric_energy",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "电能是能量的一种形式。"
+    },
+    {
+      "from": "energy_energy",
+      "to": "energy_nuclear_energy",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "核能是能量的一种形式。"
+    },
+    {
+      "from": "energy_energy",
+      "to": "energy_solar_energy",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "太阳能是重要能源来源。"
+    },
+    {
+      "from": "energy_energy",
+      "to": "energy_chemical_energy",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "化学能是常见能量形式。"
+    },
+    {
+      "from": "mech_power",
+      "to": "elec_electric_power",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "电功率是功率思想在电学中的具体化，均表示单位时间内做功多少。"
+    },
+    {
+      "from": "energy_efficiency",
+      "to": "mech_efficiency",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "机械效率体现效率的共同思想，并用有用功与总功之比表示。"
+    },
+    {
+      "from": "energy_efficiency",
+      "to": "therm_heat_engine_efficiency",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "热机效率体现效率的共同思想。"
+    },
+    {
+      "from": "therm_热量",
+      "to": "therm_heat_engine_efficiency",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "热机效率的总输入通常对应燃料完全燃烧放出的热量。"
+    },
+    {
+      "from": "therm_calorific_value",
+      "to": "therm_heat_engine_efficiency",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "热值用于计算燃料完全燃烧放出的热量，是热机效率计算的重要支撑。"
+    },
+    {
+      "from": "mech_useful_work",
+      "to": "therm_heat_engine_efficiency",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "热机效率分子是热机所做的有用功。"
+    },
+    {
+      "from": "mech_mechanical_energy",
+      "to": "therm_internal_energy",
+      "type": "transformation",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "机械能可通过摩擦做功等过程转化为内能，内能也可通过做功转化为机械能。"
+    },
+    {
+      "from": "elec_electric_energy",
+      "to": "therm_internal_energy",
+      "type": "transformation",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "电流热效应体现电能向内能转化。"
+    },
+    {
+      "from": "mech_mechanical_energy",
+      "to": "elec_electric_energy",
+      "type": "transformation",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "发电机实现机械能向电能转化，电动机实现电能向机械能转化。"
+    },
+    {
+      "from": "energy_nuclear_energy",
+      "to": "therm_internal_energy",
+      "type": "transformation",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "核反应释放的能量可在核电等过程中转化为内能。"
+    },
+    {
+      "from": "energy_solar_energy",
+      "to": "elec_electric_energy",
+      "type": "transformation",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "光伏装置可把太阳能转化为电能。"
+    },
+    {
+      "from": "energy_chemical_energy",
+      "to": "therm_internal_energy",
+      "type": "transformation",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "燃料燃烧时化学能转化为内能。"
+    },
+    {
+      "from": "energy_chemical_energy",
+      "to": "elec_electric_energy",
+      "type": "transformation",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "电池工作时化学能可转化为电能。"
+    },
+    {
+      "from": "energy_energy_conversion",
+      "to": "energy_energy_conservation",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "各种能量转化都遵循能量守恒。"
+    },
+    {
+      "from": "energy_energy_transfer",
+      "to": "energy_energy_conservation",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "能量在物体间转移同样遵循能量守恒。"
+    }
   ];
 
   function samePair(a, b) {
@@ -2301,7 +3382,7 @@ window._RELATION_PATCH_DATA = (function() {
     });
 
     // 一个概念对只保留一条主关系，避免同一对节点叠出两条线。
-    const priority = { prerequisite: 6, causal: 5, cross_module: 4, cross_disciplinary: 3, parallel: 2, historical: 1 };
+    const priority = { prerequisite: 90, causal: 80, transformation: 70, support: 60, application: 50, cross_module: 40, cross_disciplinary: 30, parallel: 20, historical: 10 };
     const deduped = new Map();
     result.forEach(conn => {
       const key = [conn.from, conn.to].sort().join('||');
