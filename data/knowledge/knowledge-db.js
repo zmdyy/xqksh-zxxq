@@ -1,7 +1,7 @@
 window.KNOWLEDGE_DB = {
-  "version": "2.1",
-  "update_date": "2026-09-27",
-  "total_count": 183,
+  "version": "2.2",
+  "update_date": "2026-09-28",
+  "total_count": 242,
   "modules": [
     "力学",
     "热学",
@@ -499,7 +499,8 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_sound_production"
+        "mech_sound_production",
+        "mech_frequency"
       ],
       "follow_ups": [
         "mech_ultrasound_infrasound"
@@ -543,7 +544,8 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_sound_production"
+        "mech_sound_production",
+        "mech_amplitude"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -1198,7 +1200,10 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [
         "mech_force_diagram"
       ],
-      "follow_ups": [],
+      "follow_ups": [
+        "mech_support_force",
+        "mech_tension_force"
+      ],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [
@@ -1243,7 +1248,8 @@ window.KNOWLEDGE_DB = {
         "mech_force_diagram"
       ],
       "follow_ups": [
-        "mech_force_analysis"
+        "mech_force_analysis",
+        "mech_sliding_friction"
       ],
       "parallels": [],
       "cross_module": [],
@@ -2511,7 +2517,8 @@ window.KNOWLEDGE_DB = {
       ],
       "follow_ups": [
         "mech_power",
-        "mech_efficiency"
+        "mech_efficiency",
+        "mech_work_conditions"
       ],
       "parallels": [],
       "cross_module": [],
@@ -2580,7 +2587,7 @@ window.KNOWLEDGE_DB = {
       "chapter": "功和功率",
       "difficulty": 1,
       "grade": 8,
-      "core_definition": "有用功与总功之比，η<1。",
+      "core_definition": "有用功与总功之比，η=W有/W总，机械效率总小于1。",
       "formula": "η=W有/W总×100%",
       "units": "",
       "history": {},
@@ -2602,7 +2609,10 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "mech_work"
+        "mech_work",
+        "mech_useful_work",
+        "mech_total_work",
+        "energy_efficiency"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -2642,8 +2652,14 @@ window.KNOWLEDGE_DB = {
           "填空题"
         ]
       },
-      "prerequisites": [],
-      "follow_ups": [],
+      "prerequisites": [
+        "mech_kinetic_energy",
+        "mech_gravitational_potential_energy",
+        "mech_elastic_potential_energy"
+      ],
+      "follow_ups": [
+        "mech_mechanical_energy_conversion"
+      ],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -3157,7 +3173,8 @@ window.KNOWLEDGE_DB = {
       "prerequisites": [],
       "follow_ups": [
         "therm_分子热运动",
-        "therm_分子间作用力"
+        "therm_分子间作用力",
+        "micro_atom"
       ],
       "parallels": [],
       "cross_module": [],
@@ -3425,7 +3442,8 @@ window.KNOWLEDGE_DB = {
       "follow_ups": [
         "therm_specific_heat",
         "therm_heat_calculation",
-        "therm_calorific_value"
+        "therm_calorific_value",
+        "therm_heat_engine_efficiency"
       ],
       "parallels": [],
       "cross_module": [],
@@ -3739,7 +3757,9 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "therm_heat_engine"
+        "therm_heat_engine",
+        "energy_efficiency",
+        "therm_热量"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -4596,7 +4616,9 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "opt_rectilinear_propagation"
+        "opt_rectilinear_propagation",
+        "opt_incidence_angle",
+        "opt_reflection_angle"
       ],
       "follow_ups": [
         "opt_镜面反射与漫反射",
@@ -5029,7 +5051,8 @@ window.KNOWLEDGE_DB = {
         "opt_凸透镜对光的作用",
         "opt_凹透镜对光的作用",
         "opt_眼镜与视力矫正",
-        "opt_lens_imaging"
+        "opt_lens_imaging",
+        "opt_focus"
       ],
       "parallels": [],
       "cross_module": [],
@@ -5204,7 +5227,9 @@ window.KNOWLEDGE_DB = {
       "follow_ups": [
         "opt_u_2f成像",
         "opt_f_u_2f成像",
-        "opt_u_f成像"
+        "opt_u_f成像",
+        "opt_object_distance",
+        "opt_image_distance"
       ],
       "parallels": [],
       "cross_module": [],
@@ -5709,7 +5734,9 @@ window.KNOWLEDGE_DB = {
       },
       "prerequisites": [],
       "follow_ups": [
-        "elec_摩擦起电"
+        "elec_摩擦起电",
+        "elec_positive_charge",
+        "elec_negative_charge"
       ],
       "parallels": [],
       "cross_module": [],
@@ -5753,7 +5780,8 @@ window.KNOWLEDGE_DB = {
         ]
       },
       "prerequisites": [
-        "elec_charge"
+        "elec_charge",
+        "elec_electron_transfer"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -5893,7 +5921,11 @@ window.KNOWLEDGE_DB = {
         "elec_voltage",
         "elec_电流表",
         "elec_电压表",
-        "elec_家庭电路"
+        "elec_家庭电路",
+        "elec_current_direction",
+        "elec_closed_circuit",
+        "elec_open_circuit",
+        "elec_short_circuit"
       ],
       "parallels": [],
       "cross_module": [],
@@ -6976,7 +7008,8 @@ window.KNOWLEDGE_DB = {
       },
       "prerequisites": [],
       "follow_ups": [
-        "elec_magnetic_field"
+        "elec_magnetic_field",
+        "elec_magnetic_pole"
       ],
       "parallels": [],
       "cross_module": [],
@@ -7021,7 +7054,8 @@ window.KNOWLEDGE_DB = {
       "follow_ups": [
         "elec_地磁场",
         "elec_磁场对电流的作用",
-        "elec_electromagnetic_induction"
+        "elec_electromagnetic_induction",
+        "elec_magnetic_field_lines"
       ],
       "parallels": [],
       "cross_module": [],
@@ -7110,7 +7144,8 @@ window.KNOWLEDGE_DB = {
         "elec_current"
       ],
       "follow_ups": [
-        "elec_电磁铁"
+        "elec_电磁铁",
+        "elec_solenoid"
       ],
       "parallels": [],
       "cross_module": [],
@@ -7555,7 +7590,9 @@ window.KNOWLEDGE_DB = {
           "填空题"
         ]
       },
-      "prerequisites": [],
+      "prerequisites": [
+        "energy_energy"
+      ],
       "follow_ups": [],
       "parallels": [],
       "cross_module": [],
@@ -8046,6 +8083,2354 @@ window.KNOWLEDGE_DB = {
       "color": "",
       "brightness": 1,
       "star_level": 2
+    },
+    {
+      "id": "mech_frequency",
+      "name": "频率",
+      "module": "力学",
+      "chapter": "声现象",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "物体每秒振动的次数，用f表示，单位是赫兹（Hz）。",
+      "formula": "f=1/T",
+      "units": "Hz",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "mech_pitch"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "振动频率"
+      ],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "mech_amplitude",
+      "name": "振幅",
+      "module": "力学",
+      "chapter": "声现象",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "振动物体偏离平衡位置的最大距离，振幅越大通常响度越大。",
+      "formula": "无",
+      "units": "m",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "mech_loudness"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "振动幅度"
+      ],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "mech_buoyancy",
+      "name": "浮力",
+      "module": "力学",
+      "chapter": "浮力",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "浸在液体或气体中的物体受到流体竖直向上的托力。",
+      "formula": "F浮",
+      "units": "N",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "填空题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "F浮"
+      ],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "mech_support_force",
+      "name": "支持力",
+      "module": "力学",
+      "chapter": "力",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "物体受到接触面对它的弹力，方向通常垂直接触面并指向受力物体。",
+      "formula": "无",
+      "units": "N",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [
+        "mech_force_elastic"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "支撑力"
+      ],
+      "node_type": "explanatory",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "mech_tension_force",
+      "name": "拉力",
+      "module": "力学",
+      "chapter": "力",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "绳、线等发生弹性形变时对所连接物体产生的拉拽作用力。",
+      "formula": "无",
+      "units": "N",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [
+        "mech_force_elastic"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "绳拉力"
+      ],
+      "node_type": "explanatory",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "mech_sliding_friction",
+      "name": "滑动摩擦力",
+      "module": "力学",
+      "chapter": "力",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "两个接触面发生相对滑动时，在接触面上产生的阻碍相对运动的力。",
+      "formula": "无",
+      "units": "N",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "mech_friction"
+      ],
+      "follow_ups": [
+        "mech_friction_factors"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "mech_friction_factors",
+      "name": "影响滑动摩擦力大小的因素",
+      "module": "力学",
+      "chapter": "力",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "滑动摩擦力大小主要与压力大小和接触面的粗糙程度有关。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "mech_sliding_friction"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "滑动摩擦力影响因素"
+      ],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "mech_work_conditions",
+      "name": "做功的两个必要因素",
+      "module": "力学",
+      "chapter": "功和功率",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "作用在物体上的力，以及物体在这个力的方向上通过的距离，是力对物体做功的两个必要因素。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "mech_work"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "mech_useful_work",
+      "name": "有用功",
+      "module": "力学",
+      "chapter": "功和功率",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "为了达到目的而必须做的功。",
+      "formula": "W有",
+      "units": "J",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "计算题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "mech_efficiency"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "mech_extra_work",
+      "name": "额外功",
+      "module": "力学",
+      "chapter": "功和功率",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "克服机械自重、摩擦等不得不额外做的功。",
+      "formula": "W额",
+      "units": "J",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "计算题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "mech_total_work",
+      "name": "总功",
+      "module": "力学",
+      "chapter": "功和功率",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "动力对机械所做的功，通常等于有用功与额外功之和。",
+      "formula": "W总=W有+W额",
+      "units": "J",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "计算题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "mech_efficiency"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "mech_kinetic_energy",
+      "name": "动能",
+      "module": "力学",
+      "chapter": "功和功率",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "物体由于运动而具有的能量；质量越大、速度越大，动能越大。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "mech_mechanical_energy"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "mech_gravitational_potential_energy",
+      "name": "重力势能",
+      "module": "力学",
+      "chapter": "功和功率",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "物体由于被举高而具有的能量；质量和相对高度会影响其大小。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "mech_mechanical_energy"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "mech_elastic_potential_energy",
+      "name": "弹性势能",
+      "module": "力学",
+      "chapter": "功和功率",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "发生弹性形变的物体由于弹性形变而具有的能量。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "mech_mechanical_energy"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "mech_mechanical_energy_conversion",
+      "name": "机械能转化",
+      "module": "力学",
+      "chapter": "功和功率",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "动能和势能可以相互转化；只有重力或弹力做功等理想条件下机械能可保持不变。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "mech_mechanical_energy"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "动能和势能转化"
+      ],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "micro_atom",
+      "name": "原子",
+      "module": "热学",
+      "chapter": "物质微观结构",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "构成物质的一种基本微粒，原子可由原子核和核外电子构成。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "therm_物质的构成"
+      ],
+      "follow_ups": [
+        "micro_atomic_structure"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "atom"
+      ],
+      "node_type": "explanatory",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "micro_atomic_structure",
+      "name": "原子结构",
+      "module": "热学",
+      "chapter": "物质微观结构",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "原子由位于中心的原子核和核外电子构成。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "micro_atom"
+      ],
+      "follow_ups": [
+        "micro_nucleus",
+        "micro_extranuclear_electron"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "原子的结构"
+      ],
+      "node_type": "explanatory",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "micro_nucleus",
+      "name": "原子核",
+      "module": "热学",
+      "chapter": "物质微观结构",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "原子中心带正电的区域，主要由质子和中子组成。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "micro_atomic_structure"
+      ],
+      "follow_ups": [
+        "micro_proton",
+        "micro_neutron"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "explanatory",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "micro_extranuclear_electron",
+      "name": "核外电子",
+      "module": "热学",
+      "chapter": "物质微观结构",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "分布在原子核外的带负电粒子；摩擦起电中发生转移的主要是核外电子。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "micro_atomic_structure"
+      ],
+      "follow_ups": [
+        "micro_electron"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "explanatory",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "micro_proton",
+      "name": "质子",
+      "module": "热学",
+      "chapter": "物质微观结构",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "原子核中的带正电粒子。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "micro_nucleus"
+      ],
+      "follow_ups": [
+        "micro_atomic_neutrality"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "explanatory",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "micro_neutron",
+      "name": "中子",
+      "module": "热学",
+      "chapter": "物质微观结构",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "原子核中不带电的粒子。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "micro_nucleus"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "explanatory",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "micro_electron",
+      "name": "电子",
+      "module": "热学",
+      "chapter": "物质微观结构",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "带负电的微观粒子；物体得失电子会改变其带电状态。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "micro_extranuclear_electron"
+      ],
+      "follow_ups": [
+        "micro_atomic_neutrality",
+        "elec_electron_transfer"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "electron"
+      ],
+      "node_type": "explanatory",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "micro_atomic_neutrality",
+      "name": "原子电中性",
+      "module": "热学",
+      "chapter": "物质微观结构",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "通常情况下原子中正负电荷量相等，整体不显电性。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "micro_proton",
+        "micro_electron"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "explanatory",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_positive_charge",
+      "name": "正电荷",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "规定与丝绸摩擦过的玻璃棒所带的电荷为正电荷。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "elec_charge"
+      ],
+      "follow_ups": [
+        "elec_charge_interaction"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "正电"
+      ],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_negative_charge",
+      "name": "负电荷",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "规定与毛皮摩擦过的橡胶棒所带的电荷为负电荷。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "elec_charge"
+      ],
+      "follow_ups": [
+        "elec_charge_interaction"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "负电"
+      ],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_charge_interaction",
+      "name": "电荷间相互作用",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "同种电荷相互排斥，异种电荷相互吸引。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "elec_positive_charge",
+        "elec_negative_charge"
+      ],
+      "follow_ups": [
+        "elec_electroscope"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "同种相斥异种相吸"
+      ],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_charged_body_property",
+      "name": "带电体的性质",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "带电体具有吸引轻小物体的性质。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_charge_quantity",
+      "name": "电荷量",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "物体所带电荷的多少叫电荷量，常简称电量，单位是库仑（C）。",
+      "formula": "Q",
+      "units": "C",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "填空题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "电量"
+      ],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_electroscope",
+      "name": "验电器",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "检验物体是否带电的仪器，常利用同种电荷相互排斥使金属箔张开。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "elec_charge_interaction"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_electron_transfer",
+      "name": "电子转移",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "物体之间发生电子转移时，失去电子的物体显正电，得到电子的物体显负电。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "micro_electron"
+      ],
+      "follow_ups": [
+        "elec_摩擦起电"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "电子得失"
+      ],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_charge_conservation",
+      "name": "电荷守恒",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "电荷不会凭空产生或消失；在摩擦起电等过程中，电荷只是发生转移。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "explanatory",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_glass_silk_friction",
+      "name": "玻璃棒与丝绸摩擦",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "玻璃棒与丝绸摩擦后，玻璃棒失去电子带正电，丝绸得到电子带负电。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "玻璃棒丝绸"
+      ],
+      "node_type": "application",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_rubber_fur_friction",
+      "name": "橡胶棒与毛皮摩擦",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "橡胶棒与毛皮摩擦后，橡胶棒得到电子带负电，毛皮失去电子带正电。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "橡胶棒毛皮"
+      ],
+      "node_type": "application",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_current_direction",
+      "name": "电流方向",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "规定正电荷定向移动的方向为电流方向；金属导体中电子定向移动方向与电流方向相反。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "elec_电路"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_closed_circuit",
+      "name": "通路",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "处处连通、能形成持续电流的电路状态。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "elec_电路"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "闭合电路"
+      ],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_open_circuit",
+      "name": "断路",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "电路某处断开，不能形成持续电流的电路状态。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "elec_电路"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "开路"
+      ],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_short_circuit",
+      "name": "短路",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "电流未经正常用电器而直接形成低电阻通路的异常连接，可能造成过大电流。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "故障分析"
+        ]
+      },
+      "prerequisites": [
+        "elec_电路"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_electric_energy",
+      "name": "电能",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "与电有关的一种能量形式；电流做功的过程伴随电能向其他形式能转化。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "electric energy"
+      ],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_magnetic_pole",
+      "name": "磁极",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "磁体上磁性最强的两个部位，分别称为N极和S极。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "elec_磁现象"
+      ],
+      "follow_ups": [
+        "elec_magnetic_pole_interaction"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_magnetic_pole_interaction",
+      "name": "磁极间相互作用",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "同名磁极相互排斥，异名磁极相互吸引。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "elec_magnetic_pole"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "同名相斥异名相吸"
+      ],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_magnetic_field_lines",
+      "name": "磁感线",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "用来形象描述磁场分布的假想曲线；曲线上某点切线方向表示该点磁场方向，疏密反映磁场强弱。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [
+        "elec_magnetic_field"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_solenoid",
+      "name": "通电螺线管",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "通电后的螺线管周围存在类似条形磁体的磁场，并有N、S极。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [
+        "elec_电流的磁效应"
+      ],
+      "follow_ups": [
+        "elec_ampere_rule"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_ampere_rule",
+      "name": "安培定则",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "用右手握住通电螺线管，四指指向电流方向，大拇指所指的一端是N极。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [
+        "elec_solenoid"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "右手螺旋定则"
+      ],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "opt_incident_ray",
+      "name": "入射光线",
+      "module": "光学",
+      "chapter": "光的反射",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "射向反射面的光线。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "opt_incidence_angle"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "explanatory",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "opt_reflected_ray",
+      "name": "反射光线",
+      "module": "光学",
+      "chapter": "光的反射",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "光射到反射面后离开反射面的光线。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "opt_reflection_angle"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "explanatory",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "opt_normal",
+      "name": "法线",
+      "module": "光学",
+      "chapter": "光的反射",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "过入射点并垂直于反射面的直线。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "opt_incidence_angle",
+        "opt_reflection_angle"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "opt_incidence_angle",
+      "name": "入射角",
+      "module": "光学",
+      "chapter": "光的反射",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "入射光线与法线的夹角。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [
+        "opt_incident_ray",
+        "opt_normal"
+      ],
+      "follow_ups": [
+        "opt_reflection_law"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "opt_reflection_angle",
+      "name": "反射角",
+      "module": "光学",
+      "chapter": "光的反射",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "反射光线与法线的夹角。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [
+        "opt_reflected_ray",
+        "opt_normal"
+      ],
+      "follow_ups": [
+        "opt_reflection_law"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "opt_focus",
+      "name": "焦点",
+      "module": "光学",
+      "chapter": "光的折射",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "平行于主光轴的光经凸透镜折射后会聚的点；凹透镜对应虚焦点。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "填空题",
+          "作图题"
+        ]
+      },
+      "prerequisites": [
+        "opt_透镜"
+      ],
+      "follow_ups": [
+        "opt_focal_length"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "F"
+      ],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "opt_focal_length",
+      "name": "焦距",
+      "module": "光学",
+      "chapter": "光的折射",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "光心到焦点的距离，用f表示。",
+      "formula": "f",
+      "units": "m",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "填空题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "opt_focus"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "opt_object_distance",
+      "name": "物距",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "物体到透镜光心的距离，用u表示。",
+      "formula": "u",
+      "units": "m",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "实验题",
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "opt_lens_imaging"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "opt_image_distance",
+      "name": "像距",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "像到透镜光心的距离，用v表示。",
+      "formula": "v",
+      "units": "m",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "实验题",
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "opt_lens_imaging"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "opt_real_image",
+      "name": "实像",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "由实际光线会聚形成、能够在光屏上承接到的像。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "opt_virtual_image",
+      "name": "虚像",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "由实际光线反向延长线会聚形成、不能在光屏上承接到的像。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "energy_energy",
+      "name": "能量",
+      "module": "能量",
+      "chapter": "能量与转化",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "物体能够对外做功，表明物体具有能量；能量有多种存在形式。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "energy_energy_conversion",
+        "energy_energy_transfer",
+        "energy_energy_conservation"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "能"
+      ],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "energy_energy_conversion",
+      "name": "能量转化",
+      "module": "能量",
+      "chapter": "能量与转化",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "能量从一种形式转变为另一种形式的过程。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "energy_energy"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "energy_energy_transfer",
+      "name": "能量转移",
+      "module": "能量",
+      "chapter": "能量与转化",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "同一种能量从一个物体转移到另一个物体的过程。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "energy_energy"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "energy_efficiency",
+      "name": "效率",
+      "module": "能量",
+      "chapter": "能量与转化",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "表示能量或功有效利用程度的比值思想；机械效率常用有用功与总功之比，热机效率常用有用功与燃料完全燃烧放出热量之比。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "mech_efficiency",
+        "therm_heat_engine_efficiency"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "能量利用效率"
+      ],
+      "node_type": "explanatory",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "energy_chemical_energy",
+      "name": "化学能",
+      "module": "能量",
+      "chapter": "能量与转化",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "储存在物质化学结构中的能量，燃料燃烧和电池工作都涉及化学能的转化。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "explanatory",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
     }
   ]
 };
