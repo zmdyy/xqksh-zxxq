@@ -1,14 +1,15 @@
 {
-  "version": "2.2",
+  "version": "2.3",
   "update_date": "2026-09-28",
-  "total_count": 242,
+  "total_count": 263,
   "modules": [
     "力学",
     "热学",
     "光学",
     "电磁学",
     "能量",
-    "数学"
+    "数学",
+    "跨学科支撑"
   ],
   "data": [
     {
@@ -374,7 +375,9 @@
           "选择题"
         ]
       },
-      "prerequisites": [],
+      "prerequisites": [
+        "mech_vibration"
+      ],
       "follow_ups": [
         "mech_pitch",
         "mech_loudness",
@@ -2655,7 +2658,8 @@
       "prerequisites": [
         "mech_kinetic_energy",
         "mech_gravitational_potential_energy",
-        "mech_elastic_potential_energy"
+        "mech_elastic_potential_energy",
+        "mech_potential_energy"
       ],
       "follow_ups": [
         "mech_mechanical_energy_conversion"
@@ -4957,7 +4961,8 @@
         ]
       },
       "prerequisites": [
-        "opt_rectilinear_propagation"
+        "opt_rectilinear_propagation",
+        "opt_refraction_angle"
       ],
       "follow_ups": [
         "opt_折射现象",
@@ -5913,7 +5918,8 @@
         ]
       },
       "prerequisites": [
-        "elec_current"
+        "elec_current",
+        "elec_power_source"
       ],
       "follow_ups": [
         "elec_series_circuit",
@@ -5968,7 +5974,10 @@
         "elec_电路"
       ],
       "follow_ups": [
-        "elec_串联电路特点"
+        "elec_串联电路特点",
+        "elec_series_current_rule",
+        "elec_series_voltage_rule",
+        "elec_series_resistance_rule"
       ],
       "parallels": [],
       "cross_module": [],
@@ -6012,7 +6021,10 @@
       ],
       "follow_ups": [
         "elec_电流表",
-        "elec_并联电路特点"
+        "elec_并联电路特点",
+        "elec_parallel_current_rule",
+        "elec_parallel_voltage_rule",
+        "elec_parallel_resistance_rule"
       ],
       "parallels": [],
       "cross_module": [],
@@ -6056,7 +6068,8 @@
       ],
       "follow_ups": [
         "elec_伏安法测电阻",
-        "elec_电路故障分析"
+        "elec_电路故障分析",
+        "elec_measure_lamp_power"
       ],
       "parallels": [],
       "cross_module": [],
@@ -6103,7 +6116,8 @@
         ]
       },
       "prerequisites": [
-        "elec_电路"
+        "elec_电路",
+        "elec_power_source"
       ],
       "follow_ups": [
         "elec_电压表",
@@ -6154,7 +6168,8 @@
       ],
       "follow_ups": [
         "elec_伏安法测电阻",
-        "elec_电路故障分析"
+        "elec_电路故障分析",
+        "elec_measure_lamp_power"
       ],
       "parallels": [],
       "cross_module": [],
@@ -6294,7 +6309,9 @@
       "prerequisites": [
         "elec_影响电阻的因素"
       ],
-      "follow_ups": [],
+      "follow_ups": [
+        "elec_measure_lamp_power"
+      ],
       "parallels": [],
       "cross_module": [],
       "cross_disciplinary": [],
@@ -6412,7 +6429,7 @@
       "chapter": "欧姆定律",
       "difficulty": 1,
       "grade": 9,
-      "core_definition": "串联电路总电阻等于各电阻之和，电流处处相等。",
+      "core_definition": "串联电路中电流处处相等，总电压等于各部分电压之和，总电阻等于各电阻之和。",
       "formula": "R=R1+R2,I=I1=I2",
       "units": "",
       "history": {},
@@ -6455,7 +6472,7 @@
       "chapter": "欧姆定律",
       "difficulty": 1,
       "grade": 9,
-      "core_definition": "并联电路总电阻倒数等于各电阻倒数之和。",
+      "core_definition": "并联电路中各支路两端电压相等，干路电流等于各支路电流之和，总电阻小于任一支路电阻。",
       "formula": "1/R=1/R1+1/R2",
       "units": "",
       "history": {},
@@ -6663,7 +6680,8 @@
         "elec_electric_work"
       ],
       "follow_ups": [
-        "elec_额定功率与实际功率"
+        "elec_额定功率与实际功率",
+        "elec_measure_lamp_power"
       ],
       "parallels": [],
       "cross_module": [],
@@ -6753,7 +6771,8 @@
       },
       "prerequisites": [
         "elec_current",
-        "elec_resistance"
+        "elec_resistance",
+        "elec_electric_heating"
       ],
       "follow_ups": [
         "elec_电热利用与防止"
@@ -7141,7 +7160,8 @@
         ]
       },
       "prerequisites": [
-        "elec_current"
+        "elec_current",
+        "elec_oersted_experiment"
       ],
       "follow_ups": [
         "elec_电磁铁",
@@ -7188,7 +7208,8 @@
         "elec_电流的磁效应"
       ],
       "follow_ups": [
-        "elec_电磁继电器"
+        "elec_电磁继电器",
+        "elec_electromagnet_factors"
       ],
       "parallels": [],
       "cross_module": [],
@@ -8092,7 +8113,7 @@
       "difficulty": 1,
       "grade": 7,
       "core_definition": "物体每秒振动的次数，用f表示，单位是赫兹（Hz）。",
-      "formula": "f=1/T",
+      "formula": "无",
       "units": "Hz",
       "history": {},
       "key_experiments": [],
@@ -8105,7 +8126,9 @@
           "填空题"
         ]
       },
-      "prerequisites": [],
+      "prerequisites": [
+        "mech_vibration"
+      ],
       "follow_ups": [
         "mech_pitch"
       ],
@@ -8123,7 +8146,8 @@
       "size": 8,
       "color": "",
       "brightness": 1,
-      "star_level": 3
+      "star_level": 3,
+      "symbol": "f"
     },
     {
       "id": "mech_amplitude",
@@ -8146,7 +8170,9 @@
           "实验题"
         ]
       },
-      "prerequisites": [],
+      "prerequisites": [
+        "mech_vibration"
+      ],
       "follow_ups": [
         "mech_loudness"
       ],
@@ -8174,7 +8200,7 @@
       "difficulty": 1,
       "grade": 8,
       "core_definition": "浸在液体或气体中的物体受到流体竖直向上的托力。",
-      "formula": "F浮",
+      "formula": "无",
       "units": "N",
       "history": {},
       "key_experiments": [],
@@ -8204,7 +8230,8 @@
       "size": 8,
       "color": "",
       "brightness": 1,
-      "star_level": 3
+      "star_level": 3,
+      "symbol": "F浮"
     },
     {
       "id": "mech_support_force",
@@ -8417,7 +8444,7 @@
       "difficulty": 1,
       "grade": 8,
       "core_definition": "为了达到目的而必须做的功。",
-      "formula": "W有",
+      "formula": "无",
       "units": "J",
       "history": {},
       "key_experiments": [],
@@ -8446,7 +8473,8 @@
       "size": 8,
       "color": "",
       "brightness": 1,
-      "star_level": 3
+      "star_level": 3,
+      "symbol": "W有"
     },
     {
       "id": "mech_extra_work",
@@ -8456,7 +8484,7 @@
       "difficulty": 1,
       "grade": 8,
       "core_definition": "克服机械自重、摩擦等不得不额外做的功。",
-      "formula": "W额",
+      "formula": "无",
       "units": "J",
       "history": {},
       "key_experiments": [],
@@ -8483,7 +8511,8 @@
       "size": 8,
       "color": "",
       "brightness": 1,
-      "star_level": 3
+      "star_level": 3,
+      "symbol": "W额"
     },
     {
       "id": "mech_total_work",
@@ -8521,7 +8550,8 @@
       "size": 8,
       "color": "",
       "brightness": 1,
-      "star_level": 3
+      "star_level": 3,
+      "symbol": "W总"
     },
     {
       "id": "mech_kinetic_energy",
@@ -8583,7 +8613,9 @@
           "实验题"
         ]
       },
-      "prerequisites": [],
+      "prerequisites": [
+        "mech_potential_energy"
+      ],
       "follow_ups": [
         "mech_mechanical_energy"
       ],
@@ -8621,7 +8653,9 @@
           "选择题"
         ]
       },
-      "prerequisites": [],
+      "prerequisites": [
+        "mech_potential_energy"
+      ],
       "follow_ups": [
         "mech_mechanical_energy"
       ],
@@ -8641,7 +8675,7 @@
     },
     {
       "id": "mech_mechanical_energy_conversion",
-      "name": "机械能转化",
+      "name": "动能和势能的转化",
       "module": "力学",
       "chapter": "功和功率",
       "difficulty": 1,
@@ -8683,8 +8717,8 @@
     {
       "id": "micro_atom",
       "name": "原子",
-      "module": "热学",
-      "chapter": "物质微观结构",
+      "module": "跨学科支撑",
+      "chapter": "化学·物质微观结构",
       "difficulty": 1,
       "grade": 9,
       "core_definition": "构成物质的一种基本微粒，原子可由原子核和核外电子构成。",
@@ -8725,8 +8759,8 @@
     {
       "id": "micro_atomic_structure",
       "name": "原子结构",
-      "module": "热学",
-      "chapter": "物质微观结构",
+      "module": "跨学科支撑",
+      "chapter": "化学·物质微观结构",
       "difficulty": 1,
       "grade": 9,
       "core_definition": "原子由位于中心的原子核和核外电子构成。",
@@ -8768,8 +8802,8 @@
     {
       "id": "micro_nucleus",
       "name": "原子核",
-      "module": "热学",
-      "chapter": "物质微观结构",
+      "module": "跨学科支撑",
+      "chapter": "化学·物质微观结构",
       "difficulty": 1,
       "grade": 9,
       "core_definition": "原子中心带正电的区域，主要由质子和中子组成。",
@@ -8809,8 +8843,8 @@
     {
       "id": "micro_extranuclear_electron",
       "name": "核外电子",
-      "module": "热学",
-      "chapter": "物质微观结构",
+      "module": "跨学科支撑",
+      "chapter": "化学·物质微观结构",
       "difficulty": 1,
       "grade": 9,
       "core_definition": "分布在原子核外的带负电粒子；摩擦起电中发生转移的主要是核外电子。",
@@ -8849,8 +8883,8 @@
     {
       "id": "micro_proton",
       "name": "质子",
-      "module": "热学",
-      "chapter": "物质微观结构",
+      "module": "跨学科支撑",
+      "chapter": "化学·物质微观结构",
       "difficulty": 1,
       "grade": 9,
       "core_definition": "原子核中的带正电粒子。",
@@ -8889,8 +8923,8 @@
     {
       "id": "micro_neutron",
       "name": "中子",
-      "module": "热学",
-      "chapter": "物质微观结构",
+      "module": "跨学科支撑",
+      "chapter": "化学·物质微观结构",
       "difficulty": 1,
       "grade": 9,
       "core_definition": "原子核中不带电的粒子。",
@@ -8927,8 +8961,8 @@
     {
       "id": "micro_electron",
       "name": "电子",
-      "module": "热学",
-      "chapter": "物质微观结构",
+      "module": "跨学科支撑",
+      "chapter": "化学·物质微观结构",
       "difficulty": 1,
       "grade": 9,
       "core_definition": "带负电的微观粒子；物体得失电子会改变其带电状态。",
@@ -8970,8 +9004,8 @@
     {
       "id": "micro_atomic_neutrality",
       "name": "原子电中性",
-      "module": "热学",
-      "chapter": "物质微观结构",
+      "module": "跨学科支撑",
+      "chapter": "化学·物质微观结构",
       "difficulty": 1,
       "grade": 9,
       "core_definition": "通常情况下原子中正负电荷量相等，整体不显电性。",
@@ -9094,7 +9128,7 @@
     },
     {
       "id": "elec_charge_interaction",
-      "name": "电荷间相互作用",
+      "name": "电荷间的相互作用",
       "module": "电磁学",
       "chapter": "电路基础",
       "difficulty": 1,
@@ -9137,7 +9171,7 @@
     },
     {
       "id": "elec_charged_body_property",
-      "name": "带电体的性质",
+      "name": "带电体吸引轻小物体",
       "module": "电磁学",
       "chapter": "电路基础",
       "difficulty": 1,
@@ -9179,7 +9213,7 @@
       "difficulty": 1,
       "grade": 9,
       "core_definition": "物体所带电荷的多少叫电荷量，常简称电量，单位是库仑（C）。",
-      "formula": "Q",
+      "formula": "无",
       "units": "C",
       "history": {},
       "key_experiments": [],
@@ -9207,7 +9241,8 @@
       "size": 8,
       "color": "",
       "brightness": 1,
-      "star_level": 3
+      "star_level": 3,
+      "symbol": "Q"
     },
     {
       "id": "elec_electroscope",
@@ -9622,7 +9657,8 @@
         ]
       },
       "prerequisites": [
-        "elec_磁现象"
+        "elec_磁现象",
+        "elec_magnet"
       ],
       "follow_ups": [
         "elec_magnetic_pole_interaction"
@@ -9643,7 +9679,7 @@
     },
     {
       "id": "elec_magnetic_pole_interaction",
-      "name": "磁极间相互作用",
+      "name": "磁极间的相互作用",
       "module": "电磁学",
       "chapter": "电与磁",
       "difficulty": 1,
@@ -9898,10 +9934,13 @@
           "选择题"
         ]
       },
-      "prerequisites": [],
+      "prerequisites": [
+        "opt_incident_point"
+      ],
       "follow_ups": [
         "opt_incidence_angle",
-        "opt_reflection_angle"
+        "opt_reflection_angle",
+        "opt_refraction_angle"
       ],
       "parallels": [],
       "cross_module": [],
@@ -10023,7 +10062,9 @@
         ]
       },
       "prerequisites": [
-        "opt_透镜"
+        "opt_透镜",
+        "opt_optical_center",
+        "opt_principal_axis"
       ],
       "follow_ups": [
         "opt_focal_length"
@@ -10052,7 +10093,7 @@
       "difficulty": 1,
       "grade": 8,
       "core_definition": "光心到焦点的距离，用f表示。",
-      "formula": "f",
+      "formula": "无",
       "units": "m",
       "history": {},
       "key_experiments": [],
@@ -10066,7 +10107,9 @@
         ]
       },
       "prerequisites": [
-        "opt_focus"
+        "opt_focus",
+        "opt_optical_center",
+        "opt_principal_axis"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -10081,7 +10124,8 @@
       "size": 8,
       "color": "",
       "brightness": 1,
-      "star_level": 3
+      "star_level": 3,
+      "symbol": "f"
     },
     {
       "id": "opt_object_distance",
@@ -10091,7 +10135,7 @@
       "difficulty": 1,
       "grade": 8,
       "core_definition": "物体到透镜光心的距离，用u表示。",
-      "formula": "u",
+      "formula": "无",
       "units": "m",
       "history": {},
       "key_experiments": [],
@@ -10105,7 +10149,8 @@
         ]
       },
       "prerequisites": [
-        "opt_lens_imaging"
+        "opt_lens_imaging",
+        "opt_optical_center"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -10120,7 +10165,8 @@
       "size": 8,
       "color": "",
       "brightness": 1,
-      "star_level": 3
+      "star_level": 3,
+      "symbol": "u"
     },
     {
       "id": "opt_image_distance",
@@ -10130,7 +10176,7 @@
       "difficulty": 1,
       "grade": 8,
       "core_definition": "像到透镜光心的距离，用v表示。",
-      "formula": "v",
+      "formula": "无",
       "units": "m",
       "history": {},
       "key_experiments": [],
@@ -10144,7 +10190,8 @@
         ]
       },
       "prerequisites": [
-        "opt_lens_imaging"
+        "opt_lens_imaging",
+        "opt_optical_center"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -10159,7 +10206,8 @@
       "size": 8,
       "color": "",
       "brightness": 1,
-      "star_level": 3
+      "star_level": 3,
+      "symbol": "v"
     },
     {
       "id": "opt_real_image",
@@ -10424,6 +10472,864 @@
       "tags": [],
       "aliases": [],
       "node_type": "explanatory",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "mech_vibration",
+      "name": "振动",
+      "module": "力学",
+      "chapter": "声现象",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "物体在某一位置附近做往复运动的现象；发声体通常都在振动。",
+      "formula": "无",
+      "symbol": "",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "mech_frequency",
+        "mech_amplitude",
+        "mech_sound_production"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "mech_potential_energy",
+      "name": "势能",
+      "module": "力学",
+      "chapter": "功和功率",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "物体由于位置或发生弹性形变而具有的能量，包括重力势能和弹性势能。",
+      "formula": "无",
+      "symbol": "",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "mech_gravitational_potential_energy",
+        "mech_elastic_potential_energy",
+        "mech_mechanical_energy"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "opt_incident_point",
+      "name": "入射点",
+      "module": "光学",
+      "chapter": "光的反射",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "入射光线射到反射面或两种介质分界面上的点。",
+      "formula": "无",
+      "symbol": "",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "作图题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "opt_normal"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "opt_refracted_ray",
+      "name": "折射光线",
+      "module": "光学",
+      "chapter": "光的折射",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "光从一种介质进入另一种介质发生折射后，在第二种介质中传播的光线。",
+      "formula": "无",
+      "symbol": "",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "作图题",
+          "选择题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "opt_refraction_angle"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "opt_refraction_angle",
+      "name": "折射角",
+      "module": "光学",
+      "chapter": "光的折射",
+      "difficulty": 1,
+      "grade": 7,
+      "core_definition": "折射光线与法线的夹角。",
+      "formula": "无",
+      "symbol": "",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "作图题",
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "opt_refracted_ray",
+        "opt_normal"
+      ],
+      "follow_ups": [
+        "opt_refraction_law"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "opt_optical_center",
+      "name": "光心",
+      "module": "光学",
+      "chapter": "光的折射",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "薄透镜的中心附近可看作光心，经过光心的光线传播方向近似不变。",
+      "formula": "无",
+      "symbol": "",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "作图题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "opt_focus",
+        "opt_focal_length",
+        "opt_object_distance",
+        "opt_image_distance"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "O"
+      ],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "opt_principal_axis",
+      "name": "主光轴",
+      "module": "光学",
+      "chapter": "光的折射",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "通过透镜两个球面球心的直线称为主光轴。",
+      "formula": "无",
+      "symbol": "",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "作图题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "opt_focus",
+        "opt_focal_length"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "主轴"
+      ],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_magnetism_property",
+      "name": "磁性",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "磁体能够吸引铁、钴、镍等物质的性质。",
+      "formula": "无",
+      "symbol": "",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "elec_magnet"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_magnet",
+      "name": "磁体",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "具有磁性的物体叫磁体。",
+      "formula": "无",
+      "symbol": "",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "elec_magnetism_property"
+      ],
+      "follow_ups": [
+        "elec_magnetic_pole"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_oersted_experiment",
+      "name": "奥斯特实验",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "通电导线附近的小磁针发生偏转，说明电流周围存在磁场，揭示了电与磁的联系。",
+      "formula": "无",
+      "symbol": "",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "elec_电流的磁效应"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_electromagnet_factors",
+      "name": "影响电磁铁磁性强弱的因素",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "电磁铁磁性强弱与电流大小、线圈匝数以及是否有铁芯等因素有关。",
+      "formula": "无",
+      "symbol": "",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "实验题",
+          "选择题"
+        ]
+      },
+      "prerequisites": [
+        "elec_电磁铁"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "电磁铁磁性强弱"
+      ],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_electric_magnetic_relation",
+      "name": "电与磁的相互联系",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "电流能够产生磁场，磁场能够对电流产生作用；变化的磁场还可以通过电磁感应产生电流。",
+      "formula": "无",
+      "symbol": "",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "explanatory",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_electric_heating",
+      "name": "电流的热效应",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "电流通过导体时，电能转化为内能，导体会发热。",
+      "formula": "无",
+      "symbol": "",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "实验题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "elec_joule_law"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [
+        "电热"
+      ],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_measure_lamp_power",
+      "name": "测量小灯泡的电功率",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "用电压表测小灯泡两端电压、电流表测通过灯泡的电流，利用P=UI计算电功率，并比较额定功率与实际功率。",
+      "formula": "P=UI",
+      "symbol": "",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "实验题"
+        ]
+      },
+      "prerequisites": [
+        "elec_electric_power",
+        "elec_电流表",
+        "elec_电压表",
+        "elec_滑动变阻器"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_power_source",
+      "name": "电源",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "提供电能、维持电路两端电压的装置，工作时把其他形式的能转化为电能。",
+      "formula": "无",
+      "symbol": "",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 3,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [],
+      "follow_ups": [
+        "elec_电路",
+        "elec_voltage"
+      ],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_series_current_rule",
+      "name": "串联电路电流规律",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "串联电路中各处电流相等。",
+      "formula": "I=I₁=I₂=…",
+      "symbol": "",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "elec_series_circuit"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_series_voltage_rule",
+      "name": "串联电路电压规律",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "串联电路两端总电压等于各部分电路两端电压之和。",
+      "formula": "U=U₁+U₂+…",
+      "symbol": "",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "elec_series_circuit"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_series_resistance_rule",
+      "name": "串联电路电阻关系",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "串联电路总电阻等于各串联电阻之和。",
+      "formula": "R=R₁+R₂+…",
+      "symbol": "",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "elec_series_circuit"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_parallel_current_rule",
+      "name": "并联电路电流规律",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "并联电路干路电流等于各支路电流之和。",
+      "formula": "I=I₁+I₂+…",
+      "symbol": "",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "elec_parallel_circuit"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_parallel_voltage_rule",
+      "name": "并联电路电压规律",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "并联电路各支路两端电压相等，并等于电源两端电压。",
+      "formula": "U=U₁=U₂=…",
+      "symbol": "",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 5,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "elec_parallel_circuit"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 3
+    },
+    {
+      "id": "elec_parallel_resistance_rule",
+      "name": "并联电路电阻关系",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "difficulty": 1,
+      "grade": 9,
+      "core_definition": "并联电路总电阻的倒数等于各支路电阻倒数之和；总电阻小于任一支路电阻。",
+      "formula": "1/R=1/R₁+1/R₂+…",
+      "symbol": "",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 4,
+        "question_types": [
+          "选择题",
+          "计算题"
+        ]
+      },
+      "prerequisites": [
+        "elec_parallel_circuit"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "aliases": [],
+      "node_type": "core",
       "x": 0,
       "y": 0,
       "z": 0,
