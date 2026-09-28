@@ -880,7 +880,7 @@ const MOD_COLORS = {
   '能量': new THREE.Color('#ff8800'),
   '数学': new THREE.Color('#4d7cff')
 };
-const CONN_TYPE_MAP = { prerequisite:0, causal:1, parallel:2, historical:3, cross_module:4, cross_disciplinary:5 };
+const CONN_TYPE_MAP = { prerequisite:0, causal:1, parallel:2, historical:3, cross_module:4, cross_disciplinary:5, support:6, application:7, transformation:8 };
 
 // ========================== DATA ==========================
 const starById = new Map();
@@ -991,6 +991,7 @@ function buildDataMaps(dbData, connData) {
       thinking: d.thinking || null,
       x: d.x, y: d.y, z: d.z,
       size: d.size || 10, starLevel: d.star_level || 3,
+      nodeType: d.node_type || 'core', aliases: d.aliases || [],
       learned: false
     };
     starById.set(id, star);
@@ -1785,9 +1786,7 @@ connDataArr.forEach(c => {
   const from = starById.get(c.from);
   const to = starById.get(c.to);
   if (!from || !to) return;
-  if (type >= 4 || from.module === to.module) {
-    rawConns.push({ from, to, type, isCrossModule: type >= 4 });
-  }
+  rawConns.push({ from, to, type, isCrossModule: from.module !== to.module });
 });
 
 const darkPos = [], darkCol = [], darkAlphas = [];
@@ -1819,7 +1818,7 @@ rawConns.forEach((c, i) => {
   const speeds = { strong: 1.0, medium: 0.7, weak: 0.5 };
   const isHubStrand = hubStarId && (from.id === hubStarId || to.id === hubStarId);
   // 总览态轻微增亮：保持明显低于点击后的聚焦态。
-  const baseOpacityByType = [0.115, 0.082, 0.044, 0.034, 0.022, 0.015];
+  const baseOpacityByType = [0.115, 0.082, 0.044, 0.034, 0.022, 0.015, 0.050, 0.042, 0.055];
   const baseOpacity = baseOpacityByType[type] !== undefined ? baseOpacityByType[type] : 0.036;
   const opacity = Math.min(0.16, baseOpacity * (isHubStrand ? 1.15 : 1.0));
   const strand = makeStrandPoints(from, to, i + type * 0.37, 10);
@@ -2231,7 +2230,7 @@ function getSortedRelatedList(id) {
     seen.add(otherId);
     const otherStar = starById.get(otherId);
     if (!otherStar) return;
-    const typeLabels = ['前置知识', '后续知识', '平行关联', '历史启发', '跨模块', '跨学科'];
+    const typeLabels = ['前置知识', '后续知识', '平行关联', '历史启发', '跨模块', '跨学科', '支撑关联', '应用关联', '能量转化'];
     let relType = 0;
     if (c.type === 0) {
       relType = c.fromId === id ? 1 : 0;
@@ -2240,11 +2239,16 @@ function getSortedRelatedList(id) {
     else if (c.type === 3) relType = 3;
     else if (c.type === 4) relType = 4;
     else if (c.type === 5) relType = 5;
+    else if (c.type === 6) relType = 6;
+    else if (c.type === 7) relType = 7;
+    else if (c.type === 8) relType = 8;
     let arrow = '↔';
     if (c.type === 0) {
       arrow = c.fromId === id ? '→' : '←';
-    } else if (c.type === 1) {
+    } else if (c.type === 1 || c.type === 7) {
       arrow = '→';
+    } else if (c.type === 8) {
+      arrow = '⇄';
     }
     related.push({ id: otherId, name: otherStar.name, module: otherStar.module, type: relType, typeLabel: typeLabels[relType] || '关联', arrow });
   });
@@ -3095,17 +3099,20 @@ function showInfoPanel(star) {
   renderKnowledgeChainPanel(star);
   panelRelated.innerHTML = '';
   var conns = connMap.get(star.id) || [];
-  var typeLabels = ['\u524d\u7f6e\u77e5\u8bc6', '\u540e\u7eed\u77e5\u8bc6', '\u5e73\u884c\u5173\u8054', '\u5386\u53f2\u542f\u53d1', '\u8de8\u6a21\u5757\u5173\u8054', '\u8de8\u5b66\u79d1\u5173\u8054'];
+  var typeLabels = ['前置知识', '后续知识', '平行关联', '历史启发', '跨模块关联', '跨学科关联', '支撑关联', '应用关联', '能量转化'];
   var typeDescriptions = [
     '先理解这些概念，再学习当前知识点会更顺。',
     '掌握当前知识点后，可以继续学习这些内容。',
     '与当前知识点处在同一层级，常用于比较、迁移或共同解题。',
     '科学发展中的来源、实验或思想线索。',
     '连接到其他物理模块，帮助建立综合题思路。',
-    '连接数学、生物、化学等学科中的相近概念。'
+    '连接数学、生物、化学等学科中的相近概念。',
+    '帮助理解、表征或计算当前知识，但不一定构成严格前置。',
+    '当前知识在典型实验、装置或生活情境中的具体应用。',
+    '表示不同形式能量之间的转化联系。'
   ];
-  var typeIcons = ['fa-arrow-up', 'fa-arrow-down', 'fa-arrows-left-right', 'fa-clock-rotate', 'fa-share-nodes', 'fa-link'];
-  var typeColors = ['#6ee7ff', '#ffd700', '#2ed573', '#a55eea', '#ff6b6b', '#ff7f50'];
+  var typeIcons = ['fa-arrow-up', 'fa-arrow-down', 'fa-arrows-left-right', 'fa-clock-rotate', 'fa-share-nodes', 'fa-link', 'fa-diagram-project', 'fa-flask', 'fa-arrows-rotate'];
+  var typeColors = ['#6ee7ff', '#ffd700', '#2ed573', '#a55eea', '#ff6b6b', '#ff7f50', '#67e8f9', '#fbbf24', '#34d399'];
   var seenIds = new Set();
   var relatedByType = {};
   conns.forEach(function(c) {
@@ -3122,6 +3129,9 @@ function showInfoPanel(star) {
     else if (c.type === 3) groupIdx = 3;
     else if (c.type === 4) groupIdx = 4;
     else if (c.type === 5) groupIdx = 5;
+    else if (c.type === 6) groupIdx = 6;
+    else if (c.type === 7) groupIdx = 7;
+    else if (c.type === 8) groupIdx = 8;
     if (!relatedByType[groupIdx]) relatedByType[groupIdx] = [];
     relatedByType[groupIdx].push(rs);
   });
