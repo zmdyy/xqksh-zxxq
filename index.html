@@ -5543,14 +5543,19 @@ var QK_ANNOTATION_ALIAS = {
 };
 
 function qkAnnotationCatalog() {
-    return qkCatalog().filter(function(k){ return !QK_ANNOTATION_EXCLUDED.has(k.id); }).map(function(k){
+    return qkCatalog().filter(function(k){
+        if (QK_ANNOTATION_EXCLUDED.has(k.id)) return false;
+        // 解释节点与实验/应用节点保留在知识星球，但不进入考试AI主标注词表。
+        return !k.node_type || k.node_type === 'core';
+    }).map(function(k){
         return {
             concept_id:k.id,
             name:k.name,
             module:k.module || '',
             chapter:k.chapter || '',
             description:String(k.core_definition || '').trim(),
-            formula:(k.formula && k.formula !== '无') ? k.formula : ''
+            formula:(k.formula && k.formula !== '无') ? k.formula : '',
+            symbol:k.symbol || ''
         };
     });
 }
@@ -6066,7 +6071,7 @@ function qkBuildAiAnnotationPack() {
     return {
         schema:'physics-exam-concept-annotation-pack',
         schema_version:'1.0',
-        knowledge_db_version:(window.KNOWLEDGE_DB && window.KNOWLEDGE_DB.version) || '2.1',
+        knowledge_db_version:(window.KNOWLEDGE_DB && window.KNOWLEDGE_DB.version) || '2.3',
         exam_context:{
             exam_id:b.id,
             exam_label:b.label || '',
@@ -6078,7 +6083,7 @@ function qkBuildAiAnnotationPack() {
             '只能逐字复制 concept_catalog 中已经存在的 concept_id，禁止根据知识点中文名称自行拼接、翻译、缩写或改写 ID。例如“电阻”必须复制 elec_resistance，绝不能写成 elec_电阻；“串联电路”必须复制 elec_series_circuit，绝不能写成 elec_串联电路。',
             'question_no 必须优先原样使用 exam_context.questions 中对应的 question_no，不要自行改题号。',
             '一道题含多个小问、多个空或多个独立评分步骤时，拆成多个 parts；每个独立评分单元只选一个 primary_concept_id。',
-            '辅助涉及的知识点放入 related_concept_ids，不参与重复计分。',
+            '辅助涉及的知识点放入 related_concept_ids，不参与重复计分。concept_catalog 已只保留适合考试标注的核心知识点，知识星球中的解释节点和实验/应用节点不会出现在本词表中。',
             '如果一个题号在成绩数据中只有一个整题 score_header，但试卷内需要拆成多个 parts，各 part 的 score_header 必须留空；不要把同一个整题分重复分配给多个知识点。',
             '如果成绩数据本身已有独立子题 score_header，可原样复制到对应 part.score_header。',
             '无法可靠判断时 primary_concept_id 设为 null，并在 candidate_concept_ids 中最多给出3个候选；不要猜测。',
@@ -6089,7 +6094,7 @@ function qkBuildAiAnnotationPack() {
             schema:'physics-exam-concept-mapping',
             schema_version:'1.0',
             exam_id:b.id,
-            knowledge_db_version:(window.KNOWLEDGE_DB && window.KNOWLEDGE_DB.version) || '2.1',
+            knowledge_db_version:(window.KNOWLEDGE_DB && window.KNOWLEDGE_DB.version) || '2.3',
             questions:[{
                 question_no:'必须复制 exam_context.questions 中的 question_no',
                 parts:[{
