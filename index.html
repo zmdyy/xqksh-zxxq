@@ -1247,6 +1247,7 @@
             <span id="qkAiImportStatus" class="qk-status qk-import-status">AI标注：未导入</span>
             <button type="button" class="qk-ai-btn" id="qkDownloadAiPackBtn">↓ 下载AI知识点标注包</button>
             <button type="button" class="qk-ai-btn" id="qkImportAiMappingBtn">↑ 导入AI标注JSON</button>
+            <button type="button" class="qk-ai-btn" id="qkPasteAiMappingBtn">粘贴AI结果</button>
             <input type="file" id="qkImportAiMappingInput" accept=".json,application/json,text/plain" style="display:none;">
             <a class="filter-btn" href="data/knowledge/exam-annotation-catalog.json" target="_blank" rel="noopener" style="text-decoration:none;">标准词表</a>
             <a class="filter-btn" href="knowledge/index.html" target="_blank" rel="noopener" style="text-decoration:none;">✦ 打开知识星球</a>
@@ -1972,6 +1973,19 @@
                 <button type="button" class="qk-edit-btn" id="qkClearBtn">清除本题标注</button>
                 <button type="button" class="qk-edit-btn" id="qkCancelBtn">取消</button>
                 <button type="button" class="upload-btn small" id="qkSaveBtn">保存标注</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="qkPasteOverlay" aria-hidden="true" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.48);z-index:10030;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;">
+        <div style="width:min(94vw,820px);max-height:88vh;overflow:auto;background:#fff;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.25);padding:18px 20px;box-sizing:border-box;">
+            <h3 style="margin:0 0 6px;color:#1e3a5f;">粘贴AI知识点标注结果</h3>
+            <div style="font-size:12px;color:#64748b;line-height:1.6;margin-bottom:10px;">在 DeepSeek / ChatGPT / 豆包等模型回复下点击“复制”，把完整回复粘贴到下面。支持纯 JSON，也支持带 <code>```json</code> 代码块的内容。</div>
+            <textarea id="qkPasteAiTextarea" spellcheck="false" placeholder="在这里粘贴AI返回的JSON……" style="width:100%;min-height:380px;resize:vertical;box-sizing:border-box;padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;font-family:Consolas,Monaco,monospace;font-size:12px;line-height:1.55;"></textarea>
+            <div id="qkPasteAiHint" style="font-size:12px;color:#64748b;margin-top:8px;">系统会在导入前校验题号、concept_id、子项和计分字段。</div>
+            <div class="qk-editor-actions">
+                <button type="button" class="qk-edit-btn" id="qkPasteCancelBtn">取消</button>
+                <button type="button" class="upload-btn small" id="qkPasteImportBtn">解析并导入</button>
             </div>
         </div>
     </div>
@@ -6084,8 +6098,20 @@ function qkResolveImportedQuestion(externalQno, templates) {
 
 function qkStripJsonWrapper(text) {
     var s = String(text || '').replace(/^\uFEFF/,'').trim();
-    var m = s.match(/^\`\`\`(?:json)?\s*([\s\S]*?)\s*\`\`\`$/i);
-    return m ? m[1].trim() : s;
+    if (!s) return s;
+
+    // 优先提取 Markdown JSON 代码块，即使代码块前后还有说明文字。
+    var fenced = s.match(/\`\`\`(?:json)?\s*([\s\S]*?)\s*\`\`\`/i);
+    if (fenced && fenced[1]) return fenced[1].trim();
+
+    // 纯 JSON 直接返回。
+    if ((s[0] === '{' && s[s.length-1] === '}') || (s[0] === '[' && s[s.length-1] === ']')) return s;
+
+    // 兼容“下面是JSON：{...}”这类网页端回复：只提取最外层对象。
+    var first = s.indexOf('{');
+    var last = s.lastIndexOf('}');
+    if (first >= 0 && last > first) return s.slice(first, last + 1).trim();
+    return s;
 }
 
 async function qkImportAiAnnotationText(text) {
@@ -6271,6 +6297,63 @@ async function qkImportAiAnnotationText(text) {
     };
 }
 
+function qkOpenPasteAiMapping() {
+    var b = qkCurrentBatch();
+    if (!b) {
+        showToast('请先保存考试批次，再导入AI标注');
+        return;
+    }
+    var ov = document.getElementById('qkPasteOverlay');
+    var ta = document.getElementById('qkPasteAiTextarea');
+    if (ta) ta.value = '';
+    if (ov) {
+        ov.style.display = 'flex';
+        ov.setAttribute('aria-hidden','false');
+        setTimeout(function(){ if (ta) ta.focus(); }, 20);
+    }
+}
+
+function qkClosePasteAiMapping() {
+    var ov = document.getElementById('qkPasteOverlay');
+    if (ov) {
+        ov.style.display = 'none';
+        ov.setAttribute('aria-hidden','true');
+    }
+}
+
+async function qkImportPastedAiMapping() {
+    var ta = document.getElementById('qkPasteAiTextarea');
+    var text = ta ? ta.value : '';
+    if (!String(text || '').trim()) {
+        showToast('请先粘贴AI返回的JSON内容');
+        return;
+    }
+    var btn = document.getElementById('qkPasteImportBtn');
+    if (btn) { btn.disabled = true; btn.textContent = '正在解析…'; }
+    try {
+        var result = await qkImportAiAnnotationText(text);
+        qkClosePasteAiMapping();
+        showToast('AI知识点标注导入完成：' + result.questionCount + '题，' + result.partCount + '个子项；其中' + result.eligibleCount + '个可用于知识点计分');
+        if (result.tagOnlyCount) {
+            setTimeout(function(){ showToast(result.tagOnlyCount + '个子项因缺少独立评分列，仅作为知识点标签，不会拆分计分'); }, 300);
+        }
+        if (result.normalizedWarnings && result.normalizedWarnings.length) {
+            setTimeout(function(){
+                showStudentListModal('AI知识点ID已自动纠正',
+                    '<div style="text-align:left;line-height:1.7;">本次发现大模型自行拼写的知识点ID，已按标准词表唯一匹配并自动纠正，不影响导入：<br><br>'
+                    + result.normalizedWarnings.map(function(x){ return '• ' + escapeHtml(x); }).join('<br>')
+                    + '</div>');
+            }, 500);
+        }
+    } catch(e) {
+        console.error(e);
+        var hint = document.getElementById('qkPasteAiHint');
+        if (hint) hint.innerHTML = '<span style="color:#b91c1c;font-weight:700;">解析失败：</span>' + escapeHtml(e.message || String(e)).replace(/\n/g,'<br>');
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = '解析并导入'; }
+    }
+}
+
 async function qkImportAiAnnotationFile(file) {
     if (!file) return;
     try {
@@ -6352,14 +6435,23 @@ function qkInit() {
 
     var downloadPack=document.getElementById('qkDownloadAiPackBtn');
     var importBtn=document.getElementById('qkImportAiMappingBtn');
+    var pasteBtn=document.getElementById('qkPasteAiMappingBtn');
     var importInput=document.getElementById('qkImportAiMappingInput');
     if(downloadPack) downloadPack.onclick=qkDownloadAiAnnotationPack;
     if(importBtn && importInput) importBtn.onclick=function(){ importInput.click(); };
+    if(pasteBtn) pasteBtn.onclick=qkOpenPasteAiMapping;
     if(importInput) importInput.onchange=function(){
         var file=importInput.files && importInput.files[0];
         importInput.value='';
         if(file) qkImportAiAnnotationFile(file);
     };
+
+    var pasteCancel=document.getElementById('qkPasteCancelBtn');
+    var pasteImport=document.getElementById('qkPasteImportBtn');
+    var pasteOv=document.getElementById('qkPasteOverlay');
+    if(pasteCancel) pasteCancel.onclick=qkClosePasteAiMapping;
+    if(pasteImport) pasteImport.onclick=qkImportPastedAiMapping;
+    if(pasteOv) pasteOv.addEventListener('click',function(e){ if(e.target===pasteOv) qkClosePasteAiMapping(); });
 
     var ov=document.getElementById('qkEditorOverlay');
     if(ov) ov.addEventListener('click',function(e){ if(e.target===ov) qkCloseEditor(); });
