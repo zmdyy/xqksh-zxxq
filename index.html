@@ -830,7 +830,11 @@
     }
 
     /* ── 题目—知识点轻量标注 V1 ─────────── */
-    .qk-toolbar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:8px 0 10px; padding:8px 10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; }
+    .qk-toolbar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:8px 0 10px; padding:7px 9px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; }
+    .qk-toolbar #qkAiImportStatus { flex:1 1 360px; width:max-content; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .qk-toolbar .qk-ai-btn { flex:0 0 auto; white-space:nowrap; }
+    .qk-toolbar .qk-ai-primary { background:#0f766e; border-color:#0f766e; color:#fff; font-weight:700; }
+    .qk-toolbar .qk-ai-primary:hover { background:#115e59; border-color:#115e59; color:#fff; }
     .qk-status { font-size:12px; color:#475569; padding:3px 7px; background:#fff; border:1px solid #e2e8f0; border-radius:999px; }
     .qk-main-badge { display:inline-block; max-width:170px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:3px 7px; border-radius:999px; font-size:12px; background:#e8f1ff; color:#1e3a5f; border:1px solid #cbdcf5; vertical-align:middle; }
     .qk-main-badge.empty { background:#f8fafc; color:#94a3b8; border-color:#e2e8f0; }
@@ -1253,15 +1257,9 @@
 
     <div class="statistics-section analysis-anchor-section" id="collectiveQuestionSection" data-analysis-section="collectiveQuestionSection">
         <div class="qk-toolbar">
-            <span id="qkCatalogStatus" class="qk-status">知识点库：加载中…</span>
-            <span id="qkTagStatus" class="qk-status">请先保存考试批次</span>
             <span id="qkAiImportStatus" class="qk-status qk-import-status">AI标注：未导入</span>
             <button type="button" class="qk-ai-btn" id="qkDownloadAiPackBtn">↓ 下载AI知识点标注包</button>
-            <button type="button" class="qk-ai-btn" id="qkImportAiMappingBtn">↑ 导入AI标注JSON</button>
-            <button type="button" class="qk-ai-btn" id="qkPasteAiMappingBtn">粘贴AI结果</button>
-            <input type="file" id="qkImportAiMappingInput" accept=".json,application/json,text/plain" style="display:none;">
-            <a class="filter-btn" href="data/knowledge/exam-annotation-catalog.json" target="_blank" rel="noopener" style="text-decoration:none;">标准词表</a>
-            <a class="filter-btn" href="knowledge/index.html" target="_blank" rel="noopener" style="text-decoration:none;">✦ 打开知识星球</a>
+            <button type="button" class="qk-ai-btn qk-ai-primary" id="qkPasteAiMappingBtn">↑ 粘贴AI结果</button>
         </div>
         <div style="font-size:15px;font-weight:bold;color:#2980b9;margin-bottom:4px;" id="allStatsTitle"></div>
         <div class="scroll-container" style="max-height:320px;">
@@ -6413,13 +6411,9 @@ async function qkImportAiAnnotationFile(file) {
 }
 
 function qkUpdateToolbar() {
-    var cat = document.getElementById('qkCatalogStatus');
-    if (cat) cat.textContent = '知识图谱：' + qkCatalog().length + ' 节点 · 考试标注词表：' + qkAnnotationCatalog().length + ' 项';
-    var status = document.getElementById('qkTagStatus');
     var aiStatus = document.getElementById('qkAiImportStatus');
     var b = qkCurrentBatch();
     if (!b) {
-        if (status) status.textContent = '请先保存考试批次';
         if (aiStatus) {
             aiStatus.className = 'qk-status qk-import-status';
             aiStatus.textContent = 'AI标注：未导入';
@@ -6445,7 +6439,6 @@ function qkUpdateToolbar() {
             });
         }
     });
-    if (status) status.textContent = '考试ID：' + b.id + ' · 已标注 ' + questionCount + ' 题 / ' + partCount + ' 子项';
     if (aiStatus) {
         if (!aiQuestionCount) {
             aiStatus.className = 'qk-status qk-import-status';
@@ -6470,17 +6463,9 @@ function qkInit() {
     if(clear) clear.onclick=qkClearCurrent;
 
     var downloadPack=document.getElementById('qkDownloadAiPackBtn');
-    var importBtn=document.getElementById('qkImportAiMappingBtn');
     var pasteBtn=document.getElementById('qkPasteAiMappingBtn');
-    var importInput=document.getElementById('qkImportAiMappingInput');
     if(downloadPack) downloadPack.onclick=qkDownloadAiAnnotationPack;
-    if(importBtn && importInput) importBtn.onclick=function(){ importInput.click(); };
     if(pasteBtn) pasteBtn.onclick=qkOpenPasteAiMapping;
-    if(importInput) importInput.onchange=function(){
-        var file=importInput.files && importInput.files[0];
-        importInput.value='';
-        if(file) qkImportAiAnnotationFile(file);
-    };
 
     var pasteCancel=document.getElementById('qkPasteCancelBtn');
     var pasteImport=document.getElementById('qkPasteImportBtn');
