@@ -856,6 +856,17 @@
     .qk-ai-btn:hover { background:#eef6ff; border-color:#6d99c5; }
     .qk-import-status.warn { color:#9a5b13; border-color:#f4d49b; background:#fffaf0; }
     .qk-import-status.ok { color:#166534; border-color:#bbdfc3; background:#f3fff5; }
+    .diagnosis-detail-table { width:100%; border-collapse:collapse; font-size:12px; line-height:1.45; }
+    .diagnosis-detail-table th { padding:9px 7px; white-space:nowrap; text-align:center; }
+    .diagnosis-detail-table td { padding:9px 7px; vertical-align:middle; }
+    .diagnosis-detail-table td.diag-num { text-align:center; white-space:nowrap; }
+    .diagnosis-detail-table td.diag-history { min-width:210px; max-width:320px; }
+    .diagnosis-history-line { display:flex; align-items:center; gap:5px; flex-wrap:wrap; margin:2px 0; }
+    .diagnosis-history-name { font-weight:700; color:#334155; }
+    .diagnosis-history-main { white-space:nowrap; }
+    .diagnosis-history-muted { color:#94a3b8; font-size:11px; }
+    .diagnosis-history-warn { color:#b45309; font-size:11px; }
+    .diagnosis-reason { white-space:nowrap; font-weight:700; color:#334155; }
     
     /* ===== 小题异常诊断卡 ===== */
     .collective-diagnosis-section {
@@ -5323,8 +5334,8 @@ function calculateCollectiveDiagnosis(fd, subjectName) {
                 totalCount:q.students.length, severity:anomalies[0].severity,
                 mapping:mapping,
                 note:isCommon
-                    ? '该题同时属于共性异常；这里只保留同时明显偏离个人基准和同层水平的学生，避免重复标记。'
-                    : '按个人基准与同层水平识别明显偏离：A+/A 为20个百分点，A-/B层为25个百分点，C/D及基础层为30个百分点。'
+                    ? '该题同时属于共性异常；这里只保留个人与同级均明显偏离的学生。'
+                    : '结合其余题均值与同级均值识别明显偏离。'
             });
         }
     });
@@ -5427,31 +5438,46 @@ function showCollectiveDiagnosisStudents(contextId) {
     }
 
     var title = '「' + escapeHtml(e.title) + '」' + (e.type === 'common' ? '共性异常' : '个性异常');
-    var html = '<div style="font-size:12px;color:#64748b;margin-bottom:8px;">' + escapeHtml(e.note || '') + '</div>';
+    var html = e.note ? '<div style="font-size:12px;color:#64748b;margin-bottom:8px;">' + escapeHtml(e.note) + '</div>' : '';
 
     if (e.type === 'common') {
-        html += '<div style="overflow:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr><th>#</th><th>姓名</th><th>班级</th><th>本题得分</th><th>满分</th><th>本题得分率</th></tr></thead><tbody>';
+        html += '<div style="overflow:auto;"><table class="diagnosis-detail-table"><thead><tr><th>#</th><th>姓名</th><th>班级</th><th>得分</th><th>满分</th><th>得分率</th></tr></thead><tbody>';
         rows.forEach(function(x, i) {
-            html += '<tr><td>' + (i+1) + '</td><td>' + escapeHtml(x.name || '') + '</td><td>' + escapeHtml(x.className || '') + '</td><td>' + Number(x.score).toFixed(2).replace(/\.00$/,'') + '</td><td>' + e.fullScore + '</td><td>' + Math.round(Number(x.rate)*100) + '%</td></tr>';
+            html += '<tr><td class="diag-num">' + (i+1) + '</td><td>' + escapeHtml(x.name || '') + '</td><td class="diag-num">' + escapeHtml(x.className || '') + '</td><td class="diag-num">' + Number(x.score).toFixed(2).replace(/\.00$/,'') + '</td><td class="diag-num">' + e.fullScore + '</td><td class="diag-num">' + Math.round(Number(x.rate)*100) + '%</td></tr>';
         });
         html += '</tbody></table></div>';
         showStudentListModal(title, html);
         return;
     }
 
-    html += '<div style="font-size:12px;color:#64748b;margin:4px 0 10px;">知识点历史基准仅在此前至少 <b>2次考试</b> 且累计至少 <b>3个可独立计分单元</b> 时计算；采用“总得分÷总满分”的分值加权方式。</div>';
-    html += '<div style="overflow:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr><th>#</th><th>姓名</th><th>班级</th><th>本题得分</th><th>满分</th><th>本题得分率</th><th>个人基准（除本题）</th><th>同层本题均值</th><th>知识点本次 vs 历史</th><th>判定依据</th></tr></thead><tbody>';
+    html += '<div style="overflow:auto;"><table class="diagnosis-detail-table"><thead><tr>'
+        + '<th>#</th><th>姓名</th><th>班级</th><th>得分</th><th>满分</th><th>得分率</th>'
+        + '<th title="本次考试除当前题外其他小题的平均得分率">其余题均值</th>'
+        + '<th title="同等级学生在当前题的平均得分率">同级均值</th>'
+        + '<th>本次 vs 历史</th><th>判据</th>'
+        + '</tr></thead><tbody>';
     rows.forEach(function(x, i) {
         var personalText = x.personalBaseline == null ? '-' : Math.round(x.personalBaseline*100) + '%';
-        var peerText = x.peerBaseline == null ? '-' : Math.round(x.peerBaseline*100) + '%' + (x.tierLabel ? '（' + escapeHtml(x.tierLabel) + '）' : '');
+        var tierShort = String(x.tierLabel || '').replace(/等级$/,'');
+        var peerText = x.peerBaseline == null ? '-' : Math.round(x.peerBaseline*100) + '%' + (tierShort ? '(' + escapeHtml(tierShort) + ')' : '');
         var conceptHistory = qkRenderConceptHistoryForStudent(ctx, e, x);
-        var reasonText = (x.reason || '明显偏离') + ' · 阈值' + Math.round((x.threshold || 0.30)*100) + '个百分点';
-        html += '<tr><td>' + (i+1) + '</td><td>' + escapeHtml(x.name || '') + '</td><td>' + escapeHtml(x.className || '') + '</td><td>' + Number(x.score).toFixed(2).replace(/\.00$/,'') + '</td><td>' + e.fullScore + '</td><td>' + Math.round(Number(x.rate)*100) + '%</td><td>' + personalText + '</td><td>' + peerText + '</td><td>' + conceptHistory + '</td><td>' + escapeHtml(reasonText) + '</td></tr>';
+        var reasonText = String(x.reason || '明显偏离').replace(/\+/g,'＋');
+        html += '<tr>'
+            + '<td class="diag-num">' + (i+1) + '</td>'
+            + '<td>' + escapeHtml(x.name || '') + '</td>'
+            + '<td class="diag-num">' + escapeHtml(x.className || '') + '</td>'
+            + '<td class="diag-num">' + Number(x.score).toFixed(2).replace(/\.00$/,'') + '</td>'
+            + '<td class="diag-num">' + e.fullScore + '</td>'
+            + '<td class="diag-num">' + Math.round(Number(x.rate)*100) + '%</td>'
+            + '<td class="diag-num">' + personalText + '</td>'
+            + '<td class="diag-num">' + peerText + '</td>'
+            + '<td class="diag-history">' + conceptHistory + '</td>'
+            + '<td><span class="diagnosis-reason">' + escapeHtml(reasonText) + '</span></td>'
+            + '</tr>';
     });
     html += '</tbody></table></div>';
-    showStudentListModal(title, html);
+    showStudentListModal(title, html, { wide:true });
 }
-
 // ============================================================
 //  P0：题目 → 标准知识点（支持题目 → 子项 → concept_id）
 //  V2：兼容旧单知识点映射，同时支持 AI JSON 多子项标注与可计分绑定
@@ -5950,13 +5976,13 @@ function qkGetHistoricalConceptPerformance(studentName, className, conceptId) {
 function qkRenderConceptHistoryForStudent(ctx, entry, studentEntry) {
     if (!ctx || !entry || !studentEntry) return '-';
     var parts = qkGetMappingParts(entry.title, entry.scoreHeader || '', ctx.subjectName || '').filter(function(p){ return !!p.primary_concept_id; });
-    if (!parts.length) return '<span style="color:#94a3b8;">未标注知识点</span>';
+    if (!parts.length) return '<span class="diagnosis-history-muted">未标注</span>';
 
     var lines = parts.map(function(p) {
         var kp = qkCatalog().find(function(k){ return k.id === p.primary_concept_id; });
         var name = kp ? kp.name : p.primary_concept_id;
         if (!p.score_eligible) {
-            return '<div><b>' + escapeHtml(name) + '</b>：<span style="color:#b45309;">仅标签，缺少独立得分</span></div>';
+            return '<div class="diagnosis-history-line"><span class="diagnosis-history-name">' + escapeHtml(name) + '</span><span class="diagnosis-history-warn">仅标签</span></div>';
         }
 
         var header = p.score_header || (parts.length === 1 ? entry.scoreHeader : '');
@@ -5967,20 +5993,30 @@ function qkRenderConceptHistoryForStudent(ctx, entry, studentEntry) {
         var currentRate = (currentScore !== null && full !== null && full > 0) ? currentScore / full : null;
 
         var hist = qkGetHistoricalConceptPerformance(studentEntry.name, studentEntry.className, p.primary_concept_id);
-        var currentText = currentRate === null ? '本次无独立得分' : ('本次 ' + Math.round(currentRate*100) + '%');
-        if (!hist.sufficient) {
-            return '<div><b>' + escapeHtml(name) + '</b>：' + currentText
-                + '｜<span style="color:#64748b;">历史样本不足（' + hist.examCount + '次/' + hist.units + '单元）</span></div>';
-        }
-        var delta = currentRate === null ? null : currentRate - hist.rate;
-        var deltaText = delta === null ? '' : ('｜较历史' + (delta >= 0 ? '+' : '') + Math.round(delta*100) + '个百分点');
-        return '<div><b>' + escapeHtml(name) + '</b>：' + currentText
-            + '｜历史 ' + Math.round(hist.rate*100) + '%（' + hist.examCount + '次/' + hist.units + '单元）'
-            + deltaText + '</div>';
-    });
-    return '<div style="min-width:240px;line-height:1.55;">' + lines.join('') + '</div>';
-}
+        var currentText = currentRate === null ? '本次—' : Math.round(currentRate*100) + '%';
 
+        if (!hist.examCount || hist.rate === null) {
+            return '<div class="diagnosis-history-line"><span class="diagnosis-history-name">' + escapeHtml(name) + '</span>'
+                + '<span class="diagnosis-history-main">' + currentText + '</span>'
+                + '<span class="diagnosis-history-muted">暂无历史</span></div>';
+        }
+
+        var historyText = Math.round(hist.rate*100) + '%';
+        if (!hist.sufficient) {
+            return '<div class="diagnosis-history-line"><span class="diagnosis-history-name">' + escapeHtml(name) + '</span>'
+                + '<span class="diagnosis-history-main">' + currentText + ' vs ' + historyText + '</span>'
+                + '<span class="diagnosis-history-warn" title="' + hist.examCount + '次考试 / ' + hist.units + '个评分点">样本少</span></div>';
+        }
+
+        var delta = currentRate === null ? null : currentRate - hist.rate;
+        var deltaText = delta === null ? '' : ((delta >= 0 ? '+' : '') + Math.round(delta*100) + 'pp');
+        return '<div class="diagnosis-history-line"><span class="diagnosis-history-name">' + escapeHtml(name) + '</span>'
+            + '<span class="diagnosis-history-main">' + currentText + ' vs ' + historyText + '</span>'
+            + (deltaText ? '<span class="diagnosis-history-muted">' + deltaText + '</span>' : '')
+            + '</div>';
+    });
+    return '<div>' + lines.join('') + '</div>';
+}
 function qkCurrentQuestionTemplates() {
     var fd = buildCollectiveDataFromCombined();
     var subjectName = getSelectedSubject();
@@ -17628,7 +17664,7 @@ function closeErrorNotebookModal() {
 </script>
 <!-- 学生名单弹窗 -->
 <div id="studentListModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:10000;justify-content:center;align-items:center;" onclick="if(event.target===this)closeStudentListModal()">
-    <div style="background:#fff;border-radius:10px;max-width:700px;width:92%;max-height:80vh;overflow-y:auto;padding:20px;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+    <div id="studentListModalPanel" style="background:#fff;border-radius:10px;max-width:700px;width:92%;max-height:80vh;overflow-y:auto;padding:20px;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
             <h3 id="studentListModalTitle" style="margin:0;font-size:16px;"></h3>
             <button onclick="closeStudentListModal()" style="background:none;border:none;font-size:24px;cursor:pointer;color:#999;line-height:1;">×</button>
@@ -17637,9 +17673,14 @@ function closeErrorNotebookModal() {
     </div>
 </div>
 <script>
-function showStudentListModal(title, htmlContent) {
+function showStudentListModal(title, htmlContent, options) {
     document.getElementById('studentListModalTitle').textContent = title;
     document.getElementById('studentListModalBody').innerHTML = htmlContent;
+    var panel = document.getElementById('studentListModalPanel');
+    if (panel) {
+        panel.style.maxWidth = options && options.wide ? '1180px' : '700px';
+        panel.style.width = options && options.wide ? '96%' : '92%';
+    }
     document.getElementById('studentListModal').style.display = 'flex';
 }
 function closeStudentListModal() {
