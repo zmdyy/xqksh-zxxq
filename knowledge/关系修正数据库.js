@@ -3363,6 +3363,484 @@ window._RELATION_PATCH_DATA = (function() {
       "strength": 5,
       "note": "能量在物体间转移同样遵循能量守恒。"
     }
+,
+    {
+      "from": "mech_vibration",
+      "to": "mech_frequency",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "mech_vibration",
+      "to": "mech_amplitude",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "mech_vibration",
+      "to": "mech_sound_production",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "mech_potential_energy",
+      "to": "mech_gravitational_potential_energy",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "mech_potential_energy",
+      "to": "mech_elastic_potential_energy",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "mech_potential_energy",
+      "to": "mech_mechanical_energy",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "opt_incident_point",
+      "to": "opt_normal",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "opt_refracted_ray",
+      "to": "opt_refraction_angle",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "opt_normal",
+      "to": "opt_refraction_angle",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "opt_refraction_angle",
+      "to": "opt_refraction_law",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "opt_optical_center",
+      "to": "opt_focus",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "opt_principal_axis",
+      "to": "opt_focus",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "opt_optical_center",
+      "to": "opt_focal_length",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "opt_principal_axis",
+      "to": "opt_focal_length",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "opt_optical_center",
+      "to": "opt_object_distance",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "opt_optical_center",
+      "to": "opt_image_distance",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_magnetism_property",
+      "to": "elec_magnet",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_magnet",
+      "to": "elec_magnetic_pole",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_oersted_experiment",
+      "to": "elec_电流的磁效应",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_电磁铁",
+      "to": "elec_electromagnet_factors",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_electric_heating",
+      "to": "elec_joule_law",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_electric_power",
+      "to": "elec_measure_lamp_power",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_电流表",
+      "to": "elec_measure_lamp_power",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_电压表",
+      "to": "elec_measure_lamp_power",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_滑动变阻器",
+      "to": "elec_measure_lamp_power",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_power_source",
+      "to": "elec_电路",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_power_source",
+      "to": "elec_voltage",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_series_circuit",
+      "to": "elec_series_current_rule",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_series_circuit",
+      "to": "elec_series_voltage_rule",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_series_circuit",
+      "to": "elec_series_resistance_rule",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_parallel_circuit",
+      "to": "elec_parallel_current_rule",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_parallel_circuit",
+      "to": "elec_parallel_voltage_rule",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_parallel_circuit",
+      "to": "elec_parallel_resistance_rule",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "新增知识结构中的高置信度前置关系。"
+    },
+    {
+      "from": "elec_electric_magnetic_relation",
+      "to": "elec_电流的磁效应",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "电流的磁效应体现“电生磁”。"
+    },
+    {
+      "from": "elec_electric_magnetic_relation",
+      "to": "elec_磁场对电流的作用",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "磁场对电流产生力的作用体现电与磁的双向联系。"
+    },
+    {
+      "from": "elec_electric_magnetic_relation",
+      "to": "elec_electromagnetic_induction",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "电磁感应体现“磁生电”。"
+    },
+    {
+      "from": "elec_电流的磁效应",
+      "to": "elec_electromagnetic_induction",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "“电生磁”和“磁生电”是电磁学中的核心对照，应直接建立强关联。"
+    },
+    {
+      "from": "elec_oersted_experiment",
+      "to": "elec_electric_magnetic_relation",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "奥斯特实验是发现电流磁效应、建立电磁联系的重要实验。"
+    },
+    {
+      "from": "mech_gravitational_potential_energy",
+      "to": "mech_potential_energy",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "重力势能是势能的一种。"
+    },
+    {
+      "from": "mech_elastic_potential_energy",
+      "to": "mech_potential_energy",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "弹性势能是势能的一种。"
+    },
+    {
+      "from": "opt_incident_point",
+      "to": "opt_reflection_law",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "反射作图中的法线、入射光线和反射光线都围绕入射点确定。"
+    },
+    {
+      "from": "opt_refracted_ray",
+      "to": "opt_refraction_law",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "折射定律描述入射光线、折射光线与法线的几何关系。"
+    },
+    {
+      "from": "opt_optical_center",
+      "to": "opt_lens_imaging",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "物距、像距和作图均以透镜光心为重要参照。"
+    },
+    {
+      "from": "opt_principal_axis",
+      "to": "opt_lens_imaging",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "凸透镜成像规律的物距、焦距位置判断以主光轴为基本结构。"
+    },
+    {
+      "from": "elec_electric_heating",
+      "to": "elec_电热利用与防止",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "电热利用与防止是电流热效应的直接应用。"
+    },
+    {
+      "from": "elec_electric_heating",
+      "to": "therm_internal_energy",
+      "type": "transformation",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "电流热效应表现为电能向内能转化。"
+    },
+    {
+      "from": "elec_measure_lamp_power",
+      "to": "elec_额定功率与实际功率",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 5,
+      "note": "实验通过不同电压下测得的实际功率理解额定功率与实际功率。"
+    },
+    {
+      "from": "elec_series_current_rule",
+      "to": "elec_串联电路特点",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "串联电路特点由电流、电压和电阻规律共同构成。"
+    },
+    {
+      "from": "elec_series_voltage_rule",
+      "to": "elec_串联电路特点",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "串联电路特点由电流、电压和电阻规律共同构成。"
+    },
+    {
+      "from": "elec_series_resistance_rule",
+      "to": "elec_串联电路特点",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "串联电路特点由电流、电压和电阻规律共同构成。"
+    },
+    {
+      "from": "elec_parallel_current_rule",
+      "to": "elec_并联电路特点",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "并联电路特点由电流、电压和电阻规律共同构成。"
+    },
+    {
+      "from": "elec_parallel_voltage_rule",
+      "to": "elec_并联电路特点",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "并联电路特点由电流、电压和电阻规律共同构成。"
+    },
+    {
+      "from": "elec_parallel_resistance_rule",
+      "to": "elec_并联电路特点",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "并联电路特点由电流、电压和电阻规律共同构成。"
+    }
   ];
 
   function samePair(a, b) {
