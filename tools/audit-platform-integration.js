@@ -63,17 +63,51 @@ if (!pinyinUtil || typeof pinyinUtil.getPinyin !== 'function') errors.push('本�
 
 const metaData = sandbox._META_CONCEPT_DATA;
 const metaNodes = metaData && Array.isArray(metaData.meta_nodes) ? metaData.meta_nodes : [];
-if (metaNodes.length !== 10) errors.push('Meta 概念数量应为10，实际为 ' + metaNodes.length);
+if (metaNodes.length !== 14) errors.push('Meta 概念数量应为14，实际为 ' + metaNodes.length);
 const dbIds = new Set((db && db.data || []).map(n => n.id));
 const seenMeta = new Set();
 for (const meta of metaNodes) {
   if (seenMeta.has(meta.id)) errors.push('Meta ID 重复: ' + meta.id);
   seenMeta.add(meta.id);
   if (dbIds.has(meta.id)) errors.push('Meta 节点错误混入知识库: ' + meta.id);
-  for (const memberId of (meta.members || [])) if (!dbIds.has(memberId)) errors.push('Meta 成员不存在: ' + meta.name + ' -> ' + memberId);
+  for (const memberId of (meta.members || [])) {
+    if (!dbIds.has(memberId) && !metaNodes.some(m => m.id === memberId)) errors.push('Meta 成员不存在: ' + meta.name + ' -> ' + memberId);
+  }
+  if (meta.anchor_id && !dbIds.has(meta.anchor_id) && !metaNodes.some(m => m.id === meta.anchor_id)) errors.push('Meta anchor不存在: ' + meta.name + ' -> ' + meta.anchor_id);
 }
-const expectedMetaNames = ['物质的物理属性','测量工具与仪表','间接测量','比值定义与比值表征','单位时间表征','能量的形式','能量转化装置','守恒思想','控制变量法','物理图示与图像表征'];
+const expectedMetaNames = ['物质的物理属性','测量工具与仪表','间接测量','比值定义与比值表征','单位时间表征','能量的形式','能量转化装置','守恒思想','控制变量法','物理图示与图像表征','理想实验法（科学推理法）','转换法','风能','水能'];
 for (const name of expectedMetaNames) if (!metaNodes.some(m => m.name === name)) errors.push('缺少 Meta 概念: ' + name);
+
+const allMetaOrDbIds = new Set([...dbIds, ...metaNodes.map(m => m.id)]);
+for (const edge of (metaData.hierarchy_edges || [])) {
+  if (!allMetaOrDbIds.has(edge.child) || !allMetaOrDbIds.has(edge.parent)) errors.push('Meta层级边无效: ' + JSON.stringify(edge));
+}
+const findMeta = name => metaNodes.find(m => m.name === name);
+const indirect = findMeta('间接测量');
+if (!indirect || !(indirect.members || []).includes('mech_avg_speed')) errors.push('间接测量缺少平均速度测量');
+const energyForms = findMeta('能量的形式');
+if (!energyForms || !(energyForms.members || []).includes('energy_solar_energy')) errors.push('能量形式缺少太阳能');
+if (!energyForms || !(energyForms.members || []).includes('mech_mechanical_energy')) errors.push('能量形式缺少机械能上位节点');
+const hierarchyKeys = new Set((metaData.hierarchy_edges || []).map(e => e.child + '->' + e.parent));
+for (const k of [
+  'mech_kinetic_energy->mech_mechanical_energy',
+  'mech_gravitational_potential_energy->mech_mechanical_energy',
+  'mech_elastic_potential_energy->mech_mechanical_energy',
+  'meta_wind_energy->mech_kinetic_energy',
+  'meta_water_energy->mech_kinetic_energy'
+]) if (!hierarchyKeys.has(k)) errors.push('能量层级缺失: ' + k);
+
+const controlMethod = findMeta('控制变量法');
+const conversionMethod = findMeta('转换法');
+const idealMethod = findMeta('理想实验法（科学推理法）');
+if (!idealMethod || !(idealMethod.members || []).includes('mech_newton1') || !(idealMethod.members || []).includes('mech_sound_propagation')) errors.push('科学推理法实验覆盖不完整');
+const doubleMethodExpected = ['mech_pressure','mech_liquid_pressure','mech_friction_factors','mech_kinetic_energy','mech_gravitational_potential_energy','therm_specific_heat','elec_joule_law','elec_electromagnet_factors'];
+for (const id of doubleMethodExpected) {
+  if (!controlMethod || !(controlMethod.members || []).includes(id) || !conversionMethod || !(conversionMethod.members || []).includes(id)) {
+    errors.push('应同时标注控制变量法+转换法: ' + id);
+  }
+}
+
 
 function pinyinIndex(name) {
   let spaced = String(pinyinUtil.getPinyin(name, ' ', false, false) || '').toLowerCase();

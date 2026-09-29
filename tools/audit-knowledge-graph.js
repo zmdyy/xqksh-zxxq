@@ -91,7 +91,9 @@ const criticalRelations = [
   ['能量守恒定律','质量守恒','extension'],
   ['电流的磁效应','电磁感应现象','support'],
   ['磁场对电流的作用','电动机','prerequisite'],
-  ['电磁感应现象','发电机','prerequisite']
+  ['电磁感应现象','发电机','prerequisite'],
+  ['电与磁的相互联系','电动机','support'],
+  ['电与磁的相互联系','发电机','support']
 ];
 const missingCriticalRelations = criticalRelations.filter(r => !hasTypedEdge(r[0], r[1], r[2]));
 

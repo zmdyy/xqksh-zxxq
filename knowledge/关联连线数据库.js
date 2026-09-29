@@ -1,7 +1,7 @@
 window._CONN_DATA = {
   "version": "2.4",
   "update_date": "2026-09-29",
-  "total_count": 420,
+  "total_count": 421,
   "connection_types": {
     "prerequisite": "前置关联",
     "causal": "因果推导",
@@ -3430,6 +3430,24 @@ window._CONN_DATA = {
       "width": 2,
       "strength": 4,
       "note": "核裂变和核聚变发生在原子核层面，直接连接现有“原子核”节点比“化学·原子结构”伪外部引用更准确。"
+    },
+    {
+      "from": "elec_electric_magnetic_relation",
+      "to": "elec_electric_motor",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "电动机利用磁场对通电导体的作用，把电能转化为机械能，是“电与磁相互联系”的典型装置。"
+    },
+    {
+      "from": "elec_electric_magnetic_relation",
+      "to": "elec_generator",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "发电机利用电磁感应把机械能转化为电能，是“磁生电”和“电与磁相互联系”的典型装置。"
     }
   ]
 };

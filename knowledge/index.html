@@ -1092,33 +1092,60 @@ function injectMetaConcepts(dbData, connData) {
   const source = window._META_CONCEPT_DATA;
   const metas = source && Array.isArray(source.meta_nodes) ? source.meta_nodes : [];
   if (!metas.length) return;
+
   const byId = new Map((dbData || []).map(function(n) { return [n.id, n]; }));
+
+  // 第一遍：先创建全部 Meta 节点。即使自身没有直接成员，也允许通过层级边存在。
   metas.forEach(function(meta, idx) {
     if (!meta || !meta.id || byId.has(meta.id)) return;
-    const members = (meta.members || []).filter(function(id) { return byId.has(id); });
-    if (!members.length) return;
+    const directMembers = (meta.members || []).filter(function(id) { return byId.has(id); });
+    const anchors = directMembers.slice();
+    if (meta.anchor_id && byId.has(meta.anchor_id) && anchors.indexOf(meta.anchor_id) < 0) anchors.push(meta.anchor_id);
+
     let cx=0, cy=0, cz=0, count=0;
-    members.forEach(function(id) {
+    anchors.forEach(function(id) {
       const n=byId.get(id);
-      if (!Number.isFinite(Number(n.x)) || !Number.isFinite(Number(n.y)) || !Number.isFinite(Number(n.z))) return;
+      if (!n || !Number.isFinite(Number(n.x)) || !Number.isFinite(Number(n.y)) || !Number.isFinite(Number(n.z))) return;
       cx+=Number(n.x); cy+=Number(n.y); cz+=Number(n.z); count++;
     });
     if (count) { cx/=count; cy/=count; cz/=count; }
+
     const angle=idx*2.399963229728653;
-    const radial=58+(idx%3)*10;
+    const radial=meta.anchor_id ? 38+(idx%2)*8 : 58+(idx%3)*10;
     const metaNode={
       id:meta.id,name:meta.name,module:'概念归类',chapter:'Meta 概念',grade:'跨章节',
       difficulty:1,core_definition:meta.description||'',formula:'无',
       applications:[meta.note||'用于跨章节知识整理，不参与考试知识点统计。'],
       common_mistakes:[],prerequisites:[],follow_ups:[],aliases:meta.aliases||[],
-      node_type:'meta',meta_members:members.slice(),
+      node_type:'meta',meta_members:[],
       x:cx+Math.cos(angle)*radial,y:cy+Math.sin(angle)*radial,z:cz+((idx%5)-2)*14,
       size:12,star_level:3
     };
-    dbData.push(metaNode); byId.set(metaNode.id,metaNode);
-    members.forEach(function(memberId){
-      connData.push({from:memberId,to:metaNode.id,type:'classification',strength:1,width:1,
-        note:'归属于“'+metaNode.name+'”这一跨章节概念分类；不表示前置、因果或同层知识关系。'});
+    dbData.push(metaNode);
+    byId.set(metaNode.id,metaNode);
+  });
+
+  // 第二遍：建立“成员 -> Meta”归类关系；允许一个知识点属于多个 Meta。
+  metas.forEach(function(meta) {
+    const metaNode=byId.get(meta.id);
+    if(!metaNode) return;
+    const validMembers=(meta.members||[]).filter(function(id){return byId.has(id)&&id!==meta.id;});
+    metaNode.meta_members=validMembers.slice();
+    validMembers.forEach(function(memberId){
+      const specificNote=meta.member_notes && meta.member_notes[memberId];
+      connData.push({
+        from:memberId,to:metaNode.id,type:'classification',strength:1,width:1,
+        note:specificNote || ('归属于“'+metaNode.name+'”这一跨章节概念分类；不表示前置、因果或同层知识关系。')
+      });
+    });
+  });
+
+  // 第三遍：建立多级归类结构，例如 能量形式→机械能→动能→风能/水能。
+  (source.hierarchy_edges || []).forEach(function(edge){
+    if(!edge || !byId.has(edge.child) || !byId.has(edge.parent) || edge.child===edge.parent) return;
+    connData.push({
+      from:edge.child,to:edge.parent,type:'classification',strength:1,width:1,
+      note:edge.note || '概念层级归类关系。'
     });
   });
 }
