@@ -902,6 +902,18 @@ const confuseByNodeId = new Map();
 const chainsByNodeId = new Map();
 const lifeByNodeId = new Map();
 
+function resolveChainNodeId(token) {
+  const raw = String(token || '').trim();
+  if (!raw) return null;
+  if (starById.has(raw)) return raw;
+
+  const matches = [];
+  starById.forEach(function(star, id) {
+    if (star.name === raw || (star.aliases || []).indexOf(raw) >= 0) matches.push(id);
+  });
+  return matches.length === 1 ? matches[0] : null;
+}
+
 function indexDiagnosticData() {
   confuseByNodeId.clear();
   (confusingConcepts || []).forEach(function(pair) {
@@ -911,15 +923,25 @@ function indexDiagnosticData() {
       if (confuseByNodeId.get(nid).indexOf(pair) < 0) confuseByNodeId.get(nid).push(pair);
     });
   });
+
   const list = (knowledgeChains && knowledgeChains.knowledgeChains) || knowledgeChains || [];
   const chains = Array.isArray(list) ? list : [];
   chainsByNodeId.clear();
   chains.forEach(function(chain) {
-    (chain.nodes || []).forEach(function(nid) {
+    const normalizedNodes = [];
+    (chain.nodes || []).forEach(function(token) {
+      const nid = resolveChainNodeId(token);
+      if (nid && normalizedNodes.indexOf(nid) < 0) normalizedNodes.push(nid);
+      else if (!nid) console.warn('[knowledge-chain] 未找到节点:', chain.name || chain.chainId, token);
+    });
+    if (!normalizedNodes.length) return;
+    const normalizedChain = Object.assign({}, chain, { nodes: normalizedNodes });
+    normalizedNodes.forEach(function(nid) {
       if (!chainsByNodeId.has(nid)) chainsByNodeId.set(nid, []);
-      chainsByNodeId.get(nid).push(chain);
+      chainsByNodeId.get(nid).push(normalizedChain);
     });
   });
+
   lifeByNodeId.clear();
   const life = (window._LIFE_DATA && window._LIFE_DATA.lifeApplications) || [];
   life.forEach(function(item) {
@@ -2305,7 +2327,8 @@ function getSortedRelatedList(id) {
     else if (c.type === 7) relType = 7;
     else if (c.type === 8) relType = 8;
     else if (c.type === 9) {
-      if (extensionRevealForId !== id) return;
+      const selectedStar = starById.get(id);
+      if (extensionRevealForId !== id && !(selectedStar && selectedStar.satelliteKind === 'extension')) return;
       relType = 9;
     }
     let arrow = '↔';
@@ -2390,6 +2413,7 @@ function getModuleHubId(mod) {
   starById.forEach(star => {
     if (star.module !== mod) return;
     const entry = starData.get(star.id);
+    if (!entry || entry.isSatellite) return;
     const conn = connCounts ? (connCounts.get(star.id) || 0) : 0;
     const level = star.starLevel || 3;
     const levelWeight = Math.max(0, 4 - level) * 18;
@@ -2448,7 +2472,7 @@ function setModuleEmphasis(mod) {
 
 function getModuleCameraPose(mod) {
   const stars = [];
-  starById.forEach(star => { if (star.module === mod) stars.push(star); });
+  starById.forEach(star => { if (star.module === mod && !isSatelliteStar(star)) stars.push(star); });
   if (!stars.length) return getOverviewCameraPose();
 
   networkGroup.updateMatrixWorld(true);
@@ -3226,9 +3250,10 @@ function showInfoPanel(star) {
     var header = document.createElement('div');
     header.className = 'related-group-header';
     header.style.color = c;
-    var extensionOpen = gi === 9 && extensionRevealForId === star.id;
-    header.innerHTML = '<i class="fas ' + typeIcons[gi] + '"></i> ' + label + ' <span style="margin-left:auto;opacity:0.65">' + items.length + (gi === 9 ? (extensionOpen ? ' · 收起' : ' · 展开') : '') + '</span>';
-    if (gi === 9) {
+    var extensionSelected = star.satelliteKind === 'extension';
+    var extensionOpen = gi === 9 && (extensionRevealForId === star.id || extensionSelected);
+    header.innerHTML = '<i class="fas ' + typeIcons[gi] + '"></i> ' + label + ' <span style="margin-left:auto;opacity:0.65">' + items.length + (gi === 9 && !extensionSelected ? (extensionOpen ? ' · 收起' : ' · 展开') : '') + '</span>';
+    if (gi === 9 && !extensionSelected) {
       header.style.cursor = 'pointer';
       header.addEventListener('click', function(e) {
         e.preventDefault(); e.stopPropagation();
@@ -3603,7 +3628,11 @@ searchInput.addEventListener('input', () => {
       if (score > 0) results.push({ star, score, hint });
     });
 
-    results.sort((a, b) => b.score - a.score || a.star.name.localeCompare(b.star.name, 'zh-CN'));
+    results.sort((a, b) =>
+      b.score - a.score ||
+      Number(isSatelliteStar(a.star)) - Number(isSatelliteStar(b.star)) ||
+      a.star.name.localeCompare(b.star.name, 'zh-CN')
+    );
     const top = results.slice(0, 20);
 
     if (top.length === 0) {

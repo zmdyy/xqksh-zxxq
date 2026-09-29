@@ -3,109 +3,405 @@ window._CHAIN_DATA = {
     {
       "chainId": "mechanics_1",
       "name": "力的基础",
-      "nodes": ["力的概念", "力的作用效果", "力的三要素", "力的示意图", "重力", "弹力", "摩擦力"]
+      "nodes": [
+        "mech_force_concept",
+        "mech_force_effects",
+        "mech_force_elements",
+        "mech_force_diagram",
+        "mech_force_analysis",
+        "mech_force_gravity",
+        "mech_force_elastic",
+        "mech_friction"
+      ]
     },
     {
       "chainId": "mechanics_2",
       "name": "运动和力",
-      "nodes": ["牛顿第一定律", "惯性", "二力平衡", "力与运动的关系"]
+      "nodes": [
+        "mech_newton1",
+        "mech_inertia",
+        "mech_balance_forces",
+        "mech_balanced_vs_interaction",
+        "mech_force_motion_state"
+      ]
     },
     {
       "chainId": "mechanics_3",
       "name": "压强",
-      "nodes": ["压强", "增大和减小压强的方法", "液体的压强", "液体压强的特点", "大气压强", "大气压的测量"]
+      "nodes": [
+        "mech_pressure_force",
+        "mech_pressure",
+        "mech_liquid_pressure",
+        "mech_communicating_vessels",
+        "mech_pascal_principle",
+        "mech_atmospheric_pressure",
+        "mech_pressure_measure",
+        "mech_fluid_pressure"
+      ]
     },
     {
       "chainId": "mechanics_4",
       "name": "浮力",
-      "nodes": ["浮力", "浮力产生的原因", "阿基米德原理", "物体的浮沉条件", "浮力的应用"]
+      "nodes": [
+        "mech_buoyancy_cause",
+        "mech_buoyancy",
+        "mech_archimedes",
+        "mech_float_sink_condition"
+      ]
     },
     {
-      "chainId": "mechanics_5",
-      "name": "功和机械能",
-      "nodes": ["功", "功的计算", "功率", "功率的计算", "动能", "势能", "机械能及其转化"]
+      "chainId": "mechanics_5a",
+      "name": "功、功率与机械效率",
+      "nodes": [
+        "mech_work_conditions",
+        "mech_work",
+        "mech_power",
+        "mech_useful_work",
+        "mech_extra_work",
+        "mech_total_work",
+        "mech_efficiency"
+      ]
+    },
+    {
+      "chainId": "mechanics_5b",
+      "name": "机械能与转化",
+      "nodes": [
+        "mech_kinetic_energy",
+        "mech_gravitational_potential_energy",
+        "mech_elastic_potential_energy",
+        "mech_potential_energy",
+        "mech_mechanical_energy",
+        "mech_mechanical_energy_conversion"
+      ]
     },
     {
       "chainId": "mechanics_6",
       "name": "简单机械",
-      "nodes": ["杠杆", "杠杆的五要素", "杠杆的平衡条件", "杠杆的分类", "滑轮", "定滑轮及其特点", "动滑轮及其特点", "滑轮组", "机械效率"]
+      "nodes": [
+        "mech_lever",
+        "mech_lever_balance",
+        "mech_滑轮",
+        "mech_滑轮组",
+        "mech_inclined_plane",
+        "mech_wheel_axle"
+      ]
     },
-
     {
       "chainId": "thermology_1",
       "name": "物态变化",
-      "nodes": ["温度", "温度计", "熔化和凝固", "晶体的熔化和凝固", "汽化和液化", "蒸发", "沸腾", "升华和凝华"]
+      "nodes": [
+        "therm_temperature",
+        "therm_thermometer",
+        "therm_melting_freezing",
+        "therm_熔化吸热与凝固放热",
+        "therm_晶体与非晶体",
+        "therm_物态变化图像",
+        "therm_汽化与液化",
+        "therm_蒸发与沸腾",
+        "therm_液化方法",
+        "therm_升华与凝华",
+        "therm_自然界水循环"
+      ]
     },
     {
       "chainId": "thermology_2",
-      "name": "内能和热机",
-      "nodes": ["内能", "改变内能的方式", "比热容", "热量的计算", "热传递", "热值", "热机", "内燃机", "能量的转化和守恒"]
+      "name": "内能、比热容与热量",
+      "nodes": [
+        "therm_internal_energy",
+        "therm_改变内能的方式",
+        "therm_热量",
+        "therm_热传递",
+        "therm_specific_heat",
+        "therm_水的比热容",
+        "therm_heat_calculation"
+      ]
     },
-
+    {
+      "chainId": "thermology_3",
+      "name": "热值、热机与能量守恒",
+      "nodes": [
+        "therm_calorific_value",
+        "therm_heat_engine",
+        "therm_heat_engine_efficiency",
+        "therm_能量守恒定律_热学",
+        "therm_热力学第一定律"
+      ]
+    },
     {
       "chainId": "optics_1",
-      "name": "光的传播",
-      "nodes": ["光的直线传播", "光的反射", "光的反射定律", "镜面反射和漫反射", "平面镜成像", "光的折射", "光的折射规律"]
+      "name": "光的传播、反射与折射",
+      "nodes": [
+        "opt_light_source",
+        "opt_rectilinear_propagation",
+        "opt_reflection_law",
+        "opt_镜面反射与漫反射",
+        "opt_平面镜成像",
+        "opt_折射现象",
+        "opt_refraction_law"
+      ]
     },
     {
       "chainId": "optics_2",
       "name": "透镜及其应用",
-      "nodes": ["透镜", "透镜的相关概念", "凸透镜成像规律", "生活中的透镜", "眼睛和眼镜", "显微镜和望远镜"]
+      "nodes": [
+        "opt_refraction_law",
+        "opt_透镜",
+        "opt_凸透镜对光的作用",
+        "opt_凹透镜对光的作用",
+        "opt_focus",
+        "opt_focal_length",
+        "opt_lens_imaging",
+        "opt_u_2f成像",
+        "opt_f_u_2f成像",
+        "opt_u_f成像",
+        "opt_照相机",
+        "opt_投影仪",
+        "opt_放大镜",
+        "opt_眼镜与视力矫正"
+      ]
     },
     {
       "chainId": "optics_3",
-      "name": "光的色散",
-      "nodes": ["光的色散", "物体的颜色", "看不见的光"]
+      "name": "光的色散与颜色",
+      "nodes": [
+        "opt_dispersion",
+        "opt_色光混合",
+        "opt_物体的颜色",
+        "opt_红外线与紫外线"
+      ]
     },
-
     {
       "chainId": "electromagnetism_1",
-      "name": "电路基础",
-      "nodes": ["两种电荷", "电荷间的相互作用", "电流", "电流的测量", "电压", "电压的测量", "电阻", "影响电阻大小的因素", "滑动变阻器"]
+      "name": "电荷与电路基础",
+      "nodes": [
+        "elec_charge",
+        "elec_positive_charge",
+        "elec_negative_charge",
+        "elec_charge_interaction",
+        "elec_electron_transfer",
+        "elec_current",
+        "elec_current_direction",
+        "elec_power_source",
+        "elec_电路",
+        "elec_series_circuit",
+        "elec_parallel_circuit",
+        "elec_电流表",
+        "elec_voltage",
+        "elec_电压表"
+      ]
     },
     {
       "chainId": "electromagnetism_2",
-      "name": "欧姆定律",
-      "nodes": ["欧姆定律", "欧姆定律的应用", "串联和并联", "串联电路的特点", "并联电路的特点", "电阻的串联和并联"]
+      "name": "电阻与欧姆定律",
+      "nodes": [
+        "elec_resistance",
+        "elec_影响电阻的因素",
+        "elec_滑动变阻器",
+        "elec_ohm_law",
+        "elec_伏安法测电阻",
+        "elec_串联电路特点",
+        "elec_series_current_rule",
+        "elec_series_voltage_rule",
+        "elec_series_resistance_rule",
+        "elec_并联电路特点",
+        "elec_parallel_current_rule",
+        "elec_parallel_voltage_rule",
+        "elec_parallel_resistance_rule"
+      ]
     },
     {
       "chainId": "electromagnetism_3",
-      "name": "电功率",
-      "nodes": ["电功", "电功的计算", "电功率", "电功率的计算", "测量小灯泡的电功率", "焦耳定律", "电热的利用和防止"]
+      "name": "电功与电功率",
+      "nodes": [
+        "elec_electric_energy",
+        "elec_electric_work",
+        "elec_电能表",
+        "elec_electric_power",
+        "elec_额定功率与实际功率",
+        "elec_measure_lamp_power",
+        "elec_electric_heating",
+        "elec_joule_law",
+        "elec_电热利用与防止"
+      ]
     },
     {
-      "chainId": "electromagnetism_4",
-      "name": "电与磁",
-      "nodes": ["磁现象", "磁场", "磁感线", "电生磁", "安培定则", "电磁铁", "电磁继电器", "磁场对通电导线的作用", "电动机", "电磁感应", "发电机"]
+      "chainId": "electromagnetism_4a",
+      "name": "电生磁",
+      "nodes": [
+        "elec_磁现象",
+        "elec_magnetic_pole",
+        "elec_magnetic_pole_interaction",
+        "elec_magnetic_field",
+        "elec_magnetic_field_lines",
+        "elec_oersted_experiment",
+        "elec_电流的磁效应",
+        "elec_solenoid",
+        "elec_ampere_rule",
+        "elec_电磁铁",
+        "elec_electromagnet_factors",
+        "elec_电磁继电器"
+      ]
     },
-
+    {
+      "chainId": "electromagnetism_4b",
+      "name": "磁场对电流的作用与电动机",
+      "nodes": [
+        "elec_magnetic_field",
+        "elec_磁场对电流的作用",
+        "elec_electric_motor"
+      ]
+    },
+    {
+      "chainId": "electromagnetism_4c",
+      "name": "磁生电与发电机",
+      "nodes": [
+        "elec_magnetic_field",
+        "elec_electromagnetic_induction",
+        "elec_generator",
+        "elec_交流电",
+        "elec_变压器"
+      ]
+    },
     {
       "chainId": "energy_1",
-      "name": "能源与可持续发展",
-      "nodes": ["能量", "能量的转化和守恒", "能源分类", "一次能源和二次能源", "可再生能源和不可再生能源", "能源与可持续发展"]
+      "name": "能量、能源与可持续发展",
+      "nodes": [
+        "energy_energy",
+        "energy_energy_conversion",
+        "energy_energy_transfer",
+        "energy_energy_conservation",
+        "energy_energy_classification",
+        "energy_renewable_nonrenewable",
+        "energy_solar_energy",
+        "energy_nuclear_energy",
+        "energy_nuclear_fusion_fission",
+        "energy_energy_environment",
+        "energy_sustainable_可持续发展"
+      ]
     }
   ],
   "nodeRelations": {
-    "力的概念": {"prerequisites": [], "followUps": ["力的作用效果", "力的三要素"]},
-    "重力": {"prerequisites": ["力的概念"], "followUps": ["二力平衡", "浮力"]},
-    "牛顿第一定律": {"prerequisites": ["力的作用效果"], "followUps": ["惯性", "二力平衡"]},
-    "压强": {"prerequisites": ["力的概念"], "followUps": ["液体的压强", "大气压强"]},
-    "浮力": {"prerequisites": ["重力", "二力平衡", "液体的压强"], "followUps": ["阿基米德原理", "物体的浮沉条件"]},
-    "功": {"prerequisites": ["力的概念"], "followUps": ["功率", "机械效率"]},
-    "动能": {"prerequisites": ["功"], "followUps": ["机械能及其转化"]},
-    "杠杆": {"prerequisites": ["力的概念"], "followUps": ["滑轮", "机械效率"]},
-    "温度": {"prerequisites": [], "followUps": ["熔化和凝固", "汽化和液化"]},
-    "内能": {"prerequisites": ["温度"], "followUps": ["比热容", "热传递"]},
-    "光的直线传播": {"prerequisites": [], "followUps": ["光的反射", "光的折射"]},
-    "凸透镜": {"prerequisites": ["光的折射"], "followUps": ["凸透镜成像规律", "生活中的透镜"]},
-    "电荷": {"prerequisites": [], "followUps": ["电流"]},
-    "电流": {"prerequisites": ["电荷"], "followUps": ["电压", "电阻"]},
-    "欧姆定律": {"prerequisites": ["电流", "电压", "电阻"], "followUps": ["电功", "电功率"]},
-    "电功率": {"prerequisites": ["欧姆定律", "电功"], "followUps": ["焦耳定律"]},
-    "磁场": {"prerequisites": ["磁现象"], "followUps": ["电生磁", "电磁感应"]},
-    "电动机": {"prerequisites": ["磁场对通电导线的作用"], "followUps": []},
-    "发电机": {"prerequisites": ["电磁感应"], "followUps": []},
-    "能量": {"prerequisites": [], "followUps": ["能量守恒定律", "能源分类"]},
-    "能源分类": {"prerequisites": ["能量"], "followUps": ["能源与可持续发展"]}
+    "mech_force_concept": {
+      "prerequisites": [],
+      "followUps": [
+        "mech_force_effects",
+        "mech_force_elements"
+      ]
+    },
+    "mech_force_gravity": {
+      "prerequisites": [
+        "mech_force_concept"
+      ],
+      "followUps": [
+        "mech_balance_forces",
+        "mech_buoyancy"
+      ]
+    },
+    "mech_newton1": {
+      "prerequisites": [
+        "mech_force_effects"
+      ],
+      "followUps": [
+        "mech_inertia",
+        "mech_balance_forces"
+      ]
+    },
+    "mech_pressure": {
+      "prerequisites": [
+        "mech_pressure_force"
+      ],
+      "followUps": [
+        "mech_liquid_pressure",
+        "mech_atmospheric_pressure"
+      ]
+    },
+    "mech_buoyancy": {
+      "prerequisites": [
+        "mech_liquid_pressure"
+      ],
+      "followUps": [
+        "mech_archimedes",
+        "mech_float_sink_condition"
+      ]
+    },
+    "mech_work": {
+      "prerequisites": [
+        "mech_work_conditions"
+      ],
+      "followUps": [
+        "mech_power",
+        "mech_efficiency"
+      ]
+    },
+    "therm_internal_energy": {
+      "prerequisites": [],
+      "followUps": [
+        "therm_改变内能的方式",
+        "therm_specific_heat"
+      ]
+    },
+    "opt_refraction_law": {
+      "prerequisites": [
+        "opt_折射现象"
+      ],
+      "followUps": [
+        "opt_透镜",
+        "opt_lens_imaging"
+      ]
+    },
+    "elec_current": {
+      "prerequisites": [
+        "elec_charge"
+      ],
+      "followUps": [
+        "elec_电路",
+        "elec_voltage"
+      ]
+    },
+    "elec_ohm_law": {
+      "prerequisites": [
+        "elec_current",
+        "elec_voltage",
+        "elec_resistance"
+      ],
+      "followUps": [
+        "elec_伏安法测电阻"
+      ]
+    },
+    "elec_电流的磁效应": {
+      "prerequisites": [
+        "elec_current",
+        "elec_oersted_experiment"
+      ],
+      "followUps": [
+        "elec_solenoid",
+        "elec_电磁铁"
+      ]
+    },
+    "elec_磁场对电流的作用": {
+      "prerequisites": [
+        "elec_magnetic_field",
+        "elec_current"
+      ],
+      "followUps": [
+        "elec_electric_motor"
+      ]
+    },
+    "elec_electromagnetic_induction": {
+      "prerequisites": [
+        "elec_magnetic_field"
+      ],
+      "followUps": [
+        "elec_generator"
+      ]
+    },
+    "energy_energy_conservation": {
+      "prerequisites": [
+        "energy_energy"
+      ],
+      "followUps": [
+        "energy_energy_environment"
+      ]
+    }
   }
 };

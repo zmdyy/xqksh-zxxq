@@ -1156,9 +1156,7 @@
           "计算题"
         ]
       },
-      "prerequisites": [
-        "mech_force_diagram"
-      ],
+      "prerequisites": [],
       "follow_ups": [],
       "parallels": [],
       "cross_module": [],
@@ -1205,9 +1203,7 @@
           "选择题"
         ]
       },
-      "prerequisites": [
-        "mech_force_diagram"
-      ],
+      "prerequisites": [],
       "follow_ups": [
         "mech_support_force",
         "mech_tension_force"
@@ -1252,9 +1248,7 @@
           "选择题"
         ]
       },
-      "prerequisites": [
-        "mech_force_diagram"
-      ],
+      "prerequisites": [],
       "follow_ups": [
         "mech_force_analysis",
         "mech_sliding_friction"
@@ -2619,8 +2613,7 @@
       "prerequisites": [
         "mech_work",
         "mech_useful_work",
-        "mech_total_work",
-        "energy_efficiency"
+        "mech_total_work"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -3766,9 +3759,7 @@
         ]
       },
       "prerequisites": [
-        "therm_heat_engine",
-        "energy_efficiency",
-        "therm_热量"
+        "therm_heat_engine"
       ],
       "follow_ups": [],
       "parallels": [],
@@ -8618,9 +8609,7 @@
           "实验题"
         ]
       },
-      "prerequisites": [
-        "mech_potential_energy"
-      ],
+      "prerequisites": [],
       "follow_ups": [
         "mech_mechanical_energy"
       ],
@@ -8658,9 +8647,7 @@
           "选择题"
         ]
       },
-      "prerequisites": [
-        "mech_potential_energy"
-      ],
+      "prerequisites": [],
       "follow_ups": [
         "mech_mechanical_energy"
       ],
@@ -9503,9 +9490,7 @@
           "选择题"
         ]
       },
-      "prerequisites": [
-        "elec_电路"
-      ],
+      "prerequisites": [],
       "follow_ups": [],
       "parallels": [],
       "cross_module": [],
@@ -9543,9 +9528,7 @@
           "选择题"
         ]
       },
-      "prerequisites": [
-        "elec_电路"
-      ],
+      "prerequisites": [],
       "follow_ups": [],
       "parallels": [],
       "cross_module": [],
@@ -9584,9 +9567,7 @@
           "故障分析"
         ]
       },
-      "prerequisites": [
-        "elec_电路"
-      ],
+      "prerequisites": [],
       "follow_ups": [],
       "parallels": [],
       "cross_module": [],
