@@ -8,6 +8,7 @@ const knowledgeHtml = fs.readFileSync(path.join(root, 'knowledge/index.html'), '
 const dbCode = fs.readFileSync(path.join(root, 'data/knowledge/knowledge-db.js'), 'utf8');
 const dictCode = fs.readFileSync(path.join(root, 'knowledge/vendor/pinyinjs/pinyin_dict_withtone.js'), 'utf8');
 const pinyinCode = fs.readFileSync(path.join(root, 'knowledge/vendor/pinyinjs/pinyinUtil.js'), 'utf8');
+const metaCode = fs.readFileSync(path.join(root, 'knowledge/概念归类数据库.js'), 'utf8');
 
 const errors = [];
 function requireText(text, needle, label) {
@@ -24,9 +25,13 @@ requireText(knowledgeHtml, 'vendor/pinyinjs/pinyin_dict_withtone.js', '知识星
 requireText(knowledgeHtml, 'vendor/pinyinjs/pinyinUtil.js', '知识星球未加载本地拼音工具');
 requireText(knowledgeHtml, 'function getPinyinSearchIndex', '缺少本地拼音索引');
 requireText(knowledgeHtml, 'function getPinyinMatch', '缺少拼音匹配逻辑');
-requireText(knowledgeHtml, "Number(isSatelliteStar(a.star)) - Number(isSatelliteStar(b.star))", '搜索排序未设置核心知识优先');
+requireText(knowledgeHtml, "Number(isAuxiliaryStar(a.star)) - Number(isAuxiliaryStar(b.star))", '搜索排序未设置核心知识优先');
 requireText(knowledgeHtml, 'function resolveChainNodeId', '知识发展链缺少ID/名称兼容解析');
 requireText(knowledgeHtml, "star.satelliteKind === 'extension'", '二级拓展卫星回链逻辑缺失');
+requireText(knowledgeHtml, '概念归类数据库.js', '未加载 Meta 数据库');
+requireText(knowledgeHtml, 'classification:10', '未注册 classification 关系');
+requireText(knowledgeHtml, 'function injectMetaConcepts', '未注入 Meta 概念');
+requireText(knowledgeHtml, "star.nodeType !== 'meta'", '学习计数未排除 Meta');
 
 const remotePinyin = knowledgeHtml.match(/https?:\/\/[^"'\s>]*pinyin/gi) || [];
 if (remotePinyin.length) errors.push('发现远程拼音依赖: ' + remotePinyin.join(', '));
@@ -49,11 +54,26 @@ vm.createContext(sandbox);
 vm.runInContext(dbCode, sandbox);
 vm.runInContext(dictCode, sandbox);
 vm.runInContext(pinyinCode, sandbox);
+vm.runInContext(metaCode, sandbox);
 
 const db = sandbox.KNOWLEDGE_DB;
 const pinyinUtil = sandbox.pinyinUtil;
 if (!db || !Array.isArray(db.data)) errors.push('知识库 JS 加载失败');
 if (!pinyinUtil || typeof pinyinUtil.getPinyin !== 'function') errors.push('本地拼音工具加载失败');
+
+const metaData = sandbox._META_CONCEPT_DATA;
+const metaNodes = metaData && Array.isArray(metaData.meta_nodes) ? metaData.meta_nodes : [];
+if (metaNodes.length !== 10) errors.push('Meta 概念数量应为10，实际为 ' + metaNodes.length);
+const dbIds = new Set((db && db.data || []).map(n => n.id));
+const seenMeta = new Set();
+for (const meta of metaNodes) {
+  if (seenMeta.has(meta.id)) errors.push('Meta ID 重复: ' + meta.id);
+  seenMeta.add(meta.id);
+  if (dbIds.has(meta.id)) errors.push('Meta 节点错误混入知识库: ' + meta.id);
+  for (const memberId of (meta.members || [])) if (!dbIds.has(memberId)) errors.push('Meta 成员不存在: ' + meta.name + ' -> ' + memberId);
+}
+const expectedMetaNames = ['物质的物理属性','测量工具与仪表','间接测量','比值定义与比值表征','单位时间表征','能量的形式','能量转化装置','守恒思想','控制变量法','物理图示与图像表征'];
+for (const name of expectedMetaNames) if (!metaNodes.some(m => m.name === name)) errors.push('缺少 Meta 概念: ' + name);
 
 function pinyinIndex(name) {
   let spaced = String(pinyinUtil.getPinyin(name, ' ', false, false) || '').toLowerCase();
@@ -107,6 +127,7 @@ const summary = {
   localPinyin: remotePinyin.length === 0,
   emptyPinyinIndexes: emptyPinyin.length,
   pinyinTests,
+  metaConcepts: metaNodes.length,
   errors
 };
 console.log(JSON.stringify(summary, null, 2));

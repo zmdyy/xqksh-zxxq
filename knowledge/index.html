@@ -784,6 +784,7 @@ canvas{display:block}
 <script src="关系修正数据库.js"></script>
 <script src="易混淆概念对比表.js"></script>
 <script src="知识链排序配置表.js"></script>
+<script src="概念归类数据库.js"></script>
 <script src="生活应用场景.js"></script>
 <script src="layout-engine.js"></script>
 
@@ -887,9 +888,10 @@ const MOD_COLORS = {
   '生物': new THREE.Color('#2ed573'),
   '化学': new THREE.Color('#ff4757'),
   '艺术': new THREE.Color('#e84393'),
-  '应用': new THREE.Color('#fbbf24')
+  '应用': new THREE.Color('#fbbf24'),
+  '概念归类': new THREE.Color('#c4b5fd')
 };
-const CONN_TYPE_MAP = { prerequisite:0, causal:1, parallel:2, historical:3, cross_module:4, cross_disciplinary:5, support:6, application:7, transformation:8, extension:9 };
+const CONN_TYPE_MAP = { prerequisite:0, causal:1, parallel:2, historical:3, cross_module:4, cross_disciplinary:5, support:6, application:7, transformation:8, extension:9, classification:10 };
 
 // ========================== DATA ==========================
 const starById = new Map();
@@ -1075,6 +1077,48 @@ function placeSatelliteNodes(dbData, connData, positions) {
       const angle = (idx / Math.max(1, items.length)) * Math.PI * 2 - Math.PI / 2;
       const radius = sat.satellite_kind === 'extension' ? 92 : sat.satellite_kind === 'application' ? 70 : 56;
       positions[sat.id] = {x:anchor.x+Math.cos(angle)*radius,y:anchor.y+Math.sin(angle)*radius,z:anchor.z+((idx%3)-1)*16};
+    });
+  });
+}
+
+function isMetaStar(star) {
+  return !!star && star.nodeType === 'meta';
+}
+function isAuxiliaryStar(star) {
+  return isSatelliteStar(star) || isMetaStar(star);
+}
+
+function injectMetaConcepts(dbData, connData) {
+  const source = window._META_CONCEPT_DATA;
+  const metas = source && Array.isArray(source.meta_nodes) ? source.meta_nodes : [];
+  if (!metas.length) return;
+  const byId = new Map((dbData || []).map(function(n) { return [n.id, n]; }));
+  metas.forEach(function(meta, idx) {
+    if (!meta || !meta.id || byId.has(meta.id)) return;
+    const members = (meta.members || []).filter(function(id) { return byId.has(id); });
+    if (!members.length) return;
+    let cx=0, cy=0, cz=0, count=0;
+    members.forEach(function(id) {
+      const n=byId.get(id);
+      if (!Number.isFinite(Number(n.x)) || !Number.isFinite(Number(n.y)) || !Number.isFinite(Number(n.z))) return;
+      cx+=Number(n.x); cy+=Number(n.y); cz+=Number(n.z); count++;
+    });
+    if (count) { cx/=count; cy/=count; cz/=count; }
+    const angle=idx*2.399963229728653;
+    const radial=58+(idx%3)*10;
+    const metaNode={
+      id:meta.id,name:meta.name,module:'概念归类',chapter:'Meta 概念',grade:'跨章节',
+      difficulty:1,core_definition:meta.description||'',formula:'无',
+      applications:[meta.note||'用于跨章节知识整理，不参与考试知识点统计。'],
+      common_mistakes:[],prerequisites:[],follow_ups:[],aliases:meta.aliases||[],
+      node_type:'meta',meta_members:members.slice(),
+      x:cx+Math.cos(angle)*radial,y:cy+Math.sin(angle)*radial,z:cz+((idx%5)-2)*14,
+      size:12,star_level:3
+    };
+    dbData.push(metaNode); byId.set(metaNode.id,metaNode);
+    members.forEach(function(memberId){
+      connData.push({from:memberId,to:metaNode.id,type:'classification',strength:1,width:1,
+        note:'归属于“'+metaNode.name+'”这一跨章节概念分类；不表示前置、因果或同层知识关系。'});
     });
   });
 }
@@ -1313,6 +1357,7 @@ try {
     console.info('[knowledge-layout] semantic layout audit', layoutResult.diagnostics);
   }
 
+  injectMetaConcepts(dbData, connData);
   buildDataMaps(dbData, connData);
   indexDiagnosticData();
   updateLoad(12, '数据加载完成，初始化3D场景...');
@@ -1530,7 +1575,7 @@ updateLoad(25, '创建纹理与数据...');
 
 // Connection counts & hub
 connCounts = new Map();
-starById.forEach((s, id) => connCounts.set(id, (connMap.get(id) || []).length));
+starById.forEach((s, id) => connCounts.set(id, (connMap.get(id) || []).filter(function(c) { return c.type !== 10; }).length));
 maxConn = 0; minConn = Infinity;
 connCounts.forEach(c => { if (c > maxConn) maxConn = c; if (c < minConn) minConn = c; });
 hubStarId = null; hubConnCount = 0;
@@ -1538,26 +1583,20 @@ connCounts.forEach((c, id) => { if (c > hubConnCount) { hubConnCount = c; hubSta
 
 // ========================== SEMANTIC POSITION FINALIZE ==========================
 (function finalizeSemanticPositions() {
-  let cx = 0, cy = 0, cz = 0, n = 0;
+  let cx=0, cy=0, cz=0, n=0;
   starById.forEach(star => {
-    cx += Number(star.x) || 0;
-    cy += Number(star.y) || 0;
-    cz += Number(star.z) || 0;
-    n++;
+    if (isAuxiliaryStar(star)) return;
+    cx+=Number(star.x)||0; cy+=Number(star.y)||0; cz+=Number(star.z)||0; n++;
   });
   if (!n) return;
-  cx /= n; cy /= n; cz /= n;
-
-  let maxDist = 1;
+  cx/=n; cy/=n; cz/=n;
+  let maxDist=1;
   starById.forEach(star => {
-    star.x = (Number(star.x) || 0) - cx;
-    star.y = (Number(star.y) || 0) - cy;
-    star.z = (Number(star.z) || 0) - cz;
-    maxDist = Math.max(maxDist, Math.sqrt(star.x * star.x + star.y * star.y + star.z * star.z));
+    star.x=(Number(star.x)||0)-cx; star.y=(Number(star.y)||0)-cy; star.z=(Number(star.z)||0)-cz;
+    if (!isAuxiliaryStar(star)) maxDist=Math.max(maxDist,Math.sqrt(star.x*star.x+star.y*star.y+star.z*star.z));
   });
-
-  visualGraphRadius = maxDist;
-  visualCenterStar = { x: 0, y: 0, z: 0 };
+  visualGraphRadius=maxDist;
+  visualCenterStar={x:0,y:0,z:0};
 })();
 
 if (visualCenterStar) {
@@ -1688,13 +1727,16 @@ let i = 0;
 starById.forEach((star) => {
   const mod = star.module;
   const isSatellite = isSatelliteStar(star);
-  const color = star.satelliteKind === 'application' ? new THREE.Color('#fbbf24') :
+  const isMeta = isMetaStar(star);
+  const isAuxiliary = isSatellite || isMeta;
+  const color = isMeta ? new THREE.Color('#c4b5fd') :
+    star.satelliteKind === 'application' ? new THREE.Color('#fbbf24') :
     star.satelliteKind === 'extension' ? new THREE.Color('#94a3b8') :
     (MOD_COLORS[mod] || new THREE.Color(0xffffff));
   const tierCfg = TIER_CFG.find(t => star.difficulty <= t.maxDiff) || TIER_CFG[1];
   const isHub = (star.id === hubStarId);
   const hubBoost = isHub ? 1.18 : 1.0;
-  const defaultSize = tierCfg.size * hubBoost;
+  const defaultSize = isMeta ? 18 : tierCfg.size * hubBoost;
   const tierBright = tierCfg.brightness * (isHub ? 1.10 : 1.0);
   
   const hitRadius = (tierCfg.label === 'core' ? 9 : tierCfg.label === 'basic' ? 6 : 4) * hubBoost;
@@ -1705,9 +1747,9 @@ starById.forEach((star) => {
   starColors[i*3] = color.r;
   starColors[i*3+1] = color.g;
   starColors[i*3+2] = color.b;
-  starSizes[i] = isSatellite ? 0 : defaultSize;
+  starSizes[i] = isAuxiliary ? 0 : defaultSize;
   starSeeds[i] = Math.random() * Math.PI * 2;
-  starDimFactors[i] = isSatellite ? 0 : tierBright;
+  starDimFactors[i] = isAuxiliary ? 0 : tierBright;
 
   starIdxMap.set(star.id, i);
   starIdList[i] = star.id;
@@ -1716,7 +1758,7 @@ starById.forEach((star) => {
   hitMesh.scale.setScalar(hitRadius);
   hitMesh.position.set(star.x, star.y, star.z);
   hitMesh.userData = { starId: star.id, tier: tierCfg.label, isHub };
-  hitMesh.visible = !isSatellite;
+  hitMesh.visible = !isAuxiliary;
   networkGroup.add(hitMesh);
   hitMeshes.set(star.id, hitMesh);
   planetMeshes.set(star.id, hitMesh);
@@ -1728,7 +1770,7 @@ starById.forEach((star) => {
   labelLayer.appendChild(label);
   labelItems.push({ id: star.id, star, label, tier: tierCfg.label, world: new THREE.Vector3(star.x, star.y, star.z) });
   
-  starData.set(star.id, { pointIndex: i, star, defaultSize, tierSize: defaultSize, tierBright, color, isHub, tier: tierCfg.label, isSatellite, planetMesh: hitMesh, atmosphereMesh: null });
+  starData.set(star.id, { pointIndex: i, star, defaultSize, tierSize: defaultSize, tierBright, color, isHub, tier: tierCfg.label, isSatellite, isMeta, isAuxiliary, planetMesh: hitMesh, atmosphereMesh: null });
   i++;
 });
 
@@ -1897,14 +1939,14 @@ function makeStrandPoints(from, to, seed, segments) {
 
 rawConns.forEach((c, i) => {
   const { from, to, type, isCrossModule } = c;
-  const color = MOD_COLORS[from.module] || new THREE.Color(0x666688);
+  const color = type === 10 ? new THREE.Color('#c4b5fd') : (MOD_COLORS[from.module] || new THREE.Color(0x666688));
   const dep = type <= 1 ? 'strong' : type <= 3 ? 'medium' : 'weak';
   const speeds = { strong: 1.0, medium: 0.7, weak: 0.5 };
   const isHubStrand = hubStarId && (from.id === hubStarId || to.id === hubStarId);
-  const isSatelliteStrand = isSatelliteStar(from) || isSatelliteStar(to);
-  const baseOpacityByType = [0.115,0.082,0.044,0.034,0.022,0.015,0.050,0.042,0.055,0];
+  const isAuxiliaryStrand = isAuxiliaryStar(from) || isAuxiliaryStar(to);
+  const baseOpacityByType = [0.115,0.082,0.044,0.034,0.022,0.015,0.050,0.042,0.055,0,0];
   const baseOpacity = baseOpacityByType[type] !== undefined ? baseOpacityByType[type] : 0.036;
-  const opacity = isSatelliteStrand ? 0 : Math.min(0.16, baseOpacity * (isHubStrand ? 1.15 : 1.0));
+  const opacity = isAuxiliaryStrand ? 0 : Math.min(0.16, baseOpacity * (isHubStrand ? 1.15 : 1.0));
   const strand = makeStrandPoints(from, to, i + type * 0.37, 10);
 
   const dS = darkPos.length / 3;
@@ -1937,7 +1979,7 @@ rawConns.forEach((c, i) => {
     trailPos.push(from.y + (to.y - from.y) * p);
     trailPos.push(from.z + (to.z - from.z) * p);
     trailCol.push(color.r * 1.35, color.g * 1.35, color.b * 1.35);
-    trailSiz.push(isSatelliteStrand ? 0 : (trailCount - j) / trailCount * (isHubStrand ? 3.6 : 1.6));
+    trailSiz.push(isAuxiliaryStrand ? 0 : (trailCount - j) / trailCount * (isHubStrand ? 3.6 : 1.6));
     trailSeed.push(Math.random() * Math.PI * 2);
   }
 
@@ -2314,7 +2356,7 @@ function getSortedRelatedList(id) {
     seen.add(otherId);
     const otherStar = starById.get(otherId);
     if (!otherStar) return;
-    const typeLabels = ['前置知识', '后续知识', '平行关联', '历史启发', '跨模块', '跨学科', '支撑关联', '应用关联', '能量转化', '二级拓展'];
+    const typeLabels = ['前置知识', '后续知识', '平行关联', '历史启发', '跨模块', '跨学科', '支撑关联', '应用关联', '能量转化', '二级拓展', '概念归类'];
     let relType = 0;
     if (c.type === 0) {
       relType = c.fromId === id ? 1 : 0;
@@ -2330,7 +2372,7 @@ function getSortedRelatedList(id) {
       const selectedStar = starById.get(id);
       if (extensionRevealForId !== id && !(selectedStar && selectedStar.satelliteKind === 'extension')) return;
       relType = 9;
-    }
+    } else if (c.type === 10) relType = 10;
     let arrow = '↔';
     if (c.type === 0) {
       arrow = c.fromId === id ? '→' : '←';
@@ -2413,7 +2455,7 @@ function getModuleHubId(mod) {
   starById.forEach(star => {
     if (star.module !== mod) return;
     const entry = starData.get(star.id);
-    if (!entry || entry.isSatellite) return;
+    if (!entry || entry.isAuxiliary) return;
     const conn = connCounts ? (connCounts.get(star.id) || 0) : 0;
     const level = star.starLevel || 3;
     const levelWeight = Math.max(0, 4 - level) * 18;
@@ -2438,7 +2480,7 @@ function setModuleEmphasis(mod) {
     const idx = entry.pointIndex;
     startDims[sid] = starDimFactors[idx];
     startSizes[sid] = starSizes[idx];
-    if (entry.isSatellite) {
+    if (entry.isAuxiliary) {
       targetDims[sid] = 0; targetSizes[sid] = 0;
       if (entry.planetMesh) entry.planetMesh.visible = false;
     } else if (mod === 'all') {
@@ -2457,13 +2499,13 @@ function setModuleEmphasis(mod) {
 
   const la = darkLineGeo.attributes.lineAlpha.array;
   lineDataMap.forEach(ld => {
-    const satelliteLine = isSatelliteStar(ld.from) || isSatelliteStar(ld.to);
-    const inModule = !satelliteLine && (mod === 'all' || (ld.from.module === mod && ld.to.module === mod));
-    const target = satelliteLine ? 0 : (mod === 'all' ? Math.min(0.18,ld.darkAlpha*1.22) : (inModule ? Math.min(0.42,Math.max(0.22,ld.darkAlpha*4.2)) : 0.008));
+    const auxiliaryLine = isAuxiliaryStar(ld.from) || isAuxiliaryStar(ld.to);
+    const inModule = !auxiliaryLine && (mod === 'all' || (ld.from.module === mod && ld.to.module === mod));
+    const target = auxiliaryLine ? 0 : (mod === 'all' ? Math.min(0.18,ld.darkAlpha*1.22) : (inModule ? Math.min(0.42,Math.max(0.22,ld.darkAlpha*4.2)) : 0.008));
     const r = connToRange[ld.idx];
     for (let s=0;s<r.segmentCount*2;s++) la[r.dark+s]=target;
     ld._targetAlpha=target;
-    ld.glowActive=!satelliteLine && inModule && mod!=='all' && ld.from.module===ld.to.module;
+    ld.glowActive=!auxiliaryLine && inModule && mod!=='all' && ld.from.module===ld.to.module;
   });
   darkLineGeo.attributes.lineAlpha.needsUpdate = true;
   networkGroup.userData.rotationSpeed = mod === 'all' ? 0.00012 : 0.00003;
@@ -2472,7 +2514,7 @@ function setModuleEmphasis(mod) {
 
 function getModuleCameraPose(mod) {
   const stars = [];
-  starById.forEach(star => { if (star.module === mod && !isSatelliteStar(star)) stars.push(star); });
+  starById.forEach(star => { if (star.module === mod && !isAuxiliaryStar(star)) stars.push(star); });
   if (!stars.length) return getOverviewCameraPose();
 
   networkGroup.updateMatrixWorld(true);
@@ -2538,7 +2580,7 @@ function updateLabels() {
       (item.tier !== 'extension' || connCount >= 3 || dim > 0.95);
 
     let wanted = visible && (showByDefault || showInCurrentModule || isActive || isModuleHub);
-    if (entry && entry.isSatellite && !isActive) wanted = false;
+    if (entry && entry.isAuxiliary && !isActive) wanted = false;
     // 选中知识点后只保留“当前节点 + 直接关联节点”。
     // 旧代码把 selectedId 本身当作布尔值，导致选中任意节点后 183 个标签全部显示。
     if (focusMode && !isActive) wanted = false;
@@ -2601,11 +2643,11 @@ function highlightConnections(id, highlight) {
     const idx = entry.pointIndex;
     startDims[sid] = starDimFactors[idx];
     startSizes[sid] = starSizes[idx];
-    const showSatellite = entry.isSatellite && (sid === id || connectedIds.has(sid));
-    if (entry.planetMesh) entry.planetMesh.visible = !entry.isSatellite || showSatellite;
+    const showAuxiliary = entry.isAuxiliary && (sid === id || connectedIds.has(sid));
+    if (entry.planetMesh) entry.planetMesh.visible = !entry.isAuxiliary || showAuxiliary;
     if (!highlight) {
-      targetDims[sid] = entry.isSatellite ? 0 : entry.tierBright;
-      targetSizes[sid] = entry.isSatellite ? 0 : entry.defaultSize;
+      targetDims[sid] = entry.isAuxiliary ? 0 : entry.tierBright;
+      targetSizes[sid] = entry.isAuxiliary ? 0 : entry.defaultSize;
     } else if (sid === id) {
       targetDims[sid] = 1.8;
       targetSizes[sid] = entry.defaultSize * 1.5;
@@ -2621,10 +2663,10 @@ function highlightConnections(id, highlight) {
 
   // Line opacities
   lineDataMap.forEach(ld => {
-    const satelliteLine = isSatelliteStar(ld.from) || isSatelliteStar(ld.to);
-    if (!highlight) ld._targetAlpha = satelliteLine ? 0 : ld.darkAlpha;
+    const auxiliaryLine = isAuxiliaryStar(ld.from) || isAuxiliaryStar(ld.to);
+    if (!highlight) ld._targetAlpha = auxiliaryLine ? 0 : ld.darkAlpha;
     else if (lineVisibleForSelection(ld,id)) ld._targetAlpha = 0.58;
-    else ld._targetAlpha = satelliteLine ? 0 : 0.012;
+    else ld._targetAlpha = auxiliaryLine ? 0 : 0.012;
   });
 
   networkGroup.userData.rotationSpeed = highlight ? 0.00003 : 0.00012;
@@ -2796,7 +2838,7 @@ function clearSelectionState(prevId, options) {
   if (options.restoreConnections !== false) highlightConnections(prevId, false);
   selectedConnectedIds.clear();
   extensionRevealForId = null;
-  starData.forEach(function(item) { if (item.isSatellite && item.planetMesh) item.planetMesh.visible = false; });
+  starData.forEach(function(item) { if (item.isAuxiliary && item.planetMesh) item.planetMesh.visible = false; });
   focusRelatedList = [];
   focusRelatedIndex = -1;
   selectedId = null;
@@ -3092,10 +3134,11 @@ function renderKnowledgeChainPanel(star) {
 }
 
 function showInfoPanel(star) {
+  const isMetaNode = star.nodeType === 'meta';
   const color = MOD_COLORS[star.module] || '#6ee7ff';
   const modCN = { '\u529b\u5b66':'\u725b\u987f\u5ea7','\u70ed\u5b66':'\u706b\u7130\u5ea7','\u5149\u5b66':'\u68f1\u955c\u5ea7','\u7535\u78c1\u5b66':'\u95ea\u7535\u5ea7','\u80fd\u91cf':'\u80fd\u91cf\u73af' };
-  const gradeStr = '\u7b2c' + star.grade + '\u5e74\u7ea7';
-  const diffStr = '\u2b50'.repeat(star.difficulty);
+  const gradeStr = isMetaNode ? '跨章节归类' : ('第' + star.grade + '年级');
+  const diffStr = isMetaNode ? '非考试知识点' : '⭐'.repeat(star.difficulty);
 
   panelIcon.style.background = color + '22';
   panelIcon.style.color = color;
@@ -3136,7 +3179,7 @@ function showInfoPanel(star) {
   }
   renderLifeScenes(star);
   var freqMap = {1:'\u6781\u5c11',2:'\u8f83\u5c11',3:'\u4e00\u822c',4:'\u8f83\u591a',5:'\u9891\u7e41'};
-  panelExam.textContent = '\u51fa\u73b0\u9891\u7387\uff1a' + (freqMap[star.examFreq]||'\u4e00\u822c') + ' \u2003\u9898\u578b\uff1a' + ((star.examTypes || []).join('\u3001') || '\u672a\u7edf\u8ba1');
+  panelExam.textContent = isMetaNode ? '概念归类导航：不参与考试知识点统计、AI标注和学习计数。' : ('出现频率：' + (freqMap[star.examFreq]||'一般') + ' 　题型：' + ((star.examTypes || []).join('、') || '未统计'));
   if (star.historyScientist) {
     var sParts = star.historyScientist.split(',');
     var scientist = sParts[0].trim();
@@ -3194,7 +3237,7 @@ function showInfoPanel(star) {
   renderKnowledgeChainPanel(star);
   panelRelated.innerHTML = '';
   var conns = connMap.get(star.id) || [];
-  var typeLabels = ['前置知识', '后续知识', '平行关联', '历史启发', '跨模块关联', '跨学科关联', '支撑关联', '应用关联', '能量转化', '二级拓展'];
+  var typeLabels = ['前置知识', '后续知识', '平行关联', '历史启发', '跨模块关联', '跨学科关联', '支撑关联', '应用关联', '能量转化', '二级拓展', '概念归类'];
   var typeDescriptions = [
     '先理解这些概念，再学习当前知识点会更顺。',
     '掌握当前知识点后，可以继续学习这些内容。',
@@ -3205,10 +3248,11 @@ function showInfoPanel(star) {
     '帮助理解、表征或计算当前知识，但不一定构成严格前置。',
     '当前知识在典型实验、装置或生活情境中的具体应用。',
     '表示不同形式能量之间的转化联系。',
-    '科学上有关联，但不作为初中教材核心结论；需要时再展开查看。'
+    '科学上有关联，但不作为初中教材核心结论；需要时再展开查看。',
+    '把分散在不同章节的知识放到同一个上位概念下整理；不表示前置、因果或并列知识关系。'
   ];
-  var typeIcons = ['fa-arrow-up','fa-arrow-down','fa-arrows-left-right','fa-clock-rotate','fa-share-nodes','fa-link','fa-diagram-project','fa-flask','fa-arrows-rotate','fa-compass'];
-  var typeColors = ['#6ee7ff','#ffd700','#2ed573','#a55eea','#ff6b6b','#ff7f50','#67e8f9','#fbbf24','#34d399','#94a3b8'];
+  var typeIcons = ['fa-arrow-up','fa-arrow-down','fa-arrows-left-right','fa-clock-rotate','fa-share-nodes','fa-link','fa-diagram-project','fa-flask','fa-arrows-rotate','fa-compass','fa-folder-tree'];
+  var typeColors = ['#6ee7ff','#ffd700','#2ed573','#a55eea','#ff6b6b','#ff7f50','#67e8f9','#fbbf24','#34d399','#94a3b8','#c4b5fd'];
   var seenIds = new Set();
   var relatedByType = {};
   conns.forEach(function(c) {
@@ -3229,6 +3273,7 @@ function showInfoPanel(star) {
     else if (c.type === 7) groupIdx = 7;
     else if (c.type === 8) groupIdx = 8;
     else if (c.type === 9) groupIdx = 9;
+    else if (c.type === 10) groupIdx = 10;
     if (!relatedByType[groupIdx]) relatedByType[groupIdx] = [];
     relatedByType[groupIdx].push(rs);
   });
@@ -3328,9 +3373,10 @@ function showInfoPanel(star) {
     panelRelated.appendChild(navBar);
   }
   var learned = getLearned()[star.id];
-  learnBtn.innerHTML = learned ? '<i class="fas fa-check-circle"></i> \u5df2\u5b66\u4e60' : '<i class="far fa-circle"></i> \u6807\u8bb0\u4e3a\u5df2\u5b66\u4e60';
+  learnBtn.style.display = isMetaNode ? 'none' : '';
+  learnBtn.innerHTML = learned ? '<i class="fas fa-check-circle"></i> 已学习' : '<i class="far fa-circle"></i> 标记为已学习';
   learnBtn.className = 'learn-btn' + (learned ? ' learned' : '');
-  learnBtn.onclick = function() { toggleLearned(star.id); };
+  learnBtn.onclick = isMetaNode ? null : function() { toggleLearned(star.id); };
   panel.classList.add('visible');
 }
 
@@ -3630,7 +3676,7 @@ searchInput.addEventListener('input', () => {
 
     results.sort((a, b) =>
       b.score - a.score ||
-      Number(isSatelliteStar(a.star)) - Number(isSatelliteStar(b.star)) ||
+      Number(isAuxiliaryStar(a.star)) - Number(isAuxiliaryStar(b.star)) ||
       a.star.name.localeCompare(b.star.name, 'zh-CN')
     );
     const top = results.slice(0, 20);
@@ -3771,7 +3817,7 @@ if (importBtn && importFile) {
 
 // ========================== STAR COUNT ==========================
 function updateStarCount() {
-  const coreIds = Array.from(starById.values()).filter(function(star) { return star.nodeType !== 'satellite'; }).map(function(star) { return star.id; });
+  const coreIds = Array.from(starById.values()).filter(function(star) { return star.nodeType !== 'satellite' && star.nodeType !== 'meta'; }).map(function(star) { return star.id; });
   const total = coreIds.length;
   const learned = getLearned();
   const learnedCount = coreIds.filter(function(id) { return !!learned[id]; }).length;
