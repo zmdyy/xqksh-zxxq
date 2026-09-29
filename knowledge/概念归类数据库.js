@@ -1,7 +1,7 @@
 window._META_CONCEPT_DATA = {
-  "version": "1.1",
+  "version": "1.2",
   "update_date": "2026-09-29",
-  "description": "知识星球跨章节 Meta 概念归类层；支持多重归类和层级归类，不进入知识点数据库、AI标注或学习计数。",
+  "description": "知识星球跨章节 Meta 概念归类层；支持多重归类、层级归类和实验/研究方法归类，不进入知识点数据库、AI标注或学习计数。",
   "meta_nodes": [
     {
       "id": "meta_material_properties",
@@ -306,6 +306,139 @@ window._META_CONCEPT_DATA = {
       "members": [],
       "anchor_id": "mech_kinetic_energy",
       "note": "不要把水能理解为只有动能：水库蓄水常先具有重力势能，流动过程中再转化为动能。"
+    },
+    {
+      "id": "meta_equivalent_substitution",
+      "name": "等效替代法（等效思想）",
+      "aliases": [
+        "等效替代法",
+        "等效法",
+        "等效替代思想"
+      ],
+      "description": "用一个更容易观察、测量或处理的对象/效果，替代原对象而保持研究所关心的效果等效。既可用于实验，也可用于物理概念处理。",
+      "members": [
+        "opt_平面镜成像",
+        "mech_force_composition",
+        "elec_series_resistance_rule",
+        "elec_parallel_resistance_rule"
+      ],
+      "note": "最典型实验是平面镜成像中用另一支相同蜡烛替代虚像来比较像的位置和大小；合力、等效电阻属于同一“等效替代思想”，但不是同一种实验操作。",
+      "member_notes": {
+        "opt_平面镜成像": "用未点燃的相同蜡烛在玻璃板后移动，使其与虚像重合，从而替代不可直接承接的虚像，确定像的位置并比较像与物大小。",
+        "mech_force_composition": "用一个合力替代几个力的共同作用效果，体现“作用效果等效”。",
+        "elec_series_resistance_rule": "用一个等效电阻替代串联电阻组，使外电路的电流—电压效果保持等效。",
+        "elec_parallel_resistance_rule": "用一个等效电阻替代并联电阻组，使外电路的电流—电压效果保持等效。"
+      }
+    },
+    {
+      "id": "meta_model_method",
+      "name": "模型法",
+      "aliases": [
+        "物理模型法",
+        "建立模型"
+      ],
+      "description": "抓住研究对象的主要特征，忽略次要因素，用简化的图形、符号或结构模型表示真实对象或过程。",
+      "members": [
+        "mech_force_diagram",
+        "opt_rectilinear_propagation",
+        "elec_magnetic_field_lines",
+        "elec_电路",
+        "micro_atomic_structure"
+      ],
+      "note": "模型不是实物本身。光线、磁感线等是人为建立的理想化表示；电路图和原子结构示意也属于模型化表达。",
+      "member_notes": {
+        "mech_force_diagram": "用带箭头线段表示力的三要素，把真实受力抽象成可分析的图示模型。",
+        "opt_rectilinear_propagation": "用带箭头的直线“光线”表示光的传播路径和方向；光线是模型，不是客观存在的细线。",
+        "elec_magnetic_field_lines": "用假想的磁感线形象描述磁场方向和强弱分布。",
+        "elec_电路": "用规定的电路符号和连线把真实电路抽象为便于分析的电路模型。",
+        "micro_atomic_structure": "用原子核和核外电子的结构示意理解肉眼不可见的微观结构。"
+      }
+    },
+    {
+      "id": "meta_analogy_method",
+      "name": "类比法",
+      "aliases": [
+        "类比",
+        "类比思想"
+      ],
+      "description": "利用两个不同物理对象在某些结构或关系上的相似性，把熟悉对象的理解迁移到较抽象的新对象；类比只说明相似处，不表示两者完全相同。",
+      "members": [
+        "elec_current",
+        "elec_voltage",
+        "elec_电路",
+        "mech_power",
+        "elec_electric_power"
+      ],
+      "note": "电学中常用水流/水压帮助理解电流、电压和闭合通路；电功率可与机械功率类比理解为“做功快慢”。必须同时强调类比边界。",
+      "member_notes": {
+        "elec_current": "可把电荷定向移动类比水在管道中的定向流动，帮助理解“流”的概念，但电荷运动机制与水流并不相同。",
+        "elec_voltage": "可用水压差帮助理解电压对电荷定向移动的推动作用；电压不是水压。",
+        "elec_电路": "闭合水路可帮助理解闭合电路中持续形成电流所需的完整路径，但两者只在结构关系上类比。",
+        "mech_power": "机械功率表示机械做功快慢，可作为理解电功率“电流做功快慢”的已有概念。",
+        "elec_electric_power": "与机械功率类比，都用单位时间内做功多少来表示做功快慢，但对应的物理过程不同。"
+      }
+    },
+    {
+      "id": "meta_repeated_measurement_rule",
+      "name": "多次测量·寻找普遍规律",
+      "aliases": [
+        "多次测量寻找规律",
+        "多次实验寻找普遍规律",
+        "避免偶然性"
+      ],
+      "description": "改变条件或选取多组不同数据重复实验，用多组证据归纳共同规律，目的是避免由一次实验的偶然结果直接下结论。",
+      "members": [
+        "mech_balance_forces",
+        "mech_archimedes",
+        "mech_lever_balance",
+        "opt_reflection_law",
+        "opt_平面镜成像",
+        "opt_lens_imaging",
+        "elec_ohm_law",
+        "elec_series_current_rule",
+        "elec_parallel_current_rule",
+        "elec_series_voltage_rule",
+        "elec_parallel_voltage_rule"
+      ],
+      "note": "这里的“多次”是为了覆盖不同条件并归纳规律，不是把同一条件重复测量后取平均。",
+      "member_notes": {
+        "mech_balance_forces": "改变力的大小、方向或作用位置进行多组实验，归纳二力平衡条件。",
+        "mech_archimedes": "更换物体或液体等获得多组 F浮 与 G排 数据，检验普遍关系。",
+        "mech_lever_balance": "改变动力、阻力和力臂得到多组数据，避免由单组数据偶然满足关系。",
+        "opt_reflection_law": "改变入射角进行多组测量，归纳反射角与入射角等规律。",
+        "opt_平面镜成像": "改变物体到镜面的距离重复成像，归纳像与物的位置、大小关系。",
+        "opt_lens_imaging": "改变物距获得多组成像情况，归纳不同物距范围内的成像规律。",
+        "elec_ohm_law": "在控制相关变量的同时取得多组 U、I 数据，归纳电流与电压、电阻的关系。",
+        "elec_series_current_rule": "在串联电路不同位置、多次测量电流，归纳各处电流关系。",
+        "elec_parallel_current_rule": "在干路和各支路进行多组测量，归纳并联电路电流关系。",
+        "elec_series_voltage_rule": "测量电源和各部分两端电压的多组数据，归纳串联电路电压关系。",
+        "elec_parallel_voltage_rule": "测量各支路两端电压的多组数据，归纳并联电路电压关系。"
+      }
+    },
+    {
+      "id": "meta_repeated_measurement_error",
+      "name": "多次测量·减小误差",
+      "aliases": [
+        "多次测量减小误差",
+        "重复测量取平均",
+        "取平均值减小误差"
+      ],
+      "description": "在研究对象和实验条件基本不变时重复测量同一个量，并对多次结果作合理平均，以减小随机误差。",
+      "members": [
+        "mech_length_measure",
+        "mech_time_measure",
+        "mech_avg_speed",
+        "mech_density_measurement",
+        "elec_伏安法测电阻"
+      ],
+      "note": "与“多次测量寻找普遍规律”不同：这里重复的是同一测量条件，主要目的是减小随机误差。小灯泡电阻随温度变化，不能把不同工作状态下的电阻简单平均。",
+      "member_notes": {
+        "mech_length_measure": "对同一长度在相同条件下重复测量并取平均，可减小随机误差。",
+        "mech_time_measure": "对同一时间过程重复测量并合理平均，可降低人工计时等随机误差。",
+        "mech_avg_speed": "对同一路段、同一运动条件重复测量路程和时间并比较/平均，可降低一次计时带来的随机误差。",
+        "mech_density_measurement": "对同一样品在条件允许时重复测量质量、体积并比较/平均，可减小随机测量误差。",
+        "elec_伏安法测电阻": "测定值电阻时在允许范围内取得多组 U、I，分别求 R 后取平均可减小随机误差；这与研究小灯泡电阻随温度变化不同。"
+      }
     }
   ],
   "hierarchy_edges": [

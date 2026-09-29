@@ -9,6 +9,7 @@ const dbCode = fs.readFileSync(path.join(root, 'data/knowledge/knowledge-db.js')
 const dictCode = fs.readFileSync(path.join(root, 'knowledge/vendor/pinyinjs/pinyin_dict_withtone.js'), 'utf8');
 const pinyinCode = fs.readFileSync(path.join(root, 'knowledge/vendor/pinyinjs/pinyinUtil.js'), 'utf8');
 const metaCode = fs.readFileSync(path.join(root, 'knowledge/概念归类数据库.js'), 'utf8');
+const examCatalog = JSON.parse(fs.readFileSync(path.join(root, 'data/knowledge/exam-annotation-catalog.json'), 'utf8'));
 
 const errors = [];
 function requireText(text, needle, label) {
@@ -63,7 +64,7 @@ if (!pinyinUtil || typeof pinyinUtil.getPinyin !== 'function') errors.push('本�
 
 const metaData = sandbox._META_CONCEPT_DATA;
 const metaNodes = metaData && Array.isArray(metaData.meta_nodes) ? metaData.meta_nodes : [];
-if (metaNodes.length !== 14) errors.push('Meta 概念数量应为14，实际为 ' + metaNodes.length);
+if (metaNodes.length !== 19) errors.push('Meta 概念数量应为19，实际为 ' + metaNodes.length);
 const dbIds = new Set((db && db.data || []).map(n => n.id));
 const seenMeta = new Set();
 for (const meta of metaNodes) {
@@ -75,7 +76,7 @@ for (const meta of metaNodes) {
   }
   if (meta.anchor_id && !dbIds.has(meta.anchor_id) && !metaNodes.some(m => m.id === meta.anchor_id)) errors.push('Meta anchor不存在: ' + meta.name + ' -> ' + meta.anchor_id);
 }
-const expectedMetaNames = ['物质的物理属性','测量工具与仪表','间接测量','比值定义与比值表征','单位时间表征','能量的形式','能量转化装置','守恒思想','控制变量法','物理图示与图像表征','理想实验法（科学推理法）','转换法','风能','水能'];
+const expectedMetaNames = ['物质的物理属性','测量工具与仪表','间接测量','比值定义与比值表征','单位时间表征','能量的形式','能量转化装置','守恒思想','控制变量法','物理图示与图像表征','理想实验法（科学推理法）','转换法','风能','水能','等效替代法（等效思想）','模型法','类比法','多次测量·寻找普遍规律','多次测量·减小误差'];
 for (const name of expectedMetaNames) if (!metaNodes.some(m => m.name === name)) errors.push('缺少 Meta 概念: ' + name);
 
 const allMetaOrDbIds = new Set([...dbIds, ...metaNodes.map(m => m.id)]);
@@ -108,6 +109,63 @@ for (const id of doubleMethodExpected) {
   }
 }
 
+const equivalentMethod = findMeta('等效替代法（等效思想）');
+const modelMethod = findMeta('模型法');
+const analogyMethod = findMeta('类比法');
+const repeatRuleMethod = findMeta('多次测量·寻找普遍规律');
+const repeatErrorMethod = findMeta('多次测量·减小误差');
+const requiredMethodMembers = [
+  [equivalentMethod, 'opt_平面镜成像', '等效替代法缺少平面镜成像'],
+  [modelMethod, 'elec_magnetic_field_lines', '模型法缺少磁感线'],
+  [modelMethod, 'opt_rectilinear_propagation', '模型法缺少光线模型'],
+  [analogyMethod, 'elec_current', '类比法缺少电流'],
+  [analogyMethod, 'elec_voltage', '类比法缺少电压'],
+  [repeatRuleMethod, 'mech_lever_balance', '寻找普遍规律缺少杠杆平衡'],
+  [repeatRuleMethod, 'opt_reflection_law', '寻找普遍规律缺少反射定律'],
+  [repeatRuleMethod, 'elec_ohm_law', '寻找普遍规律缺少欧姆定律'],
+  [repeatErrorMethod, 'mech_length_measure', '减小误差缺少长度测量'],
+  [repeatErrorMethod, 'elec_伏安法测电阻', '减小误差缺少伏安法测定值电阻']
+];
+for (const [method, id, message] of requiredMethodMembers) {
+  if (!method || !(method.members || []).includes(id)) errors.push(message);
+}
+if (!equivalentMethod || !(equivalentMethod.members || []).includes('opt_平面镜成像') || !repeatRuleMethod || !(repeatRuleMethod.members || []).includes('opt_平面镜成像')) {
+  errors.push('平面镜成像应同时体现等效替代法与多次测量寻找规律');
+}
+if (!repeatErrorMethod || !(repeatErrorMethod.members || []).includes('elec_伏安法测电阻')) {
+  errors.push('伏安法测电阻应体现多次测量减小误差');
+}
+
+
+
+const annotationExcluded = new Set(['mech_newton1_core','mech_archimedes_core','mech_balance_forces_core']);
+const expectedExamConcepts = (db && db.data || []).filter(k => {
+  if (annotationExcluded.has(k.id)) return false;
+  return !k.node_type || k.node_type === 'core';
+}).map(k => ({
+  concept_id:k.id,
+  name:k.name,
+  module:k.module || '',
+  chapter:k.chapter || '',
+  description:String(k.core_definition || '').trim(),
+  formula:(k.formula && k.formula !== '无') ? k.formula : '',
+  symbol:k.symbol || ''
+}));
+if (examCatalog.knowledge_db_version !== db.version) errors.push('考试标注词表版本与知识库不一致: ' + examCatalog.knowledge_db_version + ' vs ' + db.version);
+if (examCatalog.concept_count !== expectedExamConcepts.length) errors.push('考试标注词表concept_count不一致');
+const examMap = new Map((examCatalog.concepts || []).map(x => [x.concept_id, x]));
+if (examMap.size !== expectedExamConcepts.length) errors.push('考试标注词表概念数量与运行词表不一致');
+for (const x of expectedExamConcepts) {
+  const y = examMap.get(x.concept_id);
+  if (!y) { errors.push('考试标注词表缺少: ' + x.concept_id); continue; }
+  for (const key of ['name','module','chapter','description','formula','symbol']) {
+    if (String(y[key] ?? '') !== String(x[key] ?? '')) errors.push('考试标注词表字段不同步: ' + x.concept_id + '.' + key);
+  }
+}
+for (const y of (examCatalog.concepts || [])) {
+  if (!expectedExamConcepts.some(x => x.concept_id === y.concept_id)) errors.push('考试标注词表存在多余概念: ' + y.concept_id);
+}
+if ((examCatalog.excluded_node_types || []).indexOf('meta') < 0) errors.push('考试标注词表未明确排除Meta节点');
 
 function pinyinIndex(name) {
   let spaced = String(pinyinUtil.getPinyin(name, ' ', false, false) || '').toLowerCase();
@@ -162,6 +220,8 @@ const summary = {
   emptyPinyinIndexes: emptyPinyin.length,
   pinyinTests,
   metaConcepts: metaNodes.length,
+  examAnnotationConcepts: expectedExamConcepts.length,
+  examCatalogVersion: examCatalog.knowledge_db_version,
   errors
 };
 console.log(JSON.stringify(summary, null, 2));

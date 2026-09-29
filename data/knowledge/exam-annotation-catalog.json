@@ -1,12 +1,13 @@
 {
   "schema": "physics-exam-concept-catalog",
   "schema_version": "1.1",
-  "knowledge_db_version": "2.3",
-  "updated_at": "2026-09-28",
+  "knowledge_db_version": "2.4",
+  "updated_at": "2026-09-29",
   "concept_count": 242,
   "usage_rules": [
     "考试标注只能输出本词表中的 concept_id，不得自行创建新的 concept_id。",
-    "本词表仅包含适合用于考试知识点标注的核心知识节点；解释节点和实验/应用节点保留在知识星球中，但不作为AI主标注候选。",
+    "本词表只包含适合用于考试主知识点标注的核心知识节点；explanatory、application、satellite 以及独立 Meta 概念归类节点均不作为AI主标注候选。",
+    "实验方法等 Meta 信息用于知识整理和教学诊断视角，可在知识星球中展示，但不替代题目的 primary_concept_id。",
     "每个独立评分单元只选择一个 primary_concept_id；辅助涉及的知识点放入 related_concept_ids，不参与重复计分。",
     "一道大题含多个小问、多个空或多个独立评分步骤时，应拆分为多个 part。",
     "无法可靠判断时 primary_concept_id 填 null，并在 candidate_concept_ids 中最多给出3个候选。",
@@ -31,7 +32,9 @@
   ],
   "excluded_node_types": [
     "explanatory",
-    "application"
+    "application",
+    "satellite",
+    "meta"
   ],
   "concepts": [
     {
