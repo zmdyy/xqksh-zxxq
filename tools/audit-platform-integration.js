@@ -10,6 +10,7 @@ const dictCode = fs.readFileSync(path.join(root, 'knowledge/vendor/pinyinjs/piny
 const pinyinCode = fs.readFileSync(path.join(root, 'knowledge/vendor/pinyinjs/pinyinUtil.js'), 'utf8');
 const metaCode = fs.readFileSync(path.join(root, 'knowledge/概念归类数据库.js'), 'utf8');
 const examCatalog = JSON.parse(fs.readFileSync(path.join(root, 'data/knowledge/exam-annotation-catalog.json'), 'utf8'));
+const diagnosticBank = JSON.parse(fs.readFileSync(path.join(root, 'data/knowledge/diagnostic-question-bank.json'), 'utf8'));
 
 const errors = [];
 function requireText(text, needle, label) {
@@ -167,6 +168,42 @@ for (const y of (examCatalog.concepts || [])) {
 }
 if ((examCatalog.excluded_node_types || []).indexOf('meta') < 0) errors.push('考试标注词表未明确排除Meta节点');
 
+if (diagnosticBank.knowledge_db_version !== db.version) errors.push('诊断题库版本与知识库不一致');
+if (diagnosticBank.group_count !== (diagnosticBank.groups || []).length) errors.push('诊断题库group_count不一致');
+const diagnosticConceptIds = new Set();
+const diagnosticQuestionIds = new Set();
+let diagnosticQuestionCount = 0;
+const examConceptIds = new Set((examCatalog.concepts || []).map(x => x.concept_id));
+for (const group of (diagnosticBank.groups || [])) {
+  if (diagnosticConceptIds.has(group.concept_id)) errors.push('诊断题库重复concept_id: ' + group.concept_id);
+  diagnosticConceptIds.add(group.concept_id);
+  if (!examConceptIds.has(group.concept_id)) errors.push('诊断题知识点不在考试标注词表: ' + group.concept_id);
+  if ((group.questions || []).length < 2 || (group.questions || []).length > 4) errors.push('诊断题数不在2—4范围: ' + group.concept_id);
+  const miscCodes = new Set((group.misconceptions || []).map(m => m.code));
+  for (const q of (group.questions || [])) {
+    diagnosticQuestionCount++;
+    if (diagnosticQuestionIds.has(q.id)) errors.push('诊断题ID重复: ' + q.id);
+    diagnosticQuestionIds.add(q.id);
+    if ((q.options || []).length !== 4) errors.push('诊断题选项数不是4: ' + q.id);
+    const optionIds = new Set((q.options || []).map(o => o.id));
+    if (!optionIds.has(q.correct_option)) errors.push('诊断题正确答案无效: ' + q.id);
+    for (const option of (q.options || [])) {
+      if (option.id !== q.correct_option && (!option.misconception || !miscCodes.has(option.misconception))) {
+        errors.push('诊断题干扰项未映射有效迷思: ' + q.id + '/' + option.id);
+      }
+    }
+  }
+}
+if (diagnosticQuestionCount !== diagnosticBank.question_count) errors.push('诊断题库question_count不一致');
+if ((diagnosticBank.groups || []).length !== 24) errors.push('第一批诊断知识点应为24组，实际为 ' + (diagnosticBank.groups || []).length);
+const arch = (diagnosticBank.groups || []).find(g => g.concept_id === 'mech_archimedes');
+if (!arch || JSON.stringify(arch).indexOf('液体密度') < 0 || JSON.stringify(arch).indexOf('V排') < 0) errors.push('阿基米德原理诊断未覆盖液体密度/V排边界');
+const internalEnergy = (diagnosticBank.groups || []).find(g => g.concept_id === 'therm_internal_energy');
+if (!internalEnergy || JSON.stringify(internalEnergy).indexOf('熔化') < 0 || JSON.stringify(internalEnergy).indexOf('凝固') < 0 || JSON.stringify(internalEnergy).indexOf('沸腾') < 0) {
+  errors.push('内能诊断未覆盖熔化/凝固/沸腾温度不变情境');
+}
+
+
 function pinyinIndex(name) {
   let spaced = String(pinyinUtil.getPinyin(name, ' ', false, false) || '').toLowerCase();
   if (name.includes('率')) spaced = spaced.replace(/\bshuai\b/g, 'lv');
@@ -222,6 +259,8 @@ const summary = {
   metaConcepts: metaNodes.length,
   examAnnotationConcepts: expectedExamConcepts.length,
   examCatalogVersion: examCatalog.knowledge_db_version,
+  diagnosticGroups: diagnosticBank.group_count,
+  diagnosticQuestions: diagnosticBank.question_count,
   errors
 };
 console.log(JSON.stringify(summary, null, 2));
