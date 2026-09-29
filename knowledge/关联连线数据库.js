@@ -2455,14 +2455,6 @@ window._CONN_DATA = {
       "strength": 3
     },
     {
-      "from": "mech_density",
-      "to": "therm_specific_heat",
-      "type": "cross_module",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
       "from": "mech_archimedes",
       "to": "therm_水的比热容",
       "type": "cross_module",
