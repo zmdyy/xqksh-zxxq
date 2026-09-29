@@ -850,6 +850,8 @@
     }
     .qk-toolbar .qk-ai-primary { background:#0f766e; border-color:#0f766e; color:#fff; font-weight:700; }
     .qk-toolbar .qk-ai-primary:hover { background:#115e59; border-color:#115e59; color:#fff; }
+    .qk-toolbar .qk-ai-knowledge { background:#6d28d9; border-color:#6d28d9; color:#fff; font-weight:700; }
+    .qk-toolbar .qk-ai-knowledge:hover { background:#5b21b6; border-color:#5b21b6; color:#fff; }
     .qk-status { font-size:12px; color:#475569; padding:3px 7px; background:#fff; border:1px solid #e2e8f0; border-radius:999px; }
     .qk-main-badge { display:inline-block; max-width:170px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:3px 7px; border-radius:999px; font-size:12px; background:#e8f1ff; color:#1e3a5f; border:1px solid #cbdcf5; vertical-align:middle; }
     .qk-main-badge.empty { background:#f8fafc; color:#94a3b8; border-color:#e2e8f0; }
@@ -1275,6 +1277,7 @@
             <span id="qkAiImportStatus" class="qk-status qk-import-status">AI标注：未导入</span>
             <button type="button" class="qk-ai-btn qk-ai-download" id="qkDownloadAiPackBtn">↓ 下载AI知识点标注包</button>
             <button type="button" class="qk-ai-btn qk-ai-primary" id="qkPasteAiMappingBtn">↑ 粘贴AI结果</button>
+            <button type="button" class="qk-ai-btn qk-ai-knowledge" id="qkKnowledgePlanetBtn">✦ 知识星球</button>
         </div>
         <div style="font-size:15px;font-weight:bold;color:#2980b9;margin-bottom:4px;" id="allStatsTitle"></div>
         <div class="scroll-container" style="max-height:320px;">
@@ -6484,8 +6487,10 @@ function qkInit() {
 
     var downloadPack=document.getElementById('qkDownloadAiPackBtn');
     var pasteBtn=document.getElementById('qkPasteAiMappingBtn');
+    var knowledgeBtn=document.getElementById('qkKnowledgePlanetBtn');
     if(downloadPack) downloadPack.onclick=qkDownloadAiAnnotationPack;
     if(pasteBtn) pasteBtn.onclick=qkOpenPasteAiMapping;
+    if(knowledgeBtn) knowledgeBtn.onclick=function(){ window.open('knowledge/index.html','_blank','noopener'); };
 
     var pasteCancel=document.getElementById('qkPasteCancelBtn');
     var pasteImport=document.getElementById('qkPasteImportBtn');

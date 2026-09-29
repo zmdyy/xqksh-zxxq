@@ -670,7 +670,7 @@ canvas{display:block}
     <span class="divider"></span>
     <div class="search-box" id="searchTrigger">
       <i class="fas fa-search"></i>
-      <input type="text" placeholder="搜索知识点..." readonly>
+      <input type="text" placeholder="中文 / 拼音 / 首字母搜索..." readonly>
     </div>
     <button class="help-btn" id="helpBtn" title="帮助 (H)"><i class="fas fa-question-circle"></i></button>
   </div>
@@ -697,7 +697,7 @@ canvas{display:block}
       </div>
       <div class="shortcut-item">
         <span class="key">Ctrl+K</span>
-        <span class="action">按现象/易混说法搜索</span>
+        <span class="action">中文 / 拼音 / 首字母搜索</span>
       </div>
       <div class="shortcut-item">
         <span class="key">Esc</span>
@@ -769,11 +769,13 @@ canvas{display:block}
 
 <div id="search-overlay">
   <div class="panel">
-    <input type="text" id="searchInput" placeholder="搜索知识点、生活现象或易混说法..." autofocus>
+    <input type="text" id="searchInput" placeholder="搜索知识点：中文、拼音或首字母均可..." autofocus>
     <div id="searchResults"></div>
   </div>
 </div>
 
+<script src="vendor/pinyinjs/pinyin_dict_withtone.js"></script>
+<script src="vendor/pinyinjs/pinyinUtil.js"></script>
 <script src="../data/knowledge/knowledge-db.js"></script>
 <script src="力学思维拓展数据库.js"></script>
 <script src="电磁学思维拓展数据库.js"></script>
@@ -3455,31 +3457,123 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+// 拼音索引完全在浏览器本地生成，不调用在线接口。
+// 物理知识点中的“率”均读 lv，“弹”用于弹力/弹性语境时读 tan，
+// 对这两个常见多音字做领域纠正，避免“功率/效率/弹力”等搜索漏检。
+const pinyinSearchCache = new Map();
+
+function normalizeRomanSearch(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/ü/g, 'v')
+    .replace(/[^a-z0-9]/g, '');
+}
+
+function getPinyinSearchIndex(star) {
+  if (!star || !star.id) return { spaced:'', full:'', initials:'' };
+  if (pinyinSearchCache.has(star.id)) return pinyinSearchCache.get(star.id);
+
+  const name = String(star.name || '');
+  let spaced = '';
+  let full = '';
+  let initials = '';
+
+  if (window.pinyinUtil && typeof window.pinyinUtil.getPinyin === 'function') {
+    try {
+      spaced = String(window.pinyinUtil.getPinyin(name, ' ', false, false) || '').toLowerCase();
+      if (name.indexOf('率') >= 0) spaced = spaced.replace(/\bshuai\b/g, 'lv');
+      if (name.indexOf('弹') >= 0) spaced = spaced.replace(/\bdan\b/g, 'tan');
+
+      full = normalizeRomanSearch(spaced);
+      initials = spaced
+        .split(/\s+/)
+        .map(function(part) {
+          const m = String(part || '').match(/[a-z]/i);
+          return m ? m[0].toLowerCase() : '';
+        })
+        .join('');
+    } catch (err) {
+      console.warn('[knowledge-search] 本地拼音索引生成失败:', name, err);
+    }
+  }
+
+  const index = { spaced, full, initials };
+  pinyinSearchCache.set(star.id, index);
+  return index;
+}
+
+function getPinyinMatch(star, romanQuery) {
+  if (!romanQuery) return { score:0, hint:'' };
+  const index = getPinyinSearchIndex(star);
+  if (!index.full && !index.initials) return { score:0, hint:'' };
+
+  if (index.full === romanQuery) {
+    return { score:32, hint:'拼音：' + index.spaced };
+  }
+  if (index.initials === romanQuery) {
+    return { score:30, hint:'首字母：' + index.initials.toUpperCase() };
+  }
+  if (index.full.startsWith(romanQuery)) {
+    return { score:24, hint:'拼音：' + index.spaced };
+  }
+  if (index.initials.startsWith(romanQuery)) {
+    return { score:22, hint:'首字母：' + index.initials.toUpperCase() };
+  }
+  if (index.full.indexOf(romanQuery) >= 0) {
+    return { score:15, hint:'拼音：' + index.spaced };
+  }
+  if (index.initials.indexOf(romanQuery) >= 0) {
+    return { score:13, hint:'首字母：' + index.initials.toUpperCase() };
+  }
+  return { score:0, hint:'' };
+}
+
 // Debounced search for better performance
 let searchTimeout = null;
 searchInput.addEventListener('input', () => {
   if (searchTimeout) clearTimeout(searchTimeout);
-  
+
   searchTimeout = setTimeout(() => {
     const qRaw = searchInput.value.trim();
     const q = qRaw.toLowerCase();
-    if (!qRaw) { searchResults.innerHTML = '<div class="empty">输入关键词、现象或易混说法搜索</div>'; return; }
+    if (!qRaw) {
+      searchResults.innerHTML = '<div class="empty">输入中文、拼音或首字母搜索知识点</div>';
+      return;
+    }
+
     function hit(text) {
       if (!text) return false;
       const s = String(text);
       return s.indexOf(qRaw) >= 0 || s.toLowerCase().indexOf(q) >= 0;
     }
 
+    const romanQuery = /[a-z]/i.test(qRaw) && !/[\u4e00-\u9fff]/.test(qRaw)
+      ? normalizeRomanSearch(qRaw)
+      : '';
+
     const results = [];
     starById.forEach((star, id) => {
       let score = 0;
       let hint = star.module + ' · ' + star.chapter;
-      if (hit(star.name)) { score += 10; }
+
+      if (star.name === qRaw) score += 40;
+      else if (hit(star.name)) score += 10;
       if (hit(star.chapter)) score += 5;
       if (hit(star.definition)) score += 3;
       if (hit(star.historyScientist)) score += 2;
-      (star.applications || []).forEach(function(app) { if (hit(app)) { score += 6; hint = '应用：' + app; } });
-      (star.mistakes || []).forEach(function(m) { if (hit(m)) { score += 8; hint = '错因：' + m; } });
+
+      const pinyinMatch = getPinyinMatch(star, romanQuery);
+      if (pinyinMatch.score) {
+        score += pinyinMatch.score;
+        hint = pinyinMatch.hint;
+      }
+
+      (star.applications || []).forEach(function(app) {
+        if (hit(app)) { score += 6; hint = '应用：' + app; }
+      });
+      (star.mistakes || []).forEach(function(m) {
+        if (hit(m)) { score += 8; hint = '错因：' + m; }
+      });
       (lifeByNodeId.get(id) || []).forEach(function(scene) {
         if (hit(scene.name) || hit(scene.description) || hit(scene.principle)) {
           score += 8;
@@ -3493,18 +3587,23 @@ searchInput.addEventListener('input', () => {
         }
       });
       if (star.thinking) {
-        (star.thinking.confusions || []).forEach(function(c) { if (hit(c)) { score += 5; hint = '辨析：' + c; } });
-        (star.thinking.transfer || []).forEach(function(c) { if (hit(c)) { score += 4; hint = '迁移：' + c; } });
+        (star.thinking.confusions || []).forEach(function(c) {
+          if (hit(c)) { score += 5; hint = '辨析：' + c; }
+        });
+        (star.thinking.transfer || []).forEach(function(c) {
+          if (hit(c)) { score += 4; hint = '迁移：' + c; }
+        });
       }
+
       const words = qRaw.split(/\s+/);
       words.forEach(word => {
         if (word.length > 1 && star.name.indexOf(word) >= 0) score += 4;
       });
+
       if (score > 0) results.push({ star, score, hint });
     });
-    
-    // Sort by relevance score
-    results.sort((a, b) => b.score - a.score);
+
+    results.sort((a, b) => b.score - a.score || a.star.name.localeCompare(b.star.name, 'zh-CN'));
     const top = results.slice(0, 20);
 
     if (top.length === 0) {
@@ -3526,12 +3625,12 @@ searchInput.addEventListener('input', () => {
       div.addEventListener('click', () => {
         searchOverlay.classList.remove('open');
         searchInput.value = '';
-        searchResults.innerHTML = '<div class="empty">输入关键词搜索知识点</div>';
+        searchResults.innerHTML = '<div class="empty">输入中文、拼音或首字母搜索知识点</div>';
         flyToStar(star);
       });
       searchResults.appendChild(div);
     });
-  }, 200); // 200ms debounce
+  }, 160);
 });
 
 // ========================== FLY TO ==========================
