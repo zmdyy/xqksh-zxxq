@@ -26,9 +26,7 @@ for (const e of edges) {
 }
 const duplicatePairs = [...pairMap.values()].filter(v => v.length > 1);
 
-const unknownInternal = edges.filter(e =>
-  e.type !== 'cross_disciplinary' && (!ids.has(e.from) || !ids.has(e.to))
-);
+const unknownEdges = edges.filter(e => !ids.has(e.from) || !ids.has(e.to));
 
 const touched = new Set();
 for (const e of edges) {
@@ -59,7 +57,7 @@ const summary = {
   runtimeEdges: edges.length,
   relationTypes: typeCounts,
   duplicatePairs: duplicatePairs.length,
-  unknownInternalEdges: unknownInternal.length,
+  unknownEdges: unknownEdges.length,
   isolatedNodes: isolated.length,
   metadataPrerequisitesMissingInEdges: metaMissingInEdges.length,
   edgePrerequisitesMissingInMetadata: edgeMissingInMeta.length
@@ -69,13 +67,13 @@ console.log(JSON.stringify(summary, null, 2));
 
 if (
   duplicatePairs.length ||
-  unknownInternal.length ||
+  unknownEdges.length ||
   isolated.length ||
   metaMissingInEdges.length ||
   edgeMissingInMeta.length
 ) {
   if (duplicatePairs.length) console.error('重复关系:', duplicatePairs);
-  if (unknownInternal.length) console.error('悬空内部关系:', unknownInternal);
+  if (unknownEdges.length) console.error('悬空关系:', unknownEdges);
   if (isolated.length) console.error('孤立节点:', isolated.map(n => n.id));
   if (metaMissingInEdges.length) console.error('元数据有、运行图无:', metaMissingInEdges);
   if (edgeMissingInMeta.length) console.error('运行图有、元数据无:', edgeMissingInMeta);

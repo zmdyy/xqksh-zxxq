@@ -3860,7 +3860,7 @@ window._RELATION_PATCH_DATA = (function() {
     });
 
     // 一个概念对只保留一条主关系，避免同一对节点叠出两条线。
-    const priority = { prerequisite: 90, causal: 80, transformation: 70, support: 60, application: 50, cross_module: 40, cross_disciplinary: 30, parallel: 20, historical: 10 };
+    const priority = { prerequisite: 90, causal: 80, transformation: 70, support: 60, application: 50, cross_module: 40, cross_disciplinary: 30, parallel: 20, extension: 15, historical: 10 };
     const deduped = new Map();
     result.forEach(conn => {
       const key = [conn.from, conn.to].sort().join('||');

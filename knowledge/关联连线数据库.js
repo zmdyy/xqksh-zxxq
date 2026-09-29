@@ -1,24 +1,19 @@
 window._CONN_DATA = {
-  "version": "2.1",
-  "update_date": "2026-09-13",
-  "total_count": 436,
+  "version": "2.4",
+  "update_date": "2026-09-29",
+  "total_count": 420,
   "connection_types": {
     "prerequisite": "前置关联",
     "causal": "因果推导",
     "parallel": "平行关联",
     "historical": "历史启发",
     "cross_module": "跨模块关联",
-    "cross_disciplinary": "跨学科关联"
+    "cross_disciplinary": "跨学科关联",
+    "support": "支撑关联",
+    "application": "应用关联",
+    "extension": "二级拓展"
   },
   "data": [
-    {
-      "from": "energy_sustainable_可持续发展",
-      "to": "工程_绿色建筑",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
     {
       "from": "mech_motion_reference",
       "to": "mech_motion_speed",
@@ -1476,174 +1471,6 @@ window._CONN_DATA = {
       "strength": 3
     },
     {
-      "from": "mech_density",
-      "to": "数学_比例",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "mech_liquid_pressure",
-      "to": "地理_深海",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "mech_archimedes",
-      "to": "生物_浮游",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "mech_friction",
-      "to": "地理_板块",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "therm_自然界水循环",
-      "to": "地理_水循环",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "therm_扩散现象",
-      "to": "化学_扩散",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "therm_specific_heat",
-      "to": "地理_沿海气候",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "opt_rectilinear_propagation",
-      "to": "数学_直线",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "opt_日食与月食",
-      "to": "地理_天体",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "opt_眼镜与视力矫正",
-      "to": "生物_眼睛",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "opt_红外线与紫外线",
-      "to": "生物_杀菌",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "elec_charge",
-      "to": "化学_电子",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "elec_电流的磁效应",
-      "to": "化学_电解",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "elec_家庭电路",
-      "to": "工程_电路",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "elec_electric_motor",
-      "to": "工程_电机",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "energy_solar_energy",
-      "to": "生物_光合作用",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "energy_nuclear_energy",
-      "to": "化学_核反应",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "energy_energy_environment",
-      "to": "地理_温室效应",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "mech_lever",
-      "to": "数学_杠杆原理",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "mech_pressure",
-      "to": "工程_液压",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "mech_fluid_pressure",
-      "to": "生物_鸟类飞行",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
       "from": "mech_motion_reference",
       "to": "mech_avg_speed",
       "type": "parallel",
@@ -2796,478 +2623,6 @@ window._CONN_DATA = {
       "strength": 3
     },
     {
-      "from": "mech_length_measure",
-      "to": "数学_测量误差",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "mech_density",
-      "to": "数学_比值定义",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "mech_force_gravity",
-      "to": "地理_重力分布",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "mech_friction",
-      "to": "工程_轴承润滑",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "mech_balance_forces",
-      "to": "工程_桥梁设计",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "mech_pressure",
-      "to": "工程_履带坦克",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "mech_liquid_pressure",
-      "to": "工程_水坝设计",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "mech_fluid_pressure",
-      "to": "工程_飞机机翼",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "mech_archimedes",
-      "to": "工程_船舶设计",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "mech_lever_balance",
-      "to": "生物_人体杠杆",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "mech_power",
-      "to": "工程_汽车功率",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "mech_efficiency",
-      "to": "工程_机械优化",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "therm_thermometer",
-      "to": "工程_温度传感器",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "therm_melting_freezing",
-      "to": "化学_金属熔化",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "therm_蒸发与沸腾",
-      "to": "地理_全球变暖",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "therm_扩散现象",
-      "to": "化学_溶液扩散",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "therm_internal_energy",
-      "to": "化学_反应热",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "therm_改变内能的方式",
-      "to": "工程_发动机冷却",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "therm_specific_heat",
-      "to": "地理_海陆风",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "therm_水的比热容",
-      "to": "工程_散热设计",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "therm_heat_engine",
-      "to": "工程_汽车发动机",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "therm_蒸发致冷",
-      "to": "生物_出汗降温",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "therm_自然界水循环",
-      "to": "地理_云雨形成",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "therm_热膨胀",
-      "to": "工程_桥梁伸缩",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "opt_影子的形成",
-      "to": "数学_相似三角形",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "opt_小孔成像",
-      "to": "数学_小孔成像原理",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "opt_reflection_law",
-      "to": "数学_反射对称",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "opt_平面镜成像",
-      "to": "数学_轴对称",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "opt_平面镜应用",
-      "to": "工程_潜望镜设计",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "opt_折射现象",
-      "to": "生物_鱼眼视觉",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "opt_凸透镜对光的作用",
-      "to": "工程_聚光太阳能",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "opt_lens_imaging",
-      "to": "生物_眼睛成像",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "opt_u_2f成像",
-      "to": "工程_相机设计",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "opt_照相机",
-      "to": "工程_手机镜头",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "opt_眼镜与视力矫正",
-      "to": "生物_近视矫正",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "opt_色光混合",
-      "to": "艺术_色彩理论",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "elec_摩擦起电",
-      "to": "化学_静电现象",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "elec_导体与绝缘体",
-      "to": "工程_电缆设计",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "elec_电路",
-      "to": "工程_电路设计",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "elec_series_circuit",
-      "to": "工程_圣诞灯串",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "elec_parallel_circuit",
-      "to": "工程_家庭布线",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "elec_resistance",
-      "to": "工程_电阻器",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "elec_滑动变阻器",
-      "to": "工程_音量旋钮",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "elec_ohm_law",
-      "to": "工程_自动控制",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "elec_electric_power",
-      "to": "工程_电器铭牌",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "elec_joule_law",
-      "to": "工程_电饭煲",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "elec_家庭电路",
-      "to": "工程_配电箱",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "elec_安全用电",
-      "to": "工程_接地保护",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "elec_磁现象",
-      "to": "地理_地磁导航",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "elec_电磁铁",
-      "to": "工程_电磁起重机",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "elec_electric_motor",
-      "to": "工程_电动车",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "elec_generator",
-      "to": "工程_风力发电",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "elec_电磁波",
-      "to": "工程_无线通信",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "energy_energy_conservation",
-      "to": "化学_质量守恒",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "energy_energy_classification",
-      "to": "地理_化石燃料",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "energy_solar_energy",
-      "to": "工程_光伏发电",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "energy_nuclear_energy",
-      "to": "工程_核电站",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "energy_nuclear_fusion_fission",
-      "to": "化学_原子结构",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
-      "from": "energy_renewable_nonrenewable",
-      "to": "地理_能源分布",
-      "type": "cross_disciplinary",
-      "color": "",
-      "width": 2,
-      "strength": 3
-    },
-    {
       "from": "mech_density",
       "to": "math_unit_conversion",
       "type": "cross_disciplinary",
@@ -3498,6 +2853,591 @@ window._CONN_DATA = {
       "color": "",
       "width": 2,
       "strength": 3
+    },
+    {
+      "from": "energy_sustainable_可持续发展",
+      "to": "sat_application_应用_绿色建筑",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“可持续发展”在“绿色建筑”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "mech_density",
+      "to": "sat_cross_数学_比值关系",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "密度是质量与体积的比值，理解比值关系有助于正确解释密度大小，而不是只比较质量或体积。"
+    },
+    {
+      "from": "mech_liquid_pressure",
+      "to": "sat_cross_地理_海洋深度与压强",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "在同种海水中，深度增大时液体压强增大，可用于理解海洋不同深度的压力环境。"
+    },
+    {
+      "from": "mech_archimedes",
+      "to": "sat_cross_生物_水生生物浮沉与鱼鳔调节",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "水生生物可通过改变排开液体体积或整体平均密度调节浮沉，鱼鳔是典型例子。"
+    },
+    {
+      "from": "therm_自然界水循环",
+      "to": "sat_cross_地理_水循环",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "蒸发、液化和降水等物态变化共同构成自然界水循环，是物理与地理之间直接的知识迁移。"
+    },
+    {
+      "from": "therm_扩散现象",
+      "to": "sat_cross_化学_微粒运动与扩散",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "扩散可作为物质由微粒构成且微粒不停运动的宏观证据，并与化学中的微粒观相互支撑。"
+    },
+    {
+      "from": "therm_specific_heat",
+      "to": "sat_cross_地理_沿海气候",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "水的比热容较大，使海洋升温和降温相对缓慢，是理解沿海地区温度变化较缓的重要物理基础。"
+    },
+    {
+      "from": "opt_日食与月食",
+      "to": "sat_cross_地理_日_地_月位置关系",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "日食和月食取决于太阳、地球、月球的相对位置以及光的直线传播。"
+    },
+    {
+      "from": "opt_眼镜与视力矫正",
+      "to": "sat_cross_生物_眼睛",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "眼睛的晶状体和角膜共同完成屈光成像，眼镜通过改变入眼光线帮助像落在视网膜附近。"
+    },
+    {
+      "from": "opt_红外线与紫外线",
+      "to": "sat_application_应用_紫外线杀菌消毒",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "一定剂量的紫外线可破坏微生物的遗传物质，因此被用于部分消毒场景；使用时需注意防护。"
+    },
+    {
+      "from": "energy_solar_energy",
+      "to": "sat_cross_生物_光合作用",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "绿色植物通过光合作用把太阳辐射能转化并储存在化学能中，是太阳能进入生态系统的重要途径。"
+    },
+    {
+      "from": "energy_energy_environment",
+      "to": "sat_cross_地理_温室效应",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "化石能源利用会排放温室气体，能源选择与温室效应、气候环境之间存在明确联系。"
+    },
+    {
+      "from": "mech_pascal_principle",
+      "to": "sat_application_应用_液压系统",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "密闭液体中的压强能够向各个方向传递，液压千斤顶等装置利用帕斯卡原理实现力的传递与放大。"
+    },
+    {
+      "from": "mech_fluid_pressure",
+      "to": "sat_extension_生物_鸟类飞行",
+      "type": "extension",
+      "color": "",
+      "width": 2,
+      "strength": 1,
+      "note": "鸟类飞行涉及翼型、攻角、环量和非定常气流等多种因素；流速与压强关系只能作为其中一个拓展视角，不能简化为“上方空气快、压强小，所以产生全部升力”。"
+    },
+    {
+      "from": "mech_force_gravity",
+      "to": "sat_extension_地理_重力分布",
+      "type": "extension",
+      "color": "",
+      "width": 2,
+      "strength": 1,
+      "note": "地球表面不同纬度和海拔处的重力加速度会有小幅差异，可作为重力概念与地球形状、自转之间的拓展联系。"
+    },
+    {
+      "from": "mech_friction",
+      "to": "sat_application_应用_轴承润滑",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“摩擦力”在“轴承润滑”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "mech_force_analysis",
+      "to": "sat_application_应用_桥梁受力分析",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "桥梁结构设计需要先识别各构件受到的力，再分析力的平衡与传递。"
+    },
+    {
+      "from": "mech_pressure",
+      "to": "sat_application_应用_履带坦克",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“压强”在“履带坦克”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "mech_liquid_pressure",
+      "to": "sat_application_应用_水坝设计",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“液体压强”在“水坝设计”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "mech_fluid_pressure",
+      "to": "sat_application_应用_飞机机翼",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“流体压强与流速”在“飞机机翼”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "mech_archimedes",
+      "to": "sat_application_应用_船舶设计",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“阿基米德原理”在“船舶设计”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "mech_lever_balance",
+      "to": "sat_cross_生物_人体杠杆",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "骨骼、关节和肌肉在初中层面可简化为杠杆模型，用力臂和平衡条件解释部分人体动作。"
+    },
+    {
+      "from": "mech_power",
+      "to": "sat_application_应用_汽车功率",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“功率”在“汽车功率”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "mech_efficiency",
+      "to": "sat_application_应用_提高机械效率与机械节能",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "减少额外功和能量损失可以提高机械效率，是机械节能设计的重要思路。"
+    },
+    {
+      "from": "therm_thermometer",
+      "to": "sat_application_应用_温度传感器",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“温度计”在“温度传感器”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "therm_melting_freezing",
+      "to": "sat_application_应用_金属熔炼与铸造",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "金属熔炼与铸造利用熔化、凝固过程实现材料成形，是物态变化的典型工程应用。"
+    },
+    {
+      "from": "therm_扩散现象",
+      "to": "sat_application_应用_溶液扩散",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“扩散现象”在“溶液扩散”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "therm_改变内能的方式",
+      "to": "sat_application_应用_发动机冷却",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“改变内能的方式”在“发动机冷却”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "therm_specific_heat",
+      "to": "sat_cross_地理_海陆风",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "海洋和陆地受热、冷却速度不同会形成温差并驱动局地空气流动，可用于解释海陆风的基本形成条件。"
+    },
+    {
+      "from": "therm_水的比热容",
+      "to": "sat_application_应用_散热设计",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“水的比热容”在“散热设计”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "therm_heat_engine",
+      "to": "sat_application_应用_汽车发动机",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“热机”在“汽车发动机”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "therm_蒸发致冷",
+      "to": "sat_cross_生物_出汗降温",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "汗液蒸发需要吸热，能够带走皮肤表面的热量，是人体散热的重要方式之一。"
+    },
+    {
+      "from": "therm_自然界水循环",
+      "to": "sat_cross_地理_云雨形成",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "地表水蒸发形成水汽，水汽冷却后凝结形成云滴并在一定条件下形成降水。"
+    },
+    {
+      "from": "therm_热膨胀",
+      "to": "sat_application_应用_桥梁伸缩",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“热膨胀”在“桥梁伸缩”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "opt_影子的形成",
+      "to": "sat_cross_数学_相似三角形",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "点光源或近似点光源条件下，影子的几何大小可借助光的直线传播和相似三角形关系分析。"
+    },
+    {
+      "from": "opt_小孔成像",
+      "to": "sat_cross_数学_相似三角形",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "小孔成像中的物高、像高和物距、像距可形成相似三角形关系，用几何比例解释像的大小变化。"
+    },
+    {
+      "from": "opt_平面镜成像",
+      "to": "sat_cross_数学_轴对称",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "平面镜成像中像与物关于镜面对称，可用轴对称思想描述位置和大小关系。"
+    },
+    {
+      "from": "opt_平面镜应用",
+      "to": "sat_application_应用_潜望镜设计",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“平面镜应用”在“潜望镜设计”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "opt_凸透镜对光的作用",
+      "to": "sat_application_应用_凸透镜聚光与放大镜聚光",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "凸透镜对平行光具有会聚作用，放大镜在合适条件下可把太阳光会聚到较小区域。"
+    },
+    {
+      "from": "opt_lens_imaging",
+      "to": "sat_cross_生物_眼睛成像",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "眼睛的屈光系统可近似看作会聚透镜系统，在视网膜上形成倒立、缩小的实像。"
+    },
+    {
+      "from": "opt_u_2f成像",
+      "to": "sat_application_应用_相机设计",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“u>2f成像”在“相机设计”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "opt_照相机",
+      "to": "sat_application_应用_手机镜头",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“照相机”在“手机镜头”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "opt_眼镜与视力矫正",
+      "to": "sat_cross_生物_近视_远视的形成与矫正",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "近视和远视与眼球成像位置有关，可分别利用凹透镜或凸透镜改变入眼光线的会聚情况进行矫正。"
+    },
+    {
+      "from": "opt_色光混合",
+      "to": "sat_cross_艺术_色光混合与颜料混色对比",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "色光混合属于加色混合，颜料混色主要表现为减色混合，两者规律不同，不能直接等同。"
+    },
+    {
+      "from": "elec_导体与绝缘体",
+      "to": "sat_application_应用_电缆设计",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“导体与绝缘体”在“电缆设计”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "elec_电路",
+      "to": "sat_application_应用_电路设计",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“电路”在“电路设计”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "elec_parallel_circuit",
+      "to": "sat_application_应用_家庭布线",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“并联电路”在“家庭布线”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "elec_resistance",
+      "to": "sat_application_应用_电阻器",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“电阻”在“电阻器”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "elec_滑动变阻器",
+      "to": "sat_application_应用_电位器与可调电阻",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "电位器属于可调电阻器件，可通过改变有效电阻实现电压或信号幅度调节；不应把所有音量旋钮都称为滑动变阻器。"
+    },
+    {
+      "from": "elec_electric_power",
+      "to": "sat_application_应用_电器铭牌",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“电功率”在“电器铭牌”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "elec_joule_law",
+      "to": "sat_application_应用_电饭煲",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“焦耳定律”在“电饭煲”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "elec_家庭电路",
+      "to": "sat_application_应用_配电箱",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“家庭电路”在“配电箱”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "elec_安全用电",
+      "to": "sat_application_应用_接地保护",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“安全用电”在“接地保护”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "elec_地磁场",
+      "to": "sat_cross_地理_地磁导航",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "地球具有地磁场，指南针等装置可依据地磁场方向辅助辨别方向。"
+    },
+    {
+      "from": "elec_电磁铁",
+      "to": "sat_application_应用_电磁起重机",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“电磁铁”在“电磁起重机”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "elec_electric_motor",
+      "to": "sat_application_应用_电动车",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“电动机”在“电动车”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "elec_generator",
+      "to": "sat_application_应用_风力发电",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“发电机”在“风力发电”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "elec_电磁波",
+      "to": "sat_application_应用_无线通信",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“电磁波”在“无线通信”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "energy_energy_conservation",
+      "to": "sat_extension_化学_质量守恒",
+      "type": "extension",
+      "color": "",
+      "width": 2,
+      "strength": 1,
+      "note": "能量守恒和质量守恒是不同层面的守恒规律，只适合用于比较“守恒思想”，不能把一个规律说成由另一个规律推出。"
+    },
+    {
+      "from": "energy_energy_classification",
+      "to": "sat_cross_地理_化石燃料",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "煤、石油和天然气的形成与分布具有明显地域性，是能源分类与地理资源分布的交叉点。"
+    },
+    {
+      "from": "energy_solar_energy",
+      "to": "sat_application_应用_光伏发电",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“太阳能”在“光伏发电”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "energy_nuclear_energy",
+      "to": "sat_application_应用_核电站",
+      "type": "application",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "“核能”在“核电站”中的典型应用，用于把物理规律迁移到真实装置、工程或生活情境。"
+    },
+    {
+      "from": "energy_renewable_nonrenewable",
+      "to": "sat_cross_地理_能源分布",
+      "type": "cross_disciplinary",
+      "color": "",
+      "width": 2,
+      "strength": 3,
+      "note": "不同地区的太阳能、风能、水能和化石能源禀赋不同，能源可再生性与资源空间分布需要结合理解。"
+    },
+    {
+      "from": "micro_electron",
+      "to": "elec_charge",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "电子是带负电的基本粒子，电荷概念直接连接现有“电子”节点，不再使用伪“化学·电子”外部引用。"
+    },
+    {
+      "from": "micro_nucleus",
+      "to": "energy_nuclear_fusion_fission",
+      "type": "support",
+      "color": "",
+      "width": 2,
+      "strength": 4,
+      "note": "核裂变和核聚变发生在原子核层面，直接连接现有“原子核”节点比“化学·原子结构”伪外部引用更准确。"
     }
   ]
 };

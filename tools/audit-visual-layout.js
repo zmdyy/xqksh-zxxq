@@ -17,8 +17,11 @@ if (!patch || typeof patch.applyTo !== 'function') throw new Error('关系修正
 
 const runtimeEdges = patch.applyTo(conn.data);
 const ids = new Set(db.data.map(n => n.id));
-const internalEdges = runtimeEdges.filter(e => ids.has(e.from) && ids.has(e.to));
-const result = layout.computeLayout(db.data, internalEdges, {
+const coreNodes = db.data.filter(n => n.node_type !== 'satellite');
+const satelliteNodes = db.data.filter(n => n.node_type === 'satellite');
+const coreIds = new Set(coreNodes.map(n => n.id));
+const internalEdges = runtimeEdges.filter(e => coreIds.has(e.from) && coreIds.has(e.to));
+const result = layout.computeLayout(coreNodes, internalEdges, {
   targetRadius: 320,
   iterations: 70,
   minNodeDistance: 34
@@ -28,11 +31,13 @@ const errors = [];
 const warnings = [];
 const positions = result.positions;
 
-for (const n of db.data) {
+for (const n of coreNodes) {
   const p = positions[n.id];
-  if (!p || !Number.isFinite(p.x) || !Number.isFinite(p.y) || !Number.isFinite(p.z)) {
-    errors.push('无效坐标: ' + n.id);
-  }
+  if (!p || !Number.isFinite(p.x) || !Number.isFinite(p.y) || !Number.isFinite(p.z)) errors.push('无效核心节点坐标: ' + n.id);
+}
+for (const n of satelliteNodes) {
+  if (!['cross','application','extension'].includes(n.satellite_kind)) errors.push('卫星类型无效: ' + n.id);
+  if (!runtimeEdges.some(e => e.from === n.id || e.to === n.id)) errors.push('孤立卫星节点: ' + n.id);
 }
 
 Object.entries(result.diagnostics.modules).forEach(([mod, stat]) => {
@@ -63,6 +68,8 @@ if (!html.includes('labelBoxOverlaps')) {
 
 const summary = {
   nodes: db.data.length,
+  coreNodes: coreNodes.length,
+  satelliteNodes: satelliteNodes.length,
   runtimeEdges: runtimeEdges.length,
   internalEdges: internalEdges.length,
   radius: result.diagnostics.radius,

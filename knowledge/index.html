@@ -880,9 +880,14 @@ const MOD_COLORS = {
   '电磁学': new THREE.Color('#bb77ff'),
   '能量': new THREE.Color('#ff8800'),
   '数学': new THREE.Color('#4d7cff'),
-  '跨学科支撑': new THREE.Color('#45b8ac')
+  '跨学科支撑': new THREE.Color('#45b8ac'),
+  '地理': new THREE.Color('#ff7f50'),
+  '生物': new THREE.Color('#2ed573'),
+  '化学': new THREE.Color('#ff4757'),
+  '艺术': new THREE.Color('#e84393'),
+  '应用': new THREE.Color('#fbbf24')
 };
-const CONN_TYPE_MAP = { prerequisite:0, causal:1, parallel:2, historical:3, cross_module:4, cross_disciplinary:5, support:6, application:7, transformation:8 };
+const CONN_TYPE_MAP = { prerequisite:0, causal:1, parallel:2, historical:3, cross_module:4, cross_disciplinary:5, support:6, application:7, transformation:8, extension:9 };
 
 // ========================== DATA ==========================
 const starById = new Map();
@@ -993,7 +998,7 @@ function buildDataMaps(dbData, connData) {
       thinking: d.thinking || null,
       x: d.x, y: d.y, z: d.z,
       size: d.size || 10, starLevel: d.star_level || 3,
-      nodeType: d.node_type || 'core', aliases: d.aliases || [],
+      nodeType: d.node_type || 'core', satelliteKind: d.satellite_kind || '', aliases: d.aliases || [],
       learned: false
     };
     starById.set(id, star);
@@ -1010,15 +1015,62 @@ function buildDataMaps(dbData, connData) {
     const to = starById.get(c.to);
     if (!from || !to) return;
     const typeNum = CONN_TYPE_MAP[c.type] !== undefined ? CONN_TYPE_MAP[c.type] : 0;
-    const conn = { from, to, type: typeNum, fromId: c.from, toId: c.to };
+    const conn = { from, to, type: typeNum, fromId: c.from, toId: c.to, note: c.note || '' };
     if (!connMap.has(c.from)) connMap.set(c.from, []);
     if (!connMap.has(c.to)) connMap.set(c.to, []);
     connMap.get(c.from).push(conn);
     connMap.get(c.to).push(conn);
     if (c.type === 'cross_disciplinary') {
-      pushCrossDiscipline(from, { subject: to.module, concept: to.name, targetId: to.id });
+      pushCrossDiscipline(from, { subject: to.module, concept: to.name, targetId: to.id, note: c.note || to.definition || '' });
     }
   });
+}
+
+function isSatelliteStar(star) {
+  return !!star && star.nodeType === 'satellite';
+}
+let extensionRevealForId = null;
+
+function placeSatelliteNodes(dbData, connData, positions) {
+  const rawById = new Map((dbData || []).map(n => [n.id, n]));
+  const groups = new Map();
+  (dbData || []).filter(n => n.node_type === 'satellite').forEach(sat => {
+    const neighbors = (connData || []).filter(e => e.from === sat.id || e.to === sat.id)
+      .map(e => e.from === sat.id ? e.to : e.from)
+      .filter(id => rawById.has(id) && rawById.get(id).node_type !== 'satellite' && positions[id]);
+    if (!neighbors.length) return;
+    const anchorId = neighbors.slice().sort()[0];
+    if (!groups.has(anchorId)) groups.set(anchorId, []);
+    groups.get(anchorId).push(sat);
+  });
+  groups.forEach((items, anchorId) => {
+    const anchor = positions[anchorId];
+    if (!anchor) return;
+    items.sort((a,b) => String(a.id).localeCompare(String(b.id)));
+    items.forEach((sat, idx) => {
+      const angle = (idx / Math.max(1, items.length)) * Math.PI * 2 - Math.PI / 2;
+      const radius = sat.satellite_kind === 'extension' ? 92 : sat.satellite_kind === 'application' ? 70 : 56;
+      positions[sat.id] = {x:anchor.x+Math.cos(angle)*radius,y:anchor.y+Math.sin(angle)*radius,z:anchor.z+((idx%3)-1)*16};
+    });
+  });
+}
+
+function getVisibleConnectedIds(id) {
+  const conns = connMap.get(id) || [];
+  const connectedIds = new Set();
+  conns.forEach(c => {
+    const selectedStar = starById.get(id);
+    if (c.type === 9 && extensionRevealForId !== id && !(selectedStar && selectedStar.satelliteKind === 'extension')) return;
+    connectedIds.add(c.fromId === id ? c.toId : c.fromId);
+  });
+  return connectedIds;
+}
+
+function lineVisibleForSelection(ld, id) {
+  if (!(ld.from.id === id || ld.to.id === id)) return false;
+  const selectedStar = starById.get(id);
+  if (ld.type === 9 && extensionRevealForId !== id && !(selectedStar && selectedStar.satelliteKind === 'extension')) return false;
+  return true;
 }
 
 // localStorage helper with error handling
@@ -1219,11 +1271,13 @@ try {
   }
 
   if (window.KNOWLEDGE_LAYOUT && typeof window.KNOWLEDGE_LAYOUT.computeLayout === 'function') {
-    const layoutResult = window.KNOWLEDGE_LAYOUT.computeLayout(dbData, connData, {
-      targetRadius: 320,
-      iterations: 70,
-      minNodeDistance: 34
+    const layoutNodes = dbData.filter(function(node) { return node.node_type !== 'satellite'; });
+    const layoutIds = new Set(layoutNodes.map(function(node) { return node.id; }));
+    const layoutEdges = connData.filter(function(edge) { return layoutIds.has(edge.from) && layoutIds.has(edge.to); });
+    const layoutResult = window.KNOWLEDGE_LAYOUT.computeLayout(layoutNodes, layoutEdges, {
+      targetRadius: 320, iterations: 70, minNodeDistance: 34
     });
+    placeSatelliteNodes(dbData, connData, layoutResult.positions);
     dbData.forEach(function(node) {
       const p = layoutResult.positions[node.id];
       if (!p) return;
@@ -1609,7 +1663,10 @@ labelLayer = document.getElementById('label-layer');
 let i = 0;
 starById.forEach((star) => {
   const mod = star.module;
-  const color = MOD_COLORS[mod] || new THREE.Color(0xffffff);
+  const isSatellite = isSatelliteStar(star);
+  const color = star.satelliteKind === 'application' ? new THREE.Color('#fbbf24') :
+    star.satelliteKind === 'extension' ? new THREE.Color('#94a3b8') :
+    (MOD_COLORS[mod] || new THREE.Color(0xffffff));
   const tierCfg = TIER_CFG.find(t => star.difficulty <= t.maxDiff) || TIER_CFG[1];
   const isHub = (star.id === hubStarId);
   const hubBoost = isHub ? 1.18 : 1.0;
@@ -1624,9 +1681,9 @@ starById.forEach((star) => {
   starColors[i*3] = color.r;
   starColors[i*3+1] = color.g;
   starColors[i*3+2] = color.b;
-  starSizes[i] = defaultSize;
+  starSizes[i] = isSatellite ? 0 : defaultSize;
   starSeeds[i] = Math.random() * Math.PI * 2;
-  starDimFactors[i] = tierBright;
+  starDimFactors[i] = isSatellite ? 0 : tierBright;
 
   starIdxMap.set(star.id, i);
   starIdList[i] = star.id;
@@ -1635,6 +1692,7 @@ starById.forEach((star) => {
   hitMesh.scale.setScalar(hitRadius);
   hitMesh.position.set(star.x, star.y, star.z);
   hitMesh.userData = { starId: star.id, tier: tierCfg.label, isHub };
+  hitMesh.visible = !isSatellite;
   networkGroup.add(hitMesh);
   hitMeshes.set(star.id, hitMesh);
   planetMeshes.set(star.id, hitMesh);
@@ -1646,7 +1704,7 @@ starById.forEach((star) => {
   labelLayer.appendChild(label);
   labelItems.push({ id: star.id, star, label, tier: tierCfg.label, world: new THREE.Vector3(star.x, star.y, star.z) });
   
-  starData.set(star.id, { pointIndex: i, star, defaultSize, tierSize: defaultSize, tierBright, color, isHub, tier: tierCfg.label, planetMesh: hitMesh, atmosphereMesh: null });
+  starData.set(star.id, { pointIndex: i, star, defaultSize, tierSize: defaultSize, tierBright, color, isHub, tier: tierCfg.label, isSatellite, planetMesh: hitMesh, atmosphereMesh: null });
   i++;
 });
 
@@ -1819,10 +1877,10 @@ rawConns.forEach((c, i) => {
   const dep = type <= 1 ? 'strong' : type <= 3 ? 'medium' : 'weak';
   const speeds = { strong: 1.0, medium: 0.7, weak: 0.5 };
   const isHubStrand = hubStarId && (from.id === hubStarId || to.id === hubStarId);
-  // 总览态轻微增亮：保持明显低于点击后的聚焦态。
-  const baseOpacityByType = [0.115, 0.082, 0.044, 0.034, 0.022, 0.015, 0.050, 0.042, 0.055];
+  const isSatelliteStrand = isSatelliteStar(from) || isSatelliteStar(to);
+  const baseOpacityByType = [0.115,0.082,0.044,0.034,0.022,0.015,0.050,0.042,0.055,0];
   const baseOpacity = baseOpacityByType[type] !== undefined ? baseOpacityByType[type] : 0.036;
-  const opacity = Math.min(0.16, baseOpacity * (isHubStrand ? 1.15 : 1.0));
+  const opacity = isSatelliteStrand ? 0 : Math.min(0.16, baseOpacity * (isHubStrand ? 1.15 : 1.0));
   const strand = makeStrandPoints(from, to, i + type * 0.37, 10);
 
   const dS = darkPos.length / 3;
@@ -1855,7 +1913,7 @@ rawConns.forEach((c, i) => {
     trailPos.push(from.y + (to.y - from.y) * p);
     trailPos.push(from.z + (to.z - from.z) * p);
     trailCol.push(color.r * 1.35, color.g * 1.35, color.b * 1.35);
-    trailSiz.push((trailCount - j) / trailCount * (isHubStrand ? 3.6 : 1.6));
+    trailSiz.push(isSatelliteStrand ? 0 : (trailCount - j) / trailCount * (isHubStrand ? 3.6 : 1.6));
     trailSeed.push(Math.random() * Math.PI * 2);
   }
 
@@ -2094,7 +2152,7 @@ function hitTest() {
 function showTooltipAt(entry, cx, cy) {
   const diffStars = entry.star.difficulty;
   const diffStr = '⭐'.repeat(diffStars);
-  tooltip.textContent = `${entry.star.name}  ${diffStr}`;
+  tooltip.textContent = entry.isSatellite && entry.star.definition ? (entry.star.name + ' · ' + entry.star.definition) : (entry.star.name + '  ' + diffStr);
   tooltip.style.left = cx + 'px';
   tooltip.style.top = (cy - 10) + 'px';
   tooltip.classList.add('visible');
@@ -2232,7 +2290,7 @@ function getSortedRelatedList(id) {
     seen.add(otherId);
     const otherStar = starById.get(otherId);
     if (!otherStar) return;
-    const typeLabels = ['前置知识', '后续知识', '平行关联', '历史启发', '跨模块', '跨学科', '支撑关联', '应用关联', '能量转化'];
+    const typeLabels = ['前置知识', '后续知识', '平行关联', '历史启发', '跨模块', '跨学科', '支撑关联', '应用关联', '能量转化', '二级拓展'];
     let relType = 0;
     if (c.type === 0) {
       relType = c.fromId === id ? 1 : 0;
@@ -2244,6 +2302,10 @@ function getSortedRelatedList(id) {
     else if (c.type === 6) relType = 6;
     else if (c.type === 7) relType = 7;
     else if (c.type === 8) relType = 8;
+    else if (c.type === 9) {
+      if (extensionRevealForId !== id) return;
+      relType = 9;
+    }
     let arrow = '↔';
     if (c.type === 0) {
       arrow = c.fromId === id ? '→' : '←';
@@ -2273,7 +2335,7 @@ function activateGlowLines(id) {
   trailPointsGeo.attributes.size.needsUpdate = true;
 
   lineDataMap.forEach(ld => {
-    if (ld.from.id === id || ld.to.id === id) {
+    if (lineVisibleForSelection(ld, id)) {
       ld.glowActive = true; ld.glowProgress = 0;
       const r = connToRange[ld.idx];
       for (let j = 0; j < r.trailCount; j++) trailSiz[r.trail + j] = (r.trailCount - j) / r.trailCount * 6;
@@ -2350,7 +2412,10 @@ function setModuleEmphasis(mod) {
     const idx = entry.pointIndex;
     startDims[sid] = starDimFactors[idx];
     startSizes[sid] = starSizes[idx];
-    if (mod === 'all') {
+    if (entry.isSatellite) {
+      targetDims[sid] = 0; targetSizes[sid] = 0;
+      if (entry.planetMesh) entry.planetMesh.visible = false;
+    } else if (mod === 'all') {
       targetDims[sid] = entry.tierBright;
       targetSizes[sid] = entry.defaultSize;
     } else if (entry.star.module === mod) {
@@ -2366,14 +2431,13 @@ function setModuleEmphasis(mod) {
 
   const la = darkLineGeo.attributes.lineAlpha.array;
   lineDataMap.forEach(ld => {
-    const inModule = mod === 'all' || (ld.from.module === mod && ld.to.module === mod);
-    const target = mod === 'all'
-      ? Math.min(0.18, ld.darkAlpha * 1.22)
-      : (inModule ? Math.min(0.42, Math.max(0.22, ld.darkAlpha * 4.2)) : 0.008);
+    const satelliteLine = isSatelliteStar(ld.from) || isSatelliteStar(ld.to);
+    const inModule = !satelliteLine && (mod === 'all' || (ld.from.module === mod && ld.to.module === mod));
+    const target = satelliteLine ? 0 : (mod === 'all' ? Math.min(0.18,ld.darkAlpha*1.22) : (inModule ? Math.min(0.42,Math.max(0.22,ld.darkAlpha*4.2)) : 0.008));
     const r = connToRange[ld.idx];
-    for (let s = 0; s < r.segmentCount * 2; s++) la[r.dark + s] = target;
-    ld._targetAlpha = target;
-    ld.glowActive = inModule && mod !== 'all' && ld.from.module === ld.to.module;
+    for (let s=0;s<r.segmentCount*2;s++) la[r.dark+s]=target;
+    ld._targetAlpha=target;
+    ld.glowActive=!satelliteLine && inModule && mod!=='all' && ld.from.module===ld.to.module;
   });
   darkLineGeo.attributes.lineAlpha.needsUpdate = true;
   networkGroup.userData.rotationSpeed = mod === 'all' ? 0.00012 : 0.00003;
@@ -2448,6 +2512,7 @@ function updateLabels() {
       (item.tier !== 'extension' || connCount >= 3 || dim > 0.95);
 
     let wanted = visible && (showByDefault || showInCurrentModule || isActive || isModuleHub);
+    if (entry && entry.isSatellite && !isActive) wanted = false;
     // 选中知识点后只保留“当前节点 + 直接关联节点”。
     // 旧代码把 selectedId 本身当作布尔值，导致选中任意节点后 183 个标签全部显示。
     if (focusMode && !isActive) wanted = false;
@@ -2499,7 +2564,7 @@ function updateLabels() {
 }
 
 function highlightConnections(id, highlight) {
-  const connectedIds = highlight ? getConnectedIds(id) : new Set();
+  const connectedIds = highlight ? getVisibleConnectedIds(id) : new Set();
   selectedConnectedIds = connectedIds;
 
   const targetDims = {};
@@ -2510,9 +2575,11 @@ function highlightConnections(id, highlight) {
     const idx = entry.pointIndex;
     startDims[sid] = starDimFactors[idx];
     startSizes[sid] = starSizes[idx];
+    const showSatellite = entry.isSatellite && (sid === id || connectedIds.has(sid));
+    if (entry.planetMesh) entry.planetMesh.visible = !entry.isSatellite || showSatellite;
     if (!highlight) {
-      targetDims[sid] = entry.tierBright;
-      targetSizes[sid] = entry.defaultSize;
+      targetDims[sid] = entry.isSatellite ? 0 : entry.tierBright;
+      targetSizes[sid] = entry.isSatellite ? 0 : entry.defaultSize;
     } else if (sid === id) {
       targetDims[sid] = 1.8;
       targetSizes[sid] = entry.defaultSize * 1.5;
@@ -2528,13 +2595,10 @@ function highlightConnections(id, highlight) {
 
   // Line opacities
   lineDataMap.forEach(ld => {
-    if (!highlight) {
-      ld._targetAlpha = ld.darkAlpha;
-    } else if (ld.from.id === id || ld.to.id === id) {
-      ld._targetAlpha = 0.58;
-    } else {
-      ld._targetAlpha = 0.012;
-    }
+    const satelliteLine = isSatelliteStar(ld.from) || isSatelliteStar(ld.to);
+    if (!highlight) ld._targetAlpha = satelliteLine ? 0 : ld.darkAlpha;
+    else if (lineVisibleForSelection(ld,id)) ld._targetAlpha = 0.58;
+    else ld._targetAlpha = satelliteLine ? 0 : 0.012;
   });
 
   networkGroup.userData.rotationSpeed = highlight ? 0.00003 : 0.00012;
@@ -2631,6 +2695,7 @@ function selectStar(id, flyOptions) {
   }
   const previousId = selectedId;
   if (previousId) clearSelectionState(previousId, { resetCamera: false, hidePanel: false });
+  extensionRevealForId = null;
   selectedId = id;
   const entry = starData.get(id);
   if (!entry) return;
@@ -2704,6 +2769,8 @@ function clearSelectionState(prevId, options) {
 
   if (options.restoreConnections !== false) highlightConnections(prevId, false);
   selectedConnectedIds.clear();
+  extensionRevealForId = null;
+  starData.forEach(function(item) { if (item.isSatellite && item.planetMesh) item.planetMesh.visible = false; });
   focusRelatedList = [];
   focusRelatedIndex = -1;
   selectedId = null;
@@ -3101,7 +3168,7 @@ function showInfoPanel(star) {
   renderKnowledgeChainPanel(star);
   panelRelated.innerHTML = '';
   var conns = connMap.get(star.id) || [];
-  var typeLabels = ['前置知识', '后续知识', '平行关联', '历史启发', '跨模块关联', '跨学科关联', '支撑关联', '应用关联', '能量转化'];
+  var typeLabels = ['前置知识', '后续知识', '平行关联', '历史启发', '跨模块关联', '跨学科关联', '支撑关联', '应用关联', '能量转化', '二级拓展'];
   var typeDescriptions = [
     '先理解这些概念，再学习当前知识点会更顺。',
     '掌握当前知识点后，可以继续学习这些内容。',
@@ -3111,10 +3178,11 @@ function showInfoPanel(star) {
     '连接数学、生物、化学等学科中的相近概念。',
     '帮助理解、表征或计算当前知识，但不一定构成严格前置。',
     '当前知识在典型实验、装置或生活情境中的具体应用。',
-    '表示不同形式能量之间的转化联系。'
+    '表示不同形式能量之间的转化联系。',
+    '科学上有关联，但不作为初中教材核心结论；需要时再展开查看。'
   ];
-  var typeIcons = ['fa-arrow-up', 'fa-arrow-down', 'fa-arrows-left-right', 'fa-clock-rotate', 'fa-share-nodes', 'fa-link', 'fa-diagram-project', 'fa-flask', 'fa-arrows-rotate'];
-  var typeColors = ['#6ee7ff', '#ffd700', '#2ed573', '#a55eea', '#ff6b6b', '#ff7f50', '#67e8f9', '#fbbf24', '#34d399'];
+  var typeIcons = ['fa-arrow-up','fa-arrow-down','fa-arrows-left-right','fa-clock-rotate','fa-share-nodes','fa-link','fa-diagram-project','fa-flask','fa-arrows-rotate','fa-compass'];
+  var typeColors = ['#6ee7ff','#ffd700','#2ed573','#a55eea','#ff6b6b','#ff7f50','#67e8f9','#fbbf24','#34d399','#94a3b8'];
   var seenIds = new Set();
   var relatedByType = {};
   conns.forEach(function(c) {
@@ -3134,6 +3202,7 @@ function showInfoPanel(star) {
     else if (c.type === 6) groupIdx = 6;
     else if (c.type === 7) groupIdx = 7;
     else if (c.type === 8) groupIdx = 8;
+    else if (c.type === 9) groupIdx = 9;
     if (!relatedByType[groupIdx]) relatedByType[groupIdx] = [];
     relatedByType[groupIdx].push(rs);
   });
@@ -3155,18 +3224,29 @@ function showInfoPanel(star) {
     var header = document.createElement('div');
     header.className = 'related-group-header';
     header.style.color = c;
-    header.innerHTML = '<i class="fas ' + typeIcons[gi] + '"></i> ' + label + ' <span style="margin-left:auto;opacity:0.5">' + items.length + '</span>';
+    var extensionOpen = gi === 9 && extensionRevealForId === star.id;
+    header.innerHTML = '<i class="fas ' + typeIcons[gi] + '"></i> ' + label + ' <span style="margin-left:auto;opacity:0.65">' + items.length + (gi === 9 ? (extensionOpen ? ' · 收起' : ' · 展开') : '') + '</span>';
+    if (gi === 9) {
+      header.style.cursor = 'pointer';
+      header.addEventListener('click', function(e) {
+        e.preventDefault(); e.stopPropagation();
+        extensionRevealForId = extensionRevealForId === star.id ? null : star.id;
+        highlightConnections(star.id, true); activateGlowLines(star.id); showInfoPanel(star);
+      });
+    }
     group.appendChild(header);
     var desc = document.createElement('div');
     desc.className = 'related-group-desc';
     desc.textContent = typeDescriptions[gi] || '';
     group.appendChild(desc);
+    if (gi === 9 && !extensionOpen) { panelRelated.appendChild(group); return; }
     items.forEach(function(rs) {
       if (!rs) return;
       var mc = MOD_COLORS[rs.module] || '#888';
       var item = document.createElement('div');
       item.className = 'related-item';
       item.innerHTML = '<span class="dot" style="background:' + mc + '"></span><span>' + rs.name + '</span><span class="mod-label">' + rs.module + '</span>';
+      if (rs.nodeType === 'satellite' && rs.definition) item.title = rs.definition;
       item.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); selectStar(rs.id); });
       group.appendChild(item);
     });
@@ -3563,9 +3643,10 @@ if (importBtn && importFile) {
 
 // ========================== STAR COUNT ==========================
 function updateStarCount() {
-  const total = starById.size;
+  const coreIds = Array.from(starById.values()).filter(function(star) { return star.nodeType !== 'satellite'; }).map(function(star) { return star.id; });
+  const total = coreIds.length;
   const learned = getLearned();
-  const learnedCount = Object.values(learned).filter(v => v).length;
+  const learnedCount = coreIds.filter(function(id) { return !!learned[id]; }).length;
   document.getElementById('starCount').textContent = `✦ ${learnedCount}/${total} 已学习`;
 }
 updateStarCount();
