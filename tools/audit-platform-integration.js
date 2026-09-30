@@ -47,6 +47,9 @@ requireText(knowledgeHtml, 'function closeDiagnosticModal', '迷思诊断缺少�
 requireText(knowledgeHtml, "width:min(960px,92vw)", '迷思诊断弹窗尺寸未放大');
 requireText(knowledgeHtml, 'font-size:23px', '迷思诊断题干字号未放大');
 requireText(knowledgeHtml, "diagnosticModalBody.innerHTML", '诊断题仍未渲染到中央弹窗');
+const finishDiagnosticSource = knowledgeHtml.slice(knowledgeHtml.indexOf('function finishDiagnosticSession()'), knowledgeHtml.indexOf('function showInfoPanel(star)'));
+if (!finishDiagnosticSource.includes('diagnosticModalBody.innerHTML')) errors.push('诊断结果页未渲染到中央弹窗');
+if (finishDiagnosticSource.includes('panelDiagnostic.innerHTML')) errors.push('诊断结果页仍残留在右侧详情栏');
 
 
 const remotePinyin = knowledgeHtml.match(/https?:\/\/[^"'\s>]*pinyin/gi) || [];

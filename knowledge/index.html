@@ -3478,7 +3478,7 @@ function finishDiagnosticSession() {
       '<div class="explain">' + escapeDiagnosticHtml(q.explanation) + '</div></div>';
   }).join('');
 
-  panelDiagnostic.innerHTML=
+  diagnosticModalBody.innerHTML=
     '<div class="diag-result-summary"><div class="diag-result-card"><strong>本次正确</strong><span>' +
     correctCount + ' / ' + group.questions.length + '</span></div><div class="diag-result-card"><strong>重复错误模式</strong><span>' +
     repeated.length + '</span></div></div>' + patternHtml + reviewHtml +
