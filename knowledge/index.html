@@ -304,6 +304,36 @@ canvas{display:block}
   content:attr(data-step);margin-left:auto;font-size:10px;font-weight:800;letter-spacing:1px;
   color:rgba(216,179,90,.85);padding:2px 7px;border-radius:999px;background:rgba(216,179,90,.1)
 }
+#panelDiagnosticWrap{background:linear-gradient(135deg,rgba(168,85,247,.09),rgba(110,231,255,.035));border-color:rgba(196,181,253,.18)}
+.diag-intro{font-size:13px;line-height:1.65;color:rgba(236,241,250,.82)}
+.diag-intro strong{color:#fff}
+.diag-misconception-list{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0 12px}
+.diag-misconception-chip{font-size:11px;padding:4px 8px;border-radius:999px;background:rgba(196,181,253,.08);border:1px solid rgba(196,181,253,.18);color:rgba(240,235,255,.88)}
+.diag-btn{width:100%;border:1px solid rgba(196,181,253,.28);border-radius:10px;padding:10px 12px;background:rgba(124,58,237,.18);color:#f5f3ff;font-weight:800;font-size:13px;cursor:pointer;transition:.2s;font-family:'Microsoft YaHei UI','Microsoft YaHei','Noto Sans SC','PingFang SC','Inter',sans-serif}
+.diag-btn:hover{background:rgba(124,58,237,.28);border-color:rgba(196,181,253,.42)}
+.diag-progress{font-size:11px;color:rgba(236,241,250,.58);margin-bottom:8px}
+.diag-stem{font-size:15px;line-height:1.65;color:#fff;font-weight:750;margin-bottom:11px}
+.diag-options{display:grid;gap:7px}
+.diag-option{width:100%;text-align:left;padding:9px 10px;border-radius:9px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.16);color:rgba(247,249,252,.92);font-size:13px;line-height:1.5;cursor:pointer;font-family:'Microsoft YaHei UI','Microsoft YaHei','Noto Sans SC','PingFang SC','Inter',sans-serif}
+.diag-option:hover{background:rgba(255,255,255,.055)}
+.diag-option.selected{border-color:rgba(110,231,255,.45);background:rgba(110,231,255,.10);color:#fff}
+.diag-confidence{margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)}
+.diag-confidence-title{font-size:12px;color:rgba(236,241,250,.7);margin-bottom:7px}
+.diag-confidence-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.diag-confidence-btn{border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 4px;background:rgba(255,255,255,.025);color:rgba(247,249,252,.8);font-size:11px;cursor:pointer}
+.diag-confidence-btn.selected{border-color:rgba(216,179,90,.5);background:rgba(216,179,90,.12);color:#ffe48e}
+.diag-next{margin-top:9px}.diag-next:disabled{opacity:.35;cursor:not-allowed}
+.diag-result-summary{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:11px}
+.diag-result-card{padding:9px;border-radius:9px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)}
+.diag-result-card strong{display:block;font-size:10px;color:rgba(236,241,250,.55);margin-bottom:3px}
+.diag-result-card span{font-size:16px;font-weight:900;color:#fff}
+.diag-pattern{padding:9px 10px;margin:8px 0;border-radius:9px;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.16);font-size:12px;line-height:1.55;color:rgba(255,239,188,.92)}
+.diag-review-item{margin-top:9px;padding:10px;border-radius:9px;background:rgba(0,0,0,.15);border:1px solid rgba(255,255,255,.06);font-size:12px;line-height:1.55}
+.diag-review-item.correct{border-color:rgba(52,211,153,.18)} .diag-review-item.wrong{border-color:rgba(248,113,113,.20)}
+.diag-review-item .q{color:#fff;font-weight:750;margin-bottom:5px}
+.diag-review-item .answer{color:rgba(236,241,250,.76)}
+.diag-review-item .explain{color:rgba(236,241,250,.62);margin-top:4px}
+
 #info-panel .section p{font-size:16px;line-height:1.72;color:#f7f9fc;font-weight:600}
 #info-panel .panel-summary{
   display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 18px
@@ -740,6 +770,7 @@ canvas{display:block}
     <div class="meta" id="panelMeta"></div>
     <div class="section"><h3>核心定义</h3><p id="panelDef">定义内容</p></div>
     <div class="section" id="panelMistakesWrap"><h3>常见错误</h3><div id="panelMistakes"></div></div>
+    <div class="section" id="panelDiagnosticWrap" style="display:none"><h3>迷思诊断</h3><div id="panelDiagnostic"></div></div>
     <div class="section" id="panelFormulaWrap"><h3>公式</h3><div class="formula" id="panelFormula"></div></div>
     <div class="section" id="panelThinkingWrap"><h3>思维可视化</h3><div id="panelThinking"></div></div>
     <div class="section" id="panelConfuseWrap"><h3>易混淆对照</h3><div id="panelConfuse"></div></div>
@@ -785,6 +816,7 @@ canvas{display:block}
 <script src="易混淆概念对比表.js"></script>
 <script src="知识链排序配置表.js"></script>
 <script src="概念归类数据库.js"></script>
+<script src="诊断题库.js"></script>
 <script src="生活应用场景.js"></script>
 <script src="layout-engine.js"></script>
 
@@ -1321,7 +1353,7 @@ const hitMaterial = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0,
 // DOM refs
 let panel, panelTitle, panelMeta, panelDef, panelFormula, panelFormulaWrap, panelThinking, panelThinkingWrap;
 let panelApps, panelExam, panelRelated, panelCross, panelCrossWrap;
-let panelMistakes, panelMistakesWrap, panelConfuse, panelConfuseWrap, panelChain, panelChainWrap, panelScenes;
+let panelMistakes, panelMistakesWrap, panelDiagnostic, panelDiagnosticWrap, panelConfuse, panelConfuseWrap, panelChain, panelChainWrap, panelScenes;
 let panelHistory, panelHistoryWrap, learnBtn, panelClose, panelIcon;
 let searchTrigger, searchOverlay, searchInput, searchResults;
 let loadBar, loadStatus, tooltip;
@@ -2948,6 +2980,8 @@ panelHistory = document.getElementById('panelHistory');
 panelHistoryWrap = document.getElementById('panelHistoryWrap');
 panelMistakes = document.getElementById('panelMistakes');
 panelMistakesWrap = document.getElementById('panelMistakesWrap');
+panelDiagnostic = document.getElementById('panelDiagnostic');
+panelDiagnosticWrap = document.getElementById('panelDiagnosticWrap');
 panelConfuse = document.getElementById('panelConfuse');
 panelConfuseWrap = document.getElementById('panelConfuseWrap');
 panelChain = document.getElementById('panelChain');
@@ -2959,7 +2993,7 @@ panelClose = document.getElementById('panelClose');
 panelClose.addEventListener('click', deselectStar);
 
 document.querySelectorAll('#info-panel .section h3').forEach(function(title, index) {
-  var steps = ['01 概念', '02 错因', '03 公式', '04 思维', '05 易混', '06 应用', '07 考点', '08 故事', '09 跨学科', '10 发展', '11 脉络'];
+  var steps = ['01 概念', '02 错因', '03 诊断', '04 公式', '05 思维', '06 易混', '07 应用', '08 考点', '09 故事', '10 跨学科', '11 发展', '12 脉络'];
   title.setAttribute('data-step', steps[index] || '');
 });
 
@@ -3160,6 +3194,175 @@ function renderKnowledgeChainPanel(star) {
   panelChain.appendChild(btn);
 }
 
+const diagnosticGroupByConcept = new Map(
+  ((window._DIAGNOSTIC_BANK && window._DIAGNOSTIC_BANK.groups) || []).map(function(group) {
+    return [group.concept_id, group];
+  })
+);
+let activeDiagnosticSession = null;
+
+function escapeDiagnosticHtml(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function saveDiagnosticResult(result) {
+  try {
+    const key = 'physicsDiagnosticV01';
+    const all = JSON.parse(localStorage.getItem(key) || '{}');
+    all[result.concept_id] = result;
+    localStorage.setItem(key, JSON.stringify(all));
+  } catch (e) { console.warn('[diagnostic] 保存结果失败', e); }
+}
+
+function getDiagnosticResult(conceptId) {
+  try {
+    const all = JSON.parse(localStorage.getItem('physicsDiagnosticV01') || '{}');
+    return all[conceptId] || null;
+  } catch (e) { return null; }
+}
+
+function renderDiagnosticIntro(star) {
+  const group = diagnosticGroupByConcept.get(star.id);
+  activeDiagnosticSession = null;
+  panelDiagnostic.innerHTML = '';
+  if (!group || star.nodeType === 'meta' || star.nodeType === 'satellite') {
+    panelDiagnosticWrap.style.display = 'none';
+    return;
+  }
+  panelDiagnosticWrap.style.display = 'block';
+  const last = getDiagnosticResult(star.id);
+  const chips = (group.misconceptions || []).map(function(m) {
+    return '<span class="diag-misconception-chip">' + escapeDiagnosticHtml(m.description) + '</span>';
+  }).join('');
+  panelDiagnostic.innerHTML =
+    '<div class="diag-intro"><strong>' + group.questions.length + ' 道微型诊断题</strong> · 跨情境检验，不以单题对错直接判定掌握。' +
+    (last ? '<br><span style="color:rgba(216,179,90,.9)">上次结果：' + last.correct_count + '/' + last.total + '，可重新诊断。</span>' : '') +
+    '</div><div class="diag-misconception-list">' + chips + '</div>' +
+    '<button type="button" class="diag-btn" id="diagStartBtn">开始诊断（' + group.questions.length + '题）</button>';
+  const btn = document.getElementById('diagStartBtn');
+  if (btn) btn.onclick = function(e) { e.preventDefault(); e.stopPropagation(); startDiagnosticSession(group); };
+}
+
+function startDiagnosticSession(group) {
+  activeDiagnosticSession = { group:group,index:0,selectedOption:null,confidence:null,responses:[] };
+  renderDiagnosticQuestion();
+}
+
+function renderDiagnosticQuestion() {
+  const session = activeDiagnosticSession;
+  if (!session) return;
+  const group = session.group;
+  const q = group.questions[session.index];
+  if (!q) return finishDiagnosticSession();
+  panelDiagnostic.innerHTML =
+    '<div class="diag-progress">第 ' + (session.index + 1) + ' / ' + group.questions.length + ' 题 · ' + escapeDiagnosticHtml(q.role || '') + '</div>' +
+    '<div class="diag-stem">' + escapeDiagnosticHtml(q.stem) + '</div>' +
+    '<div class="diag-options">' + q.options.map(function(o) {
+      return '<button type="button" class="diag-option" data-option="' + escapeDiagnosticHtml(o.id) + '"><strong>' +
+        escapeDiagnosticHtml(o.id) + '.</strong> ' + escapeDiagnosticHtml(o.text) + '</button>';
+    }).join('') + '</div>' +
+    '<div class="diag-confidence"><div class="diag-confidence-title">你对这个答案有多确定？</div>' +
+    '<div class="diag-confidence-row">' +
+      '<button type="button" class="diag-confidence-btn" data-confidence="1">猜测</button>' +
+      '<button type="button" class="diag-confidence-btn" data-confidence="2">不确定</button>' +
+      '<button type="button" class="diag-confidence-btn" data-confidence="3">较确定</button>' +
+    '</div><button type="button" class="diag-btn diag-next" id="diagNextBtn" disabled>' +
+      (session.index === group.questions.length - 1 ? '提交诊断' : '下一题') +
+    '</button></div>' +
+    '<div style="font-size:11px;color:rgba(236,241,250,.45);margin-top:8px">本组完成前不显示对错，避免影响后续题判断。</div>';
+
+  panelDiagnostic.querySelectorAll('.diag-option').forEach(function(btn) {
+    btn.onclick = function(e) {
+      e.preventDefault(); e.stopPropagation();
+      session.selectedOption = btn.dataset.option;
+      panelDiagnostic.querySelectorAll('.diag-option').forEach(function(x){x.classList.remove('selected');});
+      btn.classList.add('selected');
+      updateDiagnosticNextButton();
+    };
+  });
+  panelDiagnostic.querySelectorAll('.diag-confidence-btn').forEach(function(btn) {
+    btn.onclick = function(e) {
+      e.preventDefault(); e.stopPropagation();
+      session.confidence = Number(btn.dataset.confidence);
+      panelDiagnostic.querySelectorAll('.diag-confidence-btn').forEach(function(x){x.classList.remove('selected');});
+      btn.classList.add('selected');
+      updateDiagnosticNextButton();
+    };
+  });
+  const next=document.getElementById('diagNextBtn');
+  if(next) next.onclick=function(e){e.preventDefault();e.stopPropagation();submitDiagnosticQuestion();};
+}
+
+function updateDiagnosticNextButton() {
+  const btn=document.getElementById('diagNextBtn');
+  if(btn&&activeDiagnosticSession) btn.disabled=!(activeDiagnosticSession.selectedOption&&activeDiagnosticSession.confidence);
+}
+
+function submitDiagnosticQuestion() {
+  const session=activeDiagnosticSession;
+  if(!session||!session.selectedOption||!session.confidence) return;
+  const q=session.group.questions[session.index];
+  const chosen=q.options.find(function(o){return o.id===session.selectedOption;});
+  session.responses.push({
+    question_id:q.id,selected_option:session.selectedOption,correct_option:q.correct_option,
+    correct:session.selectedOption===q.correct_option,
+    misconception:chosen&&chosen.misconception?chosen.misconception:null,
+    confidence:session.confidence
+  });
+  session.index++;session.selectedOption=null;session.confidence=null;
+  if(session.index>=session.group.questions.length) finishDiagnosticSession(); else renderDiagnosticQuestion();
+}
+
+function finishDiagnosticSession() {
+  const session=activeDiagnosticSession;
+  if(!session) return;
+  const group=session.group;
+  const correctCount=session.responses.filter(function(r){return r.correct;}).length;
+  const counts={};
+  session.responses.forEach(function(r){if(r.misconception) counts[r.misconception]=(counts[r.misconception]||0)+1;});
+  const miscByCode=new Map((group.misconceptions||[]).map(function(m){return [m.code,m];}));
+  const repeated=Object.keys(counts).filter(function(code){return counts[code]>=2;}).sort(function(a,b){return counts[b]-counts[a];});
+  const result={concept_id:group.concept_id,concept_name:group.concept_name,timestamp:new Date().toISOString(),
+    correct_count:correctCount,total:group.questions.length,repeated_misconceptions:repeated,responses:session.responses.slice()};
+  saveDiagnosticResult(result);
+
+  let patternHtml='';
+  if(repeated.length){
+    patternHtml=repeated.map(function(code){
+      const m=miscByCode.get(code);
+      return '<div class="diag-pattern"><strong>重复出现的错误模式（候选）</strong><br>' +
+        escapeDiagnosticHtml(m?m.description:code) + ' · 出现 ' + counts[code] + ' 次</div>';
+    }).join('');
+  } else if(correctCount<group.questions.length){
+    patternHtml='<div class="diag-pattern">本次有错误，但没有同一种错误认识在两个独立情境中重复出现，<strong>暂不判定为稳定迷思</strong>。</div>';
+  } else {
+    patternHtml='<div class="diag-pattern" style="background:rgba(52,211,153,.07);border-color:rgba(52,211,153,.16);color:rgba(209,250,229,.94)">本组跨情境作答均正确。仍需结合后续真实考试表现判断是否稳定掌握。</div>';
+  }
+
+  const reviewHtml=group.questions.map(function(q,idx){
+    const r=session.responses[idx];
+    const chosen=q.options.find(function(o){return o.id===r.selected_option;});
+    const correct=q.options.find(function(o){return o.id===q.correct_option;});
+    return '<div class="diag-review-item ' + (r.correct?'correct':'wrong') + '">' +
+      '<div class="q">' + (idx+1) + '. ' + escapeDiagnosticHtml(q.stem) + '</div>' +
+      '<div class="answer">你的答案：' + escapeDiagnosticHtml(r.selected_option + '. ' + (chosen?chosen.text:'')) +
+      ' · ' + (r.correct?'✓ 正确':'✗ 正确答案：' + escapeDiagnosticHtml(q.correct_option + '. ' + (correct?correct.text:''))) +
+      ' · 置信度：' + ({1:'猜测',2:'不确定',3:'较确定'}[r.confidence]||'') + '</div>' +
+      '<div class="explain">' + escapeDiagnosticHtml(q.explanation) + '</div></div>';
+  }).join('');
+
+  panelDiagnostic.innerHTML=
+    '<div class="diag-result-summary"><div class="diag-result-card"><strong>本次正确</strong><span>' +
+    correctCount + ' / ' + group.questions.length + '</span></div><div class="diag-result-card"><strong>重复错误模式</strong><span>' +
+    repeated.length + '</span></div></div>' + patternHtml + reviewHtml +
+    '<button type="button" class="diag-btn" id="diagRetryBtn" style="margin-top:11px">重新诊断</button>';
+  const retry=document.getElementById('diagRetryBtn');
+  if(retry) retry.onclick=function(e){e.preventDefault();e.stopPropagation();startDiagnosticSession(group);};
+  activeDiagnosticSession=null;
+}
+
 function showInfoPanel(star) {
   const isMetaNode = star.nodeType === 'meta';
   const color = MOD_COLORS[star.module] || '#6ee7ff';
@@ -3182,6 +3385,7 @@ function showInfoPanel(star) {
   panelDef.parentElement.classList.add('concept-card');
   panelDef.textContent = star.definition || '\u6682\u65e0\u5b9a\u4e49';
   renderMistakes(star);
+  renderDiagnosticIntro(star);
   if (star.formula) {
     panelFormulaWrap.style.display = 'block';
     panelFormula.innerHTML = renderFormula(star.formula) + renderFormulaUnits(star.formula, star.thinking);

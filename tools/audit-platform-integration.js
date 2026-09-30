@@ -34,6 +34,12 @@ requireText(knowledgeHtml, '概念归类数据库.js', '未加载 Meta 数据库
 requireText(knowledgeHtml, 'classification:10', '未注册 classification 关系');
 requireText(knowledgeHtml, 'function injectMetaConcepts', '未注入 Meta 概念');
 requireText(knowledgeHtml, "star.nodeType !== 'meta'", '学习计数未排除 Meta');
+requireText(knowledgeHtml, '诊断题库.js', '知识星球未加载诊断题库');
+requireText(knowledgeHtml, 'id="panelDiagnosticWrap"', '知识详情面板缺少迷思诊断区域');
+requireText(knowledgeHtml, 'function renderDiagnosticIntro', '知识星球缺少诊断题入口渲染');
+requireText(knowledgeHtml, 'function startDiagnosticSession', '知识星球缺少诊断会话');
+requireText(knowledgeHtml, 'function finishDiagnosticSession', '知识星球缺少诊断结果汇总');
+requireText(knowledgeHtml, '本组完成前不显示对错', '诊断题未采用延迟反馈，可能污染后续题判断');
 
 const remotePinyin = knowledgeHtml.match(/https?:\/\/[^"'\s>]*pinyin/gi) || [];
 if (remotePinyin.length) errors.push('发现远程拼音依赖: ' + remotePinyin.join(', '));
