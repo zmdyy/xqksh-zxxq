@@ -40,6 +40,14 @@ requireText(knowledgeHtml, 'function renderDiagnosticIntro', '知识星球缺少
 requireText(knowledgeHtml, 'function startDiagnosticSession', '知识星球缺少诊断会话');
 requireText(knowledgeHtml, 'function finishDiagnosticSession', '知识星球缺少诊断结果汇总');
 requireText(knowledgeHtml, '本组完成前不显示对错', '诊断题未采用延迟反馈，可能污染后续题判断');
+requireText(knowledgeHtml, 'id="diagnostic-modal"', '迷思诊断未使用中央弹窗');
+requireText(knowledgeHtml, 'id="diagnosticModalBody"', '迷思诊断弹窗缺少题目容器');
+requireText(knowledgeHtml, 'function openDiagnosticModal', '迷思诊断缺少弹窗打开逻辑');
+requireText(knowledgeHtml, 'function closeDiagnosticModal', '迷思诊断缺少弹窗关闭逻辑');
+requireText(knowledgeHtml, "width:min(960px,92vw)", '迷思诊断弹窗尺寸未放大');
+requireText(knowledgeHtml, 'font-size:23px', '迷思诊断题干字号未放大');
+requireText(knowledgeHtml, "diagnosticModalBody.innerHTML", '诊断题仍未渲染到中央弹窗');
+
 
 const remotePinyin = knowledgeHtml.match(/https?:\/\/[^"'\s>]*pinyin/gi) || [];
 if (remotePinyin.length) errors.push('发现远程拼音依赖: ' + remotePinyin.join(', '));
