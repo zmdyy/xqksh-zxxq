@@ -11,6 +11,7 @@ const pinyinCode = fs.readFileSync(path.join(root, 'knowledge/vendor/pinyinjs/pi
 const metaCode = fs.readFileSync(path.join(root, 'knowledge/概念归类数据库.js'), 'utf8');
 const examCatalog = JSON.parse(fs.readFileSync(path.join(root, 'data/knowledge/exam-annotation-catalog.json'), 'utf8'));
 const diagnosticBank = JSON.parse(fs.readFileSync(path.join(root, 'data/knowledge/diagnostic-question-bank.json'), 'utf8'));
+const notebookDocxCode = fs.readFileSync(path.join(root, 'notebook-docx.js'), 'utf8');
 
 const errors = [];
 function requireText(text, needle, label) {
@@ -22,6 +23,17 @@ requireText(rootHtml, "window.open('knowledge/index.html','_blank','noopener')",
 requireText(rootHtml, "return !k.node_type || k.node_type === 'core';", 'AI标注词表未限制为核心知识点');
 requireText(rootHtml, "knowledge/index.html?concept_id=", '小题知识点未使用 concept_id 深链');
 requireText(rootHtml, "|| '2.4'", 'AI标注包兜底知识库版本不是 2.4');
+requireText(rootHtml, 'function collectStudentErrorsFromAllBatches(studentName, studentClass)', '错题本未使用学生身份辅助信息');
+requireText(rootHtml, 'batchSet[batch.id] = true', '错题本跨批次统计仍按批次名称或非错题批次计数');
+requireText(rootHtml, 'subjectSet[subjName] = true', '错题本科目统计缺失');
+requireText(rootHtml, 'window.getErrorNotebookQuestionSnapshots = getErrorNotebookQuestionSnapshots', '错题本未提供原卷截图导出接口');
+requireText(rootHtml, 'detailItemNames: e.detailItemNames || [e.itemName]', '错题本导出未保留合并子问信息');
+requireText(rootHtml, 'notebook-docx.js?v=6', '错题本Word生成器版本未更新');
+requireText(notebookDocxCode, 'typeof window.getErrorNotebookQuestionSnapshots', 'Word导出未优先使用原卷截图');
+requireText(notebookDocxCode, 'docxInfoTable', 'Word错题信息未结构化排版');
+try { new vm.Script(notebookDocxCode, { filename: 'notebook-docx.js' }); }
+catch (e) { errors.push('notebook-docx.js 语法错误: ' + e.message); }
+
 
 requireText(knowledgeHtml, 'vendor/pinyinjs/pinyin_dict_withtone.js', '知识星球未加载本地拼音字典');
 requireText(knowledgeHtml, 'vendor/pinyinjs/pinyinUtil.js', '知识星球未加载本地拼音工具');
