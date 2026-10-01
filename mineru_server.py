@@ -133,23 +133,28 @@ def poll_agent(task_id, timeout=240):
     raise TimeoutError("MinerU Agent parse timeout")
 
 
-def poll_precise(batch_id, token, file_name, data_id, timeout=480):
+def get_precise_row(batch_id, token, file_name="", data_id=""):
     headers = {"Authorization": f"Bearer {token}", "Accept": "*/*"}
+    _, data = request_json(
+        "GET",
+        f"{V4}/extract-results/batch/{batch_id}",
+        headers=headers,
+    )
+    if not isinstance(data, dict) or data.get("code") != 0:
+        raise RuntimeError((data or {}).get("msg") or "MinerU precise query failed")
+    rows = (data.get("data") or {}).get("extract_result") or []
+    row = next((x for x in rows if data_id and x.get("data_id") == data_id), None)
+    if row is None:
+        row = next((x for x in rows if file_name and x.get("file_name") == file_name), None)
+    if row is None and rows:
+        row = rows[0]
+    return row
+
+
+def poll_precise(batch_id, token, file_name, data_id, timeout=1200):
     started = time.time()
     while time.time() - started < timeout:
-        _, data = request_json(
-            "GET",
-            f"{V4}/extract-results/batch/{batch_id}",
-            headers=headers,
-        )
-        if not isinstance(data, dict) or data.get("code") != 0:
-            raise RuntimeError((data or {}).get("msg") or "MinerU precise query failed")
-        rows = (data.get("data") or {}).get("extract_result") or []
-        row = next((x for x in rows if x.get("data_id") == data_id), None)
-        if row is None:
-            row = next((x for x in rows if x.get("file_name") == file_name), None)
-        if row is None and rows:
-            row = rows[0]
+        row = get_precise_row(batch_id, token, file_name, data_id)
         if row:
             state = row.get("state")
             if state == "done":
@@ -159,6 +164,19 @@ def poll_precise(batch_id, token, file_name, data_id, timeout=480):
         time.sleep(2.2)
     raise TimeoutError("MinerU precise parse timeout")
 
+
+def extract_precise_markdown(zip_url):
+    zip_resp = requests.get(zip_url, timeout=TIMEOUT)
+    zip_resp.raise_for_status()
+    with zipfile.ZipFile(io.BytesIO(zip_resp.content)) as zf:
+        md_names = [n for n in zf.namelist() if re.search(r"(^|/)full\.md$", n, re.I)]
+        if not md_names:
+            md_names = [n for n in zf.namelist() if n.lower().endswith(".md")]
+        if not md_names:
+            raise RuntimeError("No Markdown file found in MinerU result ZIP")
+        md_name = md_names[0]
+        markdown = zf.read(md_name).decode("utf-8", errors="replace")
+        return embed_zip_assets(markdown, zf, md_name)
 
 def normalize_remote_markdown_assets(markdown, markdown_url):
     base = urljoin(markdown_url, ".")
@@ -272,6 +290,117 @@ def parse_file_light():
         return fail(exc, 500, "mineru_light")
 
 
+@app.route("/mineru/precise/start", methods=["POST", "OPTIONS"])
+def precise_start():
+    if request.method == "OPTIONS":
+        return ("", 204)
+    try:
+        file_obj = request.files.get("file")
+        if not file_obj:
+            return fail("missing file", 400, "input")
+        content = file_obj.read()
+        if len(content) > 200 * 1024 * 1024:
+            return fail("MinerU precise mode file must be <= 200MB", 400, "input")
+
+        token = (request.form.get("mineru_token") or os.environ.get("MINERU_TOKEN") or "").strip()
+        if not token:
+            return fail("MinerU precise mode requires mineru_token or MINERU_TOKEN", 400, "auth")
+
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+            "Accept": "*/*",
+        }
+        data_id = f"xq_{int(time.time() * 1000)}"
+        _, payload = request_json(
+            "POST",
+            f"{V4}/file-urls/batch",
+            headers=headers,
+            json={
+                "files": [{"name": file_obj.filename, "data_id": data_id}],
+                "model_version": "vlm",
+                "language": request.form.get("language", "ch"),
+                "enable_table": True,
+                "enable_formula": True,
+            },
+        )
+        if not isinstance(payload, dict) or payload.get("code") != 0:
+            raise RuntimeError((payload or {}).get("msg") or "MinerU precise upload request failed")
+
+        data = payload.get("data") or {}
+        batch_id = data.get("batch_id")
+        file_urls = data.get("file_urls") or []
+        if not batch_id or not file_urls:
+            raise RuntimeError("MinerU did not return batch_id/file_urls")
+
+        put = requests.put(file_urls[0], data=content, timeout=TIMEOUT)
+        put.raise_for_status()
+        app.logger.info("MinerU precise submitted batch=%s file=%s", batch_id, file_obj.filename)
+
+        return jsonify(
+            ok=True,
+            state="submitted",
+            batch_id=batch_id,
+            data_id=data_id,
+            file_name=file_obj.filename,
+            source="mineru_precise",
+        )
+    except Exception as exc:
+        app.logger.exception("MinerU precise start failed")
+        return fail(exc, 500, "mineru_precise_start")
+
+
+@app.route("/mineru/precise/status", methods=["POST", "OPTIONS"])
+def precise_status():
+    if request.method == "OPTIONS":
+        return ("", 204)
+    try:
+        token = (request.form.get("mineru_token") or os.environ.get("MINERU_TOKEN") or "").strip()
+        batch_id = (request.form.get("batch_id") or "").strip()
+        data_id = (request.form.get("data_id") or "").strip()
+        file_name = (request.form.get("file_name") or "").strip()
+        if not token:
+            return fail("missing mineru_token", 400, "auth")
+        if not batch_id:
+            return fail("missing batch_id", 400, "input")
+
+        row = get_precise_row(batch_id, token, file_name, data_id)
+        if not row:
+            return jsonify(ok=True, state="waiting", batch_id=batch_id)
+
+        state = row.get("state") or "waiting"
+        progress = row.get("extract_progress") or {}
+        if state == "failed":
+            return fail(row.get("err_msg") or "MinerU precise parse failed", 502, "mineru_precise_status")
+
+        if state != "done":
+            return jsonify(
+                ok=True,
+                state=state,
+                batch_id=batch_id,
+                extract_progress=progress,
+            )
+
+        zip_url = row.get("full_zip_url")
+        if not zip_url:
+            raise RuntimeError("MinerU did not return full_zip_url")
+
+        markdown = extract_precise_markdown(zip_url)
+        app.logger.info("MinerU precise completed batch=%s", batch_id)
+        return jsonify(
+            ok=True,
+            state="done",
+            markdown=markdown,
+            batch_id=batch_id,
+            full_zip_url=zip_url,
+            extract_progress=progress,
+            source="mineru_precise",
+        )
+    except Exception as exc:
+        app.logger.exception("MinerU precise status failed")
+        return fail(exc, 500, "mineru_precise_status")
+
+
 @app.route("/mineru/parse-file-precise", methods=["POST", "OPTIONS"])
 def parse_file_precise():
     if request.method == "OPTIONS":
@@ -324,18 +453,7 @@ def parse_file_precise():
         if not zip_url:
             raise RuntimeError("MinerU did not return full_zip_url")
 
-        zip_resp = requests.get(zip_url, timeout=TIMEOUT)
-        zip_resp.raise_for_status()
-        with zipfile.ZipFile(io.BytesIO(zip_resp.content)) as zf:
-            md_names = [n for n in zf.namelist() if re.search(r"(^|/)full\.md$", n, re.I)]
-            if not md_names:
-                md_names = [n for n in zf.namelist() if n.lower().endswith(".md")]
-            if not md_names:
-                raise RuntimeError("No Markdown file found in MinerU result ZIP")
-
-            md_name = md_names[0]
-            markdown = zf.read(md_name).decode("utf-8", errors="replace")
-            markdown = embed_zip_assets(markdown, zf, md_name)
+        markdown = extract_precise_markdown(zip_url)
 
         return jsonify(
             ok=True,
