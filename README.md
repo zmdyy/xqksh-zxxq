@@ -87,3 +87,26 @@ node tools/audit-visual-layout.js
 
 其中视觉体检会检查无效坐标、模块内最小节点间距、模块间分离度、标签碰撞规避是否启用，以及旧的“选中后全部标签显示”问题是否回归。
 
+
+
+## MinerU 解析
+
+当前网页不再把本地 Python 服务作为 MinerU 的必需条件。
+
+- **MinerU 轻量解析**：网页优先直接调用 MinerU 官方 Agent API，无需 Token。适合 10 MB / 20 页以内的试卷。
+- **MinerU 精准解析**：在页面中填写独立的 MinerU Token 后，网页直接调用官方 V4 签名上传接口，下载完整结果 ZIP，并把 ZIP 内图片内嵌到 Markdown 后再保存到考试批次。
+- **本地兼容服务**：若浏览器、校园网络或部署环境阻止跨域直连，网页会自动尝试 `http://127.0.0.1:8765`。
+
+Windows 本地需要兼容服务时可直接运行：
+
+```bat
+start_mineru_server.bat
+```
+
+若希望同时启动网页和兼容服务，可运行：
+
+```bat
+start_local.bat
+```
+
+依赖文件为 `requirements-mineru.txt`，代理实现位于 `mineru_server.py`。代理只作为云端 API 的兼容层，不要求本机安装 MinerU 模型。
