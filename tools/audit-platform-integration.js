@@ -29,6 +29,14 @@ requireText(rootHtml, 'subjectSet[subjName] = true', '错题本科目统计缺�
 requireText(rootHtml, 'window.getErrorNotebookQuestionSnapshots = getErrorNotebookQuestionSnapshots', '错题本未提供原卷截图导出接口');
 requireText(rootHtml, 'detailItemNames: e.detailItemNames || [e.itemName]', '错题本导出未保留合并子问信息');
 requireText(rootHtml, 'notebook-docx.js?v=6', '错题本Word生成器版本未更新');
+requireText(rootHtml, "MINERU_CLOUD_AGENT_BASE = 'https://mineru.net/api/v1/agent'", 'MinerU轻量解析未接官方云端Agent API');
+requireText(rootHtml, "MINERU_CLOUD_V4_BASE = 'https://mineru.net/api/v4'", 'MinerU精准解析未接官方V4 API');
+requireText(rootHtml, 'function mineruEmbedZipAssets', 'MinerU精准结果未内嵌ZIP图片');
+requireText(rootHtml, 'async function parsePdfToMarkdown_MinerUAgentCloud', '缺少MinerU云端轻量解析函数');
+requireText(rootHtml, 'async function parsePdfToMarkdown_MinerUPreciseCloud', '缺少MinerU云端精准解析函数');
+requireText(rootHtml, 'id="mineruToken"', 'MinerU精准模式缺少独立Token输入');
+requireText(rootHtml, 'parsePdfToMarkdown_MinerULocalProxy', 'MinerU缺少本地兼容后备');
+
 requireText(notebookDocxCode, 'typeof window.getErrorNotebookQuestionSnapshots', 'Word导出未优先使用原卷截图');
 requireText(notebookDocxCode, 'docxInfoTable', 'Word错题信息未结构化排版');
 try { new vm.Script(notebookDocxCode, { filename: 'notebook-docx.js' }); }
