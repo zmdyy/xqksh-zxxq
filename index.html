@@ -3720,57 +3720,7 @@ async function parsePdfToMarkdown_MinerULocalProxy(file, progressCb, precise) {
     };
 }
 
-async function parsePdfToMarkdown_MinerU(file, progressCb, precise) {
-    var isPrecise = !!precise;
-    if (!isPrecise && file.size > 10 * 1024 * 1024) throw new Error('MinerU 轻量接口限制文件不超过 10MB');
-    if (isPrecise && file.size > 200 * 1024 * 1024) throw new Error('MinerU 精准解析限制文件不超过 200MB');
-    if (!isPrecise && window.pdfjsLib) {
-        try {
-            if (progressCb) progressCb('正在检查 PDF 页数...');
-            var ab = await file.arrayBuffer();
-            var pdf = await window.pdfjsLib.getDocument({ data: ab, disableWorker: true }).promise;
-            if (pdf.numPages > 20) throw new Error('MinerU 轻量接口限制不超过 20 页，当前 ' + pdf.numPages + ' 页');
-        } catch(checkErr) {
-            if (/MinerU 轻量接口限制/.test(String(checkErr.message || checkErr))) throw checkErr;
-            console.warn('MinerU 页数预检查失败，继续提交服务端解析', checkErr);
-        }
-    }
 
-    if (progressCb) progressCb('正在提交到本地 MinerU ' + (isPrecise ? '精准' : '轻量') + '服务...');
-    var fd = new FormData();
-    fd.append('file', file, file.name);
-    fd.append('language', 'ch');
-    fd.append('enable_table', 'true');
-    fd.append('is_ocr', 'false');
-    fd.append('enable_formula', 'true');
-    if (isPrecise) fd.append('model_version', 'vlm');
-
-    var resp;
-    try {
-        resp = await fetch(MINERU_API_BASE + '/' + (isPrecise ? 'mineru/parse-file-precise' : 'mineru/parse-file'), { method: 'POST', body: fd });
-    } catch(err) {
-        throw new Error('无法连接本地 MinerU 服务。请先运行: python mineru_server.py');
-    }
-    var text = await resp.text();
-    var data;
-    try { data = JSON.parse(text); } catch(e) { throw new Error('本地 MinerU 服务返回非 JSON: ' + text.slice(0, 200)); }
-    if (!resp.ok || !data.ok) throw new Error(data.error || ('本地 MinerU 服务失败: HTTP ' + resp.status));
-
-    if (progressCb) progressCb('MinerU 解析完成，正在构建题目索引...');
-    var markdown = data.markdown || '';
-    var questionIndex = buildQuestionIndexFromMarkdown(markdown);
-    var detectedSubject = detectSubjectByFileName(file.name);
-    return {
-        markdown: markdown,
-        questionIndex: questionIndex,
-        detectedSubject: detectedSubject,
-        source: isPrecise ? 'mineru_precise' : 'mineru',
-        taskId: data.task_id || '',
-        markdownUrl: data.markdown_url || '',
-        batchId: data.batch_id || '',
-        zipUrl: data.full_zip_url || ''
-    };
-}
 
 async function parsePdfToMarkdown_LocalFast(file, progressCb) {
     var modeEl = document.getElementById('pdfParseMode');
