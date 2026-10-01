@@ -553,26 +553,41 @@ async function exportErrorNotebookWord() {
                 var correctAns = notebookCleanAnswer(it.correctAnswer, '未提供');
                 bodyXml += docxInfoTable(it.score + '/' + it.maxScore + '（' + ratePct + '%）', stuAns, correctAns);
 
-                var snapshots = [];
-                if (typeof window.getErrorNotebookQuestionSnapshots === 'function' && it.batchId) {
+                var sourceText = it.parseSource ? it.parseSource.replace('mineru_precise','MinerU 精准').replace('mineru','MinerU 轻量').replace('vision','AI视觉').replace('local','pdf.js') : '';
+                bodyXml += docxBlock(
+                    docxStyledRun('原题', {size:20,bold:true,color:'475569'}) +
+                    (sourceText ? docxStyledRun('  ·  ' + sourceText, {size:17,color:'94A3B8'}) : ''),
+                    {after:70,keepNext:true}
+                );
+
+                var preparedStem = it.stemMarkdown ? preprocess(it.stemMarkdown) : '';
+                var structuredUsed = false;
+                if (preparedStem && notebookMarkdownHasUsefulText(preparedStem)) {
+                    loadingDiv.textContent = '正在排版图文原题：' + subj.name + ' ' + (it.itemName || '');
+                    bodyXml += await markdownStemToDocxBody(preparedStem, mediaBag);
+                    structuredUsed = true;
+                }
+
+                // PDF整题截图只作为兜底，不再作为默认输出。
+                var needSnapshotFallback = !structuredUsed || notebookMarkdownHasBrokenImageCue(preparedStem) ||
+                    (notebookQuestionSuggestsFigure(preparedStem) && !notebookMarkdownHasRenderableImage(preparedStem));
+                if (needSnapshotFallback && typeof window.getErrorNotebookQuestionSnapshots === 'function' && it.batchId) {
                     try {
-                        loadingDiv.textContent = '正在提取原题：' + subj.name + ' ' + (it.itemName || '');
-                        snapshots = await window.getErrorNotebookQuestionSnapshots(it);
+                        loadingDiv.textContent = '正在补充原卷图示：' + subj.name + ' ' + (it.itemName || '');
+                        var snapshots = await window.getErrorNotebookQuestionSnapshots(it);
+                        if (snapshots && snapshots.length) {
+                            if (structuredUsed) bodyXml += docxBlock(docxStyledRun('原卷图示补充', {size:18,bold:true,color:'64748B'}), {before:80,after:60});
+                            for (var si = 0; si < snapshots.length; si++) {
+                                var shotXml = await docxImageParagraphFromSource(snapshots[si], mediaBag, 5850000, 6900000);
+                                if (shotXml) bodyXml += shotXml;
+                            }
+                        }
                     } catch (snapErr) {
-                        console.warn('原题截图提取失败，回退到文本题干', snapErr);
-                        snapshots = [];
+                        console.warn('原卷兜底截图失败', snapErr);
                     }
                 }
 
-                bodyXml += docxBlock(docxStyledRun('原题', {size:20,bold:true,color:'475569'}), {after:70,keepNext:true});
-                if (snapshots && snapshots.length) {
-                    for (var si = 0; si < snapshots.length; si++) {
-                        var shotXml = await docxImageParagraphFromSource(snapshots[si], mediaBag, 5850000, 6900000);
-                        if (shotXml) bodyXml += shotXml;
-                    }
-                } else if (it.stemMarkdown) {
-                    bodyXml += await markdownStemToDocxBody(preprocess(it.stemMarkdown), mediaBag);
-                } else {
+                if (!structuredUsed && !preparedStem) {
                     bodyXml += docxBlock(docxStyledRun('未能从试卷中定位原题。', {size:19,color:'94A3B8'}), {after:100});
                 }
 
