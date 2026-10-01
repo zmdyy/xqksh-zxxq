@@ -3217,60 +3217,14 @@ async function reparsePdfFromDataMinerU(entry, precise) {
     delete entry._qi;
 }
 window.refreshAllPdfAnalyses = async function() {
-    var modeEl = document.getElementById('pdfParseMode');
-    var mode = modeEl ? modeEl.value : 'fast';
-    var cfg = getVisionConfig();
-    var labelMap = {
-        fast: 'pdf.js 快速解析',
-        precise: 'AI视觉精准解析',
-        mineru: 'MinerU 轻量解析',
-        mineru_precise: 'MinerU 精准解析'
-    };
-    var label = labelMap[mode] || mode;
-
-    if (mode === 'mineru_precise' && !cfg.mineruToken) {
-        await showAlert('当前选择了 MinerU 精准解析，但尚未填写 MinerU Token。不会降级为 pdf.js。');
-        return;
-    }
-    if (mode === 'precise' && !cfg.apiKey) {
-        await showAlert('当前选择了 AI视觉精准解析，但尚未填写 API Key。不会降级为 pdf.js。');
-        return;
-    }
-    if (!await showConfirm('将按当前模式「' + label + '」重新解析试卷并刷新分析结果，是否继续？')) return;
-
-    showToast('正在使用 ' + label + ' 重新解析试卷…', 'info');
-    var pdfEntries = uploadedPdfs.filter(function(p) { return p.status === 'ready' || p.status === 'error'; });
-    for (var i = 0; i < pdfEntries.length; i++) {
-        var p = pdfEntries[i];
-        if (/\.md$/i.test(p.fileName)) continue;
-        if (!p.fileData && !p.fileDataB64) {
-            showToast('试卷 "' + p.fileName + '" 无原始数据，跳过', 'warning');
-            continue;
-        }
-        try {
-            p.status = 'parsing';
-            p.errorMsg = '';
-            renderPdfList();
-            if (mode === 'mineru' || mode === 'mineru_precise') {
-                await reparsePdfFromDataMinerU(p, mode === 'mineru_precise');
-            } else {
-                await reparsePdfFromData(p);
-                // parsePdfToMarkdown() itself respects AI视觉 precise mode.
-                if (mode === 'precise' && p.source !== 'vision') {
-                    throw new Error('AI视觉精准解析未成功，实际来源为 ' + getNotebookPdfSourceLabel(p.source));
-                }
-            }
-        } catch(err) {
-            p.status = 'error';
-            p.errorMsg = String(err.message || err);
-        }
-        renderPdfList();
-    }
-
+    showToast('正在刷新分析结果…', 'info');
     try { displayPersonalResults(); } catch(e) { console.warn('个人分析刷新失败', e); }
+    try { renderCollectiveDiagnosis(); } catch(e) { console.warn('共性诊断刷新失败', e); }
     try { renderCollectiveTables(); } catch(e) { console.warn('小题分析刷新失败', e); }
+    try { renderCollectiveRankBar(); } catch(e) { console.warn('排名分析刷新失败', e); }
+    try { renderScoreDistChart(); } catch(e) { console.warn('分布图刷新失败', e); }
     var savedOk = await DataPool.syncFromGlobalsIfEditing();
-    showToast(savedOk === false ? '解析完成，但批次保存失败' : (label + '完成并已更新当前批次'), savedOk === false ? 'warning' : 'success');
+    showToast(savedOk === false ? '分析已刷新，但当前批次保存失败' : '分析已刷新（不会重新解析PDF）', savedOk === false ? 'warning' : 'success');
 };
 window.reparseAllPdfsMinerU = async function() {
     var modeEl = document.getElementById('pdfParseMode');
@@ -8044,6 +7998,9 @@ function showPersonalErrorNotebook(studentName, studentClass) {
                     if (questionSource) html += '<span style="font-weight:500;color:#64748b;background:#eef2ff;padding:2px 7px;border-radius:10px;">' + escapeHtml(getNotebookPdfSourceLabel(questionSource)) + '</span>';
                     if (questionSourceFile) html += '<span style="font-weight:400;color:#9ca3af;">' + escapeHtml(questionSourceFile) + '</span>';
                     html += '</div>';
+                    if (questionSource === 'local') {
+                        html += '<div style="margin:6px 0 8px;padding:8px 10px;border-radius:6px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:12px;">⚠ 当前题目来自 pdf.js 文本层，图片和复杂版式可能缺失。请在「上传管理」选择 MinerU 精准解析并点击「重新解析（MinerU）」。</div>';
+                    }
                     html += '<div class="markdown-body notebook-full-question" style="margin-top:6px;padding:12px 14px;background:#f9fafb;border-radius:6px;border-left:3px solid #6366f1;overflow:visible;line-height:1.75;" id="' + cId + '">' + renderedQ + '</div>';
                 }
             }
