@@ -94,6 +94,52 @@ function stripMarkdownLight(text) {
         .replace(/&gt;/g, '>')
         .replace(/&amp;/g, '&');
 }
+
+function normalizeNotebookQuestionText(text) {
+    var s = String(text == null ? '' : text)
+        .replace(/\u00a0/g, ' ')
+        .replace(/[\t ]{2,}/g, ' ')
+        .replace(/\s+([，。！？；：、）》】〕）])/g, '$1')
+        .replace(/([（《【〔])\s+/g, '$1');
+
+    // pdf.js often inserts spaces between Chinese glyph fragments.
+    // Remove those artificial spaces while preserving normal Latin word spacing.
+    var prev = '';
+    while (prev !== s) {
+        prev = s;
+        s = s.replace(/([\u3400-\u9fff])\s+(?=[\u3400-\u9fff])/g, '$1');
+    }
+    s = s.replace(/([\u3400-\u9fff])\s+([，。！？；：、])/g, '$1$2');
+    s = s.replace(/([（《【])\s+([\u3400-\u9fff])/g, '$1$2');
+    return s;
+}
+
+function notebookParagraphChunks(text) {
+    var normalized = normalizeNotebookQuestionText(text);
+    var rawBlocks = normalized.split(/\n{2,}/);
+    var out = [];
+    rawBlocks.forEach(function(block) {
+        var lines = block.split(/\n+/).map(function(x) { return x.trim(); }).filter(Boolean);
+        if (!lines.length) return;
+        var current = '';
+        lines.forEach(function(line) {
+            var structural = /^(?:[A-DＡ-Ｄ][\.．、]|[（(]\s*\d+\s*[）)]|\d+[\.、．)]|[①②③④⑤⑥⑦⑧⑨⑩])/.test(line);
+            if (structural && current) {
+                out.push(current.trim());
+                current = line;
+                return;
+            }
+            if (!current) current = line;
+            else {
+                var noSpaceJoin = /[\u3400-\u9fff，。！？；：、）》】]$/.test(current) && /^[\u3400-\u9fff，。！？；：、）》】]/.test(line);
+                current += noSpaceJoin ? line : (' ' + line);
+            }
+        });
+        if (current) out.push(current.trim());
+    });
+    return out;
+}
+
 function tokenizeNotebookMarkdown(md) {
     var tokens = [];
     var s = String(md || '');
@@ -435,13 +481,10 @@ async function markdownStemToDocxBody(md, mediaBag) {
         if (tok.type === 'text') {
             var plain = stripMarkdownLight(tok.value);
             if (!plain) continue;
-            var chunks = plain.split(/\n{2,}/);
+            var chunks = notebookParagraphChunks(plain);
             for (var c = 0; c < chunks.length; c++) {
-                var chunk = chunks[c].replace(/^\n+|\n+$/g, '');
-                if (!chunk) {
-                    flushInline();
-                    continue;
-                }
+                var chunk = chunks[c];
+                if (!chunk) continue;
                 if (c === 0) inlineBuf += docxTextRun(chunk);
                 else {
                     flushInline();
