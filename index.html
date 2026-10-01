@@ -3630,7 +3630,11 @@ async function parsePdfToMarkdown_MinerULocalProxy(file, progressCb, precise) {
     fd.append('enable_table', 'true');
     fd.append('is_ocr', 'false');
     fd.append('enable_formula', 'true');
-    if (precise) fd.append('model_version', 'vlm');
+    if (precise) {
+        fd.append('model_version', 'vlm');
+        var localCfg = getVisionConfig();
+        if (localCfg.mineruToken) fd.append('mineru_token', localCfg.mineruToken);
+    }
     var resp = await fetch(MINERU_API_BASE + '/' + (precise ? 'mineru/parse-file-precise' : 'mineru/parse-file'), { method: 'POST', body: fd });
     var text = await resp.text();
     var data = mineruSafeJson(text, '本地MinerU');
