@@ -311,6 +311,10 @@ def precise_start():
             "Content-Type": "application/json",
             "Accept": "*/*",
         }
+        model_version = (request.form.get("model_version") or "vlm").strip()
+        if model_version not in {"pipeline", "vlm"}:
+            return fail("model_version must be pipeline or vlm", 400, "input")
+
         data_id = f"xq_{int(time.time() * 1000)}"
         _, payload = request_json(
             "POST",
@@ -318,7 +322,7 @@ def precise_start():
             headers=headers,
             json={
                 "files": [{"name": file_obj.filename, "data_id": data_id}],
-                "model_version": "vlm",
+                "model_version": model_version,
                 "language": request.form.get("language", "ch"),
                 "enable_table": True,
                 "enable_formula": True,
@@ -335,7 +339,12 @@ def precise_start():
 
         put = requests.put(file_urls[0], data=content, timeout=TIMEOUT)
         put.raise_for_status()
-        app.logger.info("MinerU precise submitted batch=%s file=%s", batch_id, file_obj.filename)
+        app.logger.info(
+            "MinerU precise submitted batch=%s model=%s file=%s",
+            batch_id,
+            model_version,
+            file_obj.filename,
+        )
 
         return jsonify(
             ok=True,
@@ -343,6 +352,7 @@ def precise_start():
             batch_id=batch_id,
             data_id=data_id,
             file_name=file_obj.filename,
+            model_version=model_version,
             source="mineru_precise",
         )
     except Exception as exc:
