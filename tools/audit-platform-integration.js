@@ -28,7 +28,7 @@ requireText(rootHtml, 'batchSet[batch.id] = true', '错题本跨批次统计仍�
 requireText(rootHtml, 'subjectSet[subjName] = true', '错题本科目统计缺失');
 requireText(rootHtml, 'window.getErrorNotebookQuestionSnapshots = getErrorNotebookQuestionSnapshots', '错题本未提供原卷截图导出接口');
 requireText(rootHtml, 'detailItemNames: e.detailItemNames || [e.itemName]', '错题本导出未保留合并子问信息');
-requireText(rootHtml, 'notebook-docx.js?v=7', '错题本Word生成器版本未更新');
+requireText(rootHtml, 'notebook-docx.js?v=8', '错题本Word生成器版本未更新');
 requireText(rootHtml, "MINERU_CLOUD_AGENT_BASE = 'https://mineru.net/api/v1/agent'", 'MinerU轻量解析未接官方云端Agent API');
 requireText(rootHtml, "MINERU_CLOUD_V4_BASE = 'https://mineru.net/api/v4'", 'MinerU精准解析未接官方V4 API');
 requireText(rootHtml, 'function mineruEmbedZipAssets', 'MinerU精准结果未内嵌ZIP图片');
