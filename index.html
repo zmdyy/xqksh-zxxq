@@ -1001,7 +1001,7 @@
             <ul class="file-list" id="pdfFileList"></ul>
             <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
                 <button class="upload-btn small" onclick="refreshAllPdfAnalyses()" style="background:#2ecc71;" title="重新运行个人分析、小题分析等模块以应用科目变更">🔄 刷新分析</button>
-                <button class="upload-btn small" onclick="reparseAllPdfsMinerU()" style="background:#0ea5e9;" title="通过本地 Python 服务重新提交 PDF 到 MinerU 轻量解析">🔄 重新解析（MinerU）</button>
+                <button class="upload-btn small" onclick="reparseAllPdfsMinerU()" style="background:#0ea5e9;" title="优先直连 MinerU 官方云端；必要时自动尝试本地兼容服务">🔄 重新解析（MinerU）</button>
             </div>
         </div>
     </div>
@@ -1016,8 +1016,8 @@
                 <select id="pdfParseMode" style="padding:4px 8px;border-radius:4px;border:1px solid #ccc;font-size:13px;">
                     <option value="fast">🔵 快速模式（纯文本提取）</option>
                     <option value="precise">🟣 精准模式（AI视觉识别）</option>
-                    <option value="mineru">⚡ MinerU 轻量解析（需本地服务）</option>
-                    <option value="mineru_precise">🧩 MinerU 精准解析（Token+图片嵌入）</option>
+                    <option value="mineru">⚡ MinerU 轻量解析（云端直连·免Token）</option>
+                    <option value="mineru_precise">🧩 MinerU 精准解析（云端直连·Token）</option>
                 </select>
             </label>
             <label style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;">
@@ -1030,8 +1030,13 @@
             </label>
             <label style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;">
                 API Key：
-                <input type="password" id="visionApiKey" placeholder="留空则使用快速模式" style="padding:4px 8px;border-radius:4px;border:1px solid #ccc;font-size:13px;width:240px;">
+                <input type="password" id="visionApiKey" placeholder="AI视觉模式使用" style="padding:4px 8px;border-radius:4px;border:1px solid #ccc;font-size:13px;width:210px;">
                 <button id="visionToggleKeyBtn" style="background:none;border:none;cursor:pointer;font-size:14px;padding:2px;" title="显示/隐藏">👁</button>
+            </label>
+            <label id="mineruTokenWrap" style="display:none;align-items:center;gap:4px;font-size:13px;font-weight:600;">
+                MinerU Token：
+                <input type="password" id="mineruToken" placeholder="精准解析需要；轻量解析无需" style="padding:4px 8px;border-radius:4px;border:1px solid #ccc;font-size:13px;width:250px;">
+                <button id="mineruToggleTokenBtn" type="button" style="background:none;border:none;cursor:pointer;font-size:14px;padding:2px;" title="显示/隐藏">👁</button>
             </label>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                 <button class="upload-btn small" id="visionTestBtn" style="background:#6366f1;">测试连接</button>
@@ -2735,15 +2740,19 @@ const DEFAULT_VISION_CONFIG = {
 };
 
 const MINERU_API_BASE = String(window.MINERU_API_BASE || localStorage.getItem('mineruApiBase') || 'http://127.0.0.1:8765').replace(/\/+$/, '');
+const MINERU_CLOUD_AGENT_BASE = 'https://mineru.net/api/v1/agent';
+const MINERU_CLOUD_V4_BASE = 'https://mineru.net/api/v4';
 
 // Vision config persistence
 function saveVisionConfig() {
+    var mineruTokenEl = document.getElementById('mineruToken');
     var cfg = {
         provider: document.getElementById('visionProvider').value,
         model: document.getElementById('visionModel').value,
         apiKey: document.getElementById('visionApiKey').value,
+        mineruToken: mineruTokenEl ? mineruTokenEl.value : '',
         mode: document.getElementById('pdfParseMode').value,
-        mineruDefaultVersion: 1
+        mineruDefaultVersion: 2
     };
     try { localStorage.setItem('visionConfig', JSON.stringify(cfg)); } catch(e) {}
 }
@@ -2751,7 +2760,6 @@ function loadVisionConfig() {
     try {
         var raw = localStorage.getItem('visionConfig');
         var cfg = raw ? JSON.parse(raw) : {};
-        // Fill defaults for any missing fields
         if (!cfg.provider || !document.getElementById('visionProvider').querySelector('option[value="' + cfg.provider + '"]')) {
             cfg.provider = DEFAULT_VISION_CONFIG.provider;
         }
@@ -2760,23 +2768,27 @@ function loadVisionConfig() {
             var curProv = VISION_PROVIDERS[cfg.provider];
             cfg.apiKey = (curProv && curProv.defaultKey) || DEFAULT_VISION_CONFIG.apiKey;
         }
-        if (!cfg.mineruDefaultVersion) cfg.mode = 'mineru_precise';
-        if (!cfg.mode || ['fast','precise','mineru','mineru_precise'].indexOf(cfg.mode) < 0) cfg.mode = 'mineru_precise';
+        if (!cfg.mode || ['fast','precise','mineru','mineru_precise'].indexOf(cfg.mode) < 0) cfg.mode = 'mineru';
 
         document.getElementById('visionProvider').value = cfg.provider;
         updateVisionModelList();
         var m = document.getElementById('visionModel');
         if (m.querySelector('option[value="' + cfg.model + '"]')) m.value = cfg.model;
-        document.getElementById('visionApiKey').value = cfg.apiKey;
+        document.getElementById('visionApiKey').value = cfg.apiKey || '';
+        var mt = document.getElementById('mineruToken');
+        if (mt) mt.value = cfg.mineruToken || '';
         document.getElementById('pdfParseMode').value = cfg.mode;
+        updateVisionModeBadge();
         saveVisionConfig();
     } catch(e) {}
 }
 function getVisionConfig() {
+    var mt = document.getElementById('mineruToken');
     return {
         provider: document.getElementById('visionProvider').value,
         model: document.getElementById('visionModel').value,
         apiKey: document.getElementById('visionApiKey').value.trim(),
+        mineruToken: mt ? mt.value.trim() : '',
         mode: document.getElementById('pdfParseMode').value
     };
 }
@@ -2802,20 +2814,24 @@ function updateVisionModelList() {
 function updateVisionModeBadge() {
     var badge = document.getElementById('visionModeBadge');
     var mode = document.getElementById('pdfParseMode').value;
+    var mineruWrap = document.getElementById('mineruTokenWrap');
+    if (mineruWrap) mineruWrap.style.display = mode === 'mineru_precise' ? 'flex' : 'none';
     if (!badge) return;
     if (mode === 'precise') {
         var key = document.getElementById('visionApiKey').value.trim();
-        badge.textContent = key ? '🟣 精准模式' : '⚠ 精准模式（无Key）';
+        badge.textContent = key ? '🟣 AI视觉精准模式' : '⚠ AI视觉精准模式（无Key）';
         badge.style.background = key ? '#ede7f6' : '#fff3e0';
         badge.style.color = key ? '#4527a0' : '#e65100';
     } else if (mode === 'mineru') {
-        badge.textContent = '⚡ MinerU 轻量解析';
+        badge.textContent = '⚡ MinerU 云端轻量';
         badge.style.background = '#e0f2fe';
         badge.style.color = '#0369a1';
     } else if (mode === 'mineru_precise') {
-        badge.textContent = '🧩 MinerU 精准解析';
-        badge.style.background = '#fef3c7';
-        badge.style.color = '#92400e';
+        var token = document.getElementById('mineruToken');
+        var hasToken = token && token.value.trim();
+        badge.textContent = hasToken ? '🧩 MinerU 云端精准' : '⚠ MinerU 精准（需Token）';
+        badge.style.background = hasToken ? '#dcfce7' : '#fef3c7';
+        badge.style.color = hasToken ? '#166534' : '#92400e';
     } else {
         badge.textContent = '🔵 快速模式';
         badge.style.background = '#e8f5e9';
@@ -3233,7 +3249,7 @@ window.reparseAllPdfsMinerU = async function() {
     var modeEl = document.getElementById('pdfParseMode');
     var precise = modeEl && modeEl.value === 'mineru_precise';
     var label = precise ? 'MinerU 精准解析' : 'MinerU 轻量解析';
-    if (!await showConfirm('将通过本地服务重新提交所有PDF到 ' + label + '，可能需要几十秒到几分钟，是否继续？')) { showToast('已取消', 'info'); return; }
+    if (!await showConfirm('将优先直连 MinerU 官方云端重新解析所有PDF；若浏览器环境阻止直连，会自动尝试本地兼容服务。' + label + ' 可能需要几十秒到几分钟，是否继续？')) { showToast('已取消', 'info'); return; }
     showToast('正在提交 ' + label + '...', 'info');
     var pdfEntries = uploadedPdfs.filter(function(p) { return !/\.md$/i.test(p.fileName) && (p.status === 'ready' || p.status === 'error'); });
     if (!pdfEntries.length) { showToast('没有可重新解析的 PDF', 'warning'); return; }
@@ -3435,6 +3451,203 @@ async function parsePdfToMarkdown(file, progressCb) {
     inlineSubs.forEach(function(sq) { questionIndex.push(sq); });
     var detectedSubject = detectSubjectByFileName(file.name);
     return { markdown: markdown, questionIndex: questionIndex, detectedSubject: detectedSubject, source: 'local' };
+}
+
+
+function mineruSleep(ms) {
+    return new Promise(function(resolve) { setTimeout(resolve, ms); });
+}
+function mineruSafeJson(text, label) {
+    try { return JSON.parse(text); }
+    catch(e) { throw new Error((label || 'MinerU') + ' 返回非JSON: ' + String(text || '').slice(0, 180)); }
+}
+function mineruNormalizeMarkdownAssetUrls(markdown, baseUrl) {
+    if (!markdown || !baseUrl) return markdown || '';
+    var base;
+    try { base = new URL('.', baseUrl).href; } catch(e) { return markdown; }
+    var out = String(markdown);
+    out = out.replace(/!\[([^\]]*)\]\((?!data:|https?:|blob:)([^)]+)\)/gi, function(_, alt, rel) {
+        try { return '![' + alt + '](' + new URL(rel.trim(), base).href + ')'; } catch(e) { return _; }
+    });
+    out = out.replace(/(<img\b[^>]*\bsrc=["'])(?!data:|https?:|blob:)([^"']+)(["'][^>]*>)/gi, function(_, a, rel, b) {
+        try { return a + new URL(rel.trim(), base).href + b; } catch(e) { return _; }
+    });
+    return out;
+}
+function mineruZipMime(path) {
+    var p = String(path || '').toLowerCase().split('?')[0];
+    if (/\.jpe?g$/.test(p)) return 'image/jpeg';
+    if (/\.webp$/.test(p)) return 'image/webp';
+    if (/\.gif$/.test(p)) return 'image/gif';
+    if (/\.svg$/.test(p)) return 'image/svg+xml';
+    return 'image/png';
+}
+function mineruNormalizeZipPath(path) {
+    return decodeURIComponent(String(path || '').replace(/^\.\//, '').replace(/^\//, '')).replace(/\\/g, '/');
+}
+function mineruFindZipFile(zip, mdFileName, relPath) {
+    var clean = mineruNormalizeZipPath(relPath).split('#')[0].split('?')[0];
+    var mdDir = '';
+    var slash = String(mdFileName || '').lastIndexOf('/');
+    if (slash >= 0) mdDir = String(mdFileName).slice(0, slash + 1);
+    var candidates = [
+        mineruNormalizeZipPath(mdDir + clean),
+        clean,
+        clean.replace(/^images\//, ''),
+        'images/' + clean.replace(/^images\//, '')
+    ];
+    var names = Object.keys(zip.files || {});
+    for (var i = 0; i < candidates.length; i++) {
+        if (zip.file(candidates[i])) return zip.file(candidates[i]);
+    }
+    var base = clean.split('/').pop();
+    var matches = names.filter(function(n) { return !zip.files[n].dir && n.split('/').pop() === base; });
+    return matches.length === 1 ? zip.file(matches[0]) : null;
+}
+async function mineruEmbedZipAssets(markdown, zip, mdFileName, progressCb) {
+    var out = String(markdown || '');
+    var refs = [];
+    var re = /!\[([^\]]*)\]\(([^)]+)\)|<img\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi;
+    var m;
+    while ((m = re.exec(out))) {
+        var src = (m[2] || m[3] || '').trim();
+        if (!src || /^(data:|https?:|blob:)/i.test(src)) continue;
+        if (refs.indexOf(src) < 0) refs.push(src);
+    }
+    for (var i = 0; i < refs.length; i++) {
+        var src = refs[i];
+        var zf = mineruFindZipFile(zip, mdFileName, src);
+        if (!zf) continue;
+        if (progressCb) progressCb('正在内嵌试卷图片 ' + (i + 1) + '/' + refs.length + '...');
+        try {
+            var b64 = await zf.async('base64');
+            var dataUri = 'data:' + mineruZipMime(zf.name || src) + ';base64,' + b64;
+            out = out.split(src).join(dataUri);
+        } catch(e) {
+            console.warn('MinerU ZIP图片内嵌失败:', src, e);
+        }
+    }
+    return out;
+}
+async function parsePdfToMarkdown_MinerU(file, progressCb, precise) {
+    var cloudErr = null;
+    try {
+        return precise
+            ? await parsePdfToMarkdown_MinerUPreciseCloud(file, progressCb)
+            : await parsePdfToMarkdown_MinerUAgentCloud(file, progressCb);
+    } catch(err) {
+        cloudErr = err;
+        console.warn('MinerU云端直连失败，尝试本地兼容服务', err);
+    }
+    try {
+        return await parsePdfToMarkdown_MinerULocalProxy(file, progressCb, !!precise);
+    } catch(localErr) {
+        var msg = 'MinerU云端直连失败：' + String(cloudErr && (cloudErr.message || cloudErr) || '未知错误') +
+            '；本地兼容服务也不可用：' + String(localErr && (localErr.message || localErr) || '未知错误');
+        throw new Error(msg);
+    }
+}
+async function parsePdfToMarkdown_MinerUPreciseCloud(file, progressCb) {
+    if (file.size > 200 * 1024 * 1024) throw new Error('MinerU精准解析限制文件不超过200MB');
+    var cfg = getVisionConfig();
+    var token = String(cfg.mineruToken || '').trim();
+    if (!token) throw new Error('MinerU精准解析需要填写 MinerU Token');
+    if (typeof JSZip === 'undefined') throw new Error('JSZip未加载，无法读取MinerU结果包');
+
+    var dataId = ('xq_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8)).replace(/[^A-Za-z0-9_.-]/g, '');
+    if (progressCb) progressCb('正在向 MinerU 申请精准解析上传地址...');
+    var applyResp = await fetch(MINERU_CLOUD_V4_BASE + '/file-urls/batch', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({
+            files: [{ name: file.name, data_id: dataId }],
+            model_version: 'vlm',
+            language: 'ch',
+            enable_table: true,
+            enable_formula: true
+        })
+    });
+    var applyText = await applyResp.text();
+    var applyData = mineruSafeJson(applyText, 'MinerU精准');
+    if (!applyResp.ok || applyData.code !== 0 || !applyData.data || !applyData.data.file_urls || !applyData.data.file_urls[0]) {
+        throw new Error(applyData.msg || ('MinerU精准申请上传失败 HTTP ' + applyResp.status));
+    }
+    var batchId = applyData.data.batch_id;
+    var uploadUrl = applyData.data.file_urls[0];
+    if (progressCb) progressCb('上传试卷到 MinerU 精准解析...');
+    var putResp = await fetch(uploadUrl, { method: 'PUT', body: file });
+    if (!putResp.ok) throw new Error('MinerU精准文件上传失败 HTTP ' + putResp.status);
+
+    var started = Date.now(), zipUrl = '';
+    while (Date.now() - started < 480000) {
+        await mineruSleep(2200);
+        var pollResp = await fetch(MINERU_CLOUD_V4_BASE + '/extract-results/batch/' + encodeURIComponent(batchId), {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        var pollText = await pollResp.text();
+        var pollData = mineruSafeJson(pollText, 'MinerU精准');
+        if (!pollResp.ok || pollData.code !== 0 || !pollData.data) throw new Error(pollData.msg || 'MinerU精准查询失败');
+        var list = pollData.data.extract_result || [];
+        var row = list.find(function(x) { return x && (x.data_id === dataId || x.file_name === file.name); }) || list[0];
+        if (row) {
+            if (row.state === 'done') { zipUrl = row.full_zip_url || ''; break; }
+            if (row.state === 'failed') throw new Error(row.err_msg || 'MinerU精准解析失败');
+            if (progressCb) {
+                var ep = row.extract_progress || {};
+                progressCb('MinerU精准解析中' + (ep.total_pages ? '：' + (ep.extracted_pages || 0) + '/' + ep.total_pages + '页' : '：' + (row.state || '处理中')) + '...');
+            }
+        }
+    }
+    if (!zipUrl) throw new Error('MinerU精准解析超时');
+    if (progressCb) progressCb('正在下载 MinerU 完整结果包...');
+    var zipResp = await fetch(zipUrl);
+    if (!zipResp.ok) throw new Error('MinerU结果包下载失败 HTTP ' + zipResp.status);
+    var zipBuf = await zipResp.arrayBuffer();
+    var zip = await JSZip.loadAsync(zipBuf);
+    var mdNames = Object.keys(zip.files).filter(function(n) { return !zip.files[n].dir && /(^|\/)full\.md$/i.test(n); });
+    if (!mdNames.length) mdNames = Object.keys(zip.files).filter(function(n) { return !zip.files[n].dir && /\.md$/i.test(n); });
+    if (!mdNames.length) throw new Error('MinerU结果包中未找到Markdown');
+    var mdName = mdNames[0];
+    var markdown = await zip.file(mdName).async('string');
+    markdown = await mineruEmbedZipAssets(markdown, zip, mdName, progressCb);
+    return {
+        markdown: markdown,
+        questionIndex: buildQuestionIndexFromMarkdown(markdown),
+        detectedSubject: detectSubjectByFileName(file.name),
+        source: 'mineru_precise',
+        batchId: batchId,
+        zipUrl: zipUrl
+    };
+}
+async function parsePdfToMarkdown_MinerULocalProxy(file, progressCb, precise) {
+    if (progressCb) progressCb('云端直连不可用，正在尝试本地 MinerU 兼容服务...');
+    var fd = new FormData();
+    fd.append('file', file, file.name);
+    fd.append('language', 'ch');
+    fd.append('enable_table', 'true');
+    fd.append('is_ocr', 'false');
+    fd.append('enable_formula', 'true');
+    if (precise) fd.append('model_version', 'vlm');
+    var resp = await fetch(MINERU_API_BASE + '/' + (precise ? 'mineru/parse-file-precise' : 'mineru/parse-file'), { method: 'POST', body: fd });
+    var text = await resp.text();
+    var data = mineruSafeJson(text, '本地MinerU');
+    if (!resp.ok || !data.ok) throw new Error(data.error || ('本地MinerU失败 HTTP ' + resp.status));
+    var markdown = data.markdown || '';
+    if (markdown && data.markdown_url) markdown = mineruNormalizeMarkdownAssetUrls(markdown, data.markdown_url);
+    markdown = await embedImagesAsBase64(markdown, 1600, 0.88);
+    return {
+        markdown: markdown,
+        questionIndex: buildQuestionIndexFromMarkdown(markdown),
+        detectedSubject: detectSubjectByFileName(file.name),
+        source: precise ? 'mineru_precise' : 'mineru',
+        taskId: data.task_id || '',
+        markdownUrl: data.markdown_url || '',
+        batchId: data.batch_id || '',
+        zipUrl: data.full_zip_url || ''
+    };
 }
 
 async function parsePdfToMarkdown_MinerU(file, progressCb, precise) {
@@ -8554,6 +8767,18 @@ document.getElementById('pdfParseMode').addEventListener('change', function() {
     saveVisionConfig();
     setVisionControlsDimmed(this.value !== 'precise');
 });
+var mineruTokenEl = document.getElementById('mineruToken');
+if (mineruTokenEl) {
+    mineruTokenEl.addEventListener('input', function() { updateVisionModeBadge(); saveVisionConfig(); });
+}
+var mineruToggleTokenBtn = document.getElementById('mineruToggleTokenBtn');
+if (mineruToggleTokenBtn) {
+    mineruToggleTokenBtn.addEventListener('click', function() {
+        var inp = document.getElementById('mineruToken');
+        inp.type = inp.type === 'password' ? 'text' : 'password';
+        this.textContent = inp.type === 'password' ? '👁' : '🙈';
+    });
+}
 document.getElementById('visionToggleKeyBtn').addEventListener('click', function() {
     var inp = document.getElementById('visionApiKey');
     inp.type = inp.type === 'password' ? 'text' : 'password';
