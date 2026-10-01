@@ -485,6 +485,25 @@ async function markdownStemToDocxBody(md, mediaBag) {
     flushInline();
     return paragraphs.join('');
 }
+function notebookMarkdownHasUsefulText(md) {
+    var s = String(md || '')
+        .replace(/!\\[[^\\]]*\\]\\([^)]*\\)/g, ' ')
+        .replace(/<img\\b[^>]*>/gi, ' ')
+        .replace(/[`*_>#\\-]/g, ' ')
+        .replace(/\\s+/g, '');
+    return s.length >= 12;
+}
+function notebookMarkdownHasRenderableImage(md) {
+    return /!\\[[^\\]]*\\]\\((?:data:image\\/|https?:\\/\\/)[^)]+\\)|<img\\b[^>]*\\bsrc=[\"'](?:data:image\\/|https?:\\/\\/)[^\"']+[\"'][^>]*>/i.test(String(md || ''));
+}
+function notebookMarkdownHasBrokenImageCue(md) {
+    var s = String(md || '');
+    return /\\[image\\]|!\\[[^\\]]*\\]\\(\\s*\\)|<img\\b[^>]*\\bsrc=[\"']\\s*[\"']/i.test(s);
+}
+function notebookQuestionSuggestsFigure(md) {
+    return /(如图|图示|图甲|图乙|图丙|图丁|电路图|装置图|图\\s*\\d+)/.test(String(md || ''));
+}
+
 async function exportErrorNotebookWord() {
     var payload = window.lastErrorNotebookExport;
     var titleEl = document.getElementById('errorNotebookTitle');
