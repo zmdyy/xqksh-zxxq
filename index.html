@@ -2048,7 +2048,7 @@ const DataPool = {
         b.combinedStudentData = deepClone(combinedStudentData);
         b.allSubjectHeaders = deepClone(allSubjectHeaders);
         b.uploadedFilesData = deepClone(uploadedFilesData);
-        b.uploadedPdfs = deepClone(uploadedPdfs);
+        b.uploadedPdfs = cloneUploadedPdfsForMemory(uploadedPdfs);
         var ok = await persistBatches();
         refreshBatchList();
         updateBatchInfoBars();
@@ -2058,6 +2058,40 @@ const DataPool = {
 
 function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
+function normalizePdfBytes(value) {
+    if (!value) return null;
+    if (value instanceof Uint8Array) return new Uint8Array(value);
+    if (value instanceof ArrayBuffer) return new Uint8Array(value.slice(0));
+    if (Array.isArray(value)) return new Uint8Array(value);
+    if (typeof value === 'object') {
+        var keys = Object.keys(value).filter(function(k) { return /^\d+$/.test(k); }).sort(function(a,b) { return Number(a) - Number(b); });
+        if (keys.length) return new Uint8Array(keys.map(function(k) { return value[k]; }));
+    }
+    return null;
+}
+function cloneUploadedPdfsForMemory(list) {
+    return (list || []).map(function(p) {
+        var copy = Object.assign({}, p);
+        var bytes = normalizePdfBytes(p && p.fileData);
+        if (bytes) copy.fileData = bytes;
+        else delete copy.fileData;
+        delete copy._qi;
+        return copy;
+    });
+}
+function pdfBytesToBase64(bytesLike) {
+    var bytes = normalizePdfBytes(bytesLike);
+    if (!bytes || !bytes.length) return '';
+    var chunk = 0x8000;
+    var parts = [];
+    for (var i = 0; i < bytes.length; i += chunk) {
+        var slice = bytes.subarray(i, Math.min(i + chunk, bytes.length));
+        var s = '';
+        for (var j = 0; j < slice.length; j++) s += String.fromCharCode(slice[j]);
+        parts.push(s);
+    }
+    return btoa(parts.join(''));
+}
 function hasDataValue(v) { return v !== null && v !== undefined && !(typeof v === 'string' && v.trim() === ''); }
 function pickDataValue(primary, fallback, emptyValue) { return hasDataValue(primary) ? primary : (hasDataValue(fallback) ? fallback : (emptyValue !== undefined ? emptyValue : '')); }
 function getStudentDisplayName(stu) { return stu ? (stu.displayName || stu.name || '') : ''; }
@@ -2133,10 +2167,8 @@ function persistBatches() {
             var pdfs = (b.uploadedPdfs || []).map(function(p) {
                 var copy = Object.assign({}, p);
                 if (copy.fileData) {
-                    var binary = '';
-                    var bytes = copy.fileData;
-                    for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-                    copy.fileDataB64 = btoa(binary);
+                    var encoded = pdfBytesToBase64(copy.fileData);
+                    if (encoded) copy.fileDataB64 = encoded;
                     delete copy.fileData;
                 }
                 delete copy._qi;
@@ -3036,7 +3068,7 @@ function loadBatch(id) {
         combinedStudentData = deepClone(batch.combinedStudentData || []);
         applyDuplicateDisplayNames(combinedStudentData);
         allSubjectHeaders = deepClone(batch.allSubjectHeaders || []);
-        uploadedPdfs = deepClone(batch.uploadedPdfs || []);
+        uploadedPdfs = cloneUploadedPdfsForMemory(batch.uploadedPdfs || []);
         document.getElementById('deleteBatchBtn').style.display = 'inline-block';
         document.getElementById('clearCurrentBtn').style.display = 'inline-block';
         document.getElementById('newBatchName').style.display = 'inline-block';
@@ -3069,7 +3101,7 @@ document.getElementById('saveBatchBtn').addEventListener('click', async function
         document.getElementById('saveBatchBtn').textContent = '更新批次';
     } else {
         name = name || ('批次' + (DataPool.batches.length + 1));
-        var savedBatch = DataPool.addBatch(name, { combinedStudentData: deepClone(combinedStudentData), allSubjectHeaders: deepClone(allSubjectHeaders), uploadedPdfs: deepClone(uploadedPdfs), uploadedFilesData: deepClone(uploadedFilesData) });
+        var savedBatch = DataPool.addBatch(name, { combinedStudentData: deepClone(combinedStudentData), allSubjectHeaders: deepClone(allSubjectHeaders), uploadedPdfs: cloneUploadedPdfsForMemory(uploadedPdfs), uploadedFilesData: deepClone(uploadedFilesData) });
         refreshBatchList();
         var ok = await persistBatches();
         if (ok) loadBatch(savedBatch.id);
