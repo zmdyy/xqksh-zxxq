@@ -91,22 +91,35 @@ node tools/audit-visual-layout.js
 
 ## MinerU 解析
 
-当前网页不再把本地 Python 服务作为 MinerU 的必需条件。
+MinerU 精准解析需要后端代理。浏览器直接访问 MinerU API 可能被 CORS、混合内容或本机网络策略拦截，因此本项目本地运行时采用**同源一体化服务**：
 
-- **MinerU 轻量解析**：网页优先直接调用 MinerU 官方 Agent API，无需 Token。适合 10 MB / 20 页以内的试卷。
-- **MinerU 精准解析**：在页面中填写独立的 MinerU Token 后，网页直接调用官方 V4 签名上传接口，下载完整结果 ZIP，并把 ZIP 内图片内嵌到 Markdown 后再保存到考试批次。
-- **本地兼容服务**：若浏览器、校园网络或部署环境阻止跨域直连，网页会自动尝试 `http://127.0.0.1:8765`。
+- 网页：`http://127.0.0.1:5500/index.html`
+- 健康检查：`http://127.0.0.1:5500/health`
+- MinerU 轻量代理：`/mineru/parse-file`
+- MinerU 精准代理：`/mineru/parse-file-precise`
 
-Windows 本地需要兼容服务时可直接运行：
-
-```bat
-start_mineru_server.bat
-```
-
-若希望同时启动网页和兼容服务，可运行：
+Windows 推荐直接运行：
 
 ```bat
 start_local.bat
 ```
 
-依赖文件为 `requirements-mineru.txt`，代理实现位于 `mineru_server.py`。代理只作为云端 API 的兼容层，不要求本机安装 MinerU 模型。
+脚本会检查/安装 `Flask` 与 `requests`，随后由 `mineru_server.py` 在 5500 端口同时提供网页和 MinerU 代理。浏览器与代理同源，因此不需要跨域访问 MinerU。
+
+如果只需要旧的独立代理模式，可运行：
+
+```bat
+start_mineru_server.bat
+```
+
+该模式仅在 `http://127.0.0.1:8765` 提供代理，主要用于兼容旧工作流。
+
+### 解析模式
+
+- **MinerU 轻量解析**：免 Token，适合快速提取。
+- **MinerU 精准解析**：填写独立的 MinerU Token，代理调用官方 V4 接口，使用 `vlm` 模型，下载完整结果 ZIP，并把 ZIP 内图片内嵌到 Markdown 后保存到考试批次。
+- 选择精准模式后不会自动降级为轻量或 pdf.js；失败时会保留错误信息。
+
+### 注意
+
+如果浏览器中出现 `Failed to fetch` 且页面不是从 `http://127.0.0.1:5500/index.html` 打开的，请关闭原来的静态服务器，运行 `start_local.bat` 后从新的本地地址进入。
