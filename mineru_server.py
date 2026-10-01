@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-xqksh-zxxq local web server + MinerU proxy.
+xqksh-zxxq MinerU proxy.
 
-Recommended:
+Production:
+    Deploy as a public HTTPS web service (Render blueprint: render.yaml).
+
+Local debugging:
     python -m pip install -r requirements-mineru.txt
     python mineru_server.py
+    open http://127.0.0.1:5500/index.html
 
-Then open:
-    http://127.0.0.1:5500/index.html
-
-The same Flask process serves the web app and proxies MinerU requests, so the
-browser never needs to call mineru.net cross-origin.
+The browser calls this proxy instead of mineru.net directly, avoiding CORS.
+User-supplied MinerU tokens are used only for the current request and are not
+persisted by this service.
 """
 from __future__ import annotations
 
@@ -34,16 +36,44 @@ app = Flask(__name__, static_folder=None)
 AGENT = "https://mineru.net/api/v1/agent"
 V4 = "https://mineru.net/api/v4"
 TIMEOUT = 60
-PORT = int(os.environ.get("MINERU_PORT", "5500"))
+PORT = int(os.environ.get("PORT") or os.environ.get("MINERU_PORT", "5500"))
 SERVE_APP = os.environ.get("MINERU_SERVE_APP", "1") != "0"
+MAX_UPLOAD_MB = int(os.environ.get("MAX_UPLOAD_MB", "210"))
+app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_MB * 1024 * 1024
+
+DEFAULT_ALLOWED_ORIGINS = (
+    "https://zmdyy.github.io,"
+    "http://127.0.0.1:5500,"
+    "http://localhost:5500,"
+    "http://127.0.0.1:8765,"
+    "http://localhost:8765"
+)
+ALLOWED_ORIGINS = {
+    x.strip().rstrip("/")
+    for x in os.environ.get("ALLOWED_ORIGINS", DEFAULT_ALLOWED_ORIGINS).split(",")
+    if x.strip()
+}
+
+
+def origin_allowed(origin: str) -> bool:
+    if not origin:
+        return True
+    origin = origin.rstrip("/")
+    return "*" in ALLOWED_ORIGINS or origin in ALLOWED_ORIGINS
 
 
 @app.after_request
 def add_headers(resp):
-    # Keeps the API-only 8765 compatibility mode usable as a fallback.
-    resp.headers["Access-Control-Allow-Origin"] = "*"
+    # Allow the GitHub Pages frontend and local debugging origins.
+    # Do not use a wildcard in production: the browser sends a user-provided
+    # MinerU token to this proxy for precise parsing.
+    origin = (request.headers.get("Origin") or "").rstrip("/")
+    if origin and origin_allowed(origin):
+        resp.headers["Access-Control-Allow-Origin"] = origin
+        resp.headers["Vary"] = "Origin"
     resp.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
     resp.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    resp.headers["Cache-Control"] = "no-store"
     return resp
 
 
@@ -54,6 +84,7 @@ def health():
         service="xqksh-mineru-proxy",
         same_origin=SERVE_APP,
         port=PORT,
+        mode="web+proxy" if SERVE_APP else "proxy-only",
     )
 
 
@@ -332,4 +363,4 @@ if __name__ == "__main__":
     mode = "web + MinerU proxy" if SERVE_APP else "MinerU proxy only"
     print(f"xqksh-zxxq {mode}: http://127.0.0.1:{PORT}")
     print(f"Health check: http://127.0.0.1:{PORT}/health")
-    app.run(host="127.0.0.1", port=PORT, debug=False, threaded=True)
+    app.run(host=os.environ.get("HOST", "127.0.0.1"), port=PORT, debug=False, threaded=True)
