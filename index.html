@@ -6761,14 +6761,21 @@ function populateLevelCheckboxes() {
 
 function showCollectiveStudentDetail(name) {
     var resolved = resolveStudentSearchValue(name, { classFilter: document.getElementById('collectiveClassFilter') ? document.getElementById('collectiveClassFilter').value : '__all__' });
-    if (resolved) name = resolved.displayName;
+    var displayQueryName = resolved ? resolved.displayName : name;
+    var rawQueryName = resolved ? (resolved.rawName || resolved.displayName) : name;
+    var resolvedClass = resolved ? String(resolved.className || '') : '';
     const fd = getCollectiveFilteredData();
     const ss = getSelectedSubject();
     const res = document.getElementById('collectiveStudentQueryResult');
-    if (!fd.nameField || !name) { res.innerHTML = '<div class="error">无法查询</div>'; return; }
-    const filtered = fd.data.filter(r => r[fd.nameField] == name);
-    if (!filtered.length) { res.innerHTML = `<div class="error">未找到学生（${escapeHtml(name)}）</div>`; return; }
+    if (!fd.nameField || !rawQueryName) { res.innerHTML = '<div class="error">无法查询</div>'; return; }
+    const filtered = fd.data.filter(function(r) {
+        if (String(r[fd.nameField] || '') !== String(rawQueryName || '')) return false;
+        if (resolvedClass && fd.classField) return String(r[fd.classField] || '') === resolvedClass;
+        return true;
+    });
+    if (!filtered.length) { res.innerHTML = `<div class="error">未找到学生（${escapeHtml(displayQueryName || rawQueryName)}）</div>`; return; }
     const stu = filtered[0];
+    name = displayQueryName || rawQueryName;
     var hc = utilSplitHeaderCols(fd.headers);
     var scoreCols = hc.scoreCols, ansCols = hc.ansCols;
     var qd = utilBuildQuestionDict(scoreCols, ansCols, fd, ss);
