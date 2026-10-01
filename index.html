@@ -3634,21 +3634,35 @@ async function parsePdfToMarkdown_MinerUAgentCloud(file, progressCb) {
 }
 
 async function parsePdfToMarkdown_MinerU(file, progressCb, precise) {
-    var cloudErr = null;
+    var proxyBase = await findMineruProxyBase();
+    if (proxyBase) {
+        try {
+            if (progressCb) progressCb('已连接本地 MinerU 服务：' + proxyBase);
+            return await parsePdfToMarkdown_MinerULocalProxy(file, progressCb, !!precise, proxyBase);
+        } catch(proxyErr) {
+            console.warn('本地MinerU代理调用失败，尝试浏览器直连云端', proxyErr);
+            if (progressCb) progressCb('⚠ 本地 MinerU 服务已连接，但解析失败，正在尝试云端直连...');
+            try {
+                return precise
+                    ? await parsePdfToMarkdown_MinerUPreciseCloud(file, progressCb)
+                    : await parsePdfToMarkdown_MinerUAgentCloud(file, progressCb);
+            } catch(cloudErr) {
+                throw new Error('本地 MinerU 服务解析失败：' + String(proxyErr && (proxyErr.message || proxyErr) || '未知错误') +
+                    '；浏览器云端直连也失败：' + String(cloudErr && (cloudErr.message || cloudErr) || '未知错误'));
+            }
+        }
+    }
+
     try {
+        if (progressCb) progressCb('未检测到本地 MinerU 服务，正在尝试浏览器直连云端...');
         return precise
             ? await parsePdfToMarkdown_MinerUPreciseCloud(file, progressCb)
             : await parsePdfToMarkdown_MinerUAgentCloud(file, progressCb);
-    } catch(err) {
-        cloudErr = err;
-        console.warn('MinerU云端直连失败，尝试本地兼容服务', err);
-    }
-    try {
-        return await parsePdfToMarkdown_MinerULocalProxy(file, progressCb, !!precise);
-    } catch(localErr) {
-        var msg = 'MinerU云端直连失败：' + String(cloudErr && (cloudErr.message || cloudErr) || '未知错误') +
-            '；本地兼容服务也不可用：' + String(localErr && (localErr.message || localErr) || '未知错误');
-        throw new Error(msg);
+    } catch(cloudErr) {
+        throw new Error(
+            'MinerU 浏览器直连失败：' + String(cloudErr && (cloudErr.message || cloudErr) || '未知错误') +
+            '。当前未检测到本地同源服务。请使用仓库中的 start_local.bat 启动后，从 http://127.0.0.1:5500/index.html 打开系统。'
+        );
     }
 }
 async function parsePdfToMarkdown_MinerUPreciseCloud(file, progressCb) {
@@ -3726,8 +3740,40 @@ async function parsePdfToMarkdown_MinerUPreciseCloud(file, progressCb) {
         zipUrl: zipUrl
     };
 }
-async function parsePdfToMarkdown_MinerULocalProxy(file, progressCb, precise) {
-    if (progressCb) progressCb('云端直连不可用，正在尝试本地 MinerU 兼容服务...');
+async function findMineruProxyBase() {
+    var candidates = [];
+    if (window.location && /^https?:$/.test(window.location.protocol)) {
+        candidates.push(window.location.origin);
+    }
+    if (MINERU_API_BASE && candidates.indexOf(MINERU_API_BASE) < 0) {
+        candidates.push(MINERU_API_BASE);
+    }
+
+    for (var i = 0; i < candidates.length; i++) {
+        var base = String(candidates[i] || '').replace(/\/+$/, '');
+        if (!base) continue;
+        try {
+            var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+            var timer = ctrl ? setTimeout(function() { ctrl.abort(); }, 1800) : null;
+            var resp = await fetch(base + '/health', {
+                method: 'GET',
+                cache: 'no-store',
+                signal: ctrl ? ctrl.signal : undefined
+            });
+            if (timer) clearTimeout(timer);
+            if (!resp.ok) continue;
+            var data = await resp.json();
+            if (data && data.ok && data.service === 'xqksh-mineru-proxy') return base;
+        } catch(e) {}
+    }
+    return '';
+}
+
+async function parsePdfToMarkdown_MinerULocalProxy(file, progressCb, precise, proxyBase) {
+    var base = String(proxyBase || MINERU_API_BASE || '').replace(/\/+$/, '');
+    if (!base) throw new Error('未找到可用的 MinerU 本地代理');
+    if (progressCb) progressCb('正在通过本地同源服务连接 MinerU...');
+
     var fd = new FormData();
     fd.append('file', file, file.name);
     fd.append('language', 'ch');
@@ -3739,10 +3785,24 @@ async function parsePdfToMarkdown_MinerULocalProxy(file, progressCb, precise) {
         var localCfg = getVisionConfig();
         if (localCfg.mineruToken) fd.append('mineru_token', localCfg.mineruToken);
     }
-    var resp = await fetch(MINERU_API_BASE + '/' + (precise ? 'mineru/parse-file-precise' : 'mineru/parse-file'), { method: 'POST', body: fd });
+
+    var resp;
+    try {
+        resp = await fetch(base + '/' + (precise ? 'mineru/parse-file-precise' : 'mineru/parse-file'), {
+            method: 'POST',
+            body: fd
+        });
+    } catch(e) {
+        throw new Error('无法访问 MinerU 本地服务 ' + base + '：' + (e.message || e));
+    }
+
     var text = await resp.text();
     var data = mineruSafeJson(text, '本地MinerU');
-    if (!resp.ok || !data.ok) throw new Error(data.error || ('本地MinerU失败 HTTP ' + resp.status));
+    if (!resp.ok || !data.ok) {
+        var stageText = data.stage ? (' [' + data.stage + ']') : '';
+        throw new Error((data.error || ('本地MinerU失败 HTTP ' + resp.status)) + stageText);
+    }
+
     var markdown = data.markdown || '';
     if (markdown && data.markdown_url) markdown = mineruNormalizeMarkdownAssetUrls(markdown, data.markdown_url);
     markdown = await embedImagesAsBase64(markdown, 1600, 0.88);
