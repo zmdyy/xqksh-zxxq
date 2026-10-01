@@ -2716,7 +2716,7 @@ const VISION_PROVIDERS = {
         free: false,
         registerUrl: 'https://open.bigmodel.cn',
         note: '需注册获取 API Key',
-        defaultKey: '71d5d8ba103341e5aa29ca61a3ce2056.uwfUkIkInmiRrR9n'
+        defaultKey: ''
     },
     kimi: {
         name: '月之暗面 Kimi',
@@ -2726,7 +2726,7 @@ const VISION_PROVIDERS = {
         free: false,
         registerUrl: 'https://platform.moonshot.ai',
         note: 'K2系列支持视觉理解，需注册获取 API Key',
-        defaultKey: 'sk-O0s87idpUocaTLIhldEMmdM1CfAkGfRwENXHWI9B0hoYl8vg'
+        defaultKey: ''
     }
 };
 
@@ -2736,7 +2736,7 @@ const VISION_PROMPT = '你是一个专业的理科试卷识别专家。请将这
 const DEFAULT_VISION_CONFIG = {
     provider: 'glm',
     model: 'glm-4.5v',
-    apiKey: '71d5d8ba103341e5aa29ca61a3ce2056.uwfUkIkInmiRrR9n'
+    apiKey: ''
 };
 
 const MINERU_API_BASE = String(window.MINERU_API_BASE || localStorage.getItem('mineruApiBase') || 'http://127.0.0.1:8765').replace(/\/+$/, '');
@@ -8793,8 +8793,7 @@ document.getElementById('visionProvider').addEventListener('change', function() 
     updateVisionModelList();
     var prov = VISION_PROVIDERS[this.value];
     var keyInput = document.getElementById('visionApiKey');
-    if (prov && prov.defaultKey && (!keyInput.value.trim() || keyInput.dataset.lastProvider !== this.value)) {
-        keyInput.value = prov.defaultKey;
+    if (keyInput && keyInput.dataset.lastProvider !== this.value) {
         keyInput.dataset.lastProvider = this.value;
     }
     saveVisionConfig();
