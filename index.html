@@ -3529,6 +3529,72 @@ async function mineruEmbedZipAssets(markdown, zip, mdFileName, progressCb) {
     }
     return out;
 }
+async function parsePdfToMarkdown_MinerUAgentCloud(file, progressCb) {
+    if (file.size > 10 * 1024 * 1024) throw new Error('MinerU 云端轻量解析限制文件不超过10MB');
+    if (window.pdfjsLib) {
+        try {
+            var abCheck = await file.arrayBuffer();
+            var pdfCheck = await window.pdfjsLib.getDocument({ data: abCheck, disableWorker: true }).promise;
+            if (pdfCheck.numPages > 20) throw new Error('MinerU 云端轻量解析限制不超过20页，当前' + pdfCheck.numPages + '页');
+        } catch(e) {
+            if (/限制不超过20页/.test(String(e.message || e))) throw e;
+        }
+    }
+    if (progressCb) progressCb('正在直连 MinerU 官方云端，申请上传地址...');
+    var createResp = await fetch(MINERU_CLOUD_AGENT_BASE + '/parse/file', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            file_name: file.name,
+            language: 'ch',
+            enable_table: true,
+            is_ocr: false,
+            enable_formula: true
+        })
+    });
+    var createText = await createResp.text();
+    var createData = mineruSafeJson(createText, 'MinerU轻量');
+    if (!createResp.ok || createData.code !== 0 || !createData.data || !createData.data.file_url) {
+        throw new Error(createData.msg || ('MinerU轻量申请上传失败 HTTP ' + createResp.status));
+    }
+    var taskId = createData.data.task_id;
+    var fileUrl = createData.data.file_url;
+    if (progressCb) progressCb('上传试卷到 MinerU...');
+    var uploadResp = await fetch(fileUrl, { method: 'PUT', body: file });
+    if (!uploadResp.ok) throw new Error('MinerU轻量文件上传失败 HTTP ' + uploadResp.status);
+
+    var started = Date.now(), markdownUrl = '';
+    while (Date.now() - started < 240000) {
+        await mineruSleep(1800);
+        var pollResp = await fetch(MINERU_CLOUD_AGENT_BASE + '/parse/' + encodeURIComponent(taskId));
+        var pollText = await pollResp.text();
+        var pollData = mineruSafeJson(pollText, 'MinerU轻量');
+        if (!pollResp.ok || pollData.code !== 0 || !pollData.data) throw new Error(pollData.msg || 'MinerU轻量查询失败');
+        var state = pollData.data.state;
+        if (state === 'done') {
+            markdownUrl = pollData.data.markdown_url || '';
+            break;
+        }
+        if (state === 'failed') throw new Error(pollData.data.err_msg || 'MinerU轻量解析失败');
+        if (progressCb) progressCb('MinerU 云端解析中：' + (state || '处理中') + '...');
+    }
+    if (!markdownUrl) throw new Error('MinerU轻量解析超时');
+    if (progressCb) progressCb('正在下载 MinerU Markdown...');
+    var mdResp = await fetch(markdownUrl);
+    if (!mdResp.ok) throw new Error('MinerU Markdown下载失败 HTTP ' + mdResp.status);
+    var markdown = await mdResp.text();
+    markdown = mineruNormalizeMarkdownAssetUrls(markdown, markdownUrl);
+    markdown = await embedImagesAsBase64(markdown, 1600, 0.88);
+    return {
+        markdown: markdown,
+        questionIndex: buildQuestionIndexFromMarkdown(markdown),
+        detectedSubject: detectSubjectByFileName(file.name),
+        source: 'mineru',
+        taskId: taskId,
+        markdownUrl: markdownUrl
+    };
+}
+
 async function parsePdfToMarkdown_MinerU(file, progressCb, precise) {
     var cloudErr = null;
     try {
