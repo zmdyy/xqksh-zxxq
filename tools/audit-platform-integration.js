@@ -36,6 +36,10 @@ requireText(rootHtml, 'async function parsePdfToMarkdown_MinerUAgentCloud', '缺
 requireText(rootHtml, 'async function parsePdfToMarkdown_MinerUPreciseCloud', '缺少MinerU云端精准解析函数');
 requireText(rootHtml, 'id="mineruToken"', 'MinerU精准模式缺少独立Token输入');
 requireText(rootHtml, 'parsePdfToMarkdown_MinerULocalProxy', 'MinerU缺少本地兼容后备');
+const mineruEntryCount = (rootHtml.match(/async function parsePdfToMarkdown_MinerU\(file, progressCb, precise\)/g) || []).length;
+if (mineruEntryCount !== 1) errors.push('MinerU主入口函数数量异常: ' + mineruEntryCount);
+if (/defaultKey:\s*['"][^'"]+['"]/.test(rootHtml)) errors.push('公开页面仍包含预填API密钥');
+
 
 requireText(notebookDocxCode, 'typeof window.getErrorNotebookQuestionSnapshots', 'Word导出未优先使用原卷截图');
 requireText(notebookDocxCode, 'docxInfoTable', 'Word错题信息未结构化排版');
