@@ -3859,40 +3859,62 @@ async function parsePdfToMarkdown_Vision(file, progressCb) {
 // ============================================================
 async function embedImagesAsBase64(mdText, maxWidth, quality) {
     if (typeof mdText !== 'string') return mdText;
-    var urlPattern = /!\[image\]\((https?:\/\/[^)]+)\)/g;
-    var urls = [], match;
-    while ((match = urlPattern.exec(mdText)) !== null) {
-        if (urls.indexOf(match[1]) < 0) urls.push(match[1]);
-    }
+    var urls = [];
+    var patterns = [
+        /!\[[^\]]*\]\((https?:\/\/[^)]+)\)/gi,
+        /<img\b[^>]*\bsrc=["'](https?:\/\/[^"']+)["'][^>]*>/gi
+    ];
+    patterns.forEach(function(re) {
+        var match;
+        while ((match = re.exec(mdText)) !== null) {
+            if (urls.indexOf(match[1]) < 0) urls.push(match[1]);
+        }
+    });
     if (!urls.length) return mdText;
+
     var results = await Promise.all(urls.map(function(url) {
         return fetch(url, { mode: 'cors' }).then(function(resp) {
             if (!resp.ok) throw new Error('HTTP ' + resp.status);
             return resp.blob();
         }).then(function(blob) {
+            if (/image\/svg\+xml/i.test(blob.type || '')) {
+                return new Promise(function(resolve, reject) {
+                    var reader = new FileReader();
+                    reader.onload = function() { resolve({ url: url, dataUri: reader.result }); };
+                    reader.onerror = function() { reject(new Error('SVG读取失败')); };
+                    reader.readAsDataURL(blob);
+                });
+            }
             return new Promise(function(resolve, reject) {
                 var img = new Image();
                 var blobUrl = URL.createObjectURL(blob);
                 img.onload = function() {
                     URL.revokeObjectURL(blobUrl);
+                    var w = img.naturalWidth || img.width || 1;
+                    var h = img.naturalHeight || img.height || 1;
+                    var limit = maxWidth || 1600;
+                    if (w > limit) { h = Math.round(h * limit / w); w = limit; }
                     var canvas = document.createElement('canvas');
-                    var w = img.width, h = img.height;
-                    if (w > (maxWidth || 400)) { h = h * (maxWidth || 400) / w; w = (maxWidth || 400); }
-                    canvas.width = w; canvas.height = h;
-                    var ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, w, h);
-                    resolve({ url: url, dataUri: canvas.toDataURL('image/jpeg', quality || 0.3) });
+                    canvas.width = Math.max(1, Math.round(w));
+                    canvas.height = Math.max(1, Math.round(h));
+                    var ctx = canvas.getContext('2d', { alpha: false });
+                    ctx.fillStyle = '#fff';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    resolve({ url: url, dataUri: canvas.toDataURL('image/jpeg', quality == null ? 0.88 : quality) });
                 };
                 img.onerror = function() { URL.revokeObjectURL(blobUrl); reject(new Error('图片解码失败')); };
                 img.src = blobUrl;
             });
         }).catch(function(err) {
-            console.warn('图片下载/压缩失败: ' + url, err.message);
+            console.warn('图片下载/内嵌失败: ' + url, err.message);
             return { url: url, dataUri: null };
         });
     }));
     var result = mdText;
-    results.forEach(function(r) { if (r.dataUri) result = result.split(r.url).join(r.dataUri); });
+    results.forEach(function(r) {
+        if (r.dataUri) result = result.split(r.url).join(r.dataUri);
+    });
     return result;
 }
 
