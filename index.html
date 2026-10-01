@@ -14,7 +14,7 @@
     <script src="auto-render.min.js"></script>
     <script src="jszip.min.js"></script>
     <script src="mathml2omml.js"></script>
-    <script src="notebook-docx.js?v=5"></script>
+    <script src="notebook-docx.js?v=6"></script>
     <style>
         /* ── Design System ──────────────────────────── */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -6797,7 +6797,9 @@ function showCollectiveStudentDetail(name) {
 
     // ---- 错题本入口按钮 ----
     html += '<div style="margin-top:16px;">';
-    html += '<button class="upload-btn" onclick="showPersonalErrorNotebook(\'' + escapeHtml(name).replace(/'/g,"\\'") + '\')" style="background:#e74c3c;padding:8px 20px;font-size:14px;min-width:44px;min-height:44px;border-radius:6px;border:none;color:#fff;cursor:pointer;transition:background 0.15s,transform 0.1s;" onmouseover="this.style.background=\'#c0392b\'" onmouseout="this.style.background=\'#e74c3c\'" onmousedown="this.style.transform=\'scale(0.96)\'" onmouseup="this.style.transform=\'scale(1)\'">📘 查看该生错题本</button>';
+    var notebookRawName = String(stu[fd.nameField] || name || '');
+    var notebookClass = fd.classField ? String(stu[fd.classField] || '') : '';
+    html += '<button class="upload-btn" onclick="showPersonalErrorNotebook(\'' + escapeHtml(notebookRawName).replace(/'/g,"\\'") + '\',\'' + escapeHtml(notebookClass).replace(/'/g,"\\'") + '\')" style="background:#e74c3c;padding:8px 20px;font-size:14px;min-width:44px;min-height:44px;border-radius:6px;border:none;color:#fff;cursor:pointer;transition:background 0.15s,transform 0.1s;" onmouseover="this.style.background=\'#c0392b\'" onmouseout="this.style.background=\'#e74c3c\'" onmousedown="this.style.transform=\'scale(0.96)\'" onmouseup="this.style.transform=\'scale(1)\'">📘 查看该生错题本</button>';
     html += '</div>';
 
     res.innerHTML = html;
@@ -6957,7 +6959,8 @@ function mergeSplitErrorItems(errors) {
             batchLabel: list[0].batchLabel,
             batchId: list[0].batchId,
             subjectName: list[0].subjectName,
-            itemName: uniqueNames.join('、'),
+            itemName: uniqueNames.length > 1 ? ('第' + getErrorMajorKey(list[0].itemName) + '题') : uniqueNames[0],
+            detailItemNames: uniqueNames,
             lookupItemName: getErrorMajorKey(list[0].itemName),
             score: score,
             maxScore: maxScore,
@@ -6976,27 +6979,44 @@ function mergeSplitErrorItems(errors) {
     return merged;
 }
 
-function collectStudentErrorsFromAllBatches(studentName) {
+function collectStudentErrorsFromAllBatches(studentName, studentClass) {
     var result = { allErrors: [], totalErrors: 0, subjectCount: 0, batchCount: 0 };
     if (!DataPool.batches || !DataPool.batches.length) return result;
     var subjectSet = {}, batchSet = {};
+    var targetName = String(studentName || '').trim();
+    var targetClass = String(studentClass || '').trim();
+
     DataPool.batches.forEach(function(batch) {
         var students = batch.combinedStudentData;
         if (!students || !students.length) return;
-        var stu = students.find(function(s) { return String(s.name).trim() === String(studentName).trim(); });
-        if (!stu) return;
-        batchSet[batch.label] = true;
-        if (!stu.subjects) return;
+
+        var exactDisplay = students.filter(function(s) {
+            return String(s && s.displayName || '').trim() === targetName;
+        });
+        var rawCandidates = students.filter(function(s) {
+            return String(s && s.name || '').trim() === targetName;
+        });
+        var stu = exactDisplay.length === 1 ? exactDisplay[0] : null;
+        if (!stu && rawCandidates.length === 1) stu = rawCandidates[0];
+        if (!stu && rawCandidates.length > 1 && targetClass) {
+            var classMatches = rawCandidates.filter(function(s) {
+                return String(s && s.class || '').trim() === targetClass;
+            });
+            if (classMatches.length === 1) stu = classMatches[0];
+        }
+        if (!stu || !stu.subjects) return;
+
         Object.keys(stu.subjects).forEach(function(subjName) {
             var subj = stu.subjects[subjName];
             if (!subj || !subj.subScores) return;
-            subjectSet[subjName] = true;
             Object.keys(subj.subScores).forEach(function(itemKey) {
                 var item = subj.subScores[itemKey];
                 if (!item || typeof item !== 'object') return;
                 var snum = parseFloat(item.score), mnum = parseFloat(item.maxScore);
-                if (isNaN(snum) || isNaN(mnum) || mnum <= 0) return;
-                if (snum >= mnum) return;
+                if (isNaN(snum) || isNaN(mnum) || mnum <= 0 || snum >= mnum) return;
+
+                subjectSet[subjName] = true;
+                batchSet[batch.id] = true;
                 result.allErrors.push({
                     batchLabel: batch.label,
                     batchId: batch.id,
@@ -7005,8 +7025,8 @@ function collectStudentErrorsFromAllBatches(studentName) {
                     score: snum,
                     maxScore: mnum,
                     rate: Math.max(0, Math.min(1, snum / mnum)),
-                    studentAnswer: String(item.studentAnswer || '').trim(),
-                    correctAnswer: String(item.correctAnswer || '').trim()
+                    studentAnswer: String(item.studentAnswer == null ? '' : item.studentAnswer).trim(),
+                    correctAnswer: String(item.correctAnswer == null ? '' : item.correctAnswer).trim()
                 });
             });
         });
@@ -7382,8 +7402,161 @@ function extractQuestionTextFromPdf(batch, subjectName, itemKey) {
     return foundText;
 }
 
-function showPersonalErrorNotebook(studentName) {
-    var crossData = collectStudentErrorsFromAllBatches(studentName);
+function notebookPdfBytes(entry) {
+    if (!entry) return null;
+    if (entry.fileData instanceof Uint8Array) return entry.fileData;
+    if (entry.fileData && entry.fileData.buffer) {
+        try { return new Uint8Array(entry.fileData.buffer); } catch(e) {}
+    }
+    if (entry.fileData && typeof entry.fileData === 'object') {
+        var keys = Object.keys(entry.fileData).filter(function(k) { return /^\d+$/.test(k); }).sort(function(a,b) { return Number(a)-Number(b); });
+        if (keys.length) return new Uint8Array(keys.map(function(k) { return entry.fileData[k]; }));
+    }
+    if (entry.fileDataB64) {
+        try {
+            var bin = atob(entry.fileDataB64);
+            var arr = new Uint8Array(bin.length);
+            for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+            return arr;
+        } catch(e) {}
+    }
+    return null;
+}
+
+function notebookPdfLineGeometry(textContent) {
+    var items = (textContent && textContent.items || []).map(function(it) {
+        return {
+            text: String(it.str || '').replace(/\s+/g, ' ').trim(),
+            x: it.transform && it.transform.length > 4 ? Number(it.transform[4]) : 0,
+            y: it.transform && it.transform.length > 5 ? Number(it.transform[5]) : 0,
+            h: Math.max(8, Math.abs(it.height || (it.transform && it.transform[3]) || 10))
+        };
+    }).filter(function(it) { return !!it.text; }).sort(function(a,b) {
+        var dy = b.y - a.y;
+        return Math.abs(dy) > 4 ? dy : a.x - b.x;
+    });
+    var lines = [];
+    items.forEach(function(it) {
+        var line = lines.length ? lines[lines.length - 1] : null;
+        if (!line || Math.abs(line.y - it.y) > 5) {
+            lines.push({ y: it.y, x: it.x, h: it.h, parts: [it] });
+        } else {
+            line.parts.push(it);
+            line.x = Math.min(line.x, it.x);
+            line.h = Math.max(line.h, it.h);
+        }
+    });
+    return lines.map(function(line) {
+        line.parts.sort(function(a,b) { return a.x-b.x; });
+        return { text: line.parts.map(function(p) { return p.text; }).join(' ').replace(/\s+/g,' ').trim(), y: line.y, x: line.x, h: line.h };
+    });
+}
+
+function notebookMajorFromItem(itemKey) {
+    var major = getErrorMajorKey(itemKey);
+    var m = String(major || itemKey || '').match(/(\d{1,3})/);
+    return m ? m[1] : null;
+}
+
+function notebookLineMajor(text) {
+    var t = compactDigits(String(text || '').trim());
+    var m = t.match(/^(\d{1,3})\s*[\.、．)]/) || t.match(/^第\s*(\d{1,3})\s*题/);
+    return m ? m[1] : null;
+}
+
+async function notebookCropPdfPage(page, topPdfY, bottomPdfY) {
+    var scale = 1.65;
+    var viewport = page.getViewport({ scale: scale });
+    var canvas = document.createElement('canvas');
+    canvas.width = Math.ceil(viewport.width);
+    canvas.height = Math.ceil(viewport.height);
+    var ctx = canvas.getContext('2d', { alpha: false });
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+    var pageHeightPdf = viewport.height / scale;
+    var top = Math.max(0, Math.floor((pageHeightPdf - topPdfY) * scale) - 22);
+    var bottom = Math.min(canvas.height, Math.ceil((pageHeightPdf - bottomPdfY) * scale) + 18);
+    if (!isFinite(top) || !isFinite(bottom) || bottom <= top + 40) {
+        top = 0; bottom = canvas.height;
+    }
+    var sidePad = Math.max(8, Math.floor(canvas.width * 0.025));
+    var cropW = Math.max(1, canvas.width - sidePad * 2);
+    var cropH = Math.max(1, bottom - top);
+    var out = document.createElement('canvas');
+    out.width = cropW;
+    out.height = cropH;
+    var octx = out.getContext('2d', { alpha:false });
+    octx.fillStyle = '#fff';
+    octx.fillRect(0,0,cropW,cropH);
+    octx.drawImage(canvas, sidePad, top, cropW, cropH, 0, 0, cropW, cropH);
+    return out.toDataURL('image/jpeg', 0.92);
+}
+
+async function getErrorNotebookQuestionSnapshots(item) {
+    if (!item || !item.batchId || !window.pdfjsLib) return [];
+    var batch = DataPool.batches.find(function(b) { return b.id === item.batchId; });
+    if (!batch || !batch.uploadedPdfs || !batch.uploadedPdfs.length) return [];
+    var pdfEntry = batch.uploadedPdfs.find(function(p) {
+        if (!p || p.status !== 'ready') return false;
+        if (p.detectedSubject) return pdfSubjectMatches(p.detectedSubject, item.subjectName);
+        return true;
+    });
+    if (!pdfEntry) return [];
+    var bytes = notebookPdfBytes(pdfEntry);
+    if (!bytes || bytes.length < 5) return [];
+    var major = notebookMajorFromItem(item.lookupItemName || item.itemName);
+    if (!major) return [];
+
+    try {
+        var pdf = await window.pdfjsLib.getDocument({ data: bytes.slice ? bytes.slice(0) : bytes, disableWorker: true }).promise;
+        var foundPage = -1, foundLine = null, foundLines = null;
+        for (var pn = 1; pn <= pdf.numPages; pn++) {
+            var page = await pdf.getPage(pn);
+            var tc = await page.getTextContent();
+            var lines = notebookPdfLineGeometry(tc);
+            var line = lines.find(function(l) { return notebookLineMajor(l.text) === String(major); });
+            if (line) { foundPage = pn; foundLine = line; foundLines = lines; break; }
+        }
+        if (foundPage < 0 || !foundLine) return [];
+
+        var images = [];
+        var firstPage = await pdf.getPage(foundPage);
+        var below = (foundLines || []).filter(function(l) {
+            var lm = notebookLineMajor(l.text);
+            return lm && lm !== String(major) && l.y < foundLine.y - 4;
+        }).sort(function(a,b) { return b.y - a.y; });
+        var nextMajor = below.length ? below[0] : null;
+        var firstBottomY = nextMajor ? (nextMajor.y + Math.max(6, nextMajor.h)) : 0;
+        images.push(await notebookCropPdfPage(firstPage, foundLine.y + Math.max(14, foundLine.h), firstBottomY));
+
+        if (!nextMajor && foundPage < pdf.numPages) {
+            for (var extra = foundPage + 1; extra <= Math.min(pdf.numPages, foundPage + 2); extra++) {
+                var page2 = await pdf.getPage(extra);
+                var tc2 = await page2.getTextContent();
+                var lines2 = notebookPdfLineGeometry(tc2);
+                var majors2 = lines2.filter(function(l) { return !!notebookLineMajor(l.text); }).sort(function(a,b) { return b.y-a.y; });
+                var stop = majors2.length ? majors2[0] : null;
+                var viewport2 = page2.getViewport({scale:1});
+                if (stop && (viewport2.height - stop.y) < viewport2.height * 0.18) break;
+                var bottomY = stop ? (stop.y + Math.max(6, stop.h)) : 0;
+                if (viewport2.height - bottomY > viewport2.height * 0.12) {
+                    images.push(await notebookCropPdfPage(page2, viewport2.height, bottomY));
+                }
+                if (stop) break;
+            }
+        }
+        return images.filter(Boolean);
+    } catch(e) {
+        console.warn('错题本原题截图生成失败:', item.itemName, e);
+        return [];
+    }
+}
+window.getErrorNotebookQuestionSnapshots = getErrorNotebookQuestionSnapshots;
+
+function showPersonalErrorNotebook(studentName, studentClass) {
+    var crossData = collectStudentErrorsFromAllBatches(studentName, studentClass);
     if (!crossData.totalErrors) {
         showAlert('该学生在所有批次中均无错题记录');
         return;
@@ -7404,7 +7577,7 @@ function showPersonalErrorNotebook(studentName) {
 
     var html = '';
     var mergedCount = Object.keys(subjectGroups).reduce(function(n, k) { return n + subjectGroups[k].length; }, 0);
-    var exportPayload = { studentName: studentName, totalErrors: mergedCount, subjectCount: crossData.subjectCount, batchCount: crossData.batchCount, subjects: [] };
+    var exportPayload = { studentName: studentName, studentClass: studentClass || '', totalErrors: mergedCount, subjectCount: crossData.subjectCount, batchCount: crossData.batchCount, subjects: [] };
     // Summary bar
     html += '<div style="background:#fdf2f2;border-radius:8px;padding:16px 20px;margin-bottom:24px;border-left:4px solid #e74c3c;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">';
     html += '<div><div style="font-size:16px;font-weight:bold;color:#c0392b;">' + escapeHtml(studentName) + '</div>';
@@ -7484,7 +7657,9 @@ function showPersonalErrorNotebook(studentName) {
                 else exportStem = (contextInfo.fullText || contextInfo.summaryText) + (qText && contextInfo.fullText !== qText ? '\n\n' + qText : '');
             }
             exportSubject.items.push({
-                itemName: e.itemName, batchLabel: e.batchLabel, score: e.score, maxScore: e.maxScore, rate: e.rate,
+                itemName: e.itemName, detailItemNames: e.detailItemNames || [e.itemName], batchLabel: e.batchLabel, batchId: e.batchId,
+                subjectName: e.subjectName, lookupItemName: e.lookupItemName || e.itemName,
+                score: e.score, maxScore: e.maxScore, rate: e.rate,
                 studentAnswer: e.studentAnswer, correctAnswer: e.correctAnswer, stemMarkdown: exportStem
             });
             html += '</div>';
