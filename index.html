@@ -3770,9 +3770,105 @@ async function findMineruProxyBase() {
     return '';
 }
 
+async function parsePdfToMarkdown_MinerUPreciseProxy(file, progressCb, proxyBase) {
+    var base = String(proxyBase || MINERU_API_BASE || '').replace(/\/+$/, '');
+    var cfg = getVisionConfig();
+    var token = String(cfg.mineruToken || '').trim();
+    if (!token) throw new Error('MinerU精准解析需要填写 MinerU Token');
+
+    if (progressCb) progressCb('正在提交试卷到 MinerU 精准解析...');
+    var startFd = new FormData();
+    startFd.append('file', file, file.name);
+    startFd.append('language', 'ch');
+    startFd.append('mineru_token', token);
+
+    var startResp;
+    try {
+        startResp = await fetch(base + '/mineru/precise/start', {
+            method: 'POST',
+            body: startFd
+        });
+    } catch(e) {
+        throw new Error('无法提交 MinerU 精准任务：' + (e.message || e));
+    }
+
+    var startText = await startResp.text();
+    var startData = mineruSafeJson(startText, 'MinerU精准提交');
+    if (!startResp.ok || !startData.ok || !startData.batch_id) {
+        var startStage = startData.stage ? (' [' + startData.stage + ']') : '';
+        throw new Error((startData.error || ('MinerU精准提交失败 HTTP ' + startResp.status)) + startStage);
+    }
+
+    var batchId = startData.batch_id;
+    var dataId = startData.data_id || '';
+    var fileName = startData.file_name || file.name;
+    var started = Date.now();
+    var maxWait = 30 * 60 * 1000;
+
+    if (progressCb) progressCb('MinerU 已接收任务，正在排队/解析...');
+
+    while (Date.now() - started < maxWait) {
+        await mineruSleep(3000);
+
+        var statusFd = new FormData();
+        statusFd.append('mineru_token', token);
+        statusFd.append('batch_id', batchId);
+        statusFd.append('data_id', dataId);
+        statusFd.append('file_name', fileName);
+
+        var statusResp;
+        try {
+            statusResp = await fetch(base + '/mineru/precise/status', {
+                method: 'POST',
+                body: statusFd
+            });
+        } catch(e) {
+            if (progressCb) progressCb('网络短暂波动，正在继续查询 MinerU 任务...');
+            continue;
+        }
+
+        var statusText = await statusResp.text();
+        var statusData = mineruSafeJson(statusText, 'MinerU精准进度');
+        if (!statusResp.ok || !statusData.ok) {
+            var statusStage = statusData.stage ? (' [' + statusData.stage + ']') : '';
+            throw new Error((statusData.error || ('MinerU精准查询失败 HTTP ' + statusResp.status)) + statusStage);
+        }
+
+        var state = statusData.state || 'waiting';
+        var ep = statusData.extract_progress || {};
+        if (progressCb) {
+            if (ep.total_pages) {
+                progressCb('MinerU 精准解析中：' + (ep.extracted_pages || 0) + '/' + ep.total_pages + ' 页');
+            } else {
+                progressCb('MinerU 精准解析中：' + state + '...');
+            }
+        }
+
+        if (state === 'done') {
+            var markdown = statusData.markdown || '';
+            if (!markdown) throw new Error('MinerU精准解析完成，但未返回Markdown');
+            return {
+                markdown: markdown,
+                questionIndex: buildQuestionIndexFromMarkdown(markdown),
+                detectedSubject: detectSubjectByFileName(file.name),
+                source: 'mineru_precise',
+                batchId: batchId,
+                zipUrl: statusData.full_zip_url || ''
+            };
+        }
+    }
+
+    throw new Error('MinerU精准解析等待超过30分钟，任务可能仍在MinerU端处理中');
+}
+
 async function parsePdfToMarkdown_MinerULocalProxy(file, progressCb, precise, proxyBase) {
     var base = String(proxyBase || MINERU_API_BASE || '').replace(/\/+$/, '');
     if (!base) throw new Error('未找到可用的 MinerU 解析服务');
+
+    if (precise) {
+        return await parsePdfToMarkdown_MinerUPreciseProxy(file, progressCb, base);
+    }
+
     if (progressCb) progressCb('正在通过 MinerU 在线解析服务处理文件...');
 
     var fd = new FormData();
@@ -3781,15 +3877,10 @@ async function parsePdfToMarkdown_MinerULocalProxy(file, progressCb, precise, pr
     fd.append('enable_table', 'true');
     fd.append('is_ocr', 'false');
     fd.append('enable_formula', 'true');
-    if (precise) {
-        fd.append('model_version', 'vlm');
-        var localCfg = getVisionConfig();
-        if (localCfg.mineruToken) fd.append('mineru_token', localCfg.mineruToken);
-    }
 
     var resp;
     try {
-        resp = await fetch(base + '/' + (precise ? 'mineru/parse-file-precise' : 'mineru/parse-file'), {
+        resp = await fetch(base + '/mineru/parse-file', {
             method: 'POST',
             body: fd
         });
@@ -3811,11 +3902,9 @@ async function parsePdfToMarkdown_MinerULocalProxy(file, progressCb, precise, pr
         markdown: markdown,
         questionIndex: buildQuestionIndexFromMarkdown(markdown),
         detectedSubject: detectSubjectByFileName(file.name),
-        source: precise ? 'mineru_precise' : 'mineru',
+        source: 'mineru',
         taskId: data.task_id || '',
-        markdownUrl: data.markdown_url || '',
-        batchId: data.batch_id || '',
-        zipUrl: data.full_zip_url || ''
+        markdownUrl: data.markdown_url || ''
     };
 }
 
