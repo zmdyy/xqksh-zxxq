@@ -3115,7 +3115,8 @@ function renderPdfList() {
     uploadedPdfs.forEach(p => {
         var li = document.createElement('li');
         var span = document.createElement('span');
-        span.textContent = '(' + (p.status === 'ready' ? '已解析' : p.status === 'parsing' ? '解析中...' : '失败') + (p.status === 'error' && p.errorMsg ? ' (' + p.errorMsg + ')' : '') + ')';
+        var sourceLabel = p.status === 'ready' && p.source ? ' · ' + getNotebookPdfSourceLabel(p.source) : '';
+        span.textContent = '(' + (p.status === 'ready' ? '已解析' + sourceLabel : p.status === 'parsing' ? '解析中...' : '失败') + (p.status === 'error' && p.errorMsg ? ' (' + p.errorMsg + ')' : '') + ')';
         var subjectTag = document.createElement('span');
         if (p.status === 'ready') {
             if (!p.detectedSubject) { var d = detectSubjectByFileName(p.fileName); if (d) p.detectedSubject = d; }
@@ -3736,15 +3737,15 @@ async function parsePdfToMarkdown_LocalFast(file, progressCb) {
 async function parsePdfToMarkdown_AutoFallback(file, progressCb, preferPrecise) {
     var errors = [];
     if (preferPrecise) {
+        var cfg = getVisionConfig();
+        if (!cfg.mineruToken) throw new Error('已选择 MinerU 精准解析，请先填写 MinerU Token');
         try {
             return await parsePdfToMarkdown_MinerU(file, progressCb, true);
         } catch(err) {
-            errors.push('精准: ' + (err.message || err));
-            console.warn('MinerU 精准解析失败，降级到轻量解析', err);
-            if (progressCb) progressCb('⚠ MinerU 精准解析失败，正在尝试轻量解析...');
+            console.error('MinerU 精准解析失败', err);
+            throw new Error('MinerU 精准解析失败：' + String(err && (err.message || err) || '未知错误') + '。已保持精准模式，不会自动降级为轻量解析。');
         }
     }
-
     try {
         return await parsePdfToMarkdown_MinerU(file, progressCb, false);
     } catch(err) {
@@ -3752,7 +3753,6 @@ async function parsePdfToMarkdown_AutoFallback(file, progressCb, preferPrecise) 
         console.warn('MinerU 轻量解析失败，降级到 pdf.js', err);
         if (progressCb) progressCb('⚠ MinerU 轻量解析失败，正在使用 pdf.js 快速模式...');
     }
-
     var result = await parsePdfToMarkdown_LocalFast(file, progressCb);
     result.fallbackErrors = errors;
     return result;
@@ -7618,6 +7618,102 @@ function toggleQuestionContext(fullId, btnId) {
     if (btn) btn.textContent = nextShow ? '收起完整题目' : '展开完整题目';
 }
 
+function getNotebookPdfSourceLabel(source) {
+    var map = {
+        mineru_precise: 'MinerU 精准',
+        mineru: 'MinerU 轻量',
+        vision: 'AI视觉',
+        local: 'pdf.js',
+        md: 'Markdown'
+    };
+    return map[source] || source || '未知来源';
+}
+
+function notebookPdfSourcePriority(source) {
+    var map = { mineru_precise: 50, vision: 40, mineru: 30, local: 20, md: 10 };
+    return map[source] || 0;
+}
+
+function isMajorQuestionStartLineForNotebook(line, majorNum) {
+    var t = stripQuestionLineForMatch(line);
+    if (!t) return false;
+    var m = t.match(/^(\d{1,3})\s*[\.、．)]/) || t.match(/^第\s*(\d{1,3})\s*题/) || t.match(/^(\d{1,3})[（(]/);
+    return !!(m && String(m[1]) === String(majorNum));
+}
+
+function getMajorQuestionNumberAtLineForNotebook(line) {
+    var t = stripQuestionLineForMatch(line);
+    if (!t) return null;
+    var m = t.match(/^(\d{1,3})\s*[\.、．)]/) || t.match(/^第\s*(\d{1,3})\s*题/) || t.match(/^(\d{1,3})[（(]/);
+    return m ? String(m[1]) : null;
+}
+
+function cleanCompleteNotebookQuestionText(text) {
+    return String(text || '').split(/\r?\n/).filter(function(line) {
+        var t = String(line || '').trim();
+        if (/^##\s*第\s*\d+\s*页/.test(t)) return false;
+        if (/^---$/.test(t)) return false;
+        if (/^(title|pages):\s*/i.test(t)) return false;
+        if (/^#\s*试卷文本/.test(t)) return false;
+        return true;
+    }).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+
+function extractCompleteQuestionTextFromPdf(batch, subjectName, itemKey) {
+    if (!batch || !batch.uploadedPdfs || !batch.uploadedPdfs.length) return { text:'', source:'', fileName:'' };
+    var majorNum = getErrorMajorKey(itemKey);
+    var subjectPdfs = batch.uploadedPdfs.filter(function(p) {
+        if (!p || p.status !== 'ready' || !p.markdown) return false;
+        if (p.detectedSubject) return pdfSubjectMatches(p.detectedSubject, subjectName);
+        return true;
+    }).sort(function(a,b) {
+        return notebookPdfSourcePriority(b.source) - notebookPdfSourcePriority(a.source);
+    });
+
+    for (var pi = 0; pi < subjectPdfs.length; pi++) {
+        var p = subjectPdfs[pi];
+        var lines = String(p.markdown || '').split(/\r?\n/);
+        var qi = ensurePdfQuestionIndex(p);
+        var entry = qi && qi.findByNumber ? qi.findByNumber(String(majorNum)) : null;
+        var start = entry && typeof entry.startLine === 'number' ? entry.startLine : -1;
+
+        if (start < 0 || !isMajorQuestionStartLineForNotebook(lines[start], majorNum)) {
+            start = -1;
+            for (var i = 0; i < lines.length; i++) {
+                if (isMajorQuestionStartLineForNotebook(lines[i], majorNum)) { start = i; break; }
+            }
+        }
+        if (start < 0) continue;
+
+        var end = lines.length - 1;
+        for (var j = start + 1; j < lines.length; j++) {
+            var otherMajor = getMajorQuestionNumberAtLineForNotebook(lines[j]);
+            if (otherMajor && otherMajor !== String(majorNum)) { end = j - 1; break; }
+        }
+
+        var base = cleanCompleteNotebookQuestionText(lines.slice(start, end + 1).join('\n'));
+        if (!base) continue;
+
+        // Some exam figures are placed immediately before the question number.
+        // If the question says "如图" but the slice has no image, pull in the nearest preceding media block.
+        if (hasQuestionFigureCue(base) && !hasQuestionImageMarkup(base)) {
+            var scanStart = Math.max(0, start - 14);
+            var mediaStart = -1;
+            for (var k = start - 1; k >= scanStart; k--) {
+                var prevMajor = getMajorQuestionNumberAtLineForNotebook(lines[k]);
+                if (prevMajor && prevMajor !== String(majorNum)) break;
+                if (hasQuestionImageMarkup(lines[k])) mediaStart = k;
+            }
+            if (mediaStart >= 0) {
+                var withMedia = cleanCompleteNotebookQuestionText(lines.slice(mediaStart, end + 1).join('\n'));
+                if (withMedia) base = withMedia;
+            }
+        }
+        return { text: base, source: p.source || '', fileName: p.fileName || '' };
+    }
+    return { text:'', source:'', fileName:'' };
+}
+
 function extractQuestionTextFromPdf(batch, subjectName, itemKey) {
     if (!batch.uploadedPdfs || !batch.uploadedPdfs.length) return '';
     var refs = expandItemRefs(itemKey);
@@ -7727,7 +7823,7 @@ function notebookLineMajor(text) {
 }
 
 async function notebookCropPdfPage(page, topPdfY, bottomPdfY) {
-    var scale = 1.65;
+    var scale = 3.0;
     var viewport = page.getViewport({ scale: scale });
     var canvas = document.createElement('canvas');
     canvas.width = Math.ceil(viewport.width);
@@ -7753,7 +7849,7 @@ async function notebookCropPdfPage(page, topPdfY, bottomPdfY) {
     octx.fillStyle = '#fff';
     octx.fillRect(0,0,cropW,cropH);
     octx.drawImage(canvas, sidePad, top, cropW, cropH, 0, 0, cropW, cropH);
-    return out.toDataURL('image/jpeg', 0.92);
+    return out.toDataURL('image/png');
 }
 
 async function getErrorNotebookQuestionSnapshots(item) {
@@ -7837,7 +7933,7 @@ function showPersonalErrorNotebook(studentName, studentClass) {
         batchColorMap[label] = BATCH_COLORS[i % BATCH_COLORS.length];
     });
 
-    var html = '';
+    var html = '<style>.notebook-full-question img{display:block;max-width:min(100%,1100px);height:auto;margin:12px auto;object-fit:contain}.notebook-full-question table{max-width:100%;overflow:auto}.notebook-full-question p{margin:7px 0}</style>';
     var mergedCount = Object.keys(subjectGroups).reduce(function(n, k) { return n + subjectGroups[k].length; }, 0);
     var exportPayload = { studentName: studentName, studentClass: studentClass || '', totalErrors: mergedCount, subjectCount: crossData.subjectCount, batchCount: crossData.batchCount, subjects: [] };
     // Summary bar
@@ -7878,51 +7974,35 @@ function showPersonalErrorNotebook(studentName, studentClass) {
             html += '<span>你的答案：<b style="color:#e74c3c;">' + escapeHtml(e.studentAnswer || '(空白)') + '</b></span>';
             html += '<span>正确答案：<b style="color:#16a34a;">' + escapeHtml(e.correctAnswer || '-') + '</b></span>';
             html += '</div>';
-            // Question text from PDF with manual override (Plan A)
+            // Complete structured question from the best available parsed PDF.
             var batch = DataPool.batches.find(function(b) { return b.id === e.batchId; });
             var qText = '';
-            var contextInfo = null;
+            var questionSource = '';
+            var questionSourceFile = '';
             if (batch) {
-                qText = extractQuestionTextFromPdf(batch, e.subjectName, e.lookupItemName || e.itemName);
-                contextInfo = extractQuestionContextFromPdf(batch, e.subjectName, e.lookupItemName || e.itemName, qText);
-                var cId = 'qtext-' + e.batchId + '-' + e.subjectName.replace(/[^a-z0-9]/gi,'') + '-' + e.itemName.replace(/[^a-z0-9]/gi,'_');
-                var ctxFullId = 'qctxfull-' + e.batchId + '-' + e.subjectName.replace(/[^a-z0-9]/gi,'') + '-' + e.itemName.replace(/[^a-z0-9]/gi,'_');
-                var ctxToggleId = 'qctxtoggle-' + e.batchId + '-' + e.subjectName.replace(/[^a-z0-9]/gi,'') + '-' + e.itemName.replace(/[^a-z0-9]/gi,'_');
-                var useInlineContext = !!(contextInfo && contextInfo.hasParentContext && contextInfo.summaryText && contextInfo.summaryLineCount <= 2);
-                if (contextInfo && contextInfo.hasParentContext && contextInfo.summaryText && !useInlineContext) {
-                    var renderedSummary = (typeof marked !== 'undefined') ? marked.parse(preprocessQuestionMarkdownForNotebook(contextInfo.summaryText)) : escapeHtml(contextInfo.summaryText);
-                    html += '<div style="margin-top:8px;font-size:12px;font-weight:700;color:#475569;display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span>题目背景摘要</span>' + (contextInfo.sourceFileName ? '<span style="font-weight:400;color:#9ca3af;">来自 ' + escapeHtml(contextInfo.sourceFileName) + '</span>' : '') + '</div>';
-                    html += '<div id="' + ctxFullId + '-summary" class="markdown-body" style="margin-top:6px;padding:8px 12px;background:#eff6ff;border-radius:6px;border-left:3px solid #60a5fa;max-height:220px;overflow-y:auto;">' + renderedSummary + '</div>';
-                    if (contextInfo.canExpand && contextInfo.fullText) {
-                        var renderedFull = (typeof marked !== 'undefined') ? marked.parse(preprocessQuestionMarkdownForNotebook(contextInfo.fullText)) : escapeHtml(contextInfo.fullText);
-                        html += '<div class="qnote-noexport" style="margin-top:4px;display:flex;gap:6px;flex-wrap:wrap;">';
-                        html += '<button id="' + ctxToggleId + '" onclick="toggleQuestionContext(\'' + ctxFullId + '\',\'' + ctxToggleId + '\')" style="font-size:11px;padding:2px 8px;border:1px solid #bfdbfe;border-radius:4px;background:#fff;cursor:pointer;color:#1d4ed8;">展开完整题目</button>';
-                        html += '</div>';
-                        html += '<div id="' + ctxFullId + '" style="display:none;margin-top:6px;">';
-                        html += '<div class="markdown-body" style="padding:8px 12px;background:#f8fafc;border-radius:6px;border-left:3px solid #94a3b8;max-height:320px;overflow-y:auto;">' + renderedFull + '</div>';
-                        html += '</div>';
-                    }
-                }
+                var completeQuestion = extractCompleteQuestionTextFromPdf(batch, e.subjectName, e.lookupItemName || e.itemName);
+                qText = completeQuestion.text || '';
+                questionSource = completeQuestion.source || '';
+                questionSourceFile = completeQuestion.fileName || '';
+                if (!qText) qText = extractQuestionTextFromPdf(batch, e.subjectName, e.lookupItemName || e.itemName);
                 if (qText) {
-                    var mergedQText = qText;
-                    if (useInlineContext) mergedQText = contextInfo.summaryText + '\n\n---\n\n' + qText;
-                    var renderedQ = (typeof marked !== 'undefined') ? marked.parse(preprocessQuestionMarkdownForNotebook(mergedQText)) : escapeHtml(mergedQText);
-                    if (contextInfo && contextInfo.hasParentContext && !useInlineContext) {
-                        html += '<div style="margin-top:8px;font-size:12px;font-weight:700;color:#4338ca;">当前错题小问</div>';
-                    }
-                    html += '<div class="markdown-body" style="margin-top:6px;padding:8px 12px;background:#f9fafb;border-radius:6px;border-left:3px solid #6366f1;max-height:300px;overflow-y:auto;" id="' + cId + '">' + renderedQ + '</div>';
+                    var cId = 'qtext-' + e.batchId + '-' + e.subjectName.replace(/[^a-z0-9]/gi,'') + '-' + e.itemName.replace(/[^a-z0-9]/gi,'_');
+                    var renderedQ = (typeof marked !== 'undefined') ? marked.parse(preprocessQuestionMarkdownForNotebook(qText)) : escapeHtml(qText);
+                    html += '<div style="margin-top:10px;font-size:12px;font-weight:700;color:#4338ca;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">';
+                    html += '<span>完整原题</span>';
+                    if (questionSource) html += '<span style="font-weight:500;color:#64748b;background:#eef2ff;padding:2px 7px;border-radius:10px;">' + escapeHtml(getNotebookPdfSourceLabel(questionSource)) + '</span>';
+                    if (questionSourceFile) html += '<span style="font-weight:400;color:#9ca3af;">' + escapeHtml(questionSourceFile) + '</span>';
+                    html += '</div>';
+                    html += '<div class="markdown-body notebook-full-question" style="margin-top:6px;padding:12px 14px;background:#f9fafb;border-radius:6px;border-left:3px solid #6366f1;overflow:visible;line-height:1.75;" id="' + cId + '">' + renderedQ + '</div>';
                 }
             }
             var exportStem = qText || '';
-            if (contextInfo && contextInfo.hasParentContext && contextInfo.summaryText) {
-                if (contextInfo.summaryLineCount <= 2) exportStem = contextInfo.summaryText + '\n\n' + (qText || '');
-                else exportStem = (contextInfo.fullText || contextInfo.summaryText) + (qText && contextInfo.fullText !== qText ? '\n\n' + qText : '');
-            }
             exportSubject.items.push({
                 itemName: e.itemName, detailItemNames: e.detailItemNames || [e.itemName], batchLabel: e.batchLabel, batchId: e.batchId,
                 subjectName: e.subjectName, lookupItemName: e.lookupItemName || e.itemName,
                 score: e.score, maxScore: e.maxScore, rate: e.rate,
-                studentAnswer: e.studentAnswer, correctAnswer: e.correctAnswer, stemMarkdown: exportStem
+                studentAnswer: e.studentAnswer, correctAnswer: e.correctAnswer, stemMarkdown: exportStem,
+                parseSource: questionSource || '', sourceFileName: questionSourceFile || ''
             });
             html += '</div>';
         });
