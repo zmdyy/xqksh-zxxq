@@ -91,35 +91,58 @@ node tools/audit-visual-layout.js
 
 ## MinerU 解析
 
-MinerU 精准解析需要后端代理。浏览器直接访问 MinerU API 可能被 CORS、混合内容或本机网络策略拦截，因此本项目本地运行时采用**同源一体化服务**：
+正式使用采用 **GitHub Pages 前端 + 公网 HTTPS MinerU 代理**：
 
-- 网页：`http://127.0.0.1:5500/index.html`
-- 健康检查：`http://127.0.0.1:5500/health`
+- 前端：GitHub Pages（静态 HTML/JS）
+- 后端：Render Web Service（Flask + Gunicorn）
+- 健康检查：`/health`
 - MinerU 轻量代理：`/mineru/parse-file`
 - MinerU 精准代理：`/mineru/parse-file-precise`
 
-Windows 推荐直接运行：
+浏览器不再直接跨域访问 `mineru.net`，也不要求教师本机启动 Python 服务。
 
-```bat
-start_local.bat
+### Render 一次性部署
+
+仓库根目录提供 `render.yaml`。在 Render 中用本仓库创建 Blueprint / Web Service 后，会自动使用：
+
+- Build：`pip install -r requirements-mineru.txt`
+- Start：`gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 600 mineru_server:app`
+- Health Check：`/health`
+- `MINERU_SERVE_APP=0`：云端只提供 API，不重复托管前端。
+
+默认服务名为：
+
+`xqksh-zxxq-mineru-zmdyy`
+
+因此 GitHub Pages 默认代理地址为：
+
+`https://xqksh-zxxq-mineru-zmdyy.onrender.com`
+
+如果实际 Render 服务地址不同，可在浏览器控制台执行：
+
+```js
+localStorage.setItem('mineruApiBase', 'https://你的服务.onrender.com');
+location.reload();
 ```
 
-脚本会检查/安装 `Flask` 与 `requests`，随后由 `mineru_server.py` 在 5500 端口同时提供网页和 MinerU 代理。浏览器与代理同源，因此不需要跨域访问 MinerU。
+### Token
 
-如果只需要旧的独立代理模式，可运行：
+精准模式仍由用户在页面填写 MinerU Token。Token 会随本次上传请求发送到代理，再由代理以 Bearer 鉴权调用 MinerU V4；代理代码不把 Token 写入服务器文件或日志。
 
-```bat
-start_mineru_server.bat
-```
+### 本地调试
 
-该模式仅在 `http://127.0.0.1:8765` 提供代理，主要用于兼容旧工作流。
+`start_local.bat` 仅作为开发和故障排查工具保留。它会启动：
+
+`http://127.0.0.1:5500/index.html`
+
+正常教师使用不需要双击 BAT，也不需要安装 Python。
 
 ### 解析模式
 
-- **MinerU 轻量解析**：免 Token，适合快速提取。
-- **MinerU 精准解析**：填写独立的 MinerU Token，代理调用官方 V4 接口，使用 `vlm` 模型，下载完整结果 ZIP，并把 ZIP 内图片内嵌到 Markdown 后保存到考试批次。
-- 选择精准模式后不会自动降级为轻量或 pdf.js；失败时会保留错误信息。
+- **MinerU 轻量解析**：免 Token。
+- **MinerU 精准解析**：填写 MinerU Token，代理调用官方 V4 `file-urls/batch → extract-results/batch/{batch_id}`，下载完整结果 ZIP，并把 ZIP 内图片内嵌到 Markdown。
+- 选择精准模式后不会自动降级为轻量或 pdf.js；失败时会显示代理或 MinerU 返回的真实错误。
 
-### 注意
+### Render 免费实例说明
 
-如果浏览器中出现 `Failed to fetch` 且页面不是从 `http://127.0.0.1:5500/index.html` 打开的，请关闭原来的静态服务器，运行 `start_local.bat` 后从新的本地地址进入。
+免费 Web Service 闲置后会休眠，首次请求可能需要较长时间唤醒。前端针对公网代理使用更长的健康检查等待时间，避免把冷启动误判成服务故障。
