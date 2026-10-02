@@ -3089,6 +3089,13 @@ function loadBatch(id) {
     renderFileList(); renderPdfList();
     updateStudentNameList(combinedStudentData);
     updateBatchInfoBars();
+    if (id) {
+        setTimeout(function() {
+            localizeExistingMineruMarkdownAssets().catch(function(e) {
+                console.warn('Markdown题图自动迁移失败', e);
+            });
+        }, 80);
+    }
 }
 document.getElementById('batchSelector').addEventListener('change', function() {
     if (this.value === '__new__') {
@@ -4181,6 +4188,45 @@ async function embedImagesAsBase64(mdText, maxWidth, quality, preserveOriginal, 
     if (failed && progressCb) progressCb('图片本地化完成：成功 ' + (results.length - failed) + '，失败 ' + failed);
     return result;
 }
+
+async function localizeExistingMineruMarkdownAssets() {
+    var targets = (uploadedPdfs || []).filter(function(entry) {
+        return entry && entry.status === 'ready' && entry.markdown &&
+            /https?:\/\/cdn-mineru\.openxlab\.org\.cn\//i.test(entry.markdown);
+    });
+    if (!targets.length) return;
+
+    var statusEl = document.getElementById('pdfStatusText');
+    var changed = false;
+    for (var i = 0; i < targets.length; i++) {
+        var entry = targets[i];
+        try {
+            if (statusEl) statusEl.textContent = '正在迁移旧 Markdown 题图 ' + (i + 1) + '/' + targets.length + '...';
+            var localized = await embedImagesAsBase64(
+                entry.markdown,
+                null,
+                null,
+                true,
+                function(msg) { if (statusEl) statusEl.textContent = msg; }
+            );
+            if (localized && localized !== entry.markdown) {
+                entry.markdown = localized;
+                entry.assetsLocalized = !/https?:\/\/cdn-mineru\.openxlab\.org\.cn\//i.test(localized);
+                entry.questionIndex = buildQuestionIndexFromMarkdown(localized);
+                delete entry._qi;
+                changed = true;
+            }
+        } catch(e) {
+            console.warn('旧 Markdown 题图迁移失败:', entry.fileName, e);
+        }
+    }
+    if (changed) {
+        renderPdfList();
+        await DataPool.syncFromGlobalsIfEditing();
+        if (statusEl) statusEl.textContent = '旧 Markdown 题图已保存到本地批次';
+    }
+}
+window.localizeExistingMineruMarkdownAssets = localizeExistingMineruMarkdownAssets;
 
 // Rebuild question index from markdown text (backward compat for old saved PDFs)
 function buildQuestionIndexFromMarkdown(markdown) {
