@@ -1424,15 +1424,19 @@
     <!-- ===== 跨次前十分析 ===== -->
     <div id="crossExamSection" class="analysis-anchor-section" data-analysis-section="crossExamSection" style="margin-top:24px;display:none;">
         <hr style="margin:12px 0;border:none;border-top:2px dashed var(--primary);">
-        <h3 style="margin-bottom:8px;">前十名名次流动（桑基图）</h3>
+        <h3 style="margin-bottom:8px;">前十名流动</h3>
         <div id="crossExamBatchPicker" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;padding:8px 12px;background:#f0f7ff;border-radius:8px;border:1px solid #b8d4fe;">
             <span style="font-weight:bold;font-size:13px;color:var(--primary);">选择对比批次：</span>
+        </div>
+        <div id="crossExamBatchOrderEditor" style="display:none;align-items:center;gap:8px;flex-wrap:wrap;margin:-2px 0 10px;padding:7px 10px;background:#fafbfc;border:1px solid #dfe5ec;border-radius:8px;">
+            <span style="font-weight:700;font-size:12px;color:#4D4D4D;">批次顺序：</span>
+            <div id="crossExamBatchOrderList" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"></div>
+            <span style="font-size:11px;color:#9aa1a9;">拖动批次可调整左右顺序</span>
         </div>
         <button class="filter-btn" id="crossExamBtn" style="margin-bottom:12px;">生成跨次前十分析</button>
         <span id="crossExamStatus" style="color:#888;font-size:12px;margin-left:8px;"></span>
         <div id="crossExamResult" style="display:none;">
             <div class="statistics-section" style="margin-top:4px;border:1px solid #dfe5ec;border-radius:12px;background:#fff;padding:10px 12px 12px;">
-                <div id="crossExamSummary" style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;margin-bottom:6px;"></div>
                 <div id="crossExamSankeyScroll" style="overflow:hidden;border-top:1px solid #eef1f4;padding-top:4px;">
                     <div id="crossExamSankeyChart" style="width:100%;height:620px;"></div>
                 </div>
@@ -5366,6 +5370,90 @@ function getTop10FromBatch(batch) {
     return withScore.slice(0, 10);
 }
 
+
+var crossExamBatchOrder = [];
+
+function syncCrossExamBatchOrderFromPicker() {
+    var checkedIds = [];
+    document.querySelectorAll('#crossExamBatchPicker input[type=checkbox]:checked').forEach(function(cb) {
+        checkedIds.push(cb.value);
+    });
+    crossExamBatchOrder = crossExamBatchOrder.filter(function(id) {
+        return checkedIds.indexOf(id) !== -1;
+    });
+    checkedIds.forEach(function(id) {
+        if (crossExamBatchOrder.indexOf(id) === -1) crossExamBatchOrder.push(id);
+    });
+}
+
+function renderCrossExamBatchOrderEditor() {
+    var editor = document.getElementById('crossExamBatchOrderEditor');
+    var list = document.getElementById('crossExamBatchOrderList');
+    if (!editor || !list) return;
+    syncCrossExamBatchOrderFromPicker();
+    if (!crossExamBatchOrder.length) {
+        editor.style.display = 'none';
+        list.innerHTML = '';
+        return;
+    }
+    editor.style.display = 'flex';
+    list.innerHTML = '';
+
+    crossExamBatchOrder.forEach(function(id, idx) {
+        var batch = DataPool.batches.find(function(b) { return b.id === id; });
+        if (!batch) return;
+
+        var chip = document.createElement('div');
+        chip.draggable = true;
+        chip.dataset.batchId = id;
+        chip.style.cssText = 'display:inline-flex;align-items:center;gap:5px;padding:4px 8px;background:#fff;border:1px solid #d6dde5;border-radius:6px;color:#272727;font-size:12px;cursor:grab;user-select:none;box-shadow:0 1px 2px rgba(15,77,146,.04);';
+        chip.innerHTML = '<span style="color:#9aa1a9;font-size:13px;">☰</span><span style="font-weight:600;">' +
+            crossExamEscapeHtml(batch.label) + '</span><span style="color:#9aa1a9;">' + (idx + 1) + '</span>';
+
+        chip.addEventListener('dragstart', function(e) {
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', id);
+            chip.style.opacity = '0.45';
+        });
+        chip.addEventListener('dragend', function() {
+            chip.style.opacity = '1';
+        });
+        chip.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        });
+        chip.addEventListener('drop', function(e) {
+            e.preventDefault();
+            var draggedId = e.dataTransfer.getData('text/plain');
+            var targetId = id;
+            if (!draggedId || draggedId === targetId) return;
+            var from = crossExamBatchOrder.indexOf(draggedId);
+            var to = crossExamBatchOrder.indexOf(targetId);
+            if (from < 0 || to < 0) return;
+            crossExamBatchOrder.splice(from, 1);
+            crossExamBatchOrder.splice(to, 0, draggedId);
+            renderCrossExamBatchOrderEditor();
+            var result = document.getElementById('crossExamResult');
+            if (result && result.style.display !== 'none' && crossExamBatchOrder.length >= 2) renderCrossExamTop10();
+        });
+
+        list.appendChild(chip);
+        if (idx < crossExamBatchOrder.length - 1) {
+            var arrow = document.createElement('span');
+            arrow.textContent = '→';
+            arrow.style.cssText = 'color:#b0b6bd;font-size:12px;';
+            list.appendChild(arrow);
+        }
+    });
+}
+
+function getOrderedCrossExamBatches() {
+    syncCrossExamBatchOrderFromPicker();
+    return crossExamBatchOrder.map(function(id) {
+        return DataPool.batches.find(function(b) { return b.id === id; });
+    }).filter(Boolean);
+}
+
 function renderCrossExamBatchPicker() {
     var picker = document.getElementById('crossExamBatchPicker');
     if (!picker) return;
@@ -5384,6 +5472,14 @@ function renderCrossExamBatchPicker() {
         cb.type = 'checkbox';
         cb.value = b.id;
         cb.checked = prevChecked.hasOwnProperty(b.id) ? prevChecked[b.id] : false;
+        cb.addEventListener('change', function() {
+            renderCrossExamBatchOrderEditor();
+            var result = document.getElementById('crossExamResult');
+            if (result && result.style.display !== 'none') {
+                if (document.querySelectorAll('#crossExamBatchPicker input[type=checkbox]:checked').length >= 2) renderCrossExamTop10();
+                else result.style.display = 'none';
+            }
+        });
         var dot = document.createElement('span');
         dot.style.cssText = 'display:inline-block;width:8px;height:8px;border-radius:50%;background:' + colors[i % colors.length] + ';';
         label.appendChild(cb);
@@ -5391,6 +5487,7 @@ function renderCrossExamBatchPicker() {
         label.appendChild(document.createTextNode(b.label + ' (' + b.combinedStudentData.length + '人)'));
         picker.appendChild(label);
     });
+    renderCrossExamBatchOrderEditor();
 }
 
 function crossExamEscapeHtml(value) {
@@ -5432,12 +5529,7 @@ function buildCrossExamStudentMap(batchTop10s) {
 
 function renderCrossExamTop10() {
     var statusEl = document.getElementById('crossExamStatus');
-    var cbs = document.querySelectorAll('#crossExamBatchPicker input[type=checkbox]:checked');
-    var selectedBatches = [];
-    cbs.forEach(function(cb) {
-        var batch = DataPool.batches.find(function(b) { return b.id === cb.value; });
-        if (batch) selectedBatches.push(batch);
-    });
+    var selectedBatches = getOrderedCrossExamBatches();
     if (selectedBatches.length < 2) {
         document.getElementById('crossExamResult').style.display = 'none';
         document.getElementById('crossExamEmpty').style.display = 'block';
@@ -5456,7 +5548,6 @@ function renderCrossExamTop10() {
 
 function renderCrossExamSankey(batchTop10s) {
     var chartDom = document.getElementById('crossExamSankeyChart');
-    var summaryEl = document.getElementById('crossExamSummary');
     var countTable = document.getElementById('crossExamCountTableSimple');
     if (!chartDom) return;
     if (!window.echarts) {
@@ -5474,16 +5565,6 @@ function renderCrossExamSankey(batchTop10s) {
         Object.keys(b.ranks).forEach(function(k) { sumB += b.ranks[k]; nB++; });
         return (sumA / Math.max(1, nA)) - (sumB / Math.max(1, nB));
     });
-
-    var fullCount = stuList.filter(function(s) { return s.count === totalExamCount; }).length;
-    var repeatCount = stuList.filter(function(s) { return s.count >= 2; }).length;
-    var singleCount = stuList.filter(function(s) { return s.count === 1; }).length;
-    if (summaryEl) {
-        summaryEl.innerHTML =
-            '<span style="padding:4px 8px;border:1px solid #b9cee5;border-radius:999px;background:#f7fbff;color:#0F4D92;font-size:11px;">全程前十 <b>' + fullCount + '</b> 人</span>' +
-            '<span style="padding:4px 8px;border:1px solid #c9dfdf;border-radius:999px;background:#f7fbfb;color:#42949E;font-size:11px;">多次上榜 <b>' + repeatCount + '</b> 人</span>' +
-            '<span style="padding:4px 8px;border:1px solid #dedede;border-radius:999px;background:#fafafa;color:#767676;font-size:11px;">单次上榜 <b>' + singleCount + '</b> 人</span>';
-    }
 
     if (countTable) {
         var groupedByCount = {};
