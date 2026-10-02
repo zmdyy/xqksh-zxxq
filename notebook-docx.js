@@ -62,15 +62,27 @@ function docxInfoTable(batchText, questionText, scoreText, studentAnswer, correc
             docxBlock(text ? docxStyledRun(text, {size:19,color:color || '334155',bold:!!bold}) : '', {after:0,line:260,align:'center'}) +
             '</w:tc>';
     }
+    function labeledCell(label, value, width, accent) {
+        var text = String(value == null ? '' : value).trim();
+        if (!text) return cell('', width, '334155', false);
+        return '<w:tc><w:tcPr><w:tcW w:w="' + width + '" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="F8FAFC"/>' +
+            '<w:tcMar><w:top w:w="90" w:type="dxa"/><w:bottom w:w="90" w:type="dxa"/><w:left w:w="90" w:type="dxa"/><w:right w:w="90" w:type="dxa"/></w:tcMar></w:tcPr>' +
+            docxBlock(
+                docxStyledRun(label + '：', {size:19,color:'475569',bold:true}) +
+                docxStyledRun(text, {size:19,color:accent || '111827',bold:true}),
+                {after:0,line:260,align:'center'}
+            ) +
+            '</w:tc>';
+    }
     return '<w:tbl><w:tblPr><w:tblW w:w="9200" w:type="dxa"/><w:tblLayout w:type="fixed"/>' +
         '<w:tblBorders><w:top w:val="single" w:sz="4" w:color="E2E8F0"/><w:left w:val="single" w:sz="4" w:color="E2E8F0"/><w:bottom w:val="single" w:sz="4" w:color="E2E8F0"/><w:right w:val="single" w:sz="4" w:color="E2E8F0"/><w:insideV w:val="single" w:sz="4" w:color="E2E8F0"/></w:tblBorders></w:tblPr>' +
         '<w:tr>' +
-        cell(batchText, 1050, '475569', true) +
-        cell(questionText, 1300, '111827', true) +
-        cell(scoreText, 1500, 'DC2626', true) +
-        cell(studentAnswer, 2100, 'DC2626', true) +
-        cell(correctAnswer, 2100, '059669', true) +
-        cell(sourceText, 1150, '64748B', false) +
+        cell(batchText, 900, '475569', true) +
+        cell(questionText, 1150, '111827', true) +
+        cell(scoreText, 1350, 'DC2626', true) +
+        labeledCell('我的答案', studentAnswer, 2300, 'DC2626') +
+        labeledCell('参考答案', correctAnswer, 2300, '059669') +
+        cell(sourceText, 1200, '64748B', false) +
         '</w:tr></w:tbl><w:p><w:pPr><w:spacing w:after="100"/></w:pPr></w:p>';
 }
 
