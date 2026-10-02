@@ -87,6 +87,13 @@ function docxInfoTable(batchText, questionText, scoreText, studentAnswer, correc
 }
 
 function notebookQuestionLabel(itemName) {
+    // 与网页小题热力图 / 错题本 / PDF匹配共用同一题号语义。
+    if (typeof getCanonicalQuestionRefInfo === 'function') {
+        try {
+            var info = getCanonicalQuestionRefInfo(itemName);
+            if (info && info.wordLabel) return info.wordLabel;
+        } catch(e) {}
+    }
     var s = String(itemName == null ? '' : itemName).trim();
     var m = s.match(/第\s*(\d{1,3})\s*题/) || s.match(/(\d{1,3})/);
     return m ? ('第' + m[1] + '题') : (s || '未命名题目');
