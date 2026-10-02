@@ -25,10 +25,10 @@ import re
 import time
 import zipfile
 from pathlib import Path
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 import requests
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, Response, jsonify, request, send_from_directory
 
 ROOT = Path(__file__).resolve().parent
 app = Flask(__name__, static_folder=None)
@@ -233,6 +233,40 @@ def embed_zip_assets(markdown, zf, md_name):
         data_uri = f"data:{mime};base64," + base64.b64encode(raw).decode("ascii")
         markdown = markdown.replace(src, data_uri)
     return markdown
+
+
+@app.route("/mineru/fetch-asset", methods=["GET", "OPTIONS"])
+def fetch_mineru_asset():
+    if request.method == "OPTIONS":
+        return ("", 204)
+    try:
+        url = (request.args.get("url") or "").strip()
+        if not url:
+            return fail("missing url", 400, "asset")
+        parsed = urlparse(url)
+        allowed_hosts = {
+            "cdn-mineru.openxlab.org.cn",
+            "mineru.net",
+            "www.mineru.net",
+        }
+        if parsed.scheme != "https" or parsed.hostname not in allowed_hosts:
+            return fail("asset host not allowed", 403, "asset")
+
+        r = requests.get(url, timeout=TIMEOUT, allow_redirects=True)
+        if not r.ok:
+            return fail(f"asset HTTP {r.status_code}", 502, "asset")
+        final_host = urlparse(r.url).hostname
+        if final_host not in allowed_hosts:
+            return fail("asset redirect host not allowed", 403, "asset")
+
+        content_type = r.headers.get("content-type") or mimetypes.guess_type(parsed.path)[0] or "application/octet-stream"
+        resp = Response(r.content, status=200, content_type=content_type)
+        resp.headers["Content-Length"] = str(len(r.content))
+        resp.headers["X-Content-Type-Options"] = "nosniff"
+        return resp
+    except Exception as exc:
+        app.logger.exception("MinerU asset proxy failed")
+        return fail(exc, 500, "asset")
 
 
 @app.route("/mineru/parse-file", methods=["POST", "OPTIONS"])
