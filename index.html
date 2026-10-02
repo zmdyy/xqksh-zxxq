@@ -4094,7 +4094,7 @@ async function parsePdfToMarkdown_Vision(file, progressCb) {
 // ============================================================
 //  Image embedding: download MinerU CDN images → compress → base64
 // ============================================================
-async function embedImagesAsBase64(mdText, maxWidth, quality) {
+async function embedImagesAsBase64(mdText, maxWidth, quality, preserveOriginal, progressCb) {
     if (typeof mdText !== 'string') return mdText;
     var urls = [];
     var patterns = [
@@ -4109,20 +4109,42 @@ async function embedImagesAsBase64(mdText, maxWidth, quality) {
     });
     if (!urls.length) return mdText;
 
-    var results = await Promise.all(urls.map(function(url) {
-        return fetch(url, { mode: 'cors' }).then(function(resp) {
-            if (!resp.ok) throw new Error('HTTP ' + resp.status);
-            return resp.blob();
-        }).then(function(blob) {
-            if (/image\/svg\+xml/i.test(blob.type || '')) {
-                return new Promise(function(resolve, reject) {
-                    var reader = new FileReader();
-                    reader.onload = function() { resolve({ url: url, dataUri: reader.result }); };
-                    reader.onerror = function() { reject(new Error('SVG读取失败')); };
-                    reader.readAsDataURL(blob);
-                });
+    function blobToDataUri(blob) {
+        return new Promise(function(resolve, reject) {
+            var reader = new FileReader();
+            reader.onload = function() { resolve(reader.result); };
+            reader.onerror = function() { reject(new Error('图片读取失败')); };
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    async function fetchImageBlob(url) {
+        try {
+            var direct = await fetch(url, { mode: 'cors', cache: 'no-store' });
+            if (direct.ok) return await direct.blob();
+        } catch(e) {
+            console.warn('图片直连失败，改用后端代理:', url, e);
+        }
+        if (typeof MINERU_API_BASE !== 'undefined' && /^https:\/\//i.test(url)) {
+            var proxyUrl = String(MINERU_API_BASE || '').replace(/\/+$/, '') + '/mineru/fetch-asset?url=' + encodeURIComponent(url);
+            var proxied = await fetch(proxyUrl, { mode: 'cors', cache: 'no-store' });
+            if (!proxied.ok) throw new Error('后端图片代理 HTTP ' + proxied.status);
+            return await proxied.blob();
+        }
+        throw new Error('无法下载图片');
+    }
+
+    var results = [];
+    for (var ui = 0; ui < urls.length; ui++) {
+        var url = urls[ui];
+        if (progressCb) progressCb('正在本地化试卷图片 ' + (ui + 1) + '/' + urls.length + '...');
+        try {
+            var blob = await fetchImageBlob(url);
+            if (preserveOriginal || /image\/svg\+xml/i.test(blob.type || '')) {
+                results.push({ url: url, dataUri: await blobToDataUri(blob) });
+                continue;
             }
-            return new Promise(function(resolve, reject) {
+            var dataUri = await new Promise(function(resolve, reject) {
                 var img = new Image();
                 var blobUrl = URL.createObjectURL(blob);
                 img.onload = function() {
@@ -4138,20 +4160,25 @@ async function embedImagesAsBase64(mdText, maxWidth, quality) {
                     ctx.fillStyle = '#fff';
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    resolve({ url: url, dataUri: canvas.toDataURL('image/jpeg', quality == null ? 0.88 : quality) });
+                    resolve(canvas.toDataURL('image/jpeg', quality == null ? 0.88 : quality));
                 };
                 img.onerror = function() { URL.revokeObjectURL(blobUrl); reject(new Error('图片解码失败')); };
                 img.src = blobUrl;
             });
-        }).catch(function(err) {
-            console.warn('图片下载/内嵌失败: ' + url, err.message);
-            return { url: url, dataUri: null };
-        });
-    }));
+            results.push({ url: url, dataUri: dataUri });
+        } catch(err) {
+            console.warn('图片下载/内嵌失败: ' + url, err.message || err);
+            results.push({ url: url, dataUri: null });
+        }
+    }
+
     var result = mdText;
+    var failed = 0;
     results.forEach(function(r) {
         if (r.dataUri) result = result.split(r.url).join(r.dataUri);
+        else failed++;
     });
+    if (failed && progressCb) progressCb('图片本地化完成：成功 ' + (results.length - failed) + '，失败 ' + failed);
     return result;
 }
 
@@ -9197,6 +9224,15 @@ document.getElementById('pdfFileInput').addEventListener('change', async functio
                     reader.onerror = function() { reject(new Error('读取MD文件失败')); };
                     reader.readAsText(f);
                 });
+                document.getElementById('pdfStatusText').textContent = '正在将 MinerU 题图保存到本地批次...';
+                entry.markdown = await embedImagesAsBase64(
+                    entry.markdown,
+                    null,
+                    null,
+                    true,
+                    function(msg) { document.getElementById('pdfStatusText').textContent = msg; }
+                );
+                entry.assetsLocalized = !/https?:\/\/cdn-mineru\.openxlab\.org\.cn\//i.test(entry.markdown);
                 entry.questionIndex = buildQuestionIndexFromMarkdown(entry.markdown);
                 entry.detectedSubject = detectSubjectByFileName(f.name);
                 entry.source = 'md';
@@ -9221,7 +9257,7 @@ document.getElementById('pdfFileInput').addEventListener('change', async functio
                 if (result.mineruModel) entry.mineruModel = result.mineruModel;
                 if (result.timing) entry.mineruTiming = result.timing;
             }
-            if (entry.source !== 'mineru' && entry.source !== 'mineru_precise') {
+            if (entry.source !== 'mineru' && entry.source !== 'mineru_precise' && entry.source !== 'md') {
                 document.getElementById('pdfStatusText').textContent = '正在下载并压缩试卷图片...';
                 entry.markdown = await embedImagesAsBase64(entry.markdown);
             }
