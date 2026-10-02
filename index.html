@@ -1324,7 +1324,6 @@
                 <span>只看异常题</span>
             </label>
             <button type="button" class="filter-btn" id="collectiveHeatmapExportPngBtn" disabled>导出 PNG</button>
-            <button type="button" class="filter-btn" id="collectiveHeatmapExportSvgBtn" disabled>导出 SVG</button>
             <span id="collectiveHeatmapLegendText" style="font-size:12px;color:#64748b;margin-left:auto;">得分率：颜色越偏红表示得分率越低，越偏蓝表示得分率越高</span>
         </div>
         <div id="collectiveHeatmapEmpty" class="diagnosis-empty" style="display:none;">暂无可绘制的小题数据。</div>
@@ -7109,10 +7108,8 @@ function resetCollectiveHeatmapChart(chartEl) {
 }
 
 function setCollectiveHeatmapExportEnabled(enabled) {
-    ['collectiveHeatmapExportPngBtn','collectiveHeatmapExportSvgBtn'].forEach(function(id) {
-        var button = document.getElementById(id);
-        if (button) button.disabled = !enabled;
-    });
+    var button = document.getElementById('collectiveHeatmapExportPngBtn');
+    if (button) button.disabled = !enabled;
 }
 
 function formatCollectiveHeatmapAxisLabel(value) {
@@ -7160,7 +7157,7 @@ function downloadCollectiveHeatmapBlob(blob, filename) {
     setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
 }
 
-async function exportCollectiveHeatmap(format) {
+async function exportCollectiveHeatmap() {
     var chartEl = document.getElementById('collectiveHeatmapChart');
     var chart = chartEl && chartEl.__chart;
     var model = collectiveHeatmapContext;
@@ -7182,10 +7179,6 @@ async function exportCollectiveHeatmap(format) {
         var svgText = decodeURIComponent(dataUrl.slice(dataUrl.indexOf(',') + 1));
         svgText = svgText.replace(/(<svg\b[^>]*>)/, '$1<rect width="100%" height="100%" fill="#ffffff"/>');
         var svgBlob = new Blob([svgText], {type:'image/svg+xml;charset=utf-8'});
-        if (format === 'svg') {
-            downloadCollectiveHeatmapBlob(svgBlob, filename + '.svg');
-            return;
-        }
         var width = chart.getWidth(), height = chart.getHeight();
         var scale = Math.min(2, 16384 / width, 16384 / height, Math.sqrt(32000000 / (width * height)));
         imageUrl = URL.createObjectURL(svgBlob);
@@ -10964,8 +10957,7 @@ updateCrossExamRankRangeUI();
 document.getElementById('collectiveHeatmapFallbackStep').addEventListener('change', function() { renderCollectiveHeatmap(); });
 document.getElementById('collectiveHeatmapMode').addEventListener('change', function() { renderCollectiveHeatmap(); });
 document.getElementById('collectiveHeatmapOnlyAbnormal').addEventListener('change', function() { renderCollectiveHeatmap(); });
-document.getElementById('collectiveHeatmapExportPngBtn').addEventListener('click', function() { exportCollectiveHeatmap('png'); });
-document.getElementById('collectiveHeatmapExportSvgBtn').addEventListener('click', function() { exportCollectiveHeatmap('svg'); });
+document.getElementById('collectiveHeatmapExportPngBtn').addEventListener('click', function() { exportCollectiveHeatmap(); });
 document.querySelectorAll('input[id^="fullMark_"]').forEach(function(input) {
     input.addEventListener('change', function() { renderCollectiveHeatmap(); });
 });
