@@ -5369,34 +5369,40 @@ function getCrossExamMaxAvailableRank() {
         var count = batch && batch.combinedStudentData ? batch.combinedStudentData.length : 0;
         if (count > maxRank) maxRank = count;
     });
-    return Math.max(1, maxRank);
+    return maxRank;
 }
 
 function getCrossExamRankRange() {
     var startEl = document.getElementById('crossExamRankStart');
     var endEl = document.getElementById('crossExamRankEnd');
     var maxRank = getCrossExamMaxAvailableRank();
+    var hasRankData = maxRank > 0;
+    var effectiveMax = hasRankData ? maxRank : 10;
     var start = parseInt(startEl && startEl.value, 10);
     var end = parseInt(endEl && endEl.value, 10);
+
+    // 页面首次打开、数据尚未载入或输入框被清空时，始终回填默认 1—10。
     if (!isFinite(start)) start = 1;
     if (!isFinite(end)) end = 10;
 
-    start = Math.max(1, Math.min(maxRank, start));
-    end = Math.max(1, Math.min(maxRank, end));
+    start = Math.max(1, Math.min(effectiveMax, start));
+    end = Math.max(1, Math.min(effectiveMax, end));
     if (end < start) end = start;
 
     var adjustedForSpan = false;
     if (end - start + 1 > 50) {
-        end = Math.min(maxRank, start + 49);
+        end = Math.min(effectiveMax, start + 49);
         adjustedForSpan = true;
     }
 
     if (startEl) {
-        startEl.max = maxRank;
+        if (hasRankData) startEl.max = maxRank;
+        else startEl.removeAttribute('max');
         startEl.value = start;
     }
     if (endEl) {
-        endEl.max = maxRank;
+        if (hasRankData) endEl.max = maxRank;
+        else endEl.removeAttribute('max');
         endEl.value = end;
     }
 
