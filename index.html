@@ -4685,6 +4685,176 @@ function expandItemRefs(item) {
     return results;
 }
 
+
+/**
+ * 统一题号语义：与小题分-PDF匹配、错题本、Word 共用。
+ * 支持：17、14(2)、5-1、13-245、14(1、3、4)、12(5-8)、7、9。
+ * 不把没有父题证据的纯数字 45 / 123 擅自拆开。
+ */
+function getCanonicalQuestionRefInfo(item) {
+    var raw = String(item == null ? '' : item).trim();
+    var s = (typeof normalizeItemName === 'function' ? normalizeItemName(raw) : raw.replace(/\s+/g,''))
+        .replace(/_c\d+$/i,'').replace(/_col\d+$/i,'').trim();
+
+    var out = {
+        raw:raw, normalized:s, kind:'unknown',
+        major:null, minors:[], majors:[], sortPath:[],
+        compactLabel:'', wordLabel:'', isSubQuestion:false
+    };
+
+    function setSingle(major) {
+        major = Number(major);
+        out.kind='single'; out.major=major; out.sortPath=[major];
+        out.compactLabel=major + '题'; out.wordLabel='第' + major + '题';
+        return out;
+    }
+    function setSub(major, minors, kind, displayMinor) {
+        major = Number(major);
+        var clean = [];
+        (minors || []).forEach(function(v) {
+            v = Number(v);
+            if (isFinite(v) && clean.indexOf(v) < 0) clean.push(v);
+        });
+        out.kind=kind || (clean.length > 1 ? 'multi-sub' : 'composite');
+        out.major=major; out.minors=clean; out.isSubQuestion=clean.length > 0;
+        out.sortPath=[major].concat(clean);
+        var subText = displayMinor || clean.join('、');
+        out.compactLabel = major + '题' + (subText ? '(' + subText + ')' : '');
+        out.wordLabel = '第' + major + '题' + (subText ? '（' + subText + '）' : '');
+        return out;
+    }
+
+    if (!s) {
+        out.compactLabel=raw || '';
+        out.wordLabel=raw || '';
+        return out;
+    }
+
+    var rangeM = s.match(/^(\d{1,3})[（(](\d{1,2})\s*[-－]\s*(\d{1,2})[）)]$/);
+    if (rangeM) {
+        var rangeMinors=[];
+        for (var ri=Number(rangeM[2]); ri<=Number(rangeM[3]); ri++) rangeMinors.push(ri);
+        return setSub(rangeM[1], rangeMinors, 'sub-range', rangeM[2] + '-' + rangeM[3]);
+    }
+
+    var listM = s.match(/^(\d{1,3})[（(]([\d、，, ]+)[）)]$/);
+    if (listM) {
+        var listMinors=listM[2].split(/[、，, ]+/).filter(Boolean).map(Number);
+        return setSub(listM[1], listMinors, listMinors.length > 1 ? 'multi-sub' : 'composite');
+    }
+
+    // 13-245 = 第13题的第2、4、5小题；13-10 = 第13题第10小题。
+    var packedM = s.match(/^(\d{1,3})[-－](\d{2,})$/);
+    if (packedM) {
+        var majorPacked=Number(packedM[1]), rest=packedM[2], packedMinors=[];
+        if (rest.indexOf('0') >= 0) packedMinors=[Number(rest)];
+        else rest.split('').forEach(function(ch){ var d=Number(ch); if(d>=1&&d<=9&&packedMinors.indexOf(d)<0) packedMinors.push(d); });
+        return setSub(majorPacked, packedMinors, packedMinors.length > 1 ? 'multi-sub' : 'composite');
+    }
+
+    // 13.4.5 / 13-4-5 是多行表头保留下来的同一大题多个子题。
+    var pathM = s.match(/^\d{1,3}(?:[.．_\/－-]\d{1,3}){2,}$/);
+    if (pathM) {
+        var pathParts=s.split(/[.．_\/－-]+/).map(Number);
+        return setSub(pathParts[0], pathParts.slice(1), 'multi-sub');
+    }
+
+    var cq = typeof parseCompositeQuestionRef === 'function' ? parseCompositeQuestionRef(s) : null;
+    if (cq && cq.major != null && cq.minor != null) return setSub(cq.major, [cq.minor], 'composite');
+
+    var plainList = s.match(/^\d{1,3}(?:[、，,]\d{1,3})+$/);
+    if (plainList) {
+        out.kind='major-list';
+        out.majors=s.split(/[、，,]/).filter(Boolean).map(Number);
+        out.sortPath=out.majors.slice();
+        out.compactLabel=out.majors.join('、') + '题';
+        out.wordLabel='第' + out.majors.join('、') + '题';
+        return out;
+    }
+
+    var single=s.match(/^(?:第)?(\d{1,3})(?:题)?$/);
+    if (single) return setSingle(single[1]);
+
+    var first=s.match(/(?:^|[^0-9])(\d{1,3})(?:[^0-9]|$)/);
+    if (first) return setSingle(first[1]);
+
+    out.compactLabel=raw || s;
+    out.wordLabel=raw || s;
+    return out;
+}
+
+function getCanonicalQuestionRefFromHeaderRows(headerRows, colIndex, subjectName, startCol) {
+    if (!Array.isArray(headerRows) || colIndex == null || colIndex < 0) return null;
+    startCol = Math.max(0, Number(startCol) || 0);
+
+    function cleanPart(v) {
+        return String(v == null ? '' : v).trim()
+            .replace(subjectName || '', '').trim()
+            .replace(/^(第?\s*\d+\s*卷|[0-9]+\s*卷)\s*/i,'').trim()
+            .replace(/[（(]\s*[0-9]+(?:\.[0-9]+)?\s*分\s*[）)]/g,'').trim()
+            .replace(/_?(学生)?答案.*$/g,'').trim()
+            .replace(/正确答案.*$/g,'').trim()
+            .replace(/(本题)?(小题)?(得分|分值|分数|成绩|小题分)/g,'').trim()
+            .replace(/[—–]/g,'-').replace(/[_:：\s]+/g,'').trim();
+    }
+    function simpleNumericGroup(v) {
+        var s=cleanPart(v);
+        if (!s) return null;
+        var single=s.match(/^(?:第)?[（(]?(\d{1,4})[）)]?(?:题)?$/);
+        if (single) return { raw:s, values:[Number(single[1])], packed:/^\d{2,4}$/.test(single[1]) };
+        var list=s.match(/^[（(]?\s*(\d{1,3}(?:[、，,]\d{1,3})+)\s*[）)]?$/);
+        if (list) return { raw:s, values:list[1].split(/[、，,]/).map(Number), packed:false };
+        return null;
+    }
+
+    var current=[];
+    for (var ri=0; ri<headerRows.length; ri++) {
+        var g=simpleNumericGroup((headerRows[ri] || [])[colIndex]);
+        if (g) current.push({row:ri, group:g});
+    }
+    if (!current.length) return null;
+
+    var firstRow=current[0].row;
+    var parent=null;
+    // Excel 合并单元格只在最左列保留值：从最近的上级表头行向左找父题号。
+    for (var pri=firstRow-1; pri>=0 && !parent; pri--) {
+        for (var cc=colIndex-1; cc>=startCol; cc--) {
+            var pg=simpleNumericGroup((headerRows[pri] || [])[cc]);
+            if (pg && pg.values.length === 1) {
+                parent={row:pri, group:pg};
+                break;
+            }
+        }
+    }
+
+    var major, childGroups=[];
+    if (parent) {
+        major=parent.group.values[0];
+        childGroups=current.map(function(x){ return x.group; });
+    } else if (current.length >= 2) {
+        major=current[0].group.values[0];
+        childGroups=current.slice(1).map(function(x){ return x.group; });
+    } else {
+        // 单层表头：保持原数字，不凭空把45/123拆成子题。
+        return String(current[0].group.values[0]);
+    }
+
+    var minors=[];
+    childGroups.forEach(function(g) {
+        if (g.values.length > 1) {
+            g.values.forEach(function(v){ if(minors.indexOf(v)<0) minors.push(v); });
+            return;
+        }
+        var v=g.values[0], txt=String(v);
+        // 有父题号时，45/123 采用错题本和PDF匹配的 packed-sub 语义。
+        if (v >= 10 && txt.indexOf('0') < 0 && txt.length <= 4) {
+            txt.split('').forEach(function(ch){ var d=Number(ch); if(d>=1&&d<=9&&minors.indexOf(d)<0) minors.push(d); });
+        } else if (minors.indexOf(v)<0) minors.push(v);
+    });
+    if (!minors.length) return String(major);
+    return String(major) + '(' + minors.join('、') + ')';
+}
+
 // Find questions in PDF index using expanded refs, with major-number + keyword fallback
 function findPdfQuestionEntries(qi, itemName) {
     if (!qi || typeof qi.findByNumber !== 'function') return [];
@@ -5061,23 +5231,9 @@ function parseDataByHeaderRows(fileEntry, rawData, overrideHeaderRows) {
             const raw = String(rch || rawFieldName || '').trim();
             const isAC = /_?(学生)?答案|正确答案/.test(raw);
             const ms = eMs(raw); const ca = isAC ? eCa(raw) : '';
-            // 多行表头中的数字是题目层级，不能直接去掉分隔符：
-            // 例如 4 → 5 应保留为 4.5，1 → 2 → 3 应保留为 1.2.3。
-            var headerNumberPath = hrArr.map(function(r) {
-                var part = String((r || [])[c] || '').trim();
-                if (!part) return null;
-                part = part.replace(subjectName, '').trim()
-                    .replace(/[（(]\s*[0-9]+(?:\.[0-9]+)?\s*分\s*[）)]/g,'').trim()
-                    .replace(/_?(学生)?答案.*$/g,'').trim()
-                    .replace(/正确答案.*$/g,'').trim()
-                    .replace(/(本题)?(小题)?(得分|分值|分数|成绩|小题分)/g,'').trim();
-                var pm = part.match(/^(?:第\s*)?[（(]?\s*(\d{1,4})\s*[）)]?(?:\s*题)?$/);
-                return pm ? String(Number(pm[1])) : null;
-            }).filter(Boolean);
-            let bn;
-            if (headerNumberPath.length >= 2) {
-                bn = headerNumberPath.join('.');
-            } else {
+            // 与错题本/PDF匹配共用题号语义，并恢复Excel合并表头中的父题号。
+            let bn = getCanonicalQuestionRefFromHeaderRows(hrArr, c, subjectName, ssc);
+            if (!bn) {
                 bn = raw.replace(subjectName, '').trim()
                     .replace(/^(第?\s*\d+\s*卷|[0-9]+\s*卷)\s*/i,'').trim()
                     .replace(/[（(]\s*[0-9]+(?:\.[0-9]+)?\s*分\s*[）)]/g,'').trim()
@@ -6448,105 +6604,92 @@ function renderCollectiveDiagnosisLane(type, title, desc, list, fd, subjectName)
 
 var collectiveHeatmapContext = null;
 
-function getCollectiveHeatmapSourcePath(q) {
+function getCollectiveHeatmapSourceRef(q) {
     if (!q || !q.scoreHeader || typeof uploadedFilesData === 'undefined') return null;
-    var scoreHeader = String(q.scoreHeader || '');
-    var subjectName = '';
-    try { subjectName = utilGetSubjectFromHeader(scoreHeader) || ''; } catch(e) {}
+    var scoreHeader=String(q.scoreHeader || '');
+    var subjectName='';
+    try { subjectName=utilGetSubjectFromHeader(scoreHeader) || ''; } catch(e) {}
     if (!subjectName) return null;
 
-    var mapKey = scoreHeader;
-    var prefix = subjectName + '_';
-    if (mapKey.indexOf(prefix) === 0) mapKey = mapKey.slice(prefix.length);
-    mapKey = mapKey.replace(/[（(]\s*[0-9]+(?:\.[0-9]+)?\s*分\s*[）)]\s*$/, '').replace(/_答案$/, '').trim();
+    var mapKey=scoreHeader;
+    var prefix=subjectName + '_';
+    if (mapKey.indexOf(prefix)===0) mapKey=mapKey.slice(prefix.length);
+    mapKey=mapKey.replace(/[（(]\s*[0-9]+(?:\.[0-9]+)?\s*分\s*[）)]\s*$/,'').replace(/_答案$/,'').trim();
 
-    var files = Object.values(uploadedFilesData || {});
-    for (var fi = 0; fi < files.length; fi++) {
-        var fe = files[fi];
+    var files=Object.values(uploadedFilesData || {});
+    for (var fi=0; fi<files.length; fi++) {
+        var fe=files[fi];
         if (!fe || !Array.isArray(fe.rawData) || !Array.isArray(fe.subjectHeaders)) continue;
-        var sh = fe.subjectHeaders.find(function(h){ return h && String(h.name || '').trim() === subjectName; });
+        var sh=fe.subjectHeaders.find(function(h){ return h && String(h.name || '').trim()===subjectName; });
         if (!sh || !sh.subScoreQuestionMap) continue;
-        var sourceQ = sh.subScoreQuestionMap[mapKey];
+        var sourceQ=sh.subScoreQuestionMap[mapKey];
         if (!sourceQ) continue;
-        var ci = sourceQ.scoreIndex !== -1 ? sourceQ.scoreIndex : sourceQ.answerIndex;
+        var ci=sourceQ.scoreIndex !== -1 ? sourceQ.scoreIndex : sourceQ.answerIndex;
         if (ci == null || ci < 0) continue;
 
-        var shr = resolveHeaderRowCount(fe.rawData, fe.headerRows);
-        var path = [];
-        for (var ri = 0; ri < shr; ri++) {
-            var part = String(((fe.rawData[ri] || [])[ci]) || '').trim();
-            if (!part) continue;
-            part = part.replace(subjectName, '').trim()
-                .replace(/[（(]\s*[0-9]+(?:\.[0-9]+)?\s*分\s*[）)]/g,'').trim()
-                .replace(/_?(学生)?答案.*$/g,'').trim()
-                .replace(/正确答案.*$/g,'').trim()
-                .replace(/(本题)?(小题)?(得分|分值|分数|成绩|小题分)/g,'').trim();
-            var pm = part.match(/^(?:第\s*)?[（(]?\s*(\d{1,4})\s*[）)]?(?:\s*题)?$/);
-            if (pm) path.push(Number(pm[1]));
-        }
-        if (path.length >= 2) return path;
+        var subjectCols=[];
+        Object.keys(sh.subScoreQuestionMap).forEach(function(k){
+            var sq=sh.subScoreQuestionMap[k];
+            if (!sq) return;
+            if (sq.scoreIndex != null && sq.scoreIndex >= 0) subjectCols.push(sq.scoreIndex);
+            if (sq.answerIndex != null && sq.answerIndex >= 0) subjectCols.push(sq.answerIndex);
+        });
+        var startCol=subjectCols.length ? Math.min.apply(null,subjectCols) : 0;
+        var shr=resolveHeaderRowCount(fe.rawData, fe.headerRows);
+        var ref=getCanonicalQuestionRefFromHeaderRows(fe.rawData.slice(0,shr), ci, subjectName, startCol);
+        if (ref) return ref;
     }
     return null;
 }
 
-function getCollectiveHeatmapQuestionPath(q, index) {
-    var sourcePath = getCollectiveHeatmapSourcePath(q);
-    if (sourcePath && sourcePath.length) return sourcePath;
+function getCollectiveHeatmapQuestionInfo(q, index) {
+    var sourceRef=getCollectiveHeatmapSourceRef(q);
+    if (sourceRef) {
+        var sourceInfo=getCanonicalQuestionRefInfo(sourceRef);
+        if (sourceInfo && sourceInfo.sortPath.length) return sourceInfo;
+    }
 
-    var rawHeader = String((q && q.scoreHeader) || '');
-    var subjectName = '';
-    try { subjectName = utilGetSubjectFromHeader(rawHeader) || ''; } catch(e) {}
-    var rawKey = rawHeader;
-    if (subjectName && rawKey.indexOf(subjectName + '_') === 0) rawKey = rawKey.slice(subjectName.length + 1);
-    rawKey = rawKey.replace(/[（(]\s*[0-9]+(?:\.[0-9]+)?\s*分\s*[）)]\s*$/, '').replace(/_答案$/, '').trim();
+    var rawHeader=String((q && q.scoreHeader) || '');
+    var subjectName='';
+    try { subjectName=utilGetSubjectFromHeader(rawHeader) || ''; } catch(e) {}
+    var rawKey=rawHeader;
+    if (subjectName && rawKey.indexOf(subjectName + '_')===0) rawKey=rawKey.slice(subjectName.length + 1);
+    rawKey=rawKey.replace(/[（(]\s*[0-9]+(?:\.[0-9]+)?\s*分\s*[）)]\s*$/,'').replace(/_答案$/,'').trim();
 
-    var explicit = rawKey.match(/^\d{1,4}(?:[.．\-_/]\d{1,4})+$/);
-    if (explicit) return rawKey.split(/[.．\-_/]+/).map(function(x){ return Number(x); }).filter(function(x){ return isFinite(x); });
+    var info=getCanonicalQuestionRefInfo(rawKey);
+    if (info && info.sortPath.length) return info;
 
-    var title = String((q && q.title) || '');
-    var tm = title.match(/(?:^|[^0-9])(\d{1,4})(?:\s*题|$)/);
-    if (tm) return [Number(tm[1])];
+    info=getCanonicalQuestionRefInfo(String((q && q.title) || ''));
+    if (info && info.sortPath.length) return info;
 
-    var single = rawKey.match(/^(\d{1,4})$/);
-    if (single) return [Number(single[1])];
-
-    return [];
+    return {
+        raw:String((q && (q.title || q.scoreHeader)) || ''),
+        normalized:'',kind:'unknown',major:null,minors:[],majors:[],sortPath:[],
+        compactLabel:(String((q && q.title) || '').replace(/\s+/g,' ').trim().slice(0,8) || ('题' + (index + 1))),
+        wordLabel:'',isSubQuestion:false
+    };
 }
 
 function getCollectiveHeatmapQuestionLabel(q, index) {
-    var path = getCollectiveHeatmapQuestionPath(q, index);
-    if (path.length) return path.join('.') + '题';
-
-    var raw = '';
-    try { raw = utilGetTitle(q.scoreHeader || q.title || ''); } catch(e) { raw = String(q.title || q.scoreHeader || ''); }
-    raw = String(raw || q.title || q.scoreHeader || '').trim();
-    var m = raw.match(/(?:^|[^0-9])(\d{1,3})(?:\s*[\.、：:]|\s*题|$)/);
-    if (m) return m[1] + '题';
-    var shortText = String(q.title || '').replace(/\s+/g,' ').trim();
-    if (shortText.length > 8) shortText = shortText.slice(0,8) + '…';
-    return shortText || ('题' + (index + 1));
+    return getCollectiveHeatmapQuestionInfo(q,index).compactLabel;
 }
 
 function sortCollectiveHeatmapQuestions(questions) {
-    function pathOf(qm) {
-        var path = qm && qm.q ? getCollectiveHeatmapQuestionPath(qm.q, qm.index) : [];
-        if (path.length) return path;
-        var label = String((qm && qm.label) || '').trim();
-        var nums = label.match(/\d+/g);
-        return nums ? nums.map(Number) : [];
+    function infoOf(qm) {
+        return qm && qm.q ? getCollectiveHeatmapQuestionInfo(qm.q, qm.index) : getCanonicalQuestionRefInfo(qm && qm.label || '');
     }
-
     return (questions || []).slice().sort(function(a,b) {
-        var ap = pathOf(a), bp = pathOf(b);
+        var ai=infoOf(a), bi=infoOf(b);
+        var ap=ai.sortPath || [], bp=bi.sortPath || [];
         if (ap.length && !bp.length) return -1;
         if (!ap.length && bp.length) return 1;
-        var n = Math.max(ap.length, bp.length);
-        for (var i = 0; i < n; i++) {
-            if (i >= ap.length) return -1;
-            if (i >= bp.length) return 1;
-            if (ap[i] !== bp[i]) return ap[i] - bp[i];
+        var n=Math.max(ap.length,bp.length);
+        for (var i=0;i<n;i++) {
+            if (i>=ap.length) return -1;
+            if (i>=bp.length) return 1;
+            if (ap[i]!==bp[i]) return ap[i]-bp[i];
         }
-        return String(a && a.label || '').localeCompare(String(b && b.label || ''), 'zh-CN', {numeric:true, sensitivity:'base'});
+        return String(a && a.label || '').localeCompare(String(b && b.label || ''),'zh-CN',{numeric:true,sensitivity:'base'});
     });
 }
 
@@ -8538,20 +8681,15 @@ function renderNotebookQuestionMarkdown(text) {
 
 
 function getErrorMajorKey(itemName) {
+    var info = getCanonicalQuestionRefInfo(itemName);
+    if (info && info.major != null) return String(info.major);
     var raw = String(itemName || '').replace(/_c\d+$/i, '').replace(/_col\d+$/i, '');
-    var n = typeof normalizeItemName === 'function' ? normalizeItemName(raw) : raw;
-    if (typeof parseCompositeQuestionRef === 'function') {
-        var cq = parseCompositeQuestionRef(n);
-        if (cq && cq.major != null) return String(cq.major);
-    }
-    var multi = String(n).match(/^(\d{1,2})-(\d{2,})$/);
-    if (multi) return multi[1];
-    var m = String(n).match(/^(\d{1,3})/);
-    return m ? m[1] : String(n);
+    var m = raw.match(/(\d{1,3})/);
+    return m ? m[1] : raw;
 }
 function looksLikeSubQuestionName(itemName) {
-    var n = typeof normalizeItemName === 'function' ? normalizeItemName(itemName) : String(itemName || '');
-    return /[（(]\s*\d|[（(]\s*\d+\s*[-－、，,]|\d-\d/.test(n);
+    var info = getCanonicalQuestionRefInfo(itemName);
+    return !!(info && info.isSubQuestion);
 }
 function mergeSplitErrorItems(errors) {
     var groups = {};
