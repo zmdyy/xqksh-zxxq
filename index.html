@@ -1303,15 +1303,15 @@
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;padding:8px 10px;background:#fafbfc;border:1px solid #e5e7eb;border-radius:8px;">
             <label style="font-size:13px;font-weight:700;">查看：</label>
             <select id="collectiveHeatmapMode" class="filter-bar-select" style="width:140px;">
-                <option value="anomaly" selected>异常度</option>
-                <option value="rate">得分率</option>
+                <option value="anomaly">异常度</option>
+                <option value="rate" selected>得分率</option>
                 <option value="student">学生 × 小题</option>
             </select>
             <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;">
                 <input type="checkbox" id="collectiveHeatmapOnlyAbnormal">
                 <span>只看异常题</span>
             </label>
-            <span id="collectiveHeatmapLegendText" style="font-size:12px;color:#64748b;margin-left:auto;">异常度：全班看低于阈值比例；各等级看个性异常学生占比</span>
+            <span id="collectiveHeatmapLegendText" style="font-size:12px;color:#64748b;margin-left:auto;">得分率：颜色越偏红表示得分率越低，越偏蓝表示得分率越高</span>
         </div>
         <div id="collectiveHeatmapEmpty" class="diagnosis-empty" style="display:none;">暂无可绘制的小题数据。</div>
         <div id="collectiveHeatmapScroll" style="overflow-x:auto;overflow-y:hidden;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">
@@ -6539,7 +6539,7 @@ function renderCollectiveHeatmap(fd, subjectName) {
 
     var modeEl = document.getElementById('collectiveHeatmapMode');
     var onlyEl = document.getElementById('collectiveHeatmapOnlyAbnormal');
-    var mode = modeEl ? modeEl.value : 'anomaly';
+    var mode = modeEl ? modeEl.value : 'rate';
     var onlyAbnormal = !!(onlyEl && onlyEl.checked);
 
     if (mode === 'student') {
