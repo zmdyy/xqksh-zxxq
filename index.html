@@ -5444,21 +5444,29 @@ function displayPersonalResults() {
     const isSearching = searchName.length > 0;
     aiOutput.style.display = 'none'; dataContent.textContent = '';
 
-    if (!allSubjectHeaders.length || !combinedStudentData.length) {
+    if (!combinedStudentData.length) {
         rankingTableOutput.innerHTML = '<div class="no-data">请先在「上传管理」中上传Excel数据</div>';
         return;
     }
-    let anchorSubjName = getTotalSubjectName(allSubjectHeaders);
-    if (!anchorSubjName && allSubjectHeaders.length > 0) anchorSubjName = allSubjectHeaders[0].name;
+    const analysisSubjectNames = getMergedSubjectNames(combinedStudentData, allSubjectHeaders);
+    if (!analysisSubjectNames.length) {
+        rankingTableOutput.innerHTML = '<div class="no-data">当前批次没有可分析的科目数据</div>';
+        return;
+    }
+    let anchorSubjName = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
+    if (!anchorSubjName) {
+        const scoredNames = getScoredSubjectNames(combinedStudentData, allSubjectHeaders);
+        anchorSubjName = scoredNames.length ? scoredNames[0] : '';
+    }
     const getFullList = (sn) => combinedStudentData.map(stu => { const sd = stu.subjects[sn]; const rv = getRankValue(sd, rankType); return { student: stu, subjectData: sd, rankValue: rv, hasSubjectScore: sd && validateSubjectScore(sd) }; }).filter(e => e.hasSubjectScore && e.rankValue !== null).sort((a,b) => a.rankValue - b.rankValue);
     const anchorFullList = getFullList(anchorSubjName);
     const columnsFullDataMap = {};
-    allSubjectHeaders.forEach(h => {
-        const isMain = anchorFullList.some(e => e.student.subjects[h.name] && (hasMeaningfulRank(e.student.subjects[h.name].gradeRank) || hasMeaningfulRank(e.student.subjects[h.name].schoolRank) || hasMeaningfulRank(e.student.subjects[h.name].classRank)));
-        if (isMain) columnsFullDataMap[h.name] = getFullList(h.name);
+    analysisSubjectNames.forEach(function(subjectName) {
+        const isMain = anchorFullList.some(e => e.student.subjects[subjectName] && (hasMeaningfulRank(e.student.subjects[subjectName].gradeRank) || hasMeaningfulRank(e.student.subjects[subjectName].schoolRank) || hasMeaningfulRank(e.student.subjects[subjectName].classRank)));
+        if (isMain) columnsFullDataMap[subjectName] = getFullList(subjectName);
     });
     const dispSubjNames = Object.keys(columnsFullDataMap).filter(n => n !== anchorSubjName);
-    const dispSubjHeaders = allSubjectHeaders.filter(h => dispSubjNames.includes(h.name));
+    const dispSubjHeaders = dispSubjNames.map(function(name) { return { name:name }; });
     let indicesToShow = new Set(), anchorRank = -1, startRank, endRank;
 
     if (isSearching) {
@@ -5522,7 +5530,7 @@ function extractStudentAnalysisData(studentName, weakRateThOpt) {
     const stuEntry = findStudentByNameOrDisplay(combinedStudentData, studentName);
     if (!stuEntry) return null;
     let wt = parseFloat(weakRateThOpt); if (isNaN(wt)) wt = 0.6; wt = Math.min(0.9, Math.max(0.1, wt));
-    const anchorSN = getTotalSubjectName(allSubjectHeaders);
+    const anchorSN = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
     let totalPopulation = 0; const classPopMap = {};
     if (anchorSN) {
         const afl = combinedStudentData.filter(s => s.subjects[anchorSN] && validateSubjectScore(s.subjects[anchorSN]));
@@ -5540,8 +5548,8 @@ function extractStudentAnalysisData(studentName, weakRateThOpt) {
         analysisScoringPolicy: { noUnifiedTotalRate: true, summary: '各科满分由用户分别配置；本次不做全科统一口径的总得分率推算。', emphasis: '重点关注总分或锚定科目的排名位次，以及各单科排名之间的结构性差异。' }
     };
     const weakRefs = [];
-    allSubjectHeaders.forEach(subj => {
-        const sn = subj.name, sd = stuEntry.subjects[sn] || {};
+    getMergedSubjectNames(combinedStudentData, allSubjectHeaders).forEach(function(sn) {
+        const sd = stuEntry.subjects[sn] || {};
         const sa = { score: sd.score || 'N/A', grade: sd.grade || 'N/A' };
         const sc = String(stuEntry.class||'未知班级').trim(), ct = classPopMap[sc] || 'N/A';
         if (hasMeaningfulRank(sd.schoolRank)) sa.schoolRank = `${sd.schoolRank}/${totalPopulation}`;
@@ -5712,9 +5720,9 @@ function updateCrossExamRankRangeUI() {
 }
 
 function getRankedRangeFromBatch(batch, startRank, endRank) {
-    var data = batch.combinedStudentData;
-    var headers = batch.allSubjectHeaders;
-    if (!data || !data.length || !headers || !headers.length) return [];
+    var data = batch && batch.combinedStudentData ? batch.combinedStudentData : [];
+    var headers = batch && batch.allSubjectHeaders ? batch.allSubjectHeaders : [];
+    if (!data.length) return [];
     var totalName = getTotalSubjectName(headers, data);
     if (!totalName) {
         var scoredNames = getScoredSubjectNames(data, headers);
@@ -9710,7 +9718,10 @@ function buildParsedSheetsFromAllBatches(classFilter) {
 
     // Collect per-exam data
     const examData = DataPool.batches.map(b => {
-        const tn = getTotalSubjectName(b.allSubjectHeaders) || (b.allSubjectHeaders.length ? b.allSubjectHeaders[0].name : '');
+        const batchHeaders = b.allSubjectHeaders || [];
+        const batchData = b.combinedStudentData || [];
+        const batchScoredSubjects = getScoredSubjectNames(batchData, batchHeaders);
+        const tn = getTotalSubjectName(batchHeaders, batchData) || (batchScoredSubjects.length ? batchScoredSubjects[0] : '');
         const students = {};
         b.combinedStudentData.forEach(s => {
             const nk = String(getStudentDisplayName(s)).trim(); if (!nk) return;
@@ -11039,7 +11050,7 @@ function generateComprehensiveReport(studentName, thresholdVal) {
     lines.push('## 一、本次考试表现（' + (currentData.rankingPopulations ? currentData.rankingPopulations.gradePopulation + '人参考' : '') + '）');
     lines.push('');
     
-    var totalData = getTotalSubjectName(allSubjectHeaders);
+    var totalData = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
     if (totalData && currentData.subjects[totalData]) {
         var ts = currentData.subjects[totalData];
         lines.push('### 1.1 总分定位');
@@ -11107,7 +11118,7 @@ function generateComprehensiveReport(studentName, thresholdVal) {
         lines.push('');
         
         // Total score rank trend
-        var totalTrend = computeSubjectTrends(studentName, ps, getTotalSubjectName(allSubjectHeaders) ? subjMap[Object.keys(subjMap).find(function(k){return subjMap[k]===getTotalSubjectName(allSubjectHeaders);})] || 'chinese' : 'chinese', '总分');
+        var totalTrend = computeSubjectTrends(studentName, ps, getTotalSubjectName(allSubjectHeaders, combinedStudentData) ? subjMap[Object.keys(subjMap).find(function(k){return subjMap[k]===getTotalSubjectName(allSubjectHeaders, combinedStudentData);})] || 'chinese' : 'chinese', '总分');
         
         lines.push('### 2.1 总分排名变化');
         lines.push('');
@@ -11744,7 +11755,7 @@ function renderStudentReadableReport(studentName, thresholdVal) {
     var output = document.getElementById('studentReadableReportOutput');
     var content = document.getElementById('studentReadableReportContent');
     if (!output || !content) return false;
-    var totalName = getTotalSubjectName(allSubjectHeaders);
+    var totalName = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
     var total = totalName && data.subjects[totalName] ? data.subjects[totalName] : null;
     var subjectFullMarks = data.subjectFullMarks || {};
     var subjects = Object.keys(data.subjects || {}).filter(function(sn) { return sn !== totalName; }).map(function(sn) {
@@ -12225,7 +12236,7 @@ function getClassAverageRankSnapshot(data, subjectName, className) {
 }
 
 function getClassSubjectRankRowsForReport(className, compareBatch) {
-    var totalName = getTotalSubjectName(allSubjectHeaders);
+    var totalName = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
     var subjectNames = [];
     if (totalName && subjectHasScoreData(combinedStudentData, totalName)) subjectNames.push(totalName);
     getScoredSubjectNames(combinedStudentData, allSubjectHeaders).forEach(function(name) {
@@ -12257,7 +12268,7 @@ function formatClassRankChange(change) {
 
 function renderClassTotalGradeFlowTable(students, totalName, compareBatch) {
     if (!compareBatch || !compareBatch.combinedStudentData) return '';
-    var compareTotalName = getTotalSubjectName(compareBatch.allSubjectHeaders || []) || totalName;
+    var compareTotalName = getTotalSubjectName(compareBatch.allSubjectHeaders || [], compareBatch.combinedStudentData || []) || totalName;
     var compareMap = {};
     compareBatch.combinedStudentData.forEach(function(s) {
         compareMap[String(s.name || '').trim() + '||' + normalizeClassName(s.class || '')] = s;
@@ -12339,7 +12350,7 @@ function renderClassReadableReport(className, compareBatchId) {
     if (!output || !content) return false;
     var students = combinedStudentData.filter(function(s) { return String(s.class) === String(className); });
     if (!students.length) return false;
-    var totalName = getTotalSubjectName(allSubjectHeaders);
+    var totalName = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
     if (!totalName) return false;
     var batch = DataPool.getCurrentBatch ? DataPool.getCurrentBatch() : null;
     var compareBatch = getClassReportCompareBatch(compareBatchId);
@@ -12434,7 +12445,7 @@ function renderClassReadableReport(className, compareBatchId) {
 
 function getClassProgressRowsForReport(students, compareBatch, totalName) {
     if (!compareBatch || !compareBatch.combinedStudentData) return [];
-    var compareTotalName = getTotalSubjectName(compareBatch.allSubjectHeaders || []) || totalName;
+    var compareTotalName = getTotalSubjectName(compareBatch.allSubjectHeaders || [], compareBatch.combinedStudentData || []) || totalName;
     var compareMap = {};
     compareBatch.combinedStudentData.forEach(function(s) { compareMap[String(s.name || '').trim() + '||' + normalizeClassName(s.class || '')] = s; });
     var rows = [];
@@ -13147,7 +13158,7 @@ function buildProgressAnalysisData(baseBatch, cmpBatch, className, subjectName) 
         cmpData = cmpData.filter(function(s) { return normalizeClassName(s.class) === normalizeClassName(filterClass); });
     }
     var isTotal = !subjectName || subjectName === '__total__';
-    var totalName = isTotal ? getTotalSubjectName(baseBatch.allSubjectHeaders || allSubjectHeaders) : subjectName;
+    var totalName = isTotal ? getTotalSubjectName(baseBatch.allSubjectHeaders || allSubjectHeaders, baseData) : subjectName;
     if (!totalName) return null;
     var subjectDisplay = isTotal ? '总分' : subjectName;
     var baseMap = {}; baseData.forEach(function(s) { baseMap[String(s.name || '').trim() + '||' + normalizeClassName(s.class || '')] = s; });
@@ -14567,7 +14578,7 @@ function refreshSmartTab() {
     if (subjSel && combinedStudentData.length) {
         subjSel.innerHTML = '';
         var subjSet = new Set();
-        var totalName = getTotalSubjectName(allSubjectHeaders);
+        var totalName = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
         combinedStudentData.forEach(function(s) {
             Object.keys(s.subjects).forEach(function(sn) {
                 if (sn !== totalName) subjSet.add(sn);
@@ -14699,7 +14710,7 @@ function refreshSmartTab() {
         var subjSel3 = document.getElementById('smartSubjFilter');
         if (subjSel3) {
             var prevSubj3 = subjSel3.value;
-            var totalName3 = getTotalSubjectName(headers);
+            var totalName3 = getTotalSubjectName(headers, data);
             var subjSet3 = new Set();
             data.forEach(function(stu) {
                 Object.keys(stu.subjects || {}).forEach(function(sn) {
@@ -14735,7 +14746,7 @@ function refreshSmartTab() {
         var subjSel4 = document.getElementById('smartProgressSubjectFilter');
         if (subjSel4) {
             var prevSubj4 = subjSel4.value;
-            var totalName4 = getTotalSubjectName(headers);
+            var totalName4 = getTotalSubjectName(headers, data);
             var sset = new Set();
             data.forEach(function(stu) {
                 Object.keys(stu.subjects || {}).forEach(function(sn) {
@@ -14811,7 +14822,7 @@ function refreshSmartTab() {
     if (progSubj && combinedStudentData.length) {
         var prevProgSubjVal = progSubj.value;
         progSubj.innerHTML = '<option value="__total__">总分</option>';
-        var totalName = getTotalSubjectName(allSubjectHeaders);
+        var totalName = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
         var subjSet = new Set();
         combinedStudentData.forEach(function(s) {
             Object.keys(s.subjects).forEach(function(sn) {
@@ -14833,7 +14844,7 @@ function refreshSmartTab() {
     if (critSubj && combinedStudentData.length) {
         critSubj.innerHTML = '';
         var subjSet = new Set();
-        var totalName = getTotalSubjectName(allSubjectHeaders);
+        var totalName = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
         combinedStudentData.forEach(function(s) {
             Object.keys(s.subjects).forEach(function(sn) {
                 if (sn !== totalName) subjSet.add(sn);
@@ -14983,7 +14994,7 @@ function refreshComprehensiveTab() {
     if (progSubjSel && combinedStudentData.length) {
         var prevProgSubj = progSubjSel.value;
         progSubjSel.innerHTML = '<option value="__total__">总分</option>';
-        var totalName = getTotalSubjectName(allSubjectHeaders);
+        var totalName = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
         var subjSet = new Set();
         combinedStudentData.forEach(function(s) {
             Object.keys(s.subjects).forEach(function(sn) {
@@ -15003,7 +15014,7 @@ function refreshComprehensiveTab() {
         var critSubjSet = new Set();
         combinedStudentData.forEach(function(s) {
             Object.keys(s.subjects).forEach(function(sn) {
-                var anchorSN2 = getTotalSubjectName(allSubjectHeaders);
+                var anchorSN2 = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
                 if (sn !== anchorSN2) critSubjSet.add(sn);
             });
         });
@@ -15056,7 +15067,7 @@ function refreshComprehensiveTab() {
         var subjSet = new Set();
         combinedStudentData.forEach(function(s) {
             Object.keys(s.subjects).forEach(function(sn) {
-                var anchorSN2 = getTotalSubjectName(allSubjectHeaders);
+                var anchorSN2 = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
                 if (sn !== anchorSN2) subjSet.add(sn);
             });
         });
@@ -15289,13 +15300,13 @@ function generateBatchComprehensiveReports(className, threshold) {
     var allSubjNames = new Set();
     var compactData = [];
     students.forEach(function(s) {
-        var ts = s.subjects[getTotalSubjectName(allSubjectHeaders)];
+        var ts = s.subjects[getTotalSubjectName(allSubjectHeaders, combinedStudentData)];
         var totalRank = ts ? (parseInt(ts.gradeRank,10) || parseInt(ts.schoolRank,10) || '?') : '?';
         var totalScore = (ts && hasDataValue(ts.score)) ? ts.score : '?';
         var subjRates = {};
         var weakItems = [];
         Object.keys(s.subjects).forEach(function(sn) {
-            var anchorSN2 = getTotalSubjectName(allSubjectHeaders);
+            var anchorSN2 = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
             if (sn === anchorSN2) return;
             allSubjNames.add(sn);
             var sd = s.subjects[sn];
@@ -15373,7 +15384,7 @@ function generateBatchComprehensiveReports(className, threshold) {
     lines.push('| 弱项题目数 | ' + Object.keys(dirMap).length + ' |');
     lines.push('');
 
-    generateClassTransitionSummary(className, students, subjNames, getTotalSubjectName(allSubjectHeaders), combinedStudentData.length || students.length).forEach(function(line) {
+    generateClassTransitionSummary(className, students, subjNames, getTotalSubjectName(allSubjectHeaders, combinedStudentData), combinedStudentData.length || students.length).forEach(function(line) {
         lines.push(line);
     });
 
@@ -15492,7 +15503,7 @@ function generateTieredGroupingReport(className, threshold) {
 
     // Determine total reference population from the first student's rank denominators
     var totalPop = 100; // default
-    var anchorSN = getTotalSubjectName(allSubjectHeaders);
+    var anchorSN = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
     if (anchorSN) {
         var afl = combinedStudentData.filter(function(s) { return s.subjects[anchorSN] && validateSubjectScore(s.subjects[anchorSN]); });
         totalPop = afl.length || 100;
@@ -16002,7 +16013,7 @@ function generateSeatingReport(className) {
     });
     if (students.length < 4) return '# 班级人数不足，无法生成座位分析';
 
-    var anchorSN = getTotalSubjectName(allSubjectHeaders);
+    var anchorSN = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
     var totalPop = 100;
     if (anchorSN) {
         var afl = combinedStudentData.filter(function(s) { return s.subjects[anchorSN] && validateSubjectScore(s.subjects[anchorSN]); });
@@ -16237,7 +16248,7 @@ function generateSingleSubjectClassReport(classNames, subjectName, threshold, ti
         }
     }
 
-    var anchorSN = getTotalSubjectName(allSubjectHeaders);
+    var anchorSN = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
     var totalPop = 100;
     if (anchorSN) {
         var afl = combinedStudentData.filter(function(s) { return s.subjects[anchorSN] && validateSubjectScore(s.subjects[anchorSN]); });
@@ -16374,7 +16385,7 @@ function generateSingleSubjectClassReport(classNames, subjectName, threshold, ti
 
     // ===== 新增：偏科拖累识别 =====
     var dragStudents = [];
-    var anchorSN2 = getTotalSubjectName(allSubjectHeaders);
+    var anchorSN2 = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
     if (anchorSN2) {
         students.forEach(function(s) {
             var sd = s.subjects[subjectName];
@@ -17199,7 +17210,7 @@ function renderProgressAnalysis(baseBatch, cmpBatch, className, subjectName) {
     }
     // Match students by name
     var isTotal = !subjectName || subjectName === '__total__';
-    var totalName = isTotal ? getTotalSubjectName(allSubjectHeaders) : subjectName;
+    var totalName = isTotal ? getTotalSubjectName(allSubjectHeaders, combinedStudentData) : subjectName;
     var subjectDisplay = isTotal ? '总分' : subjectName;
     var baseMap = {}; baseData.forEach(function(s) { baseMap[s.name] = s; });
     var cmpMap = {}; cmpData.forEach(function(s) { cmpMap[s.name] = s; });
@@ -17447,7 +17458,7 @@ function getClassDiffSelectedBatches() {
 }
 
 function renderClassDiffAll() {
-    if (!combinedStudentData.length || !allSubjectHeaders.length) {
+    if (!combinedStudentData.length || !getMergedSubjectNames(combinedStudentData, allSubjectHeaders).length) {
         document.getElementById('classDiffMeanSection').style.display = 'none';
         document.getElementById('classDiffGradeSection').style.display = 'none';
         document.getElementById('classDiffRankSection').style.display = 'none';
@@ -17727,7 +17738,7 @@ function renderClassDiffHeatmap(stats, classNames, displaySubjects) {
     if (!dataSource.length) { section.style.display = 'none'; return; }
     // Get full marks for score rate calculation
     var fullMarks = expandSubjectFullMarks(getSubjectFullMarksFromInputs());
-    var totalName = getTotalSubjectName(allSubjectHeaders);
+    var totalName = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
     var totalFullMark = 0;
     displaySubjects.forEach(function(sn) {
         if (sn === totalName) return;
@@ -18158,7 +18169,7 @@ function renderClassDiffGradeDistribution() {
         var opt = document.createElement('option');
         opt.value = sh.name; opt.textContent = sh.name; select.appendChild(opt);
     });
-    var totalName = getTotalSubjectName(allSubjectHeaders);
+    var totalName = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
     var defaultIdx = gradeSubjects.findIndex(function(sh) { return sh.name === totalName; });
     if (defaultIdx >= 0) select.selectedIndex = defaultIdx;
     renderClassDiffGradeChart(gradeSubjects[select.selectedIndex].name, stats, classNames, grades);
@@ -18681,7 +18692,7 @@ setTimeout(async function() {
 function buildSeatingProfiles(className) {
     var students = combinedStudentData.filter(function(s) { return String(s.class) === className; });
     if (students.length < 4) return [];
-    var anchorSN = getTotalSubjectName(allSubjectHeaders);
+    var anchorSN = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
     var totalPop = 100;
     if (anchorSN) { var afl = combinedStudentData.filter(function(s) { return s.subjects[anchorSN] && validateSubjectScore(s.subjects[anchorSN]); }); totalPop = afl.length || 100; }
     var allSubjNames = new Set();
