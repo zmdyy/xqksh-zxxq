@@ -88,6 +88,8 @@ function stripMarkdownLight(text) {
         .replace(/^#{1,6}\s+/gm, '')
         .replace(/^>\s?/gm, '')
         .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<sup>([\s\S]*?)<\/sup>/gi, '^{$1}')
+        .replace(/<sub>([\s\S]*?)<\/sub>/gi, '_{$1}')
         .replace(/<[^>]+>/g, '')
         .replace(/&nbsp;/g, ' ')
         .replace(/&lt;/g, '<')
@@ -143,19 +145,29 @@ function notebookParagraphChunks(text) {
 function tokenizeNotebookMarkdown(md) {
     var tokens = [];
     var s = String(md || '');
-    var re = /\$\$([\s\S]+?)\$\$|\$([^$\n]+)\$|!\[([^\]]*)\]\(([^)]+)\)|<img\b[^>]*src=["']([^"']+)["'][^>]*>/gi;
+    var re = /<table\b[\s\S]*?<\/table>|<eq>([\s\S]*?)<\/eq>|\$\$([\s\S]+?)\$\$|\$([^$\n]+)\$|!\[([^\]]*)\]\(([^)]+)\)|<img\b[^>]*src=["']([^"']+)["'][^>]*>/gi;
     var last = 0, m;
     while ((m = re.exec(s))) {
         if (m.index > last) tokens.push({ type: 'text', value: s.slice(last, m.index) });
-        if (m[1] != null) tokens.push({ type: 'math', display: true, value: String(m[1]).trim() });
-        else if (m[2] != null) tokens.push({ type: 'math', display: false, value: String(m[2]).trim() });
-        else if (m[4] != null) tokens.push({ type: 'image', src: String(m[4]).trim(), alt: m[3] || '' });
-        else if (m[5] != null) tokens.push({ type: 'image', src: String(m[5]).trim(), alt: '' });
+        if (/^<table\b/i.test(m[0])) {
+            tokens.push({ type: 'table', html: m[0] });
+        } else if (m[1] != null) {
+            tokens.push({ type: 'math', display: false, value: String(m[1]).trim(), source: 'eq' });
+        } else if (m[2] != null) {
+            tokens.push({ type: 'math', display: true, value: String(m[2]).trim() });
+        } else if (m[3] != null) {
+            tokens.push({ type: 'math', display: false, value: String(m[3]).trim() });
+        } else if (m[5] != null) {
+            tokens.push({ type: 'image', src: String(m[5]).trim(), alt: m[4] || '' });
+        } else if (m[6] != null) {
+            tokens.push({ type: 'image', src: String(m[6]).trim(), alt: '' });
+        }
         last = m.index + m[0].length;
     }
     if (last < s.length) tokens.push({ type: 'text', value: s.slice(last) });
     return tokens;
 }
+
 function prepareLatexForOmml(latex) {
     var s = String(latex || '').trim();
     if (!s) return s;
@@ -423,18 +435,36 @@ async function resolveNotebookImage(src) {
         var size = await probeImageSize(parsed.bytes, parsed.mime);
         return { bytes: parsed.bytes, ext: guessImageExt(src, parsed.mime), w: size.w, h: size.h };
     }
-    try {
-        var resp = await fetch(src, { mode: 'cors' });
-        if (!resp.ok) return null;
+
+    async function readResp(resp, originalSrc) {
+        if (!resp || !resp.ok) return null;
         var buf = new Uint8Array(await resp.arrayBuffer());
         var mime = resp.headers.get('content-type') || 'image/png';
         var size2 = await probeImageSize(buf, mime);
-        return { bytes: buf, ext: guessImageExt(src, mime), w: size2.w, h: size2.h };
-    } catch (e) {
-        console.warn('错题本题图读取失败:', src, e);
-        return null;
+        return { bytes: buf, ext: guessImageExt(originalSrc, mime), w: size2.w, h: size2.h };
     }
+
+    try {
+        var resp = await fetch(src, { mode: 'cors' });
+        var direct = await readResp(resp, src);
+        if (direct) return direct;
+    } catch (e) {
+        console.warn('错题本题图直连读取失败，尝试后端代理:', src, e);
+    }
+
+    try {
+        if (typeof MINERU_API_BASE !== 'undefined' && /^https?:\/\//i.test(src)) {
+            var proxyUrl = String(MINERU_API_BASE || '').replace(/\/+$/, '') + '/mineru/fetch-asset?url=' + encodeURIComponent(src);
+            var proxyResp = await fetch(proxyUrl, { mode: 'cors', cache: 'no-store' });
+            var proxied = await readResp(proxyResp, src);
+            if (proxied) return proxied;
+        }
+    } catch (e2) {
+        console.warn('错题本题图后端代理读取失败:', src, e2);
+    }
+    return null;
 }
+
 function docxImageDrawing(relId, cx, cy, docPrId) {
     return '<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0">' +
         '<wp:extent cx="' + cx + '" cy="' + cy + '"/>' +
@@ -464,6 +494,61 @@ async function docxImageParagraphFromSource(src, mediaBag, maxCx, maxCy) {
     var ext = img.ext === 'jpg' ? 'jpeg' : img.ext;
     mediaBag.push({ relId: relId, name: 'image' + idx + '.' + ext, bytes: img.bytes, ext: ext });
     return docxBlock(docxImageDrawing(relId, cx, cy, idx), {after:120,align:'center'});
+}
+
+function docxTableCellFromHtml(cellHtml) {
+    var html = String(cellHtml || '');
+    var parts = [];
+    var re = /<eq>([\s\S]*?)<\/eq>/gi;
+    var last = 0, m;
+    while ((m = re.exec(html))) {
+        if (m.index > last) {
+            var pre = html.slice(last, m.index).replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '');
+            if (pre) parts.push(docxTextRun(pre));
+        }
+        var latex = String(m[1] || '').trim();
+        var omml = latexToOmml(latex, false);
+        parts.push(omml || docxTextRun(latexToPlainUnicode(latex) || latex));
+        last = m.index + m[0].length;
+    }
+    if (last < html.length) {
+        var rest = html.slice(last).replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '');
+        if (rest) parts.push(docxTextRun(rest));
+    }
+    return parts.join('');
+}
+
+function htmlTableToDocx(html) {
+    if (typeof DOMParser === 'undefined') return '';
+    try {
+        var doc = new DOMParser().parseFromString(String(html || ''), 'text/html');
+        var table = doc.querySelector('table');
+        if (!table) return '';
+        var rows = [].slice.call(table.querySelectorAll('tr'));
+        if (!rows.length) return '';
+
+        var out = '<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:tblLayout w:type="autofit"/>' +
+            '<w:tblBorders><w:top w:val="single" w:sz="4" w:color="CBD5E1"/><w:left w:val="single" w:sz="4" w:color="CBD5E1"/><w:bottom w:val="single" w:sz="4" w:color="CBD5E1"/><w:right w:val="single" w:sz="4" w:color="CBD5E1"/><w:insideH w:val="single" w:sz="4" w:color="CBD5E1"/><w:insideV w:val="single" w:sz="4" w:color="CBD5E1"/></w:tblBorders></w:tblPr>';
+        rows.forEach(function(row, ri) {
+            out += '<w:tr>';
+            var cells = [].slice.call(row.children).filter(function(el) {
+                return el && (el.tagName === 'TD' || el.tagName === 'TH');
+            });
+            cells.forEach(function(cell) {
+                var fill = (ri === 0 || cell.tagName === 'TH') ? 'F1F5F9' : 'FFFFFF';
+                var inner = docxTableCellFromHtml(cell.innerHTML);
+                out += '<w:tc><w:tcPr><w:shd w:val="clear" w:color="auto" w:fill="' + fill + '"/>' +
+                    '<w:tcMar><w:top w:w="90" w:type="dxa"/><w:bottom w:w="90" w:type="dxa"/><w:left w:w="90" w:type="dxa"/><w:right w:w="90" w:type="dxa"/></w:tcMar></w:tcPr>' +
+                    docxBlock(inner, {after:0,line:280}) + '</w:tc>';
+            });
+            out += '</w:tr>';
+        });
+        out += '</w:tbl><w:p><w:pPr><w:spacing w:after="120"/></w:pPr></w:p>';
+        return out;
+    } catch (e) {
+        console.warn('HTML表格转Word失败', e);
+        return '';
+    }
 }
 
 async function markdownStemToDocxBody(md, mediaBag) {
@@ -507,6 +592,10 @@ async function markdownStemToDocxBody(md, mediaBag) {
                     inlineBuf += docxTextRun(latexToPlainUnicode(tok.value) || tok.value);
                 }
             }
+        } else if (tok.type === 'table') {
+            flushInline();
+            var tableXml = htmlTableToDocx(tok.html);
+            if (tableXml) paragraphs.push(tableXml);
         } else if (tok.type === 'image') {
             flushInline();
             var img = await resolveNotebookImage(tok.src);
@@ -520,8 +609,8 @@ async function markdownStemToDocxBody(md, mediaBag) {
                 var ext = img.ext === 'jpg' ? 'jpeg' : img.ext;
                 mediaBag.push({ relId: relId, name: 'image' + idx + '.' + ext, bytes: img.bytes, ext: ext });
                 paragraphs.push(docxParagraph(docxImageDrawing(relId, cx, cy, idx)));
-            } else if (tok.alt) {
-                paragraphs.push(docxParagraph(docxTextRun('[' + tok.alt + ']')));
+            } else {
+                paragraphs.push(docxParagraph(docxStyledRun('【题图读取失败】', {size:18,color:'B91C1C',bold:true})));
             }
         }
     }
