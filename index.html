@@ -6433,6 +6433,32 @@ function getCollectiveHeatmapQuestionLabel(q, index) {
     return shortText || ('题' + (index + 1));
 }
 
+function sortCollectiveHeatmapQuestions(questions) {
+    function orderOf(qm) {
+        var label = String((qm && qm.label) || '').trim();
+        var m = label.match(/(\d{1,4})/);
+        if (m) return { numbered:true, main:Number(m[1]), sub:0, label:label };
+
+        var raw = '';
+        if (qm && qm.q) raw = String(qm.q.scoreHeader || qm.q.title || '');
+        var sub = raw.match(/(?:^|[^0-9])(\d{1,4})\s*[-_.－—/]\s*(\d{1,3})(?:[^0-9]|$)/);
+        if (sub) return { numbered:true, main:Number(sub[1]), sub:Number(sub[2]), label:label || raw };
+
+        var single = raw.match(/(?:^|[^0-9])(\d{1,4})(?:[^0-9]|$)/);
+        if (single) return { numbered:true, main:Number(single[1]), sub:0, label:label || raw };
+
+        return { numbered:false, main:Number.MAX_SAFE_INTEGER, sub:Number.MAX_SAFE_INTEGER, label:label || raw };
+    }
+
+    return (questions || []).slice().sort(function(a,b) {
+        var ao = orderOf(a), bo = orderOf(b);
+        if (ao.numbered !== bo.numbered) return ao.numbered ? -1 : 1;
+        if (ao.main !== bo.main) return ao.main - bo.main;
+        if (ao.sub !== bo.sub) return ao.sub - bo.sub;
+        return String(ao.label).localeCompare(String(bo.label), 'zh-CN', {numeric:true, sensitivity:'base'});
+    });
+}
+
 function buildCollectiveHeatmapModel(fd, subjectName) {
     var diagnosis = calculateCollectiveDiagnosis(fd, subjectName);
     var questions = diagnosis.questions || [];
@@ -6550,6 +6576,7 @@ function renderCollectiveHeatmap(fd, subjectName) {
     }
 
     var questions = onlyAbnormal ? model.questions.filter(function(qm) { return qm.isAbnormal; }) : model.questions.slice();
+    questions = sortCollectiveHeatmapQuestions(questions);
 
     if (summaryEl) {
         summaryEl.textContent = '共 ' + model.questions.length + ' 题 · 共性异常 ' + model.commonCount + ' 题 · 存在个性异常 ' + model.individualQuestionCount + ' 题'
@@ -6666,6 +6693,7 @@ function renderCollectiveHeatmap(fd, subjectName) {
 
 function renderCollectiveStudentOverviewHeatmap(model, onlyAbnormal, chartEl, scrollEl, summaryEl, legendEl) {
     var questions = onlyAbnormal ? model.questions.filter(function(qm) { return qm.isAbnormal; }) : model.questions.slice();
+    questions = sortCollectiveHeatmapQuestions(questions);
     if (!questions.length) {
         if (chartEl.__chart) { try { chartEl.__chart.dispose(); } catch(e) {} chartEl.__chart = null; }
         chartEl.innerHTML = '<div style="padding:28px;text-align:center;color:#94a3b8;">当前筛选范围内没有异常题。</div>';
@@ -6719,8 +6747,8 @@ function renderCollectiveStudentOverviewHeatmap(model, onlyAbnormal, chartEl, sc
                     flagged:flagged
                 },
                 itemStyle:{
-                    borderColor:flagged ? '#b91c1c' : '#ffffff',
-                    borderWidth:flagged ? 1.4 : 0.8
+                    borderColor:'#ffffff',
+                    borderWidth:1
                 }
             });
         });
@@ -6733,10 +6761,12 @@ function renderCollectiveStudentOverviewHeatmap(model, onlyAbnormal, chartEl, sc
     });
     var colLabels = questions.map(function(qm){ return qm.label; });
 
-    // 75% of the previous drilldown cell size.
-    var cellWidth = questions.length > 36 ? 30 : 36;
+    // 学生 × 小题与得分率/异常度使用相同的横向格子宽度。
+    var cellWidth = questions.length > 36 ? 38 : 45;
+    var aggregateChartWidth = Math.max(810, questions.length * cellWidth + 162);
     var rowHeight = studentRows.length > 28 ? 19 : 23;
-    chartEl.style.width = Math.max(820, questions.length * cellWidth + 190) + 'px';
+    // 学生视图左侧姓名轴比汇总视图多 40px，因此总宽度增加 40px，绘图区保持完全一致。
+    chartEl.style.width = (aggregateChartWidth + 40) + 'px';
     chartEl.style.height = Math.max(300, studentRows.length * rowHeight + 140) + 'px';
 
     if (summaryEl) {
@@ -6745,7 +6775,7 @@ function renderCollectiveStudentOverviewHeatmap(model, onlyAbnormal, chartEl, sc
             + (onlyAbnormal ? ' · 仅显示异常题' : '');
     }
     if (legendEl) {
-        legendEl.textContent = '学生 × 小题：颜色表示本题低于该生其余小题平均的幅度；越红越偏离个人常态，红色边框为系统已判定个性异常';
+        legendEl.textContent = '学生 × 小题：颜色表示本题低于该生其余小题平均的幅度；越红表示越偏离个人常态';
     }
 
     if (chartEl.__chart) { try { chartEl.__chart.dispose(); } catch(e) {} }
@@ -6784,7 +6814,8 @@ function renderCollectiveStudentOverviewHeatmap(model, onlyAbnormal, chartEl, sc
         },
         series:[{
             type:'heatmap',data:data,progressive:0,label:{show:false},
-            emphasis:{itemStyle:{borderColor:'#0f172a',borderWidth:2,shadowBlur:5,shadowColor:'rgba(15,23,42,.2)'}}
+            itemStyle:{borderColor:'#ffffff',borderWidth:1},
+            emphasis:{itemStyle:{borderColor:'#ffffff',borderWidth:1,shadowBlur:5,shadowColor:'rgba(15,23,42,.2)'}}
         }]
     });
     chart.off('click');
