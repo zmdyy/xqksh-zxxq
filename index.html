@@ -3004,8 +3004,12 @@ function initAnalysisSectionNav() {
         buttons.forEach(function(btn) {
             btn.addEventListener('click', function() {
                 if (btn.hasAttribute('data-analysis-top')) {
-                    var contentEl = root.querySelector('.analysis-content');
-                    if (contentEl) { contentEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); setActive(null); }
+                    var tabNav = document.querySelector('.tab-nav');
+                    if (tabNav) {
+                        var targetTop = tabNav.getBoundingClientRect().top + window.pageYOffset - 8;
+                        window.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+                        setActive(null);
+                    }
                     return;
                 }
                 var targetId = btn.getAttribute('data-analysis-target');
