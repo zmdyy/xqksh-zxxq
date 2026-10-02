@@ -3132,34 +3132,37 @@ document.getElementById('batchSelector').addEventListener('change', function() {
 document.getElementById('saveBatchBtn').addEventListener('click', async function() {
     if (!combinedStudentData.length) { await showAlert('请先上传并解析数据！'); return; }
     var name = document.getElementById('newBatchName').value.trim();
+    var savedLabel = '';
+    var savedCount = combinedStudentData.length;
+    var ok = false;
+
     if (DataPool.currentBatchId) {
         var batch = DataPool.getCurrentBatch();
         if (!batch) return;
         if (name) batch.label = name;
-        var ok = await DataPool.syncFromGlobalsIfEditing();
-        if (ok) {
-            document.getElementById('batchStatus').textContent = '已更新「' + batch.label + '」（' + combinedStudentData.length + '名学生），可继续上传新文件';
-        }
-        updateBatchInfoBars();
-        document.getElementById('saveBatchBtn').textContent = '更新批次';
+        savedLabel = batch.label;
+        ok = await DataPool.syncFromGlobalsIfEditing();
     } else {
         name = name || ('批次' + (DataPool.batches.length + 1));
-        var savedBatch = DataPool.addBatch(name, { combinedStudentData: deepClone(combinedStudentData), allSubjectHeaders: deepClone(allSubjectHeaders), uploadedPdfs: cloneUploadedPdfsForMemory(uploadedPdfs), uploadedFilesData: deepClone(uploadedFilesData) });
+        var savedBatch = DataPool.addBatch(name, {
+            combinedStudentData: deepClone(combinedStudentData),
+            allSubjectHeaders: deepClone(allSubjectHeaders),
+            uploadedPdfs: cloneUploadedPdfsForMemory(uploadedPdfs),
+            uploadedFilesData: deepClone(uploadedFilesData)
+        });
+        savedLabel = savedBatch.label;
         refreshBatchList();
-        var ok = await persistBatches();
-        if (ok) loadBatch(savedBatch.id);
-        document.getElementById('batchSelector').value = savedBatch.id;
-        document.getElementById('newBatchName').style.display = 'inline-block';
-        document.getElementById('newBatchName').value = savedBatch.label;
-        document.getElementById('saveBatchBtn').style.display = 'inline-block';
-        document.getElementById('saveBatchBtn').textContent = '更新批次';
-        document.getElementById('deleteBatchBtn').style.display = 'inline-block';
-        document.getElementById('clearCurrentBtn').style.display = 'inline-block';
-        if (ok) {
-            document.getElementById('batchStatus').textContent = '已保存「' + name + '」（' + combinedStudentData.length + '名学生），可上传新文件后点击"更新批次"追加数据';
-        }
-        updateBatchInfoBars();
+        ok = await persistBatches();
     }
+
+    if (!ok) return;
+
+    // 保存/更新成功后立即进入“新建批次”状态，避免下一次上传误覆盖刚保存的批次。
+    refreshBatchList();
+    loadBatch(null);
+    document.getElementById('batchSelector').value = '__new__';
+    document.getElementById('batchStatus').textContent =
+        '已保存「' + savedLabel + '」（' + savedCount + '名学生）；已切换到“+ 新建批次”，可继续上传下一批数据';
 });
 document.getElementById('deleteBatchBtn').addEventListener('click', async function() {
     if (!await showConfirm('确定删除当前批次？')) return;
@@ -12035,7 +12038,42 @@ function renderSubjectGradeDonutChart(rows, subjectPop, tierMode) {
         title = '单科排名分层结构';
     }
     if (!data.length) { chart.setOption({ title: { text: '单科分层结构：暂无等级/排名数据', left: 'center', textStyle: { fontSize: 13, color: '#64748b' } } }); return; }
-    chart.setOption(getReportPieOption(title, data, colors));
+    var pieOption = getReportPieOption(title, data, colors);
+    // 等级模式最多会出现 6 个扇区，外置标签比排名模式更密集。
+    // 将圆环整体上移并缩小，底部单独留给图例，同时启用标签避让，保证两种分层方式都不与图例重叠。
+    pieOption.legend = {
+        type: 'scroll',
+        left: 'center',
+        bottom: 6,
+        width: '88%',
+        itemWidth: 12,
+        itemHeight: 9,
+        itemGap: 12,
+        textStyle: { color: REPORT_CHART_THEME.axis, fontSize: 11 }
+    };
+    if (pieOption.series && pieOption.series[0]) {
+        pieOption.series[0].radius = ['38%', '59%'];
+        pieOption.series[0].center = ['50%', '43%'];
+        pieOption.series[0].avoidLabelOverlap = true;
+        pieOption.series[0].label = Object.assign({}, pieOption.series[0].label || {}, {
+            fontSize: 11,
+            minMargin: 5,
+            edgeDistance: '7%',
+            bleedMargin: 4
+        });
+        pieOption.series[0].labelLine = {
+            show: true,
+            length: 10,
+            length2: 9,
+            smooth: false,
+            maxSurfaceAngle: 80
+        };
+        pieOption.series[0].labelLayout = {
+            hideOverlap: true,
+            moveOverlap: 'shiftY'
+        };
+    }
+    chart.setOption(pieOption);
     chart.off('click');
     chart.on('click', function(params) {
         if (!params || !params.name) return;
