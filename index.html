@@ -1251,8 +1251,7 @@
     <div class="analysis-nav-layout" data-analysis-nav="collective">
         <nav class="analysis-section-nav" aria-label="小题分析章节导航">
             <div class="analysis-section-nav-title">小题分析</div>
-            <button type="button" class="analysis-nav-item active" data-analysis-target="collectiveDiagnosisSection">诊断卡</button>
-            <button type="button" class="analysis-nav-item" data-analysis-target="collectiveHeatmapSection">异常热力图</button>
+            <button type="button" class="analysis-nav-item active" data-analysis-target="collectiveHeatmapSection">异常热力图</button>
             <button type="button" class="analysis-nav-item" data-analysis-target="collectiveQuestionSection">小题统计</button>
             <button type="button" class="analysis-nav-item" data-analysis-target="collectiveLevelSection">等级分析</button>
             <button type="button" class="analysis-nav-item" data-analysis-target="collectiveRankSection">名次区间分析</button>
@@ -1261,13 +1260,7 @@
             <button type="button" class="analysis-nav-item analysis-nav-top" data-analysis-top="true">↑ 回到顶部</button>
         </nav>
         <div class="analysis-content">
-    <div class="statistics-section analysis-anchor-section collective-diagnosis-section" id="collectiveDiagnosisSection" data-analysis-section="collectiveDiagnosisSection">
-        <div class="diagnosis-head">
-            <div>
-                <h3>小题异常诊断卡</h3>
-            </div>
-            <div class="diagnosis-scope" id="collectiveDiagnosisScope">等待数据</div>
-        </div>
+    <div class="statistics-section analysis-anchor-section" id="collectiveHeatmapSection" data-analysis-section="collectiveHeatmapSection">
         <div class="filter-stats-bar">
             <div class="filter-bar-item"><span class="filter-bar-label">筛选班级：</span>
                 <select id="collectiveClassFilter" class="filter-bar-select"></select>
@@ -1280,19 +1273,7 @@
                 <button class="filter-btn" id="applyCollectiveThresholdBtn" style="padding:4px 8px;font-size:12px;margin-left:4px;">应用</button>
             </div>
         </div>
-        <div class="diagnosis-lanes" id="collectiveDiagnosisCards">
-            <div class="diagnosis-empty" style="grid-column:1/-1;">请先加载含小题得分的数据。</div>
-        </div>
-        <details class="diagnosis-rule">
-            <summary>查看自动判定规则</summary>
-            <ul>
-                <li><b>共性异常：</b>该题整体得分率低于当前“得分率阈值”，优先提示全班共性教学问题。</li>
-                <li><b>个性异常：</b>同时参考“个人基准（除本题外其他小题平均得分率）”和“同层本题均值”。优先使用成绩表已有等级；没有等级时才按 30% / 40% / 30% 相对分层。A+、A 等级偏离达到 20 个百分点，A-、B± 等级达到 25 个百分点，C/D 及基础层达到 30 个百分点，即视为明显偏离。非共性题满足任一参照即可提示；已属于共性异常的题，需两个参照同时达到阈值，避免重复标记。</li>
-            </ul>
-        </details>
-    </div>
 
-    <div class="statistics-section analysis-anchor-section" id="collectiveHeatmapSection" data-analysis-section="collectiveHeatmapSection" style="margin-top:16px;">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:10px;">
             <div>
                 <h3 style="margin:0 0 4px;font-size:1.18em;">小题异常热力图</h3>
@@ -6581,9 +6562,10 @@ function renderCollectiveHeatmap(fd, subjectName) {
         });
     });
 
-    var minCellWidth = questions.length > 36 ? 42 : 50;
-    var chartWidth = Math.max(900, questions.length * minCellWidth + 180);
-    var chartHeight = Math.max(300, rowLabels.length * 48 + 150);
+    // 得分率 / 异常度：格子尺寸缩至原来的 90%。
+    var minCellWidth = questions.length > 36 ? 38 : 45;
+    var chartWidth = Math.max(810, questions.length * minCellWidth + 162);
+    var chartHeight = Math.max(270, rowLabels.length * 43 + 135);
     chartEl.style.width = chartWidth + 'px';
     chartEl.style.height = chartHeight + 'px';
 
@@ -6844,31 +6826,9 @@ function showCollectiveHeatmapCellDetail(questionIndex, rowIndex) {
 }
 
 function renderCollectiveDiagnosis() {
-    var root = document.getElementById('collectiveDiagnosisCards');
-    var scope = document.getElementById('collectiveDiagnosisScope');
-    if (!root || !scope) return;
-
-    collectiveDiagnosisContexts = {};
     var fd = getCollectiveFilteredData();
     var subjectName = getSelectedSubject();
     renderCollectiveHeatmap(fd, subjectName);
-    var classValue = document.getElementById('collectiveClassFilter').value;
-    var classText = classValue ? (/班$/.test(classValue) ? classValue : classValue + '班') : '全部班级';
-    scope.textContent = classText + ' · ' + (subjectName || '全部科目') + ' · 阈值' + collectiveThreshold + '%';
-
-    if (!fd.headers.length || !fd.data.length) {
-        root.innerHTML = '<div class="diagnosis-empty" style="grid-column:1/-1;">暂无可诊断的小题数据。</div>';
-        return;
-    }
-
-    var result = calculateCollectiveDiagnosis(fd, subjectName);
-
-    root.innerHTML =
-        renderCollectiveDiagnosisLane('common','共性异常','很多学生都错：优先判断是否存在共性教学问题。',result.common,fd,subjectName)
-        + renderCollectiveDiagnosisLane('individual','个性异常','相对个人基准或同层水平明显偏离：优先做个别诊断。',result.individual,fd,subjectName);
-
-    qkBindButtons();
-    bindCollectiveDiagnosisButtons();
 }
 
 function bindCollectiveDiagnosisButtons() {
