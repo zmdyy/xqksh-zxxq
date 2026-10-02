@@ -1307,6 +1307,13 @@
         </div>
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;padding:8px 10px;background:#fafbfc;border:1px solid #e5e7eb;border-radius:8px;">
             <label style="font-size:13px;font-weight:700;">查看：</label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:12px;">
+                无等级时
+                <select id="collectiveHeatmapFallbackStep" class="filter-bar-select" style="width:110px;" disabled>
+                    <option value="10">10% 梯度</option>
+                    <option value="20">20% 梯度</option>
+                </select>
+            </label>
             <select id="collectiveHeatmapMode" class="filter-bar-select" style="width:140px;">
                 <option value="anomaly">异常度</option>
                 <option value="rate" selected>得分率</option>
@@ -6623,7 +6630,60 @@ function getCollectiveIndividualThreshold(tier) {
     return 0.30;
 }
 
-function splitCollectiveAbilityTiers(fd, questions, baselines, subjectName) {
+function getCollectiveHeatmapFallbackStep() {
+    var select = document.getElementById('collectiveHeatmapFallbackStep');
+    return select && select.value === '20' ? 20 : 10;
+}
+
+function splitCollectiveScoreRateTiers(fd, questions, subjectName, step) {
+    step = Number(step) === 20 ? 20 : 10;
+    var marks = getSubjectFullMarksFromInputs();
+    var sources = fd.subjectMetricSources && fd.subjectMetricSources[subjectName];
+    var names = (sources && sources.score || []).concat(getCollectiveSubjectAliases(subjectName));
+    var full = diagSafeNumber(fd.fullScoreMap && fd.fullScoreMap[subjectName + '_分数']);
+    if (!(full > 0)) {
+        for (var i = 0; i < names.length; i++) {
+            var mark = diagSafeNumber(marks[names[i]]);
+            if (mark > 0) { full = mark; break; }
+        }
+    }
+    var questionTotals = new Map();
+    var questionFull = questions.reduce(function(sum, question) { return sum + question.fullScore; }, 0);
+    questions.forEach(function(question) {
+        question.students.forEach(function(student) {
+            var total = questionTotals.get(student.row) || { score:0, count:0 };
+            total.score += student.score;
+            total.count++;
+            questionTotals.set(student.row, total);
+        });
+    });
+    var tiers = [];
+    for (var lower = 0; lower < 100; lower += step) {
+        tiers.push({ key:'score-rate:' + lower + ':' + step, label:lower + '–' + (lower + step) + '%',
+            source:'score-rate', lower:lower, upper:lower + step, step:step, rows:[], usesQuestionTotal:false });
+    }
+    (fd.data || []).forEach(function(row) {
+        var score = diagSafeNumber(row[subjectName + '_分数']);
+        var rate = null, usesQuestionTotal = false;
+        if (full > 0 && score !== null && score >= 0 && score <= full) {
+            rate = score / full;
+        } else if (score === null || !(full > 0)) {
+            // 仅在全部有效计分小题齐全时使用合计，避免非法得分或少题改变分组。
+            var total = questionTotals.get(row);
+            if (questionFull > 0 && total && total.count === questions.length) {
+                rate = total.score / questionFull;
+                usesQuestionTotal = true;
+            }
+        }
+        if (rate === null) return;
+        var index = Math.min(tiers.length - 1, Math.floor(Number((rate * 100).toFixed(10)) / step));
+        tiers[index].rows.push(row);
+        if (usesQuestionTotal) tiers[index].usesQuestionTotal = true;
+    });
+    return tiers.reverse().filter(function(tier) { return tier.rows.length > 0; });
+}
+
+function splitCollectiveAbilityTiers(fd, questions, baselines, subjectName, fallbackStep) {
     var rows = (fd.data || []).slice();
     if (!rows.length) return [];
 
@@ -6676,6 +6736,11 @@ function splitCollectiveAbilityTiers(fd, questions, baselines, subjectName) {
         }
     }
 
+    // 热力图无等级时按单科得分率分段；其他分析入口保留原有规则。
+    if (fallbackStep === 10 || fallbackStep === 20) {
+        return splitCollectiveScoreRateTiers(fd, questions, subjectName, fallbackStep);
+    }
+
     // 没有可比较的等级组时，回退到当前筛选范围内的 30% / 40% / 30% 相对分层。
     if (rows.length < 9) return [];
     var subjectScoreField = subjectName ? subjectName + '_分数' : '';
@@ -6706,13 +6771,13 @@ function getCollectiveThresholdRate() {
     return Math.max(0,Math.min(1,(isFinite(value)?value:60)/100));
 }
 
-function calculateCollectiveDiagnosis(fd, subjectName) {
+function calculateCollectiveDiagnosis(fd, subjectName, fallbackStep) {
     var threshold = getCollectiveThresholdRate();
     var questions = buildCollectiveQuestionModels(fd, subjectName);
     var baselineInfo = buildCollectiveStudentBaselines(questions);
     var baselines = baselineInfo.averages;
     var baselineStats = baselineInfo.stats;
-    var tiers = splitCollectiveAbilityTiers(fd, questions, baselines, subjectName);
+    var tiers = splitCollectiveAbilityTiers(fd, questions, baselines, subjectName, fallbackStep);
     var tierByRow = new Map();
     tiers.forEach(function(tier) {
         (tier.rows || []).forEach(function(row) { tierByRow.set(row, tier); });
@@ -6925,19 +6990,14 @@ function sortCollectiveHeatmapQuestions(questions) {
 }
 
 function buildCollectiveHeatmapModel(fd, subjectName) {
-    var diagnosis = calculateCollectiveDiagnosis(fd, subjectName);
+    var fallbackStep = getCollectiveHeatmapFallbackStep();
+    var diagnosis = calculateCollectiveDiagnosis(fd, subjectName, fallbackStep);
     var questions = diagnosis.questions || [];
     if (!questions.length) return null;
     var baselineInfo = buildCollectiveStudentBaselines(questions);
-    var tiers = splitCollectiveAbilityTiers(fd, questions, baselineInfo.averages, subjectName);
-    // 绘图只保留有有效小题记录的未匹配学生；0 分仍然是有效记录。
-    var participatingRows = new Set();
-    questions.forEach(function(question) {
-        (question.students || []).forEach(function(student) { participatingRows.add(student.row); });
-    });
-    tiers = tiers.filter(function(tier) {
-        return tier.source !== 'ungraded' || (tier.rows || []).some(function(row) { return participatingRows.has(row); });
-    });
+    var tiers = splitCollectiveAbilityTiers(fd, questions, baselineInfo.averages, subjectName, fallbackStep);
+    // 无等级学生仍计入全班统计及学生视图，不再单独绘制“未匹配等级”行。
+    tiers = tiers.filter(function(tier) { return tier.source !== 'ungraded'; });
     var threshold = getCollectiveThresholdRate();
     var commonMap = new Map();
     var individualMap = new Map();
@@ -6950,6 +7010,7 @@ function buildCollectiveHeatmapModel(fd, subjectName) {
             label:String(tier.label || tier.key).replace(/等级$/,''),
             fullLabel:tier.label || tier.key,
             source:tier.source,
+            usesQuestionTotal:!!tier.usesQuestionTotal,
             rows:tier.rows || []
         };
     }));
@@ -7005,6 +7066,7 @@ function buildCollectiveHeatmapModel(fd, subjectName) {
     return {
         fd:fd,
         subjectName:subjectName || '',
+        fallbackStep:fallbackStep,
         threshold:threshold,
         rows:rows,
         questions:questionModels,
@@ -7161,7 +7223,12 @@ function showCollectiveHeatmapStatus(chartEl, scrollEl, emptyEl, message) {
 
 function getCollectiveHeatmapGroupingText(model) {
     var graded=model.rows.some(function(row){return row.source==='grade';});
-    if (!graded) return model.rows.some(function(row){return row.source==='percentile';}) ? ' · 相对分层（无可用本学科等级）' : '';
+    if (!graded) {
+        var hasBands = model.rows.some(function(row) { return row.source === 'score-rate'; });
+        var fromQuestions = model.rows.some(function(row) { return row.usesQuestionTotal; });
+        return hasBands ? ' · 单科得分率分层（' + model.fallbackStep + '%梯度；无可用本学科等级）'
+            + (fromQuestions ? ' · 缺少单科成绩/满分时使用有效小题合计得分率' : '') : '';
+    }
     var sources=model.fd.subjectMetricSources && model.fd.subjectMetricSources[model.subjectName];
     var names=sources && sources.grade || [];
     return ' · 按本学科等级' + (names.some(function(name){return name!==model.subjectName;}) ? '（来源：'+names.join('、')+'）' : '');
@@ -7179,6 +7246,8 @@ function renderCollectiveHeatmap() {
     var fd = getCollectiveFilteredData();
     var subjectName = String(getSelectedSubject() || '').trim();
 
+    var fallbackControl = document.getElementById('collectiveHeatmapFallbackStep');
+    if (fallbackControl) fallbackControl.disabled = true;
     var subjectResolution = resolveCollectiveHeatmapSubject(fd, subjectName);
     if (subjectResolution.requiresSelection) {
         collectiveHeatmapContext = null;
@@ -7188,13 +7257,18 @@ function renderCollectiveHeatmap() {
             + '<div>当前包含：' + escapeHtml(subjectText) + '</div>'
             + '<div>请先在上方“筛选科目”中选择一个科目查看。</div></div></div>');
         if (summaryEl) summaryEl.textContent = '检测到 ' + subjectResolution.subjects.length + ' 个小题科目 · 请选择科目';
-        if (legendEl) legendEl.textContent = '热力图按所选科目的本学科等级分层；无本学科等级时才使用相对分层';
+        if (legendEl) legendEl.textContent = '热力图按所选科目的本学科等级分层；无本学科等级时按单科得分率以10%或20%梯度分层';
         return;
     }
 
     subjectName = subjectResolution.subjectName || String(subjectName || '').trim();
     var model = (!fd || !fd.headers || !fd.headers.length || !fd.data || !fd.data.length) ? null : buildCollectiveHeatmapModel(fd, subjectName);
     collectiveHeatmapContext = model;
+    var fallbackSelect = document.getElementById('collectiveHeatmapFallbackStep');
+    if (fallbackSelect) {
+        fallbackSelect.disabled = !model || model.rows.some(function(row) { return row.source === 'grade'; });
+        fallbackSelect.title = fallbackSelect.disabled ? '有本学科等级时优先按等级分组' : '按单科得分率划分；边界值归入较高段，100%归入最高段';
+    }
 
     if (!model || !model.questions.length) {
         var missingFull=(fd.headers || []).filter(function(header){return (!subjectName || utilGetSubjectFromHeader(header)===subjectName) && !header.endsWith('_答案') && !header.endsWith('_分数') && !header.endsWith('_等级') && header.includes('_') && !(Number(fd.fullScoreMap[header])>0);});
@@ -7225,7 +7299,7 @@ function renderCollectiveHeatmap() {
     }
     if (legendEl) {
         legendEl.textContent = mode === 'anomaly'
-            ? '异常度：全班看低于阈值/个性异常比例；各等级看个性异常学生占比'
+            ? '异常度：全班看低于阈值/个性异常比例；各等级/得分率段看个性异常学生占比'
             : '得分率：颜色越偏红表示得分率越低，越偏蓝表示得分率越高';
     }
 
@@ -7413,7 +7487,7 @@ function renderCollectiveStudentOverviewHeatmap(model, onlyAbnormal, chartEl, sc
     if (summaryEl) {
         var abnormalStudents = studentRows.filter(function(row){ return (anomalyCountByRow.get(row) || 0) > 0; }).length;
         summaryEl.textContent = '学生 ' + studentRows.length + ' 人 · 小题 ' + questions.length + ' 题 · 存在个性异常学生 ' + abnormalStudents + ' 人'
-            + (onlyAbnormal ? ' · 仅显示异常题' : '');
+            + (onlyAbnormal ? ' · 仅显示异常题' : '') + getCollectiveHeatmapGroupingText(model);
     }
     if (legendEl) {
         legendEl.textContent = '学生 × 小题：颜色表示本题低于该生其余小题平均的幅度；越红表示越偏离个人常态';
@@ -10887,10 +10961,14 @@ document.getElementById('crossExamBtn').addEventListener('click', renderCrossExa
 updateCrossExamRankRangeUI();
 
 // Collective analysis
+document.getElementById('collectiveHeatmapFallbackStep').addEventListener('change', function() { renderCollectiveHeatmap(); });
 document.getElementById('collectiveHeatmapMode').addEventListener('change', function() { renderCollectiveHeatmap(); });
 document.getElementById('collectiveHeatmapOnlyAbnormal').addEventListener('change', function() { renderCollectiveHeatmap(); });
 document.getElementById('collectiveHeatmapExportPngBtn').addEventListener('click', function() { exportCollectiveHeatmap('png'); });
 document.getElementById('collectiveHeatmapExportSvgBtn').addEventListener('click', function() { exportCollectiveHeatmap('svg'); });
+document.querySelectorAll('input[id^="fullMark_"]').forEach(function(input) {
+    input.addEventListener('change', function() { renderCollectiveHeatmap(); });
+});
 document.getElementById('collectiveClassFilter').addEventListener('change', () => { renderCollectiveDiagnosis(); renderCollectiveTables(); renderCollectiveRankBar(); document.getElementById('rankedAnalysisResult').innerHTML = ''; document.getElementById('levelAnalysisResult').innerHTML = ''; clearCollectiveQuestionGroupContexts('rank'); clearCollectiveQuestionGroupContexts('level'); document.getElementById('collectiveStudentQueryResult').innerHTML = ''; document.getElementById('questionStudentsResult').style.display = 'none'; });
 document.getElementById('collectiveSubjectFilter').addEventListener('change', () => { renderCollectiveDiagnosis(); renderCollectiveTables(); renderCollectiveRankBar(); renderScoreDistChart(); document.getElementById('rankedAnalysisResult').innerHTML = ''; document.getElementById('levelAnalysisResult').innerHTML = ''; clearCollectiveQuestionGroupContexts('rank'); clearCollectiveQuestionGroupContexts('level'); document.getElementById('collectiveStudentQueryResult').innerHTML = ''; populateLevelCheckboxes(); document.getElementById('questionStudentsResult').style.display = 'none'; });
 document.getElementById('applyCollectiveThresholdBtn').addEventListener('click', () => { collectiveThreshold = +document.getElementById('collectiveThresholdInput').value || 0; renderCollectiveDiagnosis(); renderCollectiveTables(); });

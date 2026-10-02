@@ -37,7 +37,7 @@ const functions=[
     'getCollectiveSubjectAliases','resolveCollectiveStudentMetric','normalizeCollectiveGrade','collectiveScoreNumber','buildCollectiveDataSnapshot','buildCollectiveDataFromCombined','qkBuildCollectiveDataFromBatchSnapshot',
     'utilGetTitle','utilGetTitleAns','utilGetSubjectFromHeader','utilSplitHeaderCols','utilGetQuestionDictKey','utilBuildQuestionDict','formatCollectiveOptionDistribution',
     'getSelectedSubject','getCollectiveFilteredData','renderCollectiveClassFilter','renderCollectiveSubjectFilter',
-    'diagSafeNumber','buildCollectiveQuestionModels','buildCollectiveStudentBaselines','getCollectiveStudentBaselineExcludingItem','getCollectiveIndividualThreshold','splitCollectiveAbilityTiers','getCollectiveThresholdRate','calculateCollectiveDiagnosis',
+    'getSubjectFullMarksFromInputs','diagSafeNumber','buildCollectiveQuestionModels','buildCollectiveStudentBaselines','getCollectiveStudentBaselineExcludingItem','getCollectiveIndividualThreshold','getCollectiveHeatmapFallbackStep','splitCollectiveScoreRateTiers','splitCollectiveAbilityTiers','getCollectiveThresholdRate','calculateCollectiveDiagnosis',
     'getCollectiveHeatmapSourceRef','getCollectiveHeatmapQuestionInfo','getCollectiveHeatmapQuestionLabel','sortCollectiveHeatmapQuestions','buildCollectiveHeatmapModel','resolveCollectiveHeatmapSubject',
     'setCollectiveHeatmapExportEnabled','formatCollectiveHeatmapAxisLabel','getCollectiveHeatmapChartWidth','getCollectiveHeatmapAxisBottom','resetCollectiveHeatmapChart','showCollectiveHeatmapStatus','getCollectiveHeatmapGroupingText','renderCollectiveHeatmap','renderCollectiveStudentOverviewHeatmap','showCollectiveHeatmapCellDetail',
     'renderCollectiveTables','calculateQuestionGroupLowStudents'
@@ -197,7 +197,7 @@ test('单一真实等级仍按等级；无学科等级绝不借用总分等级',
     const noGrade={...fd,headers:['总分_等级'],fullScoreField:'总分_分数'};
     assert.equal(sandbox.splitCollectiveAbilityTiers(noGrade,[],new Map(),'物理').length,0);
 });
-test('未匹配有效人数为0时不绘图；真实0分学生仍保留',()=>{
+test('未匹配行全部隐藏；未分级学生仍保留在全班及学生数据',()=>{
     const fd={headers:['姓名','班级','物理_1（2分）','物理_等级'],nameField:'姓名',classField:'班级',fullScoreMap:{'物理_1（2分）':2},data:[
         {'姓名':'甲','班级':'801','物理_1（2分）':2,'物理_等级':'A'},
         {'姓名':'乙','班级':'801','物理_1（2分）':1,'物理_等级':'B'}]};
@@ -207,10 +207,58 @@ test('未匹配有效人数为0时不绘图；真实0分学生仍保留',()=>{
     assert.equal(hasUnmatched(sandbox.buildCollectiveHeatmapModel(fd,'物理')),false);
     fd.data[2]['物理_1（2分）']=0;
     const model=sandbox.buildCollectiveHeatmapModel(fd,'物理');
-    assert.equal(hasUnmatched(model),true);
-    const index=model.rows.findIndex(row=>row.source==='ungraded');
-    assert.equal(model.questions[0].cells[index].qStudents.length,1);
-    assert.equal(model.questions[0].cells[index].avgRate,0);
+    assert.equal(hasUnmatched(model),false);
+    assert.equal(model.questions[0].cells[0].qStudents.length,3);
+    assert.equal(model.questions[0].cells[0].qStudents[2].score,0);
     assert.equal(hasUnmatched(sandbox.buildCollectiveHeatmapModel({...fd,data:fd.data.filter(row=>row.班级==='801')},'物理')),false);
+});
+test('无等级按单科得分率10%/20%划分：边界、满分、0分、空组与非法分数',()=>{
+    element('fullMark_物理').value='70';
+    const values=[0,6.999,7,14,42,56,63,70,-1,71,'坏'];
+    const fd={headers:['姓名','物理_分数'],fullScoreMap:{},data:values.map((v,i)=>({'姓名':String(i),'物理_分数':v}))};
+    const ten=sandbox.splitCollectiveAbilityTiers(fd,[],new Map(),'物理',10);
+    const twenty=sandbox.splitCollectiveAbilityTiers(fd,[],new Map(),'物理',20);
+    assert(ten.every(t=>t.source==='score-rate' && t.rows.length));
+    assert.deepEqual(json(ten.find(t=>t.lower===0).rows.map(r=>r.姓名)),['0','1']);
+    assert.deepEqual(json(ten.find(t=>t.lower===10).rows.map(r=>r.姓名)),['2']);
+    assert.deepEqual(json(ten.find(t=>t.lower===90).rows.map(r=>r.姓名)),['6','7']);
+    assert.equal(ten.reduce((n,t)=>n+t.rows.length,0),8);
+    assert.deepEqual(json(twenty.find(t=>t.lower===80).rows.map(r=>r.姓名)),['5','6','7']);
+    assert.equal(sandbox.splitCollectiveAbilityTiers({...fd,data:fd.data.slice(0,1)},[],new Map(),'物理',20).length,1);
+    element('fullMark_物理').value='';
+});
+test('无单科成绩时使用小题加权合计；空白0分保留，非法值不用于分层',()=>{
+    const fd={headers:['姓名','物理_1（1分）','物理_2（9分）'],nameField:'姓名',classField:'班级',
+        fullScoreMap:{'物理_1（1分）':1,'物理_2（9分）':9},data:[
+        {'姓名':'甲','物理_1（1分）':1,'物理_2（9分）':0},
+        {'姓名':'乙','物理_1（1分）':'','物理_2（9分）':''},
+        {'姓名':'丙','物理_1（1分）':'坏','物理_2（9分）':9}]};
+    const questions=sandbox.buildCollectiveQuestionModels(fd,'物理');
+    const tiers=sandbox.splitCollectiveAbilityTiers(fd,questions,new Map(),'物理',10);
+    assert.deepEqual(json(tiers.map(t=>[t.lower,t.rows.map(r=>r.姓名)])),[[10,['甲']],[0,['乙']]]);
+    assert(tiers.every(t=>t.usesQuestionTotal));
+    element('collectiveHeatmapFallbackStep').value='20';
+    const model=sandbox.buildCollectiveHeatmapModel(fd,'物理');
+    assert.equal(model.fallbackStep,20);assert.equal(model.rows[1].label,'0–20%');
+    assert.match(sandbox.getCollectiveHeatmapGroupingText(model),/20%梯度/);
+    element('collectiveHeatmapFallbackStep').value='10';
+});
+test('真实等级优先且不混入得分率段；同伴异常按热力图当前梯度计算',()=>{
+    element('fullMark_物理').value='100';
+    const fd={headers:['姓名','物理_分数','物理_1（10分）','物理_2（10分）'],nameField:'姓名',classField:'班级',
+        fullScoreMap:{'物理_1（10分）':10,'物理_2（10分）':10},data:[
+        ...[0,1,2].map(i=>({'姓名':'低'+i,'物理_分数':80,'物理_1（10分）':3,'物理_2（10分）':3})),
+        ...[0,1,2].map(i=>({'姓名':'高'+i,'物理_分数':90,'物理_1（10分）':10,'物理_2（10分）':10}))]};
+    element('collectiveHeatmapFallbackStep').value='10';
+    const ten=sandbox.buildCollectiveHeatmapModel(fd,'物理');
+    assert.equal(ten.individualQuestionCount,0);
+    element('collectiveHeatmapFallbackStep').value='20';
+    const twenty=sandbox.buildCollectiveHeatmapModel(fd,'物理');
+    assert.equal(twenty.individualQuestionCount,2);
+    assert.equal(twenty.questions[0].cells[1].anomalyCount,3);
+    fd.headers.push('物理_等级');fd.data.forEach((row,i)=>row['物理_等级']=i?'A':'');
+    const graded=sandbox.buildCollectiveHeatmapModel(fd,'物理');
+    assert.deepEqual(json(graded.rows.map(r=>r.label)),['全班','A']);
+    element('fullMark_物理').value='';element('collectiveHeatmapFallbackStep').value='10';
 });
 console.log(`Collective analysis audit passed: ${count} cases; ${scripts.length} scripts parsed.`);
