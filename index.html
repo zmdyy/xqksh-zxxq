@@ -6930,6 +6930,14 @@ function buildCollectiveHeatmapModel(fd, subjectName) {
     if (!questions.length) return null;
     var baselineInfo = buildCollectiveStudentBaselines(questions);
     var tiers = splitCollectiveAbilityTiers(fd, questions, baselineInfo.averages, subjectName);
+    // 绘图只保留有有效小题记录的未匹配学生；0 分仍然是有效记录。
+    var participatingRows = new Set();
+    questions.forEach(function(question) {
+        (question.students || []).forEach(function(student) { participatingRows.add(student.row); });
+    });
+    tiers = tiers.filter(function(tier) {
+        return tier.source !== 'ungraded' || (tier.rows || []).some(function(row) { return participatingRows.has(row); });
+    });
     var threshold = getCollectiveThresholdRate();
     var commonMap = new Map();
     var individualMap = new Map();

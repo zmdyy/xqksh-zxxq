@@ -197,4 +197,20 @@ test('单一真实等级仍按等级；无学科等级绝不借用总分等级',
     const noGrade={...fd,headers:['总分_等级'],fullScoreField:'总分_分数'};
     assert.equal(sandbox.splitCollectiveAbilityTiers(noGrade,[],new Map(),'物理').length,0);
 });
+test('未匹配有效人数为0时不绘图；真实0分学生仍保留',()=>{
+    const fd={headers:['姓名','班级','物理_1（2分）','物理_等级'],nameField:'姓名',classField:'班级',fullScoreMap:{'物理_1（2分）':2},data:[
+        {'姓名':'甲','班级':'801','物理_1（2分）':2,'物理_等级':'A'},
+        {'姓名':'乙','班级':'801','物理_1（2分）':1,'物理_等级':'B'}]};
+    const hasUnmatched=model=>model.rows.some(row=>row.source==='ungraded');
+    assert.equal(hasUnmatched(sandbox.buildCollectiveHeatmapModel(fd,'物理')),false);
+    fd.data.push({'姓名':'丙','班级':'802','物理_1（2分）':'无效','物理_等级':''});
+    assert.equal(hasUnmatched(sandbox.buildCollectiveHeatmapModel(fd,'物理')),false);
+    fd.data[2]['物理_1（2分）']=0;
+    const model=sandbox.buildCollectiveHeatmapModel(fd,'物理');
+    assert.equal(hasUnmatched(model),true);
+    const index=model.rows.findIndex(row=>row.source==='ungraded');
+    assert.equal(model.questions[0].cells[index].qStudents.length,1);
+    assert.equal(model.questions[0].cells[index].avgRate,0);
+    assert.equal(hasUnmatched(sandbox.buildCollectiveHeatmapModel({...fd,data:fd.data.filter(row=>row.班级==='801')},'物理')),false);
+});
 console.log(`Collective analysis audit passed: ${count} cases; ${scripts.length} scripts parsed.`);
