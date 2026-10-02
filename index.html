@@ -1486,8 +1486,8 @@
             </div>
             <div class="control-group">
                 <label>字体大小:</label>
-                <input type="range" id="trendFontSizeSlider" min="10" max="20" value="12">
-                <span id="trendFontSizeValue">12px</span>
+                <input type="range" id="trendFontSizeSlider" min="10" max="20" value="14">
+                <span id="trendFontSizeValue">14px</span>
             </div>
             <div class="control-group">
                 <label>主题颜色:</label>
@@ -8705,7 +8705,7 @@ function getTrendYAxisOption(mode, fontSize) {
 function getTrendChartConfig() {
     var el = function(id) { return document.getElementById(id); };
     return {
-        fontSize: parseInt(el('trendFontSizeSlider')?.value || 12),
+        fontSize: parseInt(el('trendFontSizeSlider')?.value || 14),
         lineColor: el('trendLineColorPicker')?.value || '#5470c6',
         pointStyle: el('trendPointStyleSelect')?.value || 'circle',
         pointSize: Number(el('trendPointSizeSlider')?.value || 8),
