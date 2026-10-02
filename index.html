@@ -5061,7 +5061,33 @@ function parseDataByHeaderRows(fileEntry, rawData, overrideHeaderRows) {
             const raw = String(rch || rawFieldName || '').trim();
             const isAC = /_?(学生)?答案|正确答案/.test(raw);
             const ms = eMs(raw); const ca = isAC ? eCa(raw) : '';
-            let bn = raw.replace(subjectName, '').trim().replace(/^(第?\s*\d+\s*卷|[0-9]+\s*卷)\s*/i,'').trim().replace(/[（(]\s*[0-9]+(?:\.[0-9]+)?\s*分\s*[）)]/g,'').trim().replace(/_?(学生)?答案.*$/g,'').trim().replace(/正确答案.*$/g,'').trim().replace(/(本题)?(小题)?(得分|分值|分数|成绩|小题分)\s*$/g,'').trim().replace(/(本题)?(小题)?(得分|分值|分数|成绩|小题分)/g,'').trim().replace(/[—–]/g,'-').replace(/[_:：\s]+/g,'').trim();
+            // 多行表头中的数字是题目层级，不能直接去掉分隔符：
+            // 例如 4 → 5 应保留为 4.5，1 → 2 → 3 应保留为 1.2.3。
+            var headerNumberPath = hrArr.map(function(r) {
+                var part = String((r || [])[c] || '').trim();
+                if (!part) return null;
+                part = part.replace(subjectName, '').trim()
+                    .replace(/[（(]\s*[0-9]+(?:\.[0-9]+)?\s*分\s*[）)]/g,'').trim()
+                    .replace(/_?(学生)?答案.*$/g,'').trim()
+                    .replace(/正确答案.*$/g,'').trim()
+                    .replace(/(本题)?(小题)?(得分|分值|分数|成绩|小题分)/g,'').trim();
+                var pm = part.match(/^(?:第\s*)?[（(]?\s*(\d{1,4})\s*[）)]?(?:\s*题)?$/);
+                return pm ? String(Number(pm[1])) : null;
+            }).filter(Boolean);
+            let bn;
+            if (headerNumberPath.length >= 2) {
+                bn = headerNumberPath.join('.');
+            } else {
+                bn = raw.replace(subjectName, '').trim()
+                    .replace(/^(第?\s*\d+\s*卷|[0-9]+\s*卷)\s*/i,'').trim()
+                    .replace(/[（(]\s*[0-9]+(?:\.[0-9]+)?\s*分\s*[）)]/g,'').trim()
+                    .replace(/_?(学生)?答案.*$/g,'').trim()
+                    .replace(/正确答案.*$/g,'').trim()
+                    .replace(/(本题)?(小题)?(得分|分值|分数|成绩|小题分)\s*$/g,'').trim()
+                    .replace(/(本题)?(小题)?(得分|分值|分数|成绩|小题分)/g,'').trim()
+                    .replace(/[—–]/g,'-')
+                    .replace(/[_:：\s]+/g,'').trim();
+            }
             // Filter junk columns: must contain at least a digit or meaningful Chinese
             if (!/[\d]/.test(bn) && bn.length < 2) continue;
             if (/^(点击|选择|题号|序号|备注|说明|注意事项|总分|合计|平均|排名)/.test(bn) && !/[\d]/.test(bn)) continue;
@@ -6422,7 +6448,75 @@ function renderCollectiveDiagnosisLane(type, title, desc, list, fd, subjectName)
 
 var collectiveHeatmapContext = null;
 
+function getCollectiveHeatmapSourcePath(q) {
+    if (!q || !q.scoreHeader || typeof uploadedFilesData === 'undefined') return null;
+    var scoreHeader = String(q.scoreHeader || '');
+    var subjectName = '';
+    try { subjectName = utilGetSubjectFromHeader(scoreHeader) || ''; } catch(e) {}
+    if (!subjectName) return null;
+
+    var mapKey = scoreHeader;
+    var prefix = subjectName + '_';
+    if (mapKey.indexOf(prefix) === 0) mapKey = mapKey.slice(prefix.length);
+    mapKey = mapKey.replace(/[（(]\s*[0-9]+(?:\.[0-9]+)?\s*分\s*[）)]\s*$/, '').replace(/_答案$/, '').trim();
+
+    var files = Object.values(uploadedFilesData || {});
+    for (var fi = 0; fi < files.length; fi++) {
+        var fe = files[fi];
+        if (!fe || !Array.isArray(fe.rawData) || !Array.isArray(fe.subjectHeaders)) continue;
+        var sh = fe.subjectHeaders.find(function(h){ return h && String(h.name || '').trim() === subjectName; });
+        if (!sh || !sh.subScoreQuestionMap) continue;
+        var sourceQ = sh.subScoreQuestionMap[mapKey];
+        if (!sourceQ) continue;
+        var ci = sourceQ.scoreIndex !== -1 ? sourceQ.scoreIndex : sourceQ.answerIndex;
+        if (ci == null || ci < 0) continue;
+
+        var shr = resolveHeaderRowCount(fe.rawData, fe.headerRows);
+        var path = [];
+        for (var ri = 0; ri < shr; ri++) {
+            var part = String(((fe.rawData[ri] || [])[ci]) || '').trim();
+            if (!part) continue;
+            part = part.replace(subjectName, '').trim()
+                .replace(/[（(]\s*[0-9]+(?:\.[0-9]+)?\s*分\s*[）)]/g,'').trim()
+                .replace(/_?(学生)?答案.*$/g,'').trim()
+                .replace(/正确答案.*$/g,'').trim()
+                .replace(/(本题)?(小题)?(得分|分值|分数|成绩|小题分)/g,'').trim();
+            var pm = part.match(/^(?:第\s*)?[（(]?\s*(\d{1,4})\s*[）)]?(?:\s*题)?$/);
+            if (pm) path.push(Number(pm[1]));
+        }
+        if (path.length >= 2) return path;
+    }
+    return null;
+}
+
+function getCollectiveHeatmapQuestionPath(q, index) {
+    var sourcePath = getCollectiveHeatmapSourcePath(q);
+    if (sourcePath && sourcePath.length) return sourcePath;
+
+    var rawHeader = String((q && q.scoreHeader) || '');
+    var subjectName = '';
+    try { subjectName = utilGetSubjectFromHeader(rawHeader) || ''; } catch(e) {}
+    var rawKey = rawHeader;
+    if (subjectName && rawKey.indexOf(subjectName + '_') === 0) rawKey = rawKey.slice(subjectName.length + 1);
+    rawKey = rawKey.replace(/[（(]\s*[0-9]+(?:\.[0-9]+)?\s*分\s*[）)]\s*$/, '').replace(/_答案$/, '').trim();
+
+    var explicit = rawKey.match(/^\d{1,4}(?:[.．\-_/]\d{1,4})+$/);
+    if (explicit) return rawKey.split(/[.．\-_/]+/).map(function(x){ return Number(x); }).filter(function(x){ return isFinite(x); });
+
+    var title = String((q && q.title) || '');
+    var tm = title.match(/(?:^|[^0-9])(\d{1,4})(?:\s*题|$)/);
+    if (tm) return [Number(tm[1])];
+
+    var single = rawKey.match(/^(\d{1,4})$/);
+    if (single) return [Number(single[1])];
+
+    return [];
+}
+
 function getCollectiveHeatmapQuestionLabel(q, index) {
+    var path = getCollectiveHeatmapQuestionPath(q, index);
+    if (path.length) return path.join('.') + '题';
+
     var raw = '';
     try { raw = utilGetTitle(q.scoreHeader || q.title || ''); } catch(e) { raw = String(q.title || q.scoreHeader || ''); }
     raw = String(raw || q.title || q.scoreHeader || '').trim();
@@ -6434,28 +6528,25 @@ function getCollectiveHeatmapQuestionLabel(q, index) {
 }
 
 function sortCollectiveHeatmapQuestions(questions) {
-    function orderOf(qm) {
+    function pathOf(qm) {
+        var path = qm && qm.q ? getCollectiveHeatmapQuestionPath(qm.q, qm.index) : [];
+        if (path.length) return path;
         var label = String((qm && qm.label) || '').trim();
-        var m = label.match(/(\d{1,4})/);
-        if (m) return { numbered:true, main:Number(m[1]), sub:0, label:label };
-
-        var raw = '';
-        if (qm && qm.q) raw = String(qm.q.scoreHeader || qm.q.title || '');
-        var sub = raw.match(/(?:^|[^0-9])(\d{1,4})\s*[-_.－—/]\s*(\d{1,3})(?:[^0-9]|$)/);
-        if (sub) return { numbered:true, main:Number(sub[1]), sub:Number(sub[2]), label:label || raw };
-
-        var single = raw.match(/(?:^|[^0-9])(\d{1,4})(?:[^0-9]|$)/);
-        if (single) return { numbered:true, main:Number(single[1]), sub:0, label:label || raw };
-
-        return { numbered:false, main:Number.MAX_SAFE_INTEGER, sub:Number.MAX_SAFE_INTEGER, label:label || raw };
+        var nums = label.match(/\d+/g);
+        return nums ? nums.map(Number) : [];
     }
 
     return (questions || []).slice().sort(function(a,b) {
-        var ao = orderOf(a), bo = orderOf(b);
-        if (ao.numbered !== bo.numbered) return ao.numbered ? -1 : 1;
-        if (ao.main !== bo.main) return ao.main - bo.main;
-        if (ao.sub !== bo.sub) return ao.sub - bo.sub;
-        return String(ao.label).localeCompare(String(bo.label), 'zh-CN', {numeric:true, sensitivity:'base'});
+        var ap = pathOf(a), bp = pathOf(b);
+        if (ap.length && !bp.length) return -1;
+        if (!ap.length && bp.length) return 1;
+        var n = Math.max(ap.length, bp.length);
+        for (var i = 0; i < n; i++) {
+            if (i >= ap.length) return -1;
+            if (i >= bp.length) return 1;
+            if (ap[i] !== bp[i]) return ap[i] - bp[i];
+        }
+        return String(a && a.label || '').localeCompare(String(b && b.label || ''), 'zh-CN', {numeric:true, sensitivity:'base'});
     });
 }
 
