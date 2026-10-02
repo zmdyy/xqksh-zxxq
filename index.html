@@ -1428,9 +1428,9 @@
         <div id="crossExamRankRangeBar" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:10px;padding:7px 10px;background:#fafbfc;border:1px solid #dfe5ec;border-radius:8px;">
             <span style="font-weight:700;font-size:12px;color:#4D4D4D;">名次范围：</span>
             <span style="font-size:12px;color:#666;">第</span>
-            <input type="number" id="crossExamRankStart" min="1" max="50" value="1" style="width:58px;padding:3px 6px;border:1px solid #cfd6dd;border-radius:4px;font-size:12px;text-align:center;">
+            <input type="number" id="crossExamRankStart" min="1" value="1" style="width:58px;padding:3px 6px;border:1px solid #cfd6dd;border-radius:4px;font-size:12px;text-align:center;">
             <span style="font-size:12px;color:#999;">—</span>
-            <input type="number" id="crossExamRankEnd" min="1" max="50" value="10" style="width:58px;padding:3px 6px;border:1px solid #cfd6dd;border-radius:4px;font-size:12px;text-align:center;">
+            <input type="number" id="crossExamRankEnd" min="1" value="10" style="width:58px;padding:3px 6px;border:1px solid #cfd6dd;border-radius:4px;font-size:12px;text-align:center;">
             <span style="font-size:12px;color:#666;">名</span>
             <span id="crossExamRankRangeHint" style="font-size:11px;color:#8b949e;margin-left:4px;">当前：前十名</span>
         </div>
@@ -5356,20 +5356,59 @@ function extractStudentAnalysisData(studentName, weakRateThOpt) {
 // ============================================================
 //  CROSS-EXAM TOP 10 ANALYSIS
 // ============================================================
+function getCrossExamMaxAvailableRank() {
+    var checkedIds = [];
+    document.querySelectorAll('#crossExamBatchPicker input[type=checkbox]:checked').forEach(function(cb) {
+        checkedIds.push(cb.value);
+    });
+    var batches = checkedIds.length
+        ? DataPool.batches.filter(function(b) { return checkedIds.indexOf(b.id) !== -1; })
+        : DataPool.batches;
+    var maxRank = 0;
+    batches.forEach(function(batch) {
+        var count = batch && batch.combinedStudentData ? batch.combinedStudentData.length : 0;
+        if (count > maxRank) maxRank = count;
+    });
+    return Math.max(1, maxRank);
+}
+
 function getCrossExamRankRange() {
     var startEl = document.getElementById('crossExamRankStart');
     var endEl = document.getElementById('crossExamRankEnd');
+    var maxRank = getCrossExamMaxAvailableRank();
     var start = parseInt(startEl && startEl.value, 10);
     var end = parseInt(endEl && endEl.value, 10);
     if (!isFinite(start)) start = 1;
     if (!isFinite(end)) end = 10;
-    start = Math.max(1, Math.min(50, start));
-    end = Math.max(1, Math.min(50, end));
+
+    start = Math.max(1, Math.min(maxRank, start));
+    end = Math.max(1, Math.min(maxRank, end));
     if (end < start) end = start;
-    if (startEl) startEl.value = start;
-    if (endEl) endEl.value = end;
+
+    var adjustedForSpan = false;
+    if (end - start + 1 > 50) {
+        end = Math.min(maxRank, start + 49);
+        adjustedForSpan = true;
+    }
+
+    if (startEl) {
+        startEl.max = maxRank;
+        startEl.value = start;
+    }
+    if (endEl) {
+        endEl.max = maxRank;
+        endEl.value = end;
+    }
+
     var label = (start === 1 && end === 10) ? '前十名' : (start === 1 ? ('前' + end + '名') : ('第' + start + '—' + end + '名'));
-    return { start: start, end: end, count: end - start + 1, label: label };
+    return {
+        start: start,
+        end: end,
+        count: end - start + 1,
+        label: label,
+        maxRank: maxRank,
+        adjustedForSpan: adjustedForSpan
+    };
 }
 
 function updateCrossExamRankRangeUI() {
@@ -5377,7 +5416,11 @@ function updateCrossExamRankRangeUI() {
     var title = document.getElementById('crossExamTitle');
     var hint = document.getElementById('crossExamRankRangeHint');
     if (title) title.textContent = range.label + '流动';
-    if (hint) hint.textContent = '当前：' + range.label;
+    if (hint) {
+        hint.textContent = range.adjustedForSpan
+            ? ('单次最多50名，已调整为：' + range.label)
+            : ('当前：' + range.label + '（' + range.count + '人，单次最多50名）');
+    }
     return range;
 }
 
@@ -5514,6 +5557,7 @@ function renderCrossExamBatchPicker() {
         cb.checked = prevChecked.hasOwnProperty(b.id) ? prevChecked[b.id] : false;
         cb.addEventListener('change', function() {
             renderCrossExamBatchOrderEditor();
+            updateCrossExamRankRangeUI();
             var result = document.getElementById('crossExamResult');
             if (result && result.style.display !== 'none') {
                 if (document.querySelectorAll('#crossExamBatchPicker input[type=checkbox]:checked').length >= 2) renderCrossExamTop10();
@@ -5528,6 +5572,7 @@ function renderCrossExamBatchPicker() {
         picker.appendChild(label);
     });
     renderCrossExamBatchOrderEditor();
+    updateCrossExamRankRangeUI();
 }
 
 function crossExamEscapeHtml(value) {
