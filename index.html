@@ -5119,11 +5119,11 @@ function combineAllStudentData() {
                     }
                 }
                 // 同一科目可能分别来自主成绩表和小题分表：完整合并科目元数据，上传顺序不能影响等级/排名识别。
-                if (sh.scoreIndex !== -1 && existing.scoreIndex === -1) existing.scoreIndex = sh.scoreIndex;
-                if (sh.gradeIndex !== -1 && existing.gradeIndex === -1) existing.gradeIndex = sh.gradeIndex;
-                if (sh.schoolIndex !== -1 && existing.schoolIndex === -1) existing.schoolIndex = sh.schoolIndex;
-                if (sh.classIndex !== -1 && existing.classIndex === -1) existing.classIndex = sh.classIndex;
-                if (sh.rankIndex !== -1 && existing.rankIndex === -1) existing.rankIndex = sh.rankIndex;
+                if (Number.isInteger(sh.scoreIndex) && sh.scoreIndex >= 0 && !(Number.isInteger(existing.scoreIndex) && existing.scoreIndex >= 0)) existing.scoreIndex = sh.scoreIndex;
+                if (Number.isInteger(sh.gradeIndex) && sh.gradeIndex >= 0 && !(Number.isInteger(existing.gradeIndex) && existing.gradeIndex >= 0)) existing.gradeIndex = sh.gradeIndex;
+                if (Number.isInteger(sh.schoolIndex) && sh.schoolIndex >= 0 && !(Number.isInteger(existing.schoolIndex) && existing.schoolIndex >= 0)) existing.schoolIndex = sh.schoolIndex;
+                if (Number.isInteger(sh.classIndex) && sh.classIndex >= 0 && !(Number.isInteger(existing.classIndex) && existing.classIndex >= 0)) existing.classIndex = sh.classIndex;
+                if (Number.isInteger(sh.rankIndex) && sh.rankIndex >= 0 && !(Number.isInteger(existing.rankIndex) && existing.rankIndex >= 0)) existing.rankIndex = sh.rankIndex;
             } else {
                 hs.add(sh.name);
                 allSubjectHeaders.push(sh);
@@ -6197,7 +6197,14 @@ function buildCollectiveDataFromCombined() {
         const sn = sh.name;
         if (META_NAMES.has(sn)) return;
         const hkey = sn + '_分数'; if (!headers.includes(hkey)) headers.push(hkey);
-        if (sh.gradeIndex !== -1) { const gkey = sn + '_等级'; if (!headers.includes(gkey)) headers.push(gkey); }
+        // 不只依赖 gradeIndex。旧批次或“主成绩表 + 小题表”合并后可能缺失该元数据，
+        // 只要学生实际数据里存在本学科等级，就应恢复“科目_等级”字段。
+        const hasGradeMeta = Number.isInteger(sh.gradeIndex) && sh.gradeIndex >= 0;
+        const hasGradeData = combinedStudentData.some(function(stu) {
+            const sd = stu && stu.subjects ? stu.subjects[sn] : null;
+            return sd && hasMeaningfulValue(sd.grade);
+        });
+        if (hasGradeMeta || hasGradeData) { const gkey = sn + '_等级'; if (!headers.includes(gkey)) headers.push(gkey); }
     });
     const data = combinedStudentData.map(stu => {
         const row = { '姓名': stu.name, '班级': stu.class || '' };
@@ -6219,7 +6226,13 @@ function buildCollectiveDataFromCombined() {
             const sn = sh.name; if (META_NAMES.has(sn)) return;
             const sd = stu.subjects[sn];
             row[sn + '_分数'] = sd ? sd.score : '';
-            if (sh.gradeIndex !== -1) row[sn + '_等级'] = sd ? sd.grade : '';
+            // 与上方字段探测保持一致：有真实等级数据时，即使 gradeIndex 元数据缺失也写入等级。
+            const hasGradeMeta = Number.isInteger(sh.gradeIndex) && sh.gradeIndex >= 0;
+            const hasGradeData = combinedStudentData.some(function(s) {
+                const ssd = s && s.subjects ? s.subjects[sn] : null;
+                return ssd && hasMeaningfulValue(ssd.grade);
+            });
+            if (hasGradeMeta || hasGradeData) row[sn + '_等级'] = sd ? sd.grade : '';
         });
         return row;
     });
@@ -6301,8 +6314,11 @@ function renderCollectiveClassFilter() {
 function renderCollectiveSubjectFilter() {
     const sel = document.getElementById('collectiveSubjectFilter');
     const cd = buildCollectiveDataFromCombined();
+    // 重绘筛选器时保留用户当前选择，避免切换页签/刷新分析后回到“全部科目”。
+    const previous = sel ? String(sel.value || '') : '';
     sel.innerHTML = '<option value="">全部科目</option>';
     cd.subjectList.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; sel.appendChild(o); });
+    if (previous && cd.subjectList.includes(previous)) sel.value = previous;
 }
 
 function getSelectedSubject() {
@@ -6814,7 +6830,11 @@ function renderCollectiveHeatmap(fd, subjectName) {
     if (!chartEl || !scrollEl) return;
 
     if (!fd) fd = getCollectiveFilteredData();
-    if (subjectName == null) subjectName = getSelectedSubject();
+    // 页面当前筛选值是唯一可信来源。即使某个较早的重绘调用传入了旧 subjectName，
+    // 也不能覆盖用户此刻已经选中的科目。
+    var liveSubjectEl = document.getElementById('collectiveSubjectFilter');
+    if (liveSubjectEl) subjectName = String(liveSubjectEl.value || '').trim();
+    else if (subjectName == null) subjectName = '';
 
     var subjectResolution = resolveCollectiveHeatmapSubject(fd, subjectName);
     if (subjectResolution.requiresSelection) {
