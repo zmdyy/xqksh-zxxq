@@ -1664,10 +1664,10 @@
                  <div class="comp-card-desc">跨次变化追踪</div>
                  <div class="comp-card-controls" style="flex-direction:column;align-items:stretch;">
                     <div style="display:flex;flex-wrap:wrap;gap:3px;align-items:center;">
-                        <div class="control-group"><label>基准：</label>
+                        <div class="control-group"><label>对照：</label>
                             <select id="progressBaseBatch" class="filter-bar-select" style="max-width:100px;"></select>
                         </div>
-                        <div class="control-group"><label>对比：</label>
+                        <div class="control-group"><label>本次：</label>
                             <select id="progressCompareBatch" class="filter-bar-select" style="max-width:100px;"></select>
                         </div>
                         <div class="control-group"><label>班级：</label>
@@ -1689,14 +1689,14 @@
                  <div class="comp-card-desc">跨次对比分线附近名单</div>
                  <div class="comp-card-controls" style="flex-direction:column;align-items:stretch;">
                     <div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center;">
-                        <div class="control-group"><label>本次：</label>
-                            <select id="criticalBatch0" class="filter-bar-select" style="max-width:110px;"></select>
+                        <div class="control-group"><label>上上次：</label>
+                            <select id="criticalBatch2" class="filter-bar-select" style="max-width:110px;"></select>
                         </div>
                         <div class="control-group"><label>上次：</label>
                             <select id="criticalBatch1" class="filter-bar-select" style="max-width:110px;"></select>
                         </div>
-                        <div class="control-group"><label>上上次：</label>
-                            <select id="criticalBatch2" class="filter-bar-select" style="max-width:110px;"></select>
+                        <div class="control-group"><label>本次：</label>
+                            <select id="criticalBatch0" class="filter-bar-select" style="max-width:110px;"></select>
                         </div>
                         <div class="control-group"><label>班级：</label>
                             <select id="criticalClassFilter" class="filter-bar-select" style="max-width:80px;"></select>
@@ -1851,13 +1851,13 @@
                         <div class="control-group"><label>班级：</label>
                             <select id="smartClassFilter" class="filter-bar-select" style="width:70px;"></select>
                         </div>
-                        <div class="control-group"><label>基准：</label>
-                            <span id="smartClassBaseBatchLabel" style="display:inline-block;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--text-secondary);font-weight:700;" title="当前批次">当前批次</span>
-                        </div>
-                        <div class="control-group"><label>对比：</label>
+                        <div class="control-group"><label>对照：</label>
                             <select id="smartClassCompareBatch" class="filter-bar-select" style="max-width:120px;">
-                                <option value="">仅本次（无对比）</option>
+                                <option value="">不对照（仅本次）</option>
                             </select>
+                        </div>
+                        <div class="control-group"><label>本次：</label>
+                            <select id="smartClassCurrentBatch" class="filter-bar-select" style="max-width:120px;"></select>
                         </div>
                     </div>
                     <button class="filter-btn comp-btn-warning" id="smartClassBtn" style="align-self:flex-end;">生成图形化报告</button>
@@ -1883,10 +1883,13 @@
                                 <option value="rank">排名</option>
                             </select>
                         </div>
-                        <div class="control-group"><label>对比：</label>
-                            <select id="smartSubjCompareBatch" class="filter-bar-select" style="max-width:100px;">
-                                <option value="">仅本次（无对比）</option>
+                        <div class="control-group"><label>对照：</label>
+                            <select id="smartSubjCompareBatch" class="filter-bar-select" style="max-width:110px;">
+                                <option value="">不对照（仅本次）</option>
                             </select>
+                        </div>
+                        <div class="control-group"><label>本次：</label>
+                            <select id="smartSubjCurrentBatch" class="filter-bar-select" style="max-width:110px;"></select>
                         </div>
                     </div>
                      <button class="filter-btn comp-btn-primary" id="smartSubjBtn" style="align-self:flex-end;">生成图形化报告</button>
@@ -1899,10 +1902,10 @@
                  <div class="comp-card-desc">跨次变化追踪</div>
                  <div class="comp-card-controls" style="flex-direction:column;align-items:stretch;">
                     <div style="display:flex;flex-wrap:wrap;gap:3px;align-items:center;">
-                        <div class="control-group"><label>基准：</label>
+                        <div class="control-group"><label>对照：</label>
                             <select id="smartProgressBaseBatch" class="filter-bar-select" style="max-width:100px;"></select>
                         </div>
-                        <div class="control-group"><label>对比：</label>
+                        <div class="control-group"><label>本次：</label>
                             <select id="smartProgressCompareBatch" class="filter-bar-select" style="max-width:100px;"></select>
                         </div>
                         <div class="control-group"><label>班级：</label>
@@ -1924,14 +1927,14 @@
                  <div class="comp-card-desc">跨次对比分线附近名单</div>
                  <div class="comp-card-controls" style="flex-direction:column;align-items:stretch;">
                     <div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center;">
-                        <div class="control-group"><label>本次：</label>
-                            <select id="smartCriticalBatch0" class="filter-bar-select" style="max-width:110px;"></select>
+                        <div class="control-group"><label>上上次：</label>
+                            <select id="smartCriticalBatch2" class="filter-bar-select" style="max-width:110px;"></select>
                         </div>
                         <div class="control-group"><label>上次：</label>
                             <select id="smartCriticalBatch1" class="filter-bar-select" style="max-width:110px;"></select>
                         </div>
-                        <div class="control-group"><label>上上次：</label>
-                            <select id="smartCriticalBatch2" class="filter-bar-select" style="max-width:110px;"></select>
+                        <div class="control-group"><label>本次：</label>
+                            <select id="smartCriticalBatch0" class="filter-bar-select" style="max-width:110px;"></select>
                         </div>
                         <div class="control-group"><label>班级：</label>
                             <select id="smartCriticalClassFilter" class="filter-bar-select" style="max-width:80px;"></select>
@@ -11487,8 +11490,9 @@ function renderClassTotalGradeFlowTable(students, totalName, compareBatch) {
         return '<div class="sr-note-box" style="margin-top:12px;">已匹配 ' + matchedCount + ' 人，但两个批次缺少可对应的 A+/A/B+/B/C+/C 总分等级数据。</div>';
     }
 
-    var html = '<div style="margin-top:14px;"><div class="sr-card-heading"><h4>总分等级流转</h4><span style="font-size:12px;color:#64748b;">' + escapeHtml(compareBatch.label || '对比批次') + ' → 当前批次</span></div>';
-    html += '<table class="sr-table"><thead><tr><th>对比等级</th><th>本次等级</th><th>流转</th><th>人数</th><th>学生姓名</th></tr></thead><tbody>';
+    var currentBatch = DataPool.getCurrentBatch ? DataPool.getCurrentBatch() : null;
+    var html = '<div style="margin-top:14px;"><div class="sr-card-heading"><h4>总分等级流转</h4><span style="font-size:12px;color:#64748b;">' + escapeHtml(compareBatch.label || '对照批次') + ' → ' + escapeHtml(currentBatch ? currentBatch.label : '本次') + '</span></div>';
+    html += '<table class="sr-table"><thead><tr><th>对照等级</th><th>本次等级</th><th>流转</th><th>人数</th><th>学生姓名</th></tr></thead><tbody>';
     rows.forEach(function(r) {
         var status = '稳定';
         var pillStyle = 'background:#f1f5f9;color:#475569;border-color:#cbd5e1;';
@@ -11536,13 +11540,13 @@ function renderClassReadableReport(className, compareBatchId) {
     var title = className + '班 班级学情图文报告';
     var html = [];
     html.push('<div class="comp-readable-report">');
-    html.push('<div class="cr-cover"><div><h2>' + escapeHtml(title) + '</h2><p>' + (hasCompare ? '以当前批次为基准，对比班级结构、总分与各科均分排名，并追踪学生年级名次进退步。' : '以班级结构、总分与各科均分排名为主线，快速判断班级当前状态。') + '</p></div>');
-    html.push('<div class="cr-meta"><div><b>班级：</b>' + escapeHtml(className) + '</div><div><b>基准批次：</b>' + escapeHtml(batch ? batch.label : '当前批次') + '</div>' + (hasCompare ? '<div><b>对比批次：</b>' + escapeHtml(compareBatch.label) + '</div>' : '') + '<div><b>生成时间：</b>' + new Date().toLocaleString() + '</div></div></div>');
+    html.push('<div class="cr-cover"><div><h2>' + escapeHtml(title) + '</h2><p>' + (hasCompare ? '按“对照 → 本次”的方向，对比班级结构、总分与各科均分排名，并追踪学生年级名次进退步。' : '以班级结构、总分与各科均分排名为主线，快速判断班级当前状态。') + '</p></div>');
+    html.push('<div class="cr-meta"><div><b>班级：</b>' + escapeHtml(className) + '</div>' + (hasCompare ? '<div><b>对照：</b>' + escapeHtml(compareBatch.label) + '</div>' : '') + '<div><b>本次：</b>' + escapeHtml(batch ? batch.label : '当前批次') + '</div><div><b>生成时间：</b>' + new Date().toLocaleString() + '</div></div></div>');
     html.push('<div class="sr-kpis">');
     html.push('<div class="sr-kpi"><div class="sr-kpi-label">学生人数</div><div class="sr-kpi-value">' + students.length + '</div></div>');
     html.push('<div class="sr-kpi"><div class="sr-kpi-label">总分均分</div><div class="sr-kpi-value">' + (avgScore == null ? '-' : avgScore.toFixed(1)) + '</div></div>');
     html.push('<div class="sr-kpi"><div class="sr-kpi-label">年级前10</div><div class="sr-kpi-value">' + scores.filter(function(s){ return s.rank != null && s.rank <= 10; }).length + '</div></div>');
-    html.push('<div class="sr-kpi"><div class="sr-kpi-label">' + (hasCompare ? '可对比人数' : '均分排名项目') + '</div><div class="sr-kpi-value">' + (hasCompare ? progressRows.length : subjectRankRows.filter(function(r){ return r.currentRank != null; }).length) + '</div></div>');
+    html.push('<div class="sr-kpi"><div class="sr-kpi-label">' + (hasCompare ? '可对照人数' : '均分排名项目') + '</div><div class="sr-kpi-value">' + (hasCompare ? progressRows.length : subjectRankRows.filter(function(r){ return r.currentRank != null; }).length) + '</div></div>');
     html.push('</div>');
     html.push('<div class="sr-section"><h3>一、班级结构与分布</h3><div class="sr-grid">');
     html.push('<div id="classReportTierChart" class="sr-chart sr-chart-large"></div>');
@@ -11554,7 +11558,7 @@ function renderClassReadableReport(className, compareBatchId) {
     html.push('<div class="sr-section"><h3>二、总分/各科均分排名' + (hasCompare ? '变化' : '') + '</h3>');
     if (subjectRankRows.length) {
         if (hasCompare) {
-            html.push('<table class="sr-table"><thead><tr><th>科目</th><th>本次均分</th><th>本次均分排名</th><th>对比均分</th><th>对比均分排名</th><th>排名变化</th></tr></thead><tbody>');
+            html.push('<table class="sr-table"><thead><tr><th>科目</th><th>本次均分</th><th>本次均分排名</th><th>对照均分</th><th>对照均分排名</th><th>排名变化</th></tr></thead><tbody>');
             subjectRankRows.forEach(function(row) {
                 var ch = formatClassRankChange(row.rankChange);
                 html.push('<tr><td>' + escapeHtml(row.subject) + '</td><td>' + (row.currentAvg == null ? '—' : row.currentAvg.toFixed(1)) + '</td><td>' + (row.currentRank == null ? '—' : '第' + row.currentRank + '名') + '</td><td>' + (row.compareAvg == null ? '—' : row.compareAvg.toFixed(1)) + '</td><td>' + (row.compareRank == null ? '—' : '第' + row.compareRank + '名') + '</td><td style="font-weight:800;color:' + ch.color + ';">' + ch.text + '</td></tr>');
@@ -11886,7 +11890,8 @@ function renderSubjectTeachingReadableReport(classNames, subjectName, compareBat
     if (!output || !content || !subjectName || !classNames.length) return false;
     var students = combinedStudentData.filter(function(s) { return classNames.indexOf(String(s.class)) >= 0; }).filter(function(s) { return !!getSubjectDataByAlias(s, subjectName); });
     if (!students.length) return false;
-    var batch = DataPool.getCurrentBatch ? DataPool.getCurrentBatch() : null;
+    var batch = DataPool.getCurrentBatch ? DataPool.getCurrentBatch() : null;    var referenceBatch = compareBatchId ? DataPool.batches.find(function(b) { return b.id === compareBatchId; }) : null;
+
     var fullMarks = expandSubjectFullMarks(getSubjectFullMarksFromInputs());
     var fm = fullMarks[subjectName];
     if (fm == null && subjectName === '英语') fm = (fullMarks['英语笔试'] || 0) + (fullMarks['听说'] || 0);
@@ -11910,7 +11915,7 @@ function renderSubjectTeachingReadableReport(classNames, subjectName, compareBat
     var html = [];
     html.push('<div class="comp-readable-report">');
     html.push('<div class="cr-cover"><div><h2>' + escapeHtml(title) + '</h2><p>从班级对比、分层结构、小题得分率和等级流转快速定位教学重点。</p></div>');
-    html.push('<div class="cr-meta"><div><b>科目：</b>' + escapeHtml(subjectName) + '</div><div><b>班级：</b>' + escapeHtml(classNames.join('、')) + '</div><div><b>分层：</b>' + (tierMode === 'grade' ? '等级' : '排名') + '</div><div><b>批次：</b>' + escapeHtml(batch ? batch.label : '当前批次') + '</div><div><b>生成时间：</b>' + new Date().toLocaleString() + '</div></div></div>');
+    html.push('<div class="cr-meta"><div><b>科目：</b>' + escapeHtml(subjectName) + '</div><div><b>班级：</b>' + escapeHtml(classNames.join('、')) + '</div><div><b>分层：</b>' + (tierMode === 'grade' ? '等级' : '排名') + '</div>' + (referenceBatch ? '<div><b>对照：</b>' + escapeHtml(referenceBatch.label) + '</div>' : '') + '<div><b>本次：</b>' + escapeHtml(batch ? batch.label : '当前批次') + '</div><div><b>生成时间：</b>' + new Date().toLocaleString() + '</div></div></div>');
     html.push('<div class="sr-kpis">');
     html.push('<div class="sr-kpi"><div class="sr-kpi-label">参考人数</div><div class="sr-kpi-value">' + rows.length + '</div></div>');
     html.push('<div class="sr-kpi"><div class="sr-kpi-label">均分</div><div class="sr-kpi-value">' + (avgScore == null ? '-' : avgScore.toFixed(1)) + '</div></div>');
@@ -12402,7 +12407,7 @@ function renderProgressReadableReport() {
     var html = [];
     html.push('<div class="comp-readable-report">');
     html.push('<div class="cr-cover"><div><h2>进退步量化图文报告</h2><p>从分数变化、名次变化与班级结构三个角度识别重点关注学生。</p></div>');
-    html.push('<div class="cr-meta"><div><b>对比：</b>' + escapeHtml(data.baseBatch.label) + ' → ' + escapeHtml(data.cmpBatch.label) + '</div><div><b>范围：</b>' + escapeHtml(data.className || '全部班级') + '</div><div><b>指标：</b>' + escapeHtml(data.subjectDisplay) + '</div><div><b>生成时间：</b>' + new Date().toLocaleString() + '</div></div></div>');
+    html.push('<div class="cr-meta"><div><b>对照：</b>' + escapeHtml(data.baseBatch.label) + '</div><div><b>本次：</b>' + escapeHtml(data.cmpBatch.label) + '</div><div><b>范围：</b>' + escapeHtml(data.className || '全部班级') + '</div><div><b>指标：</b>' + escapeHtml(data.subjectDisplay) + '</div><div><b>生成时间：</b>' + new Date().toLocaleString() + '</div></div></div>');
     html.push('<div class="sr-kpis">');
     html.push('<div class="sr-kpi"><div class="sr-kpi-label">匹配人数</div><div class="sr-kpi-value">' + data.results.length + '</div></div>');
     html.push('<div class="sr-kpi"><div class="sr-kpi-label">分数进步</div><div class="sr-kpi-value">' + improved.length + '</div></div>');
@@ -12418,7 +12423,7 @@ function renderProgressReadableReport() {
     html.push('<div id="progressReportClassChart" class="sr-chart sr-chart-wide"></div>');
     html.push('</div></div>');
     window.progressReadableDetailMap = {};
-    html.push('<div class="sr-section"><h3>三、重点学生明细</h3><table class="sr-table"><thead><tr><th>类型</th><th>班级</th><th>姓名</th><th>原分/现分</th><th>分数变化</th><th>名次变化</th></tr></thead><tbody>');
+    html.push('<div class="sr-section"><h3>三、重点学生明细</h3><table class="sr-table"><thead><tr><th>类型</th><th>班级</th><th>姓名</th><th>对照分/本次分</th><th>分数变化</th><th>名次变化</th></tr></thead><tbody>');
     rankImproved.slice(0, 10).forEach(function(r){ html.push(renderProgressReadableRow('名次进步', r)); });
     rankDeclined.slice(0, 10).forEach(function(r){ html.push(renderProgressReadableRow('名次退步', r)); });
     html.push('</tbody></table></div></div>');
@@ -12461,7 +12466,7 @@ function showProgressReadableDetail(key) {
     html += '<span style="padding:4px 12px;border-radius:999px;background:' + color + ';color:#fff;font-weight:800;">' + entry.type + '</span>';
     html += '</div>';
     html += '<table style="width:100%;border-collapse:collapse;font-size:13px;"><tbody>';
-    html += '<tr><td style="border:1px solid #e5e7eb;padding:8px;background:#f8fafc;font-weight:700;">原分</td><td style="border:1px solid #e5e7eb;padding:8px;">' + r.baseScore.toFixed(1) + '</td><td style="border:1px solid #e5e7eb;padding:8px;background:#f8fafc;font-weight:700;">现分</td><td style="border:1px solid #e5e7eb;padding:8px;">' + r.cmpScore.toFixed(1) + '</td></tr>';
+    html += '<tr><td style="border:1px solid #e5e7eb;padding:8px;background:#f8fafc;font-weight:700;">对照分</td><td style="border:1px solid #e5e7eb;padding:8px;">' + r.baseScore.toFixed(1) + '</td><td style="border:1px solid #e5e7eb;padding:8px;background:#f8fafc;font-weight:700;">本次分</td><td style="border:1px solid #e5e7eb;padding:8px;">' + r.cmpScore.toFixed(1) + '</td></tr>';
     html += '<tr><td style="border:1px solid #e5e7eb;padding:8px;background:#f8fafc;font-weight:700;">分数变化</td><td style="border:1px solid #e5e7eb;padding:8px;color:' + color + ';font-weight:800;">' + (r.diff >= 0 ? '+' : '') + r.diff.toFixed(1) + '</td><td style="border:1px solid #e5e7eb;padding:8px;background:#f8fafc;font-weight:700;">名次变化</td><td style="border:1px solid #e5e7eb;padding:8px;color:' + color + ';font-weight:800;">' + rankText + '</td></tr>';
     html += '<tr><td style="border:1px solid #e5e7eb;padding:8px;background:#f8fafc;font-weight:700;">原名次</td><td style="border:1px solid #e5e7eb;padding:8px;">' + escapeHtml(r.baseRank) + '</td><td style="border:1px solid #e5e7eb;padding:8px;background:#f8fafc;font-weight:700;">现名次</td><td style="border:1px solid #e5e7eb;padding:8px;">' + escapeHtml(r.cmpRank) + '</td></tr>';
     html += '</tbody></table>';
@@ -13778,22 +13783,190 @@ function refreshSmartTab() {
             sel.value = DataPool.batches[DataPool.batches.length - 1].id;
         }
     };
-    var classBaseLabel = document.getElementById('smartClassBaseBatchLabel');
-    var currentClassBaseBatch = DataPool.getCurrentBatch ? DataPool.getCurrentBatch() : null;
-    if (classBaseLabel) {
-        classBaseLabel.textContent = currentClassBaseBatch ? currentClassBaseBatch.label : '当前批次';
-        classBaseLabel.title = currentClassBaseBatch ? currentClassBaseBatch.label : '当前批次';
+    function getSmartAnalysisBatch(batchId) {
+        return DataPool.batches.find(function(b) { return b.id === batchId; }) || (DataPool.getCurrentBatch ? DataPool.getCurrentBatch() : null);
     }
-    fillBatchSel('smartClassCompareBatch', '仅本次（无对比）', { keepPrevious: true, excludeCurrent: true });
-    var classCompareSel = document.getElementById('smartClassCompareBatch');
-    if (classCompareSel) classCompareSel.disabled = DataPool.batches.length <= 1;
-    fillBatchSel('smartSubjCompareBatch', '仅本次（无对比）', { keepPrevious: true, excludeCurrent: true });
-    var baseDefault = DataPool.batches.length > 1 ? DataPool.batches[DataPool.batches.length - 2].id : (DataPool.batches[0] && DataPool.batches[0].id);
-    var cmpDefault = DataPool.currentBatchId || (DataPool.batches[DataPool.batches.length - 1] && DataPool.batches[DataPool.batches.length - 1].id);
-    fillBatchSel('smartProgressBaseBatch', null, { keepPrevious: true, defaultValue: baseDefault });
-    var cmpSel = document.getElementById('smartProgressCompareBatch');
-    fillBatchSel('smartProgressCompareBatch', null, { keepPrevious: true, defaultValue: cmpDefault });
-    if (cmpSel && DataPool.batches.length > 1 && cmpSel.value === document.getElementById('smartProgressBaseBatch').value) cmpSel.value = DataPool.batches[DataPool.batches.length - 1].id;
+    function getSmartPreviousBatchId(currentId) {
+        var idx = DataPool.batches.findIndex(function(b) { return b.id === currentId; });
+        return idx > 0 ? DataPool.batches[idx - 1].id : '';
+    }
+    function fillSmartCurrentBatch(selId) {
+        var currentId = DataPool.currentBatchId || (DataPool.batches.length ? DataPool.batches[DataPool.batches.length - 1].id : '');
+        fillBatchSel(selId, null, { keepPrevious: true, defaultValue: currentId });
+        var sel = document.getElementById(selId);
+        return sel ? sel.value : '';
+    }
+    function fillSmartReferenceBatch(selId, currentId, allowEmpty, forceDefault) {
+        var sel = document.getElementById(selId);
+        if (!sel) return '';
+        var prevVal = forceDefault ? '' : sel.value;
+        var defaultRef = getSmartPreviousBatchId(currentId);
+        sel.innerHTML = '';
+        if (allowEmpty) {
+            var eo = document.createElement('option');
+            eo.value = '';
+            eo.textContent = '不对照（仅本次）';
+            sel.appendChild(eo);
+        }
+        DataPool.batches.forEach(function(b) {
+            if (b.id === currentId) return;
+            var o = document.createElement('option');
+            o.value = b.id;
+            o.textContent = b.label;
+            sel.appendChild(o);
+        });
+        if (prevVal && prevVal !== currentId && Array.from(sel.options).some(function(o) { return o.value === prevVal; })) {
+            sel.value = prevVal;
+        } else if (defaultRef && Array.from(sel.options).some(function(o) { return o.value === defaultRef; })) {
+            sel.value = defaultRef;
+        } else if (allowEmpty) {
+            sel.value = '';
+        } else if (sel.options.length) {
+            sel.value = sel.options[0].value;
+        }
+        return sel.value || '';
+    }
+    function refreshSmartClassForBatch(batchId) {
+        var batch = getSmartAnalysisBatch(batchId);
+        var data = batch ? (batch.combinedStudentData || []) : combinedStudentData;
+        var sel = document.getElementById('smartClassFilter');
+        if (!sel) return;
+        var prev = sel.value;
+        var set = new Set();
+        data.forEach(function(stu) { if (stu.class) set.add(stu.class); });
+        var list = Array.from(set).sort();
+        sel.innerHTML = '';
+        list.forEach(function(c) {
+            var o = document.createElement('option');
+            o.value = c; o.textContent = c; sel.appendChild(o);
+        });
+        if (prev && Array.from(sel.options).some(function(o) { return o.value === prev; })) sel.value = prev;
+        else if (sel.options.length) sel.value = sel.options[0].value;
+    }
+    function refreshSmartSubjectForBatch(batchId) {
+        var batch = getSmartAnalysisBatch(batchId);
+        var data = batch ? (batch.combinedStudentData || []) : combinedStudentData;
+        var headers = batch ? (batch.allSubjectHeaders || []) : allSubjectHeaders;
+        var chipC = document.getElementById('smartSubjClassChips');
+        if (chipC) {
+            chipC.innerHTML = '';
+            var clsSet3 = new Set();
+            data.forEach(function(stu) { if (stu.class) clsSet3.add(stu.class); });
+            var clsList3 = Array.from(clsSet3).sort();
+            var allChip3 = document.createElement('span');
+            allChip3.className = 'subj-class-chip active';
+            allChip3.textContent = '全部班级';
+            allChip3.dataset.value = '__all__';
+            allChip3.addEventListener('click', function() {
+                var active = this.classList.toggle('active');
+                chipC.querySelectorAll('.subj-class-chip:not([data-value="__all__"])').forEach(function(chip) { chip.classList.toggle('active', active); });
+            });
+            chipC.appendChild(allChip3);
+            clsList3.forEach(function(c) {
+                var chip = document.createElement('span');
+                chip.className = 'subj-class-chip active';
+                chip.textContent = c;
+                chip.dataset.value = c;
+                chip.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    var allActive = chipC.querySelectorAll('.subj-class-chip:not([data-value="__all__"]).active').length === clsList3.length;
+                    allChip3.classList.toggle('active', allActive);
+                });
+                chipC.appendChild(chip);
+            });
+        }
+        var subjSel3 = document.getElementById('smartSubjFilter');
+        if (subjSel3) {
+            var prevSubj3 = subjSel3.value;
+            var totalName3 = getTotalSubjectName(headers);
+            var subjSet3 = new Set();
+            data.forEach(function(stu) {
+                Object.keys(stu.subjects || {}).forEach(function(sn) {
+                    if (sn !== totalName3) subjSet3.add(sn);
+                });
+            });
+            subjSel3.innerHTML = '';
+            Array.from(subjSet3).sort().forEach(function(sn) {
+                var o = document.createElement('option');
+                o.value = sn; o.textContent = sn; subjSel3.appendChild(o);
+            });
+            if (prevSubj3 && Array.from(subjSel3.options).some(function(o) { return o.value === prevSubj3; })) subjSel3.value = prevSubj3;
+            else if (subjSel3.options.length) subjSel3.value = subjSel3.options[0].value;
+        }
+    }
+    function refreshSmartProgressForBatch(batchId) {
+        var batch = getSmartAnalysisBatch(batchId);
+        var data = batch ? (batch.combinedStudentData || []) : combinedStudentData;
+        var headers = batch ? (batch.allSubjectHeaders || []) : allSubjectHeaders;
+        var clsSel3 = document.getElementById('smartProgressClassFilter');
+        if (clsSel3) {
+            var prevCls3 = clsSel3.value;
+            var cset = new Set();
+            data.forEach(function(stu) { if (stu.class) cset.add(stu.class); });
+            clsSel3.innerHTML = '<option value="__all__">全部</option>';
+            Array.from(cset).sort().forEach(function(c) {
+                var o = document.createElement('option');
+                o.value = c; o.textContent = c; clsSel3.appendChild(o);
+            });
+            if (prevCls3 && Array.from(clsSel3.options).some(function(o) { return o.value === prevCls3; })) clsSel3.value = prevCls3;
+            else clsSel3.value = '__all__';
+        }
+        var subjSel4 = document.getElementById('smartProgressSubjectFilter');
+        if (subjSel4) {
+            var prevSubj4 = subjSel4.value;
+            var totalName4 = getTotalSubjectName(headers);
+            var sset = new Set();
+            data.forEach(function(stu) {
+                Object.keys(stu.subjects || {}).forEach(function(sn) {
+                    if (sn !== totalName4) sset.add(sn);
+                });
+            });
+            subjSel4.innerHTML = '<option value="__total__">总分</option>';
+            Array.from(sset).sort().forEach(function(sn) {
+                var o = document.createElement('option');
+                o.value = sn; o.textContent = sn; subjSel4.appendChild(o);
+            });
+            if (prevSubj4 && Array.from(subjSel4.options).some(function(o) { return o.value === prevSubj4; })) subjSel4.value = prevSubj4;
+            else subjSel4.value = '__total__';
+        }
+    }
+
+    var classCurrentId = fillSmartCurrentBatch('smartClassCurrentBatch');
+    fillSmartReferenceBatch('smartClassCompareBatch', classCurrentId, true, false);
+    refreshSmartClassForBatch(classCurrentId);
+
+    var subjCurrentId = fillSmartCurrentBatch('smartSubjCurrentBatch');
+    fillSmartReferenceBatch('smartSubjCompareBatch', subjCurrentId, true, false);
+    refreshSmartSubjectForBatch(subjCurrentId);
+
+    var progressCurrentId = fillSmartCurrentBatch('smartProgressCompareBatch');
+    fillSmartReferenceBatch('smartProgressBaseBatch', progressCurrentId, false, false);
+    refreshSmartProgressForBatch(progressCurrentId);
+
+    var classCurrentSel = document.getElementById('smartClassCurrentBatch');
+    if (classCurrentSel && !classCurrentSel.dataset.directionBound) {
+        classCurrentSel.dataset.directionBound = '1';
+        classCurrentSel.addEventListener('change', function() {
+            fillSmartReferenceBatch('smartClassCompareBatch', this.value, true, true);
+            refreshSmartClassForBatch(this.value);
+        });
+    }
+    var subjCurrentSel = document.getElementById('smartSubjCurrentBatch');
+    if (subjCurrentSel && !subjCurrentSel.dataset.directionBound) {
+        subjCurrentSel.dataset.directionBound = '1';
+        subjCurrentSel.addEventListener('change', function() {
+            fillSmartReferenceBatch('smartSubjCompareBatch', this.value, true, true);
+            refreshSmartSubjectForBatch(this.value);
+        });
+    }
+    var progressCurrentSel = document.getElementById('smartProgressCompareBatch');
+    if (progressCurrentSel && !progressCurrentSel.dataset.directionBound) {
+        progressCurrentSel.dataset.directionBound = '1';
+        progressCurrentSel.addEventListener('change', function() {
+            fillSmartReferenceBatch('smartProgressBaseBatch', this.value, false, true);
+            refreshSmartProgressForBatch(this.value);
+        });
+    }
     fillCriticalBatchSelects();
     refreshCriticalPassLine({ fromSmart: true, silent: true });
     // Also populate comprehensive progress batch selects so syncSmart has matching options
@@ -15935,6 +16108,24 @@ document.getElementById('comprehensiveCopyBtn').addEventListener('click', functi
 //  智能分析按钮
 // ============================================================
 // Helper to set comprehensive controls from smart controls (for render functions that read from them)
+function runReadableAnalysisInBatch(batchId, callback) {
+    var batch = DataPool.batches.find(function(b) { return b.id === batchId; }) || (DataPool.getCurrentBatch ? DataPool.getCurrentBatch() : null);
+    if (!batch) return false;
+    var previousData = combinedStudentData;
+    var previousHeaders = allSubjectHeaders;
+    var previousBatchId = DataPool.currentBatchId;
+    try {
+        combinedStudentData = batch.combinedStudentData || [];
+        allSubjectHeaders = batch.allSubjectHeaders || [];
+        DataPool.currentBatchId = batch.id;
+        return callback(batch);
+    } finally {
+        combinedStudentData = previousData;
+        allSubjectHeaders = previousHeaders;
+        DataPool.currentBatchId = previousBatchId;
+    }
+}
+
 var syncSmart = function(smartId, targetId) {
     var s = document.getElementById(smartId);
     var t = document.getElementById(targetId);
@@ -15967,18 +16158,23 @@ document.getElementById('smartIndividualBtn').addEventListener('click', async fu
 
 document.getElementById('smartClassBtn').addEventListener('click', async function() {
     var cls = document.getElementById('smartClassFilter').value;
-    var compareBatchId = document.getElementById('smartClassCompareBatch').value || null;
-    // 当前批次固定作为基准；仅在用户明确选择对比批次时计算进退步和排名变化
+    var referenceBatchId = document.getElementById('smartClassCompareBatch').value || null;
+    var currentBatchId = document.getElementById('smartClassCurrentBatch').value || DataPool.currentBatchId;
+    if (referenceBatchId && referenceBatchId === currentBatchId) {
+        await showAlert('对照和本次不能选择同一个批次');
+        return;
+    }
     var ta = document.getElementById('comprehensiveDataContent');
     if (ta) ta.dataset.mode = 'batch';
-    // Sync class filter
     var clsSel = document.getElementById('comprehensiveClassFilter');
     if (clsSel) clsSel.value = cls;
     var ph = document.getElementById('smartPlaceholder');
     if (ph) ph.style.display = 'none';
     var sro = document.getElementById('studentReadableReportOutput');
     if (sro) sro.style.display = 'none';
-    var ok = renderClassReadableReport(cls, compareBatchId);
+    var ok = runReadableAnalysisInBatch(currentBatchId, function() {
+        return renderClassReadableReport(cls, referenceBatchId);
+    });
     if (!ok) { await showAlert('班级数据不足，无法生成班级学情图形化报告'); }
 });
 
@@ -15992,8 +16188,12 @@ document.getElementById('smartSubjBtn').addEventListener('click', async function
     if (!classNames.length) { await showAlert('请至少选择一个班级'); return; }
     var subjectName = document.getElementById('smartSubjFilter').value;
     var tierMode = document.getElementById('smartSubjTierMode').value || 'rank';
-    var compareBatchId = document.getElementById('smartSubjCompareBatch').value || null;
-    // Sync to comprehensive controls
+    var referenceBatchId = document.getElementById('smartSubjCompareBatch').value || null;
+    var currentBatchId = document.getElementById('smartSubjCurrentBatch').value || DataPool.currentBatchId;
+    if (referenceBatchId && referenceBatchId === currentBatchId) {
+        await showAlert('对照和本次不能选择同一个批次');
+        return;
+    }
     syncSmart('smartSubjFilter', 'comprehensiveSubjFilter');
     syncSmart('smartSubjTierMode', 'comprehensiveSubjTierMode');
     syncSmart('smartSubjCompareBatch', 'comprehensiveSubjCompareBatch');
@@ -16003,7 +16203,9 @@ document.getElementById('smartSubjBtn').addEventListener('click', async function
     if (ph) ph.style.display = 'none';
     var sro = document.getElementById('studentReadableReportOutput');
     if (sro) sro.style.display = 'none';
-    var ok = renderSubjectTeachingReadableReport(classNames, subjectName, compareBatchId, tierMode);
+    var ok = runReadableAnalysisInBatch(currentBatchId, function() {
+        return renderSubjectTeachingReadableReport(classNames, subjectName, referenceBatchId, tierMode);
+    });
     if (!ok) { await showAlert('单科数据不足，无法生成单科教研图形化报告'); }
 });
 
@@ -16019,7 +16221,7 @@ document.getElementById('smartProgressBtn').addEventListener('click', async func
     var baseId2 = document.getElementById('progressBaseBatch').value;
     var cmpId2 = document.getElementById('progressCompareBatch').value;
     if (!baseId2 || !cmpId2 || baseId2 === cmpId2) {
-        await showAlert('请先选择基准和对比批次（需选择两个不同的批次）');
+        await showAlert('请先选择对照和本次批次（需选择两个不同的批次）');
         return;
     }
     var ok = renderProgressReadableReport();
