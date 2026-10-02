@@ -14,7 +14,7 @@
     <script src="auto-render.min.js"></script>
     <script src="jszip.min.js"></script>
     <script src="mathml2omml.js"></script>
-    <script src="notebook-docx.js?v=12"></script>
+    <script src="notebook-docx.js?v=13"></script>
     <style>
         /* ── Design System ──────────────────────────── */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -944,6 +944,19 @@
     .diagnosis-rule summary { cursor:pointer;font-weight:700;color:#475569; }
     .diagnosis-rule ul { margin:7px 0 0 18px;line-height:1.7; }
     @media(max-width:980px){ .diagnosis-lanes{grid-template-columns:1fr;} .diagnosis-list{max-height:none;} }
+</style>
+
+<style>
+/* notebook-choice-layout-v1 */
+.notebook-choice-grid{display:grid;gap:8px 22px;margin:10px 0 2px;align-items:start}
+.notebook-choice-grid--two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.notebook-choice-grid--one{grid-template-columns:1fr}
+.notebook-choice-option{display:grid;grid-template-columns:28px minmax(0,1fr);gap:4px;align-items:start;padding:3px 0;min-width:0}
+.notebook-choice-label{font-weight:700;color:#334155;line-height:1.7}
+.notebook-choice-body{min-width:0;line-height:1.7}
+.notebook-choice-body>p{margin:0}
+.notebook-choice-body>p+p{margin-top:4px}
+@media (max-width:760px){.notebook-choice-grid--two{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -7464,6 +7477,82 @@ function preprocessQuestionMarkdownForNotebook(text) {
     return protectedText.replace(/\n{3,}/g, '\n\n').trim();
 }
 
+function parseNotebookChoiceStructure(text) {
+    var src = String(text || '').trim();
+    if (!src) return null;
+    var markers = [];
+    var re = /(^|[^A-Za-z0-9])([A-D])\s*[.．、]\s*/g;
+    var m;
+    while ((m = re.exec(src))) {
+        markers.push({
+            label: m[2],
+            start: m.index + (m[1] ? m[1].length : 0),
+            contentStart: re.lastIndex
+        });
+    }
+    if (markers.length < 4) return null;
+
+    var chain = null;
+    for (var i = 0; i <= markers.length - 4; i++) {
+        if (markers[i].label === 'A' && markers[i + 1].label === 'B' &&
+            markers[i + 2].label === 'C' && markers[i + 3].label === 'D') {
+            chain = markers.slice(i, i + 4);
+            break;
+        }
+    }
+    if (!chain) return null;
+
+    var options = [];
+    for (var j = 0; j < 4; j++) {
+        var end = j < 3 ? chain[j + 1].start : src.length;
+        var value = src.slice(chain[j].contentStart, end).trim();
+        if (!value) return null;
+        options.push({ label: chain[j].label, text: value });
+    }
+
+    function visibleLength(s) {
+        return String(s || '')
+            .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+            .replace(/<img\b[^>]*>/gi, '')
+            .replace(/<[^>]+>/g, '')
+            .replace(/\$+|\\[A-Za-z]+|[{}*_#>]/g, '')
+            .replace(/\s+/g, '')
+            .length;
+    }
+    var lengths = options.map(function(o) { return visibleLength(o.text); });
+    var hasComplex = options.some(function(o) {
+        return /!\[[^\]]*\]\(|<img\b|\n\s*\n/.test(o.text);
+    });
+    var maxLen = Math.max.apply(Math, lengths);
+    var totalLen = lengths.reduce(function(a, n) { return a + n; }, 0);
+    var columns = (!hasComplex && maxLen <= 30 && totalLen <= 100) ? 2 : 1;
+
+    return {
+        stem: src.slice(0, chain[0].start).trim(),
+        options: options,
+        columns: columns
+    };
+}
+
+function renderNotebookQuestionMarkdown(text) {
+    var prepared = preprocessQuestionMarkdownForNotebook(text);
+    if (typeof marked === 'undefined') return escapeHtml(prepared);
+    var choice = parseNotebookChoiceStructure(prepared);
+    if (!choice) return marked.parse(prepared);
+
+    var stemHtml = choice.stem ? marked.parse(choice.stem) : '';
+    var gridClass = choice.columns === 2 ? ' notebook-choice-grid--two' : ' notebook-choice-grid--one';
+    var optionHtml = choice.options.map(function(opt) {
+        var body = marked.parse(opt.text || '');
+        return '<div class="notebook-choice-option">' +
+            '<div class="notebook-choice-label">' + opt.label + '.</div>' +
+            '<div class="notebook-choice-body">' + body + '</div>' +
+            '</div>';
+    }).join('');
+    return stemHtml + '<div class="notebook-choice-grid' + gridClass + '">' + optionHtml + '</div>';
+}
+
+
 function getErrorMajorKey(itemName) {
     var raw = String(itemName || '').replace(/_c\d+$/i, '').replace(/_col\d+$/i, '');
     var n = typeof normalizeItemName === 'function' ? normalizeItemName(raw) : raw;
@@ -8277,7 +8366,7 @@ function showPersonalErrorNotebook(studentName, studentClass) {
                 if (!qText) qText = extractQuestionTextFromPdf(batch, e.subjectName, e.lookupItemName || e.itemName);
                 if (qText) {
                     var cId = 'qtext-' + e.batchId + '-' + e.subjectName.replace(/[^a-z0-9]/gi,'') + '-' + e.itemName.replace(/[^a-z0-9]/gi,'_');
-                    var renderedQ = (typeof marked !== 'undefined') ? marked.parse(preprocessQuestionMarkdownForNotebook(qText)) : escapeHtml(qText);
+                    var renderedQ = renderNotebookQuestionMarkdown(qText);
                     html += '<div style="margin-top:10px;font-size:12px;font-weight:700;color:#4338ca;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">';
                     html += '<span>完整原题</span>';
                     if (questionSource) html += '<span style="font-weight:500;color:#64748b;background:#eef2ff;padding:2px 7px;border-radius:10px;">' + escapeHtml(getNotebookPdfSourceLabel(questionSource)) + '</span>';

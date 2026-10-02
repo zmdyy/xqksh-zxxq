@@ -582,7 +582,7 @@ function htmlTableToDocx(html) {
     }
 }
 
-async function markdownStemToDocxBody(md, mediaBag) {
+async function markdownStemToDocxBodyCore(md, mediaBag) {
     var tokens = tokenizeNotebookMarkdown(md || '');
     var paragraphs = [];
     var inlineBuf = '';
@@ -648,6 +648,105 @@ async function markdownStemToDocxBody(md, mediaBag) {
     flushInline();
     return paragraphs.join('');
 }
+function parseNotebookChoiceStructureForDocx(text) {
+    if (typeof parseNotebookChoiceStructure === 'function') {
+        try {
+            var shared = parseNotebookChoiceStructure(text);
+            if (shared) return shared;
+        } catch(e) {}
+    }
+    var src = String(text || '').trim();
+    if (!src) return null;
+    var markers = [];
+    var re = /(^|[^A-Za-z0-9])([A-D])\s*[.．、]\s*/g;
+    var m;
+    while ((m = re.exec(src))) {
+        markers.push({
+            label: m[2],
+            start: m.index + (m[1] ? m[1].length : 0),
+            contentStart: re.lastIndex
+        });
+    }
+    if (markers.length < 4) return null;
+    var chain = null;
+    for (var i = 0; i <= markers.length - 4; i++) {
+        if (markers[i].label === 'A' && markers[i + 1].label === 'B' &&
+            markers[i + 2].label === 'C' && markers[i + 3].label === 'D') {
+            chain = markers.slice(i, i + 4);
+            break;
+        }
+    }
+    if (!chain) return null;
+    var options = [];
+    for (var j = 0; j < 4; j++) {
+        var end = j < 3 ? chain[j + 1].start : src.length;
+        var value = src.slice(chain[j].contentStart, end).trim();
+        if (!value) return null;
+        options.push({ label: chain[j].label, text: value });
+    }
+    function visibleLength(s) {
+        return String(s || '')
+            .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+            .replace(/<img\b[^>]*>/gi, '')
+            .replace(/<[^>]+>/g, '')
+            .replace(/\$+|\\[A-Za-z]+|[{}*_#>]/g, '')
+            .replace(/\s+/g, '').length;
+    }
+    var lengths = options.map(function(o) { return visibleLength(o.text); });
+    var hasComplex = options.some(function(o) { return /!\[[^\]]*\]\(|<img\b|\n\s*\n/.test(o.text); });
+    var maxLen = Math.max.apply(Math, lengths);
+    var totalLen = lengths.reduce(function(a, n) { return a + n; }, 0);
+    return {
+        stem: src.slice(0, chain[0].start).trim(),
+        options: options,
+        columns: (!hasComplex && maxLen <= 30 && totalLen <= 100) ? 2 : 1
+    };
+}
+
+function docxChoiceTc(inner, width, isLabel) {
+    return '<w:tc><w:tcPr><w:tcW w:w="' + width + '" w:type="dxa"/>' +
+        '<w:tcMar><w:top w:w="55" w:type="dxa"/><w:bottom w:w="55" w:type="dxa"/><w:left w:w="45" w:type="dxa"/><w:right w:w="75" w:type="dxa"/></w:tcMar></w:tcPr>' +
+        (inner || docxParagraph('')) + '</w:tc>';
+}
+
+async function docxChoiceOptionsTable(choice, mediaBag) {
+    var bodies = [];
+    for (var i = 0; i < choice.options.length; i++) {
+        bodies.push(await markdownStemToDocxBodyCore(choice.options[i].text, mediaBag));
+    }
+    var borderless = '<w:tblBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/><w:insideH w:val="nil"/><w:insideV w:val="nil"/></w:tblBorders>';
+    var out = '<w:tbl><w:tblPr><w:tblW w:w="9200" w:type="dxa"/><w:tblLayout w:type="fixed"/>' + borderless + '</w:tblPr>';
+    if (choice.columns === 2) {
+        for (var r = 0; r < 2; r++) {
+            var a = r * 2, b = a + 1;
+            out += '<w:tr>' +
+                docxChoiceTc(docxBlock(docxStyledRun(choice.options[a].label + '.', {size:21,bold:true,color:'334155'}), {after:0,line:280}), 430, true) +
+                docxChoiceTc(bodies[a], 4170, false) +
+                docxChoiceTc(docxBlock(docxStyledRun(choice.options[b].label + '.', {size:21,bold:true,color:'334155'}), {after:0,line:280}), 430, true) +
+                docxChoiceTc(bodies[b], 4170, false) +
+                '</w:tr>';
+        }
+    } else {
+        for (var j = 0; j < choice.options.length; j++) {
+            out += '<w:tr>' +
+                docxChoiceTc(docxBlock(docxStyledRun(choice.options[j].label + '.', {size:21,bold:true,color:'334155'}), {after:0,line:280}), 500, true) +
+                docxChoiceTc(bodies[j], 8700, false) +
+                '</w:tr>';
+        }
+    }
+    out += '</w:tbl><w:p><w:pPr><w:spacing w:after="100"/></w:pPr></w:p>';
+    return out;
+}
+
+async function markdownStemToDocxBody(md, mediaBag) {
+    var choice = parseNotebookChoiceStructureForDocx(md || '');
+    if (!choice) return await markdownStemToDocxBodyCore(md, mediaBag);
+    var out = '';
+    if (choice.stem) out += await markdownStemToDocxBodyCore(choice.stem, mediaBag);
+    out += await docxChoiceOptionsTable(choice, mediaBag);
+    return out;
+}
+
 function notebookMarkdownHasUsefulText(md) {
     var s = String(md || '')
         .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
