@@ -11431,6 +11431,83 @@ function formatClassRankChange(change) {
     return { text: '持平', color: '#475569' };
 }
 
+function renderClassTotalGradeFlowTable(students, totalName, compareBatch) {
+    if (!compareBatch || !compareBatch.combinedStudentData) return '';
+    var compareTotalName = getTotalSubjectName(compareBatch.allSubjectHeaders || []) || totalName;
+    var compareMap = {};
+    compareBatch.combinedStudentData.forEach(function(s) {
+        compareMap[String(s.name || '').trim() + '||' + normalizeClassName(s.class || '')] = s;
+    });
+    var validGrades = ['A+','A','B+','B','C+','C'];
+    var gradeLevel = { 'C': 0, 'C+': 1, 'B': 2, 'B+': 3, 'A': 4, 'A+': 5 };
+    var flowMap = {};
+    var missingNames = [];
+    var matchedCount = 0;
+
+    (students || []).forEach(function(s) {
+        var key = String(s.name || '').trim() + '||' + normalizeClassName(s.class || '');
+        var ps = compareMap[key];
+        if (!ps) return;
+        matchedCount++;
+        var curSd = getSubjectDataByAlias(s, totalName);
+        var prevSd = getSubjectDataByAlias(ps, compareTotalName);
+        var curGrade = curSd && curSd.grade ? String(curSd.grade).trim().toUpperCase() : '';
+        var prevGrade = prevSd && prevSd.grade ? String(prevSd.grade).trim().toUpperCase() : '';
+        if (validGrades.indexOf(curGrade) < 0 || validGrades.indexOf(prevGrade) < 0) {
+            missingNames.push(getStudentDisplayName(s));
+            return;
+        }
+        var flowKey = prevGrade + '→' + curGrade;
+        if (!flowMap[flowKey]) {
+            flowMap[flowKey] = {
+                from: prevGrade,
+                to: curGrade,
+                count: 0,
+                names: [],
+                delta: gradeLevel[curGrade] - gradeLevel[prevGrade]
+            };
+        }
+        flowMap[flowKey].count++;
+        flowMap[flowKey].names.push(getStudentDisplayName(s));
+    });
+
+    if (!matchedCount) {
+        return '<div class="sr-note-box" style="margin-top:12px;">两个批次之间没有可匹配的本班学生，无法生成总分等级流转表。</div>';
+    }
+
+    var rows = Object.keys(flowMap).map(function(k) { return flowMap[k]; });
+    rows.sort(function(a, b) {
+        var ai = validGrades.indexOf(a.from), bi = validGrades.indexOf(b.from);
+        if (ai !== bi) return ai - bi;
+        var aj = validGrades.indexOf(a.to), bj = validGrades.indexOf(b.to);
+        return aj - bj;
+    });
+
+    if (!rows.length) {
+        return '<div class="sr-note-box" style="margin-top:12px;">已匹配 ' + matchedCount + ' 人，但两个批次缺少可对应的 A+/A/B+/B/C+/C 总分等级数据。</div>';
+    }
+
+    var html = '<div style="margin-top:14px;"><div class="sr-card-heading"><h4>总分等级流转</h4><span style="font-size:12px;color:#64748b;">' + escapeHtml(compareBatch.label || '对比批次') + ' → 当前批次</span></div>';
+    html += '<table class="sr-table"><thead><tr><th>对比等级</th><th>本次等级</th><th>流转</th><th>人数</th><th>学生姓名</th></tr></thead><tbody>';
+    rows.forEach(function(r) {
+        var status = '稳定';
+        var pillStyle = 'background:#f1f5f9;color:#475569;border-color:#cbd5e1;';
+        if (r.delta > 0) {
+            status = '升级';
+            pillStyle = 'background:#dcfce7;color:#166534;border-color:#86efac;';
+        } else if (r.delta < 0) {
+            status = '降级';
+            pillStyle = 'background:#ffe4e6;color:#be123c;border-color:#fda4af;';
+        }
+        html += '<tr><td style="font-weight:800;">' + r.from + '</td><td style="font-weight:800;">' + r.to + '</td><td><span class="sr-pill" style="' + pillStyle + '">' + status + '</span></td><td>' + r.count + '</td><td>' + escapeHtml(r.names.join('、')) + '</td></tr>';
+    });
+    if (missingNames.length) {
+        html += '<tr><td colspan="2">等级缺失/无法识别</td><td><span class="sr-pill" style="background:#fff7ed;color:#9a3412;border-color:#fdba74;">待核对</span></td><td>' + missingNames.length + '</td><td>' + escapeHtml(missingNames.join('、')) + '</td></tr>';
+    }
+    html += '</tbody></table></div>';
+    return html;
+}
+
 function renderClassReadableReport(className, compareBatchId) {
     var output = document.getElementById('comprehensiveReadableReportOutput');
     var content = document.getElementById('comprehensiveReadableReportContent');
@@ -11470,7 +11547,9 @@ function renderClassReadableReport(className, compareBatchId) {
     html.push('<div class="sr-section"><h3>一、班级结构与分布</h3><div class="sr-grid">');
     html.push('<div id="classReportTierChart" class="sr-chart sr-chart-large"></div>');
     html.push('<div id="classReportDistChart" class="sr-chart sr-chart-large"></div>');
-    html.push('</div></div>');
+    html.push('</div>');
+    if (hasCompare) html.push(renderClassTotalGradeFlowTable(students, totalName, compareBatch));
+    html.push('</div>');
 
     html.push('<div class="sr-section"><h3>二、总分/各科均分排名' + (hasCompare ? '变化' : '') + '</h3>');
     if (subjectRankRows.length) {
