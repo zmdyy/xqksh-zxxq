@@ -5876,12 +5876,12 @@ function renderCrossExamSankey(batchTop10s) {
                 distance: 4,
                 color: '#272727',
                 fontFamily: 'Arial, Helvetica, "Microsoft YaHei", sans-serif',
-                fontSize: rankRange.count >= 25 ? 9 : (totalExamCount >= 6 ? 10 : 11),
+                fontSize: rankRange.count >= 25 ? 10 : (totalExamCount >= 6 ? 11 : 12),
                 width: labelWidth,
                 overflow: 'truncate',
                 formatter: function(p) {
                     var d = p.data || {};
-                    return d.rank + '  ' + d.student + ' · ×' + d.count;
+                    return d.rank + '  ' + d.student;
                 }
             },
             lineStyle: {
