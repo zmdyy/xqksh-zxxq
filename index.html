@@ -1302,9 +1302,10 @@
         </div>
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;padding:8px 10px;background:#fafbfc;border:1px solid #e5e7eb;border-radius:8px;">
             <label style="font-size:13px;font-weight:700;">查看：</label>
-            <select id="collectiveHeatmapMode" class="filter-bar-select" style="width:110px;">
+            <select id="collectiveHeatmapMode" class="filter-bar-select" style="width:140px;">
                 <option value="anomaly" selected>异常度</option>
                 <option value="rate">得分率</option>
+                <option value="student">学生 × 小题</option>
             </select>
             <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;">
                 <input type="checkbox" id="collectiveHeatmapOnlyAbnormal">
@@ -6540,6 +6541,12 @@ function renderCollectiveHeatmap(fd, subjectName) {
     var onlyEl = document.getElementById('collectiveHeatmapOnlyAbnormal');
     var mode = modeEl ? modeEl.value : 'anomaly';
     var onlyAbnormal = !!(onlyEl && onlyEl.checked);
+
+    if (mode === 'student') {
+        renderCollectiveStudentOverviewHeatmap(model, onlyAbnormal, chartEl, scrollEl, summaryEl, legendEl);
+        return;
+    }
+
     var questions = onlyAbnormal ? model.questions.filter(function(qm) { return qm.isAbnormal; }) : model.questions.slice();
 
     if (summaryEl) {
@@ -6602,7 +6609,7 @@ function renderCollectiveHeatmap(fd, subjectName) {
                     + '<br/>平均得分率：' + rateText
                     + '<br/>' + escapeHtml(cell.anomalyLabel) + '：' + cell.anomalyCount + '/' + cell.qStudents.length + '（' + anomalyText + '）'
                     + (qm.commonEntry ? '<br/><span style="color:#b91c1c;font-weight:700;">共性异常</span>' : '')
-                    + '<br/><span style="color:#64748b;">点击查看学生明细</span>';
+                    + '<br/><span style="color:#64748b;">点击查看本题异常学生</span>';
             }
         },
         grid:{ left:92, right:28, top:28, bottom:88 },
@@ -6654,98 +6661,94 @@ function renderCollectiveHeatmap(fd, subjectName) {
     chart.resize();
 }
 
-function getCollectiveStudentHeatmapRows(questionIndex, rowIndex) {
-    var model = collectiveHeatmapContext;
-    if (!model) return [];
-    var qm = model.questions[questionIndex];
-    var cell = qm && qm.cells[rowIndex];
-    if (!qm || !cell) return [];
-    var selectedAnomalyRows = new Set((qm.individualEntry && qm.individualEntry.affected || []).map(function(x) { return x.row; }));
-    return cell.qStudents.slice().sort(function(a,b) {
-        var aa = selectedAnomalyRows.has(a.row) ? 0 : 1;
-        var bb = selectedAnomalyRows.has(b.row) ? 0 : 1;
-        if (aa !== bb) return aa - bb;
-        if (a.rate !== b.rate) return a.rate - b.rate;
-        return String(a.name || '').localeCompare(String(b.name || ''), 'zh-CN');
-    });
-}
-
-function renderCollectiveStudentQuestionHeatmap(questionIndex, rowIndex) {
-    var model = collectiveHeatmapContext;
-    var chartEl = document.getElementById('collectiveStudentQuestionHeatmap');
-    var scrollEl = document.getElementById('collectiveStudentQuestionHeatmapScroll');
-    var modeEl = document.getElementById('collectiveStudentHeatmapMode');
-    var hintEl = document.getElementById('collectiveStudentHeatmapHint');
-    if (!model || !chartEl || !scrollEl) return;
-
-    var focusQuestion = model.questions[questionIndex];
-    var groupRow = model.rows[rowIndex];
-    var students = getCollectiveStudentHeatmapRows(questionIndex, rowIndex);
-    var questions = model.questions || [];
-    if (!focusQuestion || !groupRow || !students.length || !questions.length) {
-        chartEl.innerHTML = '<div style="padding:24px;text-align:center;color:#94a3b8;">暂无可绘制的学生小题数据。</div>';
+function renderCollectiveStudentOverviewHeatmap(model, onlyAbnormal, chartEl, scrollEl, summaryEl, legendEl) {
+    var questions = onlyAbnormal ? model.questions.filter(function(qm) { return qm.isAbnormal; }) : model.questions.slice();
+    if (!questions.length) {
+        if (chartEl.__chart) { try { chartEl.__chart.dispose(); } catch(e) {} chartEl.__chart = null; }
+        chartEl.innerHTML = '<div style="padding:28px;text-align:center;color:#94a3b8;">当前筛选范围内没有异常题。</div>';
+        chartEl.style.width = '100%';
+        chartEl.style.height = '120px';
+        if (summaryEl) summaryEl.textContent = '当前没有可显示的异常题';
         return;
     }
 
-    var mode = modeEl ? modeEl.value : 'deviation';
-    var baselineInfo = buildCollectiveStudentBaselines(questions.map(function(x){ return x.q; }));
-    var qStudentMaps = questions.map(function(qm) {
+    var allQuestions = model.questions || [];
+    var baselineInfo = buildCollectiveStudentBaselines(allQuestions.map(function(x){ return x.q; }));
+    var studentRows = (model.fd.data || []).slice();
+    var anomalyCountByRow = new Map();
+    allQuestions.forEach(function(qm) {
+        (qm.individualEntry && qm.individualEntry.affected || []).forEach(function(x) {
+            anomalyCountByRow.set(x.row, (anomalyCountByRow.get(x.row) || 0) + 1);
+        });
+    });
+    studentRows.sort(function(a,b) {
+        var diff = (anomalyCountByRow.get(b) || 0) - (anomalyCountByRow.get(a) || 0);
+        if (diff) return diff;
+        return String(a[model.fd.nameField] || '').localeCompare(String(b[model.fd.nameField] || ''),'zh-CN');
+    });
+
+    var qMaps = questions.map(function(qm) {
         var mp = new Map();
-        (qm.q.students || []).forEach(function(x) { mp.set(x.row, x); });
+        (qm.q.students || []).forEach(function(x){ mp.set(x.row, x); });
         return mp;
     });
     var anomalySets = questions.map(function(qm) {
-        return new Set((qm.individualEntry && qm.individualEntry.affected || []).map(function(x) { return x.row; }));
+        return new Set((qm.individualEntry && qm.individualEntry.affected || []).map(function(x){ return x.row; }));
     });
 
     var data = [];
-    students.forEach(function(stu, yi) {
+    studentRows.forEach(function(row, yi) {
         questions.forEach(function(qm, xi) {
-            var itemStudent = qStudentMaps[xi].get(stu.row);
-            if (!itemStudent) return;
-            var personalBaseline = getCollectiveStudentBaselineExcludingItem(baselineInfo.stats, itemStudent);
-            var deviation = personalBaseline == null ? 0 : Math.max(0, personalBaseline - itemStudent.rate) * 100;
-            var rate = itemStudent.rate * 100;
-            var isFlagged = anomalySets[xi].has(stu.row);
+            var stu = qMaps[xi].get(row);
+            if (!stu) return;
+            var personalBaseline = getCollectiveStudentBaselineExcludingItem(baselineInfo.stats, stu);
+            var deviation = personalBaseline == null ? 0 : Math.max(0, personalBaseline - stu.rate) * 100;
+            var flagged = anomalySets[xi].has(row);
             data.push({
-                value:[xi, yi, Math.round((mode === 'rate' ? rate : deviation) * 10) / 10],
+                value:[xi, yi, Math.round(deviation * 10) / 10],
                 studentMeta:{
-                    studentName:itemStudent.name || '',
-                    className:itemStudent.className || '',
-                    questionIndex:xi,
-                    rate:rate,
-                    personalBaseline:personalBaseline == null ? null : personalBaseline * 100,
+                    name:stu.name || '',
+                    className:stu.className || '',
+                    questionIndex:qm.index,
+                    rate:stu.rate * 100,
+                    baseline:personalBaseline == null ? null : personalBaseline * 100,
                     deviation:deviation,
-                    isFlagged:isFlagged
+                    flagged:flagged
                 },
                 itemStyle:{
-                    borderColor: xi === questionIndex ? '#1e3a5f' : (isFlagged ? '#b91c1c' : '#ffffff'),
-                    borderWidth: xi === questionIndex ? 2.5 : (isFlagged ? 1.6 : 1)
+                    borderColor:flagged ? '#b91c1c' : '#ffffff',
+                    borderWidth:flagged ? 1.4 : 0.8
                 }
             });
         });
     });
 
+    var studentLabels = studentRows.map(function(row) {
+        var name = String(row[model.fd.nameField] || '');
+        var cls = String(row[model.fd.classField] || '');
+        return name + (cls ? ' · ' + cls : '');
+    });
     var colLabels = questions.map(function(qm){ return qm.label; });
-    var rowLabels = students.map(function(stu){ return stu.name || '未命名'; });
-    var minCellWidth = questions.length > 36 ? 40 : 48;
-    chartEl.style.width = Math.max(980, questions.length * minCellWidth + 180) + 'px';
-    chartEl.style.height = Math.max(300, students.length * (students.length > 28 ? 25 : 30) + 140) + 'px';
 
-    if (hintEl) {
-        hintEl.textContent = mode === 'rate'
-            ? '颜色表示每位学生每道题的得分率；红色偏低、蓝色偏高。深色边框为当前查看题，红色细边框为系统已判定个性异常。'
-            : '颜色表示“本题得分率低于该生其余小题平均”的幅度；越红表示偏离个人常态越明显。深色边框为当前查看题，红色细边框为系统已判定个性异常。';
+    // 75% of the previous drilldown cell size.
+    var cellWidth = questions.length > 36 ? 30 : 36;
+    var rowHeight = studentRows.length > 28 ? 19 : 23;
+    chartEl.style.width = Math.max(820, questions.length * cellWidth + 190) + 'px';
+    chartEl.style.height = Math.max(300, studentRows.length * rowHeight + 140) + 'px';
+
+    if (summaryEl) {
+        var abnormalStudents = studentRows.filter(function(row){ return (anomalyCountByRow.get(row) || 0) > 0; }).length;
+        summaryEl.textContent = '学生 ' + studentRows.length + ' 人 · 小题 ' + questions.length + ' 题 · 存在个性异常学生 ' + abnormalStudents + ' 人'
+            + (onlyAbnormal ? ' · 仅显示异常题' : '');
+    }
+    if (legendEl) {
+        legendEl.textContent = '学生 × 小题：颜色表示本题低于该生其余小题平均的幅度；越红越偏离个人常态，红色边框为系统已判定个性异常';
     }
 
     if (chartEl.__chart) { try { chartEl.__chart.dispose(); } catch(e) {} }
     var chart = echarts.init(chartEl, null, {renderer:'svg'});
     chartEl.__chart = chart;
-    var colors = mode === 'rate'
-        ? ['#b91c1c','#f97316','#fde68a','#dbeafe','#2563eb']
-        : ['#f8fafc','#ffedd5','#fdba74','#f97316','#dc2626','#7f1d1d'];
-    var maxVal = mode === 'rate' ? 100 : Math.max(40, Math.ceil(Math.max.apply(null, data.map(function(d){ return Number(d.value[2]) || 0; })) / 10) * 10);
-
+    var maxVal = Math.max(40, Math.ceil(Math.max.apply(null, data.map(function(d){ return Number(d.value[2]) || 0; })) / 10) * 10);
     chart.setOption({
         animation:false,
         tooltip:{
@@ -6753,32 +6756,36 @@ function renderCollectiveStudentQuestionHeatmap(questionIndex, rowIndex) {
             formatter:function(params) {
                 if (!params || !params.data || !params.data.studentMeta) return '';
                 var m = params.data.studentMeta;
-                var q = questions[m.questionIndex];
-                var personalText = m.personalBaseline == null ? '-' : Math.round(m.personalBaseline) + '%';
-                return '<b>' + escapeHtml(m.studentName) + ' · ' + escapeHtml(q ? q.label : '') + '</b>'
+                var qm = model.questions[m.questionIndex];
+                return '<b>' + escapeHtml(m.name) + ' · ' + escapeHtml(qm ? qm.label : '') + '</b>'
                     + '<br/>班级：' + escapeHtml(m.className)
                     + '<br/>本题得分率：' + Math.round(m.rate) + '%'
-                    + '<br/>其余题均值：' + personalText
+                    + '<br/>其余题均值：' + (m.baseline == null ? '-' : Math.round(m.baseline) + '%')
                     + '<br/>低于个人常态：' + Math.round(m.deviation) + ' 个百分点'
-                    + (m.isFlagged ? '<br/><span style="color:#b91c1c;font-weight:700;">系统判定：个性异常</span>' : '');
+                    + (m.flagged ? '<br/><span style="color:#b91c1c;font-weight:700;">系统判定：个性异常</span>' : '');
             }
         },
-        grid:{left:92,right:28,top:30,bottom:92},
-        xAxis:{type:'category',data:colLabels,axisTick:{show:false},splitArea:{show:true},axisLabel:{
-            interval:0,rotate:questions.length > 26 ? 45 : 0,fontSize:10,color:'#475569',
-            formatter:function(value, idx){ return idx === questionIndex ? '{focus|' + value + '}' : value; },
-            rich:{focus:{color:'#1e3a5f',fontWeight:800}}
-        }},
-        yAxis:{type:'category',data:rowLabels,inverse:true,axisTick:{show:false},axisLine:{show:false},splitArea:{show:true},axisLabel:{fontSize:11,color:'#334155'}},
-        visualMap:{min:0,max:maxVal,orient:'horizontal',left:'center',bottom:18,calculable:false,
-            text:mode === 'rate' ? ['高得分率','低得分率'] : ['高偏离','低偏离'],
-            textStyle:{fontSize:11,color:'#64748b'},inRange:{color:colors}},
-        series:[{type:'heatmap',data:data,progressive:0,label:{show:false},
-            emphasis:{itemStyle:{shadowBlur:6,shadowColor:'rgba(15,23,42,.22)',borderColor:'#0f172a',borderWidth:2}}}]
+        grid:{left:132,right:28,top:28,bottom:88},
+        xAxis:{
+            type:'category',data:colLabels,axisTick:{show:false},splitArea:{show:true},
+            axisLabel:{interval:0,rotate:questions.length > 30 ? 45 : 0,fontSize:9,color:'#475569'}
+        },
+        yAxis:{
+            type:'category',data:studentLabels,inverse:true,axisTick:{show:false},axisLine:{show:false},splitArea:{show:true},
+            axisLabel:{fontSize:10,color:'#334155',width:120,overflow:'truncate'}
+        },
+        visualMap:{
+            min:0,max:maxVal,orient:'horizontal',left:'center',bottom:18,calculable:false,
+            text:['高偏离','低偏离'],textStyle:{fontSize:11,color:'#64748b'},
+            inRange:{color:['#f8fafc','#ffedd5','#fdba74','#f97316','#dc2626','#7f1d1d']}
+        },
+        series:[{
+            type:'heatmap',data:data,progressive:0,label:{show:false},
+            emphasis:{itemStyle:{borderColor:'#0f172a',borderWidth:2,shadowBlur:5,shadowColor:'rgba(15,23,42,.2)'}}
+        }]
     });
+    chart.off('click');
     chart.resize();
-    var focusX = questionIndex * minCellWidth;
-    if (scrollEl.scrollWidth > scrollEl.clientWidth) scrollEl.scrollLeft = Math.max(0, focusX - scrollEl.clientWidth * 0.42);
 }
 
 function showCollectiveHeatmapCellDetail(questionIndex, rowIndex) {
@@ -6792,56 +6799,48 @@ function showCollectiveHeatmapCellDetail(questionIndex, rowIndex) {
     var anomalyRows = new Set((qm.individualEntry && qm.individualEntry.affected || []).map(function(x) { return x.row; }));
     var lowRows = new Set(qm.q.students.filter(function(x) { return x.rate < model.threshold; }).map(function(x) { return x.row; }));
     var baselineInfo = buildCollectiveStudentBaselines(model.questions.map(function(x){ return x.q; }));
-    var displayRows = getCollectiveStudentHeatmapRows(questionIndex, rowIndex);
-    var avgText = cell.avgRate == null ? '-' : Math.round(cell.avgRate * 100) + '%';
-    var anomalyText = cell.anomalyRate == null ? '-' : Math.round(cell.anomalyRate * 100) + '%';
-    var title = qm.label + ' · ' + rowInfo.label;
 
-    var html = '<div style="display:grid;grid-template-columns:repeat(3,minmax(100px,1fr));gap:8px;margin-bottom:10px;">'
-        + '<div style="padding:9px;border:1px solid #e5e7eb;border-radius:8px;background:#f8fafc;"><div style="font-size:11px;color:#64748b;">平均得分率</div><b style="font-size:18px;">' + avgText + '</b></div>'
-        + '<div style="padding:9px;border:1px solid #e5e7eb;border-radius:8px;background:#f8fafc;"><div style="font-size:11px;color:#64748b;">' + escapeHtml(cell.anomalyLabel) + '</div><b style="font-size:18px;">' + cell.anomalyCount + ' / ' + cell.qStudents.length + '</b></div>'
-        + '<div style="padding:9px;border:1px solid #e5e7eb;border-radius:8px;background:#f8fafc;"><div style="font-size:11px;color:#64748b;">异常比例</div><b style="font-size:18px;">' + anomalyText + '</b></div>'
+    var abnormalStudents;
+    var abnormalType;
+    if (rowIndex === 0 && qm.commonEntry) {
+        abnormalStudents = cell.qStudents.filter(function(x){ return lowRows.has(x.row); });
+        abnormalType = '低于阈值';
+    } else {
+        abnormalStudents = cell.qStudents.filter(function(x){ return anomalyRows.has(x.row); });
+        abnormalType = '个性异常';
+    }
+    abnormalStudents.sort(function(a,b){ return a.rate - b.rate; });
+
+    var title = qm.label + ' · ' + rowInfo.label + ' · 异常学生';
+    var html = '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;">'
+        + '<span style="font-size:12px;color:#475569;">平均得分率 <b style="font-size:16px;color:#0f172a;">' + (cell.avgRate == null ? '-' : Math.round(cell.avgRate*100) + '%') + '</b></span>'
+        + '<span style="font-size:12px;color:#475569;">' + escapeHtml(abnormalType) + ' <b style="font-size:16px;color:#b91c1c;">' + abnormalStudents.length + ' / ' + cell.qStudents.length + '</b></span>'
         + '</div>';
 
-    if (qm.commonEntry) html += '<div style="margin-bottom:9px;padding:7px 9px;border-radius:7px;background:#fff1f2;color:#9f1239;font-size:12px;font-weight:700;">该题全班平均得分率低于当前阈值，属于共性异常。</div>';
+    if (qm.commonEntry) {
+        html += '<div style="margin-bottom:9px;padding:7px 9px;border-radius:7px;background:#fff1f2;color:#9f1239;font-size:12px;font-weight:700;">该题全班平均得分率低于当前阈值，属于共性异常。</div>';
+    }
     html += '<div style="margin-bottom:10px;font-size:12px;color:#475569;"><b>知识点：</b>' + qkRenderCell(qm.q.title, qm.q.scoreHeader || '', model.subjectName) + '</div>';
 
-    html += '<div style="border:1px solid #dbe3ec;border-radius:10px;background:#fff;padding:10px 10px 6px;margin:10px 0 14px;">'
-        + '<div style="display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:7px;">'
-        + '<div><div style="font-size:14px;font-weight:800;color:#1e3a5f;">学生 × 小题</div>'
-        + '<div id="collectiveStudentHeatmapHint" style="font-size:11px;color:#64748b;line-height:1.5;margin-top:2px;"></div></div>'
-        + '<label style="margin-left:auto;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;">查看'
-        + '<select id="collectiveStudentHeatmapMode" style="padding:3px 6px;border:1px solid #cbd5e1;border-radius:5px;font-size:12px;">'
-        + '<option value="deviation" selected>个人偏离</option><option value="rate">得分率</option></select></label>'
-        + '</div>'
-        + '<div id="collectiveStudentQuestionHeatmapScroll" style="overflow:auto;max-height:520px;border:1px solid #eef2f7;border-radius:8px;background:#fff;">'
-        + '<div id="collectiveStudentQuestionHeatmap" style="min-width:980px;height:360px;"></div></div>'
-        + '</div>';
+    if (!abnormalStudents.length) {
+        html += '<div class="diagnosis-empty" style="padding:24px 12px;">当前群体在这道题上没有识别到异常学生。</div>';
+        showStudentListModal(title, html);
+        setTimeout(function(){ try { qkBindButtons(); } catch(e) {} }, 0);
+        return;
+    }
 
-    html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 7px;">'
-        + '<b style="font-size:13px;color:#334155;">当前题学生明细</b>'
-        + '<span style="font-size:11px;color:#94a3b8;">异常学生优先排列</span></div>';
-    html += '<div style="overflow:auto;max-height:430px;"><table class="diagnosis-detail-table"><thead><tr><th>#</th><th>姓名</th><th>班级</th><th>得分率</th><th>其余题均值</th><th>状态</th></tr></thead><tbody>';
-    displayRows.forEach(function(x, i) {
+    html += '<div style="overflow:auto;max-height:520px;"><table class="diagnosis-detail-table"><thead><tr><th>#</th><th>姓名</th><th>班级</th><th>本题得分率</th><th>其余题均值</th><th>偏离</th></tr></thead><tbody>';
+    abnormalStudents.forEach(function(x, i) {
         var personal = getCollectiveStudentBaselineExcludingItem(baselineInfo.stats, x);
-        var status = anomalyRows.has(x.row) ? '个性异常' : (lowRows.has(x.row) ? '低于阈值' : '—');
-        var statusStyle = status === '个性异常' ? 'color:#b91c1c;font-weight:800;' : (status === '低于阈值' ? 'color:#c2410c;font-weight:700;' : 'color:#94a3b8;');
+        var gap = personal == null ? null : Math.max(0, personal - x.rate);
         html += '<tr><td class="diag-num">' + (i+1) + '</td><td>' + escapeHtml(x.name || '') + '</td><td>' + escapeHtml(x.className || '') + '</td>'
             + '<td class="diag-num">' + Math.round(x.rate*100) + '%</td>'
             + '<td class="diag-num">' + (personal == null ? '-' : Math.round(personal*100) + '%') + '</td>'
-            + '<td style="' + statusStyle + '">' + status + '</td></tr>';
+            + '<td class="diag-num" style="color:#b91c1c;font-weight:700;">' + (gap == null ? '-' : '-' + Math.round(gap*100) + '个百分点') + '</td></tr>';
     });
     html += '</tbody></table></div>';
-
-    showStudentListModal(title, html, {wide:true});
-    setTimeout(function(){
-        try {
-            qkBindButtons();
-            renderCollectiveStudentQuestionHeatmap(questionIndex, rowIndex);
-            var modeSelect = document.getElementById('collectiveStudentHeatmapMode');
-            if (modeSelect) modeSelect.onchange = function(){ renderCollectiveStudentQuestionHeatmap(questionIndex, rowIndex); };
-        } catch(e) { console.warn('学生×小题热力图渲染失败', e); }
-    }, 30);
+    showStudentListModal(title, html);
+    setTimeout(function(){ try { qkBindButtons(); } catch(e) {} }, 0);
 }
 
 function renderCollectiveDiagnosis() {
@@ -19933,11 +19932,6 @@ function showStudentListModal(title, htmlContent, options) {
     document.getElementById('studentListModal').style.display = 'flex';
 }
 function closeStudentListModal() {
-    var drillChart = document.getElementById('collectiveStudentQuestionHeatmap');
-    if (drillChart && drillChart.__chart) {
-        try { drillChart.__chart.dispose(); } catch(e) {}
-        drillChart.__chart = null;
-    }
     document.getElementById('studentListModal').style.display = 'none';
 }
 </script>
