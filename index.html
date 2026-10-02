@@ -5118,7 +5118,12 @@ function combineAllStudentData() {
                         });
                     }
                 }
+                // 同一科目可能分别来自主成绩表和小题分表：完整合并科目元数据，上传顺序不能影响等级/排名识别。
                 if (sh.scoreIndex !== -1 && existing.scoreIndex === -1) existing.scoreIndex = sh.scoreIndex;
+                if (sh.gradeIndex !== -1 && existing.gradeIndex === -1) existing.gradeIndex = sh.gradeIndex;
+                if (sh.schoolIndex !== -1 && existing.schoolIndex === -1) existing.schoolIndex = sh.schoolIndex;
+                if (sh.classIndex !== -1 && existing.classIndex === -1) existing.classIndex = sh.classIndex;
+                if (sh.rankIndex !== -1 && existing.rankIndex === -1) existing.rankIndex = sh.rankIndex;
             } else {
                 hs.add(sh.name);
                 allSubjectHeaders.push(sh);
@@ -6774,6 +6779,32 @@ function buildCollectiveHeatmapModel(fd, subjectName) {
     };
 }
 
+function resolveCollectiveHeatmapSubject(fd, selectedSubject) {
+    var selected = String(selectedSubject || '').trim();
+    if (selected) {
+        return { subjectName:selected, subjects:[selected], requiresSelection:false };
+    }
+    if (!fd || !fd.headers || !fd.headers.length || !fd.data || !fd.data.length) {
+        return { subjectName:'', subjects:[], requiresSelection:false };
+    }
+
+    // “全部科目”只负责发现当前有哪些科目的小题，不允许用总分等级去给单科小题分层。
+    var allQuestions = buildCollectiveQuestionModels(fd, '');
+    var seen = {};
+    allQuestions.forEach(function(q) {
+        var sn = utilGetSubjectFromHeader(q && q.scoreHeader ? q.scoreHeader : '');
+        if (sn) seen[sn] = true;
+    });
+    var subjects = Object.keys(seen).sort(function(a,b) { return a.localeCompare(b, 'zh-CN', { numeric:true }); });
+
+    // 只有一个小题科目时，“全部科目”等价于直接查看该科目。
+    if (subjects.length === 1) {
+        return { subjectName:subjects[0], subjects:subjects, requiresSelection:false };
+    }
+    // 多个小题科目不能混在一张图里，也不能使用总分等级，必须由用户明确选择。
+    return { subjectName:'', subjects:subjects, requiresSelection:subjects.length > 1 };
+}
+
 function renderCollectiveHeatmap(fd, subjectName) {
     var chartEl = document.getElementById('collectiveHeatmapChart');
     var scrollEl = document.getElementById('collectiveHeatmapScroll');
@@ -6784,6 +6815,26 @@ function renderCollectiveHeatmap(fd, subjectName) {
 
     if (!fd) fd = getCollectiveFilteredData();
     if (subjectName == null) subjectName = getSelectedSubject();
+
+    var subjectResolution = resolveCollectiveHeatmapSubject(fd, subjectName);
+    if (subjectResolution.requiresSelection) {
+        collectiveHeatmapContext = null;
+        if (chartEl.__chart) { try { chartEl.__chart.dispose(); } catch(e) {} chartEl.__chart = null; }
+        var subjectText = subjectResolution.subjects.join('、');
+        chartEl.innerHTML = '<div style="height:100%;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;text-align:center;color:#475569;font-size:14px;line-height:1.8;">'
+            + '<div><div style="font-size:16px;font-weight:700;color:#334155;margin-bottom:6px;">检测到多个科目的小题数据</div>'
+            + '<div>当前包含：' + escapeHtml(subjectText) + '</div>'
+            + '<div>请先在上方“筛选科目”中选择一个科目查看。</div></div></div>';
+        chartEl.style.width = '100%';
+        chartEl.style.height = '170px';
+        scrollEl.style.display = 'block';
+        if (emptyEl) emptyEl.style.display = 'none';
+        if (summaryEl) summaryEl.textContent = '检测到 ' + subjectResolution.subjects.length + ' 个小题科目 · 请选择科目';
+        if (legendEl) legendEl.textContent = '热力图按所选科目的本学科等级分层；无本学科等级时才使用相对分层';
+        return;
+    }
+
+    subjectName = subjectResolution.subjectName || String(subjectName || '').trim();
     var model = (!fd || !fd.headers || !fd.headers.length || !fd.data || !fd.data.length) ? null : buildCollectiveHeatmapModel(fd, subjectName);
     collectiveHeatmapContext = model;
 
@@ -6847,7 +6898,7 @@ function renderCollectiveHeatmap(fd, subjectName) {
     // 得分率 / 异常度：格子尺寸缩至原来的 90%。
     var minCellWidth = questions.length > 36 ? 38 : 45;
     var chartWidth = Math.max(810, questions.length * minCellWidth + 162);
-    var chartHeight = Math.max(270, rowLabels.length * 43 + 135);
+    var chartHeight = Math.max(300, rowLabels.length * 43 + 160);
     chartEl.style.width = chartWidth + 'px';
     chartEl.style.height = chartHeight + 'px';
 
@@ -6860,6 +6911,12 @@ function renderCollectiveHeatmap(fd, subjectName) {
         : ['#b91c1c','#f97316','#fde68a','#bfdbfe','#2563eb'];
 
     chart.setOption({
+        title:{
+            text:(model.subjectName || '当前科目') + '小题热力图',
+            left:'center',
+            top:6,
+            textStyle:{fontSize:17,fontWeight:700,color:'#334155'}
+        },
         tooltip:{
             confine:true,
             formatter:function(params) {
@@ -6876,7 +6933,7 @@ function renderCollectiveHeatmap(fd, subjectName) {
                     + '<br/><span style="color:#64748b;">点击查看本题异常学生</span>';
             }
         },
-        grid:{ left:92, right:28, top:28, bottom:88 },
+        grid:{ left:92, right:28, top:54, bottom:88 },
         xAxis:{
             type:'category',
             data:colLabels,
@@ -7001,7 +7058,7 @@ function renderCollectiveStudentOverviewHeatmap(model, onlyAbnormal, chartEl, sc
     var rowHeight = studentRows.length > 28 ? 19 : 23;
     // 学生视图左侧姓名轴比汇总视图多 40px，因此总宽度增加 40px，绘图区保持完全一致。
     chartEl.style.width = (aggregateChartWidth + 40) + 'px';
-    chartEl.style.height = Math.max(300, studentRows.length * rowHeight + 140) + 'px';
+    chartEl.style.height = Math.max(320, studentRows.length * rowHeight + 165) + 'px';
 
     if (summaryEl) {
         var abnormalStudents = studentRows.filter(function(row){ return (anomalyCountByRow.get(row) || 0) > 0; }).length;
@@ -7018,6 +7075,12 @@ function renderCollectiveStudentOverviewHeatmap(model, onlyAbnormal, chartEl, sc
     var maxVal = Math.max(40, Math.ceil(Math.max.apply(null, data.map(function(d){ return Number(d.value[2]) || 0; })) / 10) * 10);
     chart.setOption({
         animation:false,
+        title:{
+            text:(model.subjectName || '当前科目') + '小题热力图',
+            left:'center',
+            top:6,
+            textStyle:{fontSize:17,fontWeight:700,color:'#334155'}
+        },
         tooltip:{
             confine:true,
             formatter:function(params) {
@@ -7032,7 +7095,7 @@ function renderCollectiveStudentOverviewHeatmap(model, onlyAbnormal, chartEl, sc
                     + (m.flagged ? '<br/><span style="color:#b91c1c;font-weight:700;">系统判定：个性异常</span>' : '');
             }
         },
-        grid:{left:132,right:28,top:28,bottom:88},
+        grid:{left:132,right:28,top:54,bottom:88},
         xAxis:{
             type:'category',data:colLabels,axisTick:{show:false},splitArea:{show:true},
             axisLabel:{interval:0,rotate:questions.length > 30 ? 45 : 0,fontSize:9,color:'#475569'}
