@@ -39,7 +39,7 @@ const functions=[
     'getSelectedSubject','getCollectiveFilteredData','renderCollectiveClassFilter','renderCollectiveSubjectFilter',
     'diagSafeNumber','buildCollectiveQuestionModels','buildCollectiveStudentBaselines','getCollectiveStudentBaselineExcludingItem','getCollectiveIndividualThreshold','splitCollectiveAbilityTiers','getCollectiveThresholdRate','calculateCollectiveDiagnosis',
     'getCollectiveHeatmapSourceRef','getCollectiveHeatmapQuestionInfo','getCollectiveHeatmapQuestionLabel','sortCollectiveHeatmapQuestions','buildCollectiveHeatmapModel','resolveCollectiveHeatmapSubject',
-    'setCollectiveHeatmapExportEnabled','formatCollectiveHeatmapAxisLabel','getCollectiveHeatmapChartWidth','resetCollectiveHeatmapChart','showCollectiveHeatmapStatus','getCollectiveHeatmapGroupingText','renderCollectiveHeatmap','renderCollectiveStudentOverviewHeatmap','showCollectiveHeatmapCellDetail',
+    'setCollectiveHeatmapExportEnabled','formatCollectiveHeatmapAxisLabel','getCollectiveHeatmapChartWidth','getCollectiveHeatmapAxisBottom','resetCollectiveHeatmapChart','showCollectiveHeatmapStatus','getCollectiveHeatmapGroupingText','renderCollectiveHeatmap','renderCollectiveStudentOverviewHeatmap','showCollectiveHeatmapCellDetail',
     'renderCollectiveTables','calculateQuestionGroupLowStudents'
 ];
 for(const name of functions) vm.runInContext(functionSource(name),sandbox,{filename:name});

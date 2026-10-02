@@ -1322,7 +1322,7 @@
         </div>
         <div id="collectiveHeatmapEmpty" class="diagnosis-empty" style="display:none;">暂无可绘制的小题数据。</div>
         <div id="collectiveHeatmapScroll" style="overflow-x:auto;overflow-y:hidden;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">
-            <div id="collectiveHeatmapChart" style="height:360px;min-width:900px;"></div>
+            <div id="collectiveHeatmapChart" style="height:360px;min-width:0;"></div>
         </div>
     </div>
 
@@ -7054,24 +7054,37 @@ function setCollectiveHeatmapExportEnabled(enabled) {
 }
 
 function formatCollectiveHeatmapAxisLabel(value) {
-    return String(value == null ? '' : value).replace(/题\s*([（(])/, '题\n$1');
-}
-
-function getCollectiveHeatmapChartWidth(labels) {
+    var text = String(value == null ? '' : value).replace(/题\s*([（(])/, '题\n$1');
     var canvas = document.createElement('canvas');
     var context = canvas.getContext ? canvas.getContext('2d') : null;
     if (context) context.font = '11px sans-serif';
-    var widest = 0;
-    labels.forEach(function(label) {
-        formatCollectiveHeatmapAxisLabel(label).split('\n').forEach(function(line) {
-            var width = context ? context.measureText(line).width : Array.from(line).reduce(function(sum, ch) {
+    var lines = [];
+    text.split('\n').forEach(function(part) {
+        var line = '';
+        Array.from(part).forEach(function(character) {
+            var next = line + character;
+            var width = context ? context.measureText(next).width : Array.from(next).reduce(function(sum, ch) {
                 return sum + (ch.charCodeAt(0) >= 0x2e80 ? 11 : 7);
             }, 0);
-            widest = Math.max(widest, width);
+            if (line && width > 32) { lines.push(line); line = character; }
+            else line = next;
         });
+        lines.push(line);
     });
-    var cellWidth = Math.max(labels.length > 36 ? 38 : 45, Math.ceil(widest) + 16);
-    return Math.max(810, labels.length * cellWidth + 162);
+    return lines.join('\n');
+}
+
+function getCollectiveHeatmapChartWidth(labels) {
+    // 绘图区单列固定 40px；少题时画布为标题/图例保留空间，格子不拉伸。
+    return Math.max(320, labels.length * 40 + 120);
+}
+
+function getCollectiveHeatmapAxisBottom(labels) {
+    var lineCount = 1;
+    labels.forEach(function(label) {
+        lineCount = Math.max(lineCount, formatCollectiveHeatmapAxisLabel(label).split('\n').length);
+    });
+    return Math.max(88, 56 + lineCount * 16);
 }
 
 function downloadCollectiveHeatmapBlob(blob, filename) {
@@ -7235,9 +7248,10 @@ function renderCollectiveHeatmap() {
         });
     });
 
-    // 子题编号分行显示，并按最长一行预留间距。
+    // 各科目单列固定 40px，长题号增加换行与底部空间。
     var chartWidth = getCollectiveHeatmapChartWidth(colLabels);
-    var chartHeight = Math.max(300, rowLabels.length * 43 + 160);
+    var axisBottom = getCollectiveHeatmapAxisBottom(colLabels);
+    var chartHeight = Math.max(300, rowLabels.length * 43 + 160) + axisBottom - 88;
     chartEl.style.width = chartWidth + 'px';
     chartEl.style.height = chartHeight + 'px';
 
@@ -7271,7 +7285,7 @@ function renderCollectiveHeatmap() {
                     + '<br/><span style="color:#64748b;">点击查看本题异常学生</span>';
             }
         },
-        grid:{ left:92, right:28, top:54, bottom:88 },
+        grid:{ left:92, width:colLabels.length * 40, top:54, bottom:axisBottom },
         xAxis:{
             type:'category',
             data:colLabels,
@@ -7390,10 +7404,11 @@ function renderCollectiveStudentOverviewHeatmap(model, onlyAbnormal, chartEl, sc
 
     // 学生 × 小题与得分率/异常度使用相同的横向格子宽度。
     var aggregateChartWidth = getCollectiveHeatmapChartWidth(colLabels);
+    var axisBottom = getCollectiveHeatmapAxisBottom(colLabels);
     var rowHeight = studentRows.length > 28 ? 19 : 23;
     // 学生视图左侧姓名轴比汇总视图多 40px，因此总宽度增加 40px，绘图区保持完全一致。
     chartEl.style.width = (aggregateChartWidth + 40) + 'px';
-    chartEl.style.height = Math.max(320, studentRows.length * rowHeight + 165) + 'px';
+    chartEl.style.height = (Math.max(320, studentRows.length * rowHeight + 165) + axisBottom - 88) + 'px';
 
     if (summaryEl) {
         var abnormalStudents = studentRows.filter(function(row){ return (anomalyCountByRow.get(row) || 0) > 0; }).length;
@@ -7430,7 +7445,7 @@ function renderCollectiveStudentOverviewHeatmap(model, onlyAbnormal, chartEl, sc
                     + (m.flagged ? '<br/><span style="color:#b91c1c;font-weight:700;">系统判定：个性异常</span>' : '');
             }
         },
-        grid:{left:132,right:28,top:54,bottom:88},
+        grid:{left:132,width:colLabels.length * 40,top:54,bottom:axisBottom},
         xAxis:{
             type:'category',data:colLabels,axisTick:{show:false},splitArea:{show:true},
             axisLabel:{fontSize:11,interval:0,rotate:0,color:'#000000',lineHeight:16,margin:10,formatter:formatCollectiveHeatmapAxisLabel}
