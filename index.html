@@ -3149,6 +3149,8 @@ function loadBatch(id) {
         applyDuplicateDisplayNames(combinedStudentData);
         allSubjectHeaders = deepClone(batch.allSubjectHeaders || []);
         uploadedPdfs = cloneUploadedPdfsForMemory(batch.uploadedPdfs || []);
+        // 旧批次保留了原始表格：按新版表头解析重建派生信息，无需重新上传。
+        if (repairImportedBatchData()) DataPool.syncFromGlobalsIfEditing();
         document.getElementById('deleteBatchBtn').style.display = 'inline-block';
         document.getElementById('clearCurrentBtn').style.display = 'inline-block';
         document.getElementById('newBatchName').style.display = 'inline-block';
@@ -5014,6 +5016,19 @@ function findTextByItemFallback(lines, item) {
 // ============================================================
 //  V44 PARSING ENGINE
 // ============================================================
+function repairImportedBatchData() {
+    var files=Object.values(uploadedFilesData || {});
+    var outdated=files.some(function(file){return Array.isArray(file.rawData) && file.rawData.length && file.parseVersion!==2;});
+    if (!outdated) return false;
+    files.forEach(function(file) {
+        if (!Array.isArray(file.rawData) || !file.rawData.length) return;
+        var count=detectImportedDataStartRow(file.rawData) || file.headerRows || (file.fileType==='sub'?3:autoDetectHeaderRowCount(file.rawData));
+        parseDataByHeaderRows(file,file.rawData,count);
+    });
+    combineAllStudentData(false);
+    return true;
+}
+
 function reparseAndCombineData() {
     const mhr = +document.getElementById('mainHeaderRows').value, shr = +document.getElementById('subHeaderRows').value;
     Object.keys(uploadedFilesData).forEach(fid => {
@@ -5070,10 +5085,11 @@ function readExcelFile(file, fileId, type) {
             const wb = XLSX.read(data, { type: 'array' });
             const ws = wb.Sheets[wb.SheetNames[0]];
             const jd = XLSX.utils.sheet_to_json(ws, { header: 1, blankrows: true });
-            uploadedFilesData[fileId] = { fileName: file.name, fileType: type, rawData: jd, studentData: [], subjectHeaders: [] };
+            uploadedFilesData[fileId] = { fileName: file.name, fileType: type, rawData: jd, headerMerges: deepClone(ws['!merges'] || []), studentData: [], subjectHeaders: [] };
             if (type === 'sub') {
-                uploadedFilesData[fileId].headerRows = 3;
-                document.getElementById('subHeaderRows').value = 3;
+                const detected = detectImportedDataStartRow(jd) || 3;
+                uploadedFilesData[fileId].headerRows = detected;
+                document.getElementById('subHeaderRows').value = detected;
             } else {
                 const detected = autoDetectHeaderRowCount(jd);
                 uploadedFilesData[fileId].headerRows = detected;
@@ -5094,7 +5110,37 @@ function processExcelData(fileId) {
     updateBatchInfoBars();
 }
 
-function combineAllStudentData() {
+function mergeImportedQuestionMetadata(existing, incoming) {
+    var result = Object.assign({}, existing || {}, incoming || {});
+    ['scoreIndex','answerIndex'].forEach(function(key) {
+        if (!(Number.isInteger(result[key]) && result[key] >= 0)) result[key] = existing && Number.isInteger(existing[key]) ? existing[key] : -1;
+    });
+    if (!(Number(result.maxScore) > 0)) result.maxScore = existing && Number(existing.maxScore) > 0 ? existing.maxScore : null;
+    if (!hasMeaningfulValue(result.correctAnswer)) result.correctAnswer = existing && existing.correctAnswer || '';
+    return result;
+}
+
+function mergeImportedSubScores(existing, incoming) {
+    var result = Object.assign({}, existing || {});
+    Object.keys(incoming || {}).forEach(function(key) {
+        var next = incoming[key], previous = result[key];
+        if (!next || typeof next !== 'object') { result[key] = pickDataValue(next, previous, ''); return; }
+        previous = previous && typeof previous === 'object' ? previous : {};
+        result[key] = Object.assign({}, previous, next, {
+            score:pickDataValue(next.score, previous.score, ''),
+            maxScore:Number(next.maxScore) > 0 ? next.maxScore : (Number(previous.maxScore) > 0 ? previous.maxScore : ''),
+            studentAnswer:pickDataValue(next.studentAnswer, previous.studentAnswer, ''),
+            correctAnswer:pickDataValue(next.correctAnswer, previous.correctAnswer, '')
+        });
+    });
+    return result;
+}
+
+function getImportedStudentClassKey(value) {
+    return String(value == null ? '' : value).normalize('NFKC').replace(/\s+/g,'').replace(/班$/,'');
+}
+
+function combineAllStudentData(syncBatch) {
     const cm = {}; allSubjectHeaders = []; const hs = new Set();
     Object.values(uploadedFilesData).forEach(fe => {
         fe.subjectHeaders.forEach(sh => {
@@ -5104,17 +5150,9 @@ function combineAllStudentData() {
                 if (sh.subScoreQuestionMap && typeof sh.subScoreQuestionMap === 'object') {
                     const qm = Object.keys(sh.subScoreQuestionMap);
                     if (qm.length) {
-                        existing.subScoreQuestionMap = { ...(existing.subScoreQuestionMap || {}), ...sh.subScoreQuestionMap };
-                        // Also merge scoreIndex if not set
-                        Object.values(sh.subScoreQuestionMap).forEach(q => {
-                            if (q && q.scoreIndex !== undefined && q.scoreIndex !== -1) {
-                                if (!existing.subScoreQuestionMap[q.name]) existing.subScoreQuestionMap[q.name] = q;
-                                else if (existing.subScoreQuestionMap[q.name].scoreIndex === -1) existing.subScoreQuestionMap[q.name].scoreIndex = q.scoreIndex;
-                            }
-                            if (q && q.answerIndex !== undefined && q.answerIndex !== -1) {
-                                if (!existing.subScoreQuestionMap[q.name]) existing.subScoreQuestionMap[q.name] = q;
-                                else if (existing.subScoreQuestionMap[q.name].answerIndex === -1) existing.subScoreQuestionMap[q.name].answerIndex = q.answerIndex;
-                            }
+                        existing.subScoreQuestionMap = existing.subScoreQuestionMap || {};
+                        Object.keys(sh.subScoreQuestionMap).forEach(key => {
+                            existing.subScoreQuestionMap[key] = mergeImportedQuestionMetadata(existing.subScoreQuestionMap[key], sh.subScoreQuestionMap[key]);
                         });
                     }
                 }
@@ -5126,14 +5164,14 @@ function combineAllStudentData() {
                 if (Number.isInteger(sh.rankIndex) && sh.rankIndex >= 0 && !(Number.isInteger(existing.rankIndex) && existing.rankIndex >= 0)) existing.rankIndex = sh.rankIndex;
             } else {
                 hs.add(sh.name);
-                allSubjectHeaders.push(sh);
+                allSubjectHeaders.push(deepClone(sh));
             }
         });
         // Merge student data
         fe.studentData.forEach(student => {
             const rawName = String(student.name).trim();
             if (!rawName) return;
-            const classKey = String(student.class || '').trim();
+            const classKey = getImportedStudentClassKey(student.class);
             let nameKey = rawName + '||' + classKey;
             if (!classKey) {
                 const sameNameKeys = Object.keys(cm).filter(function(k) { return k.indexOf(rawName + '||') === 0; });
@@ -5145,7 +5183,7 @@ function combineAllStudentData() {
             if (!cm[nameKey]) {
                 cm[nameKey] = { name: student.name, class: student.class, candidateType: student.candidateType, schoolType: student.schoolType, subjects: {} };
             } else {
-                if (student.class) cm[nameKey].class = student.class;
+                if (student.class && (fe.fileType === 'main' || !cm[nameKey].class)) cm[nameKey].class = student.class;
                 if (student.candidateType) cm[nameKey].candidateType = student.candidateType;
                 if (student.schoolType) cm[nameKey].schoolType = student.schoolType;
             }
@@ -5158,7 +5196,7 @@ function combineAllStudentData() {
                     schoolRank: pickDataValue(ns.schoolRank, ex.schoolRank, ''),
                     classRank: pickDataValue(ns.classRank, ex.classRank, ''),
                     gradeRank: pickDataValue(ns.gradeRank, ex.gradeRank, ''),
-                    subScores: { ...(ex.subScores || {}), ...(ns.subScores || {}) }
+                    subScores: mergeImportedSubScores(ex.subScores, ns.subScores)
                 };
             });
         });
@@ -5169,7 +5207,7 @@ function combineAllStudentData() {
     updateStudentNameList(combinedStudentData);
     applyFallbackGradeRanks(combinedStudentData, allSubjectHeaders);
     calculateFallbackRanks(combinedStudentData, allSubjectHeaders);
-    DataPool.syncFromGlobalsIfEditing();
+    if (syncBatch !== false) DataPool.syncFromGlobalsIfEditing();
 }
 
 function updateStudentNameList(data) {
@@ -5184,7 +5222,9 @@ function parseDataByHeaderRows(fileEntry, rawData, overrideHeaderRows) {
     fileEntry.studentData = []; fileEntry.subjectHeaders = [];
     const ft = fileEntry.fileType; if (!rawData.length) return;
     const shr = resolveHeaderRowCount(rawData, overrideHeaderRows);
-    const hrArr = []; for (let i = 0; i < shr; i++) hrArr.push(rawData[i] || []);
+    const hrArr = getImportedHeaderRows(fileEntry, rawData, shr);
+    fileEntry.headerRows = shr;
+    fileEntry.parseVersion = 2;
     let ni = -1, ci = -1, ii = -1, cti = -1, sti = -1;
     const NK = ['姓名','名字','人名'], CK = ['班级','行政班','班名','行政班级'];
     const IK = ['序号','学号','考生号','准考证','编号','考号'];
@@ -5211,11 +5251,14 @@ function parseDataByHeaderRows(fileEntry, rawData, overrideHeaderRows) {
     const sm = {}; const mhl = rawData.length ? Math.max(...rawData.map(r => r.length)) : 0;
     let lsn = '';
     const kns = new Set((allSubjectHeaders || []).map(h => String(h?.name || '').trim()).filter(Boolean).concat(['语文','数学','英语','英语笔试','英语听力','物理','化学','生物','历史','地理','政治','道法','道德与法治','总分','理综','文综']));
-    const eMs = (t) => { const m = String(t||'').match(/[（(]\s*([0-9]+(?:\.[0-9]+)?)\s*分\s*[）)]/); return m ? parseFloat(m[1]) : null; };
     const eCa = (t) => { const m = String(t||'').match(/答案\s*[（(]\s*([^）)\s]+)\s*[）)]/); return m ? String(m[1]).trim() : ''; };
     for (let c = ssc; c < mhl; c++) {
         let { subjectName, fieldType, rawFieldName } = extractSubjectAndField(hrArr, c, lsn, fks);
         const rch = hrArr.map(r => String((r || [])[c] || '').trim()).filter(Boolean).join(' ');
+        // 小题表的“分数/得分”是题目子字段，不能误识别成学科总分。
+        if (ft === 'sub' && fieldType === '分数' && getCanonicalQuestionRefFromHeaderRows(hrArr, c, subjectName, ssc)) {
+            fieldType = ''; rawFieldName = rch;
+        }
         if (ft === 'sub' && fieldType === '') {
             const raw = String(rch || rawFieldName || '').trim(); let mtd = '';
             if (raw) {
@@ -5235,7 +5278,7 @@ function parseDataByHeaderRows(fileEntry, rawData, overrideHeaderRows) {
         } else if (rawFieldName && fieldType === '') {
             const raw = String(rch || rawFieldName || '').trim();
             const isAC = /_?(学生)?答案|正确答案/.test(raw);
-            const ms = eMs(raw); const ca = isAC ? eCa(raw) : '';
+            const ms = getQuestionMaxScoreFromHeaderRows(hrArr, c); const ca = isAC ? eCa(raw) : '';
             // 与错题本/PDF匹配共用题号语义，并恢复Excel合并表头中的父题号。
             let bn = getCanonicalQuestionRefFromHeaderRows(hrArr, c, subjectName, ssc);
             if (!bn) {
@@ -5290,18 +5333,18 @@ function parseDataByHeaderRows(fileEntry, rawData, overrideHeaderRows) {
         const row = rawData[i]; if (!row || row.length <= Math.max(ni, ci)) continue;
         const stu = { name: row[ni] || '', class: row[ci] || '', candidateType: cti !== -1 ? (row[cti]||'') : '', schoolType: sti !== -1 ? (row[sti]||'') : '', subjects: {} };
         fileEntry.subjectHeaders.forEach(subj => {
-            const sd = { score: subj.scoreIndex !== -1 ? row[subj.scoreIndex] || '' : '', grade: subj.gradeIndex !== -1 ? row[subj.gradeIndex] || '' : '', schoolRank: subj.schoolIndex !== -1 ? row[subj.schoolIndex] || '' : '', classRank: subj.classIndex !== -1 ? row[subj.classIndex] || '' : '', gradeRank: subj.rankIndex !== -1 ? (row[subj.rankIndex] || '') : '', subScores: {} };
+            const sd = { score: subj.scoreIndex !== -1 ? (row[subj.scoreIndex] ?? '') : '', grade: subj.gradeIndex !== -1 ? (row[subj.gradeIndex] ?? '') : '', schoolRank: subj.schoolIndex !== -1 ? row[subj.schoolIndex] || '' : '', classRank: subj.classIndex !== -1 ? row[subj.classIndex] || '' : '', gradeRank: subj.rankIndex !== -1 ? (row[subj.rankIndex] || '') : '', subScores: {} };
             if (Array.isArray(subj.subScoreColumns) && subj.subScoreColumns.length) subj.subScoreColumns.forEach(sc => { sd.subScores[sc.name] = row[sc.index] || ''; });
             if (subj.subScoreQuestionMap && typeof subj.subScoreQuestionMap === 'object') {
-                Object.values(subj.subScoreQuestionMap).forEach(q => {
+                Object.entries(subj.subScoreQuestionMap).forEach(([mapKey, q]) => {
                     if (!q || !q.name) return;
-                    const sv = q.scoreIndex !== -1 ? (row[q.scoreIndex] ?? '') : '';
+                    const sv = q.scoreIndex !== -1 ? (hasMeaningfulValue(row[q.scoreIndex]) ? row[q.scoreIndex] : 0) : '';
                     const av = q.answerIndex !== -1 ? (row[q.answerIndex] ?? '') : '';
                     if (!hasMeaningfulValue(sv) && !hasMeaningfulValue(av) && !hasMeaningfulValue(q.maxScore) && !hasMeaningfulValue(q.correctAnswer)) return;
-                    sd.subScores[q.name] = { score: sv, maxScore: q.maxScore ?? '', studentAnswer: av, correctAnswer: q.correctAnswer ?? '' };
+                    sd.subScores[mapKey] = { score: sv, maxScore: q.maxScore ?? '', studentAnswer: av, correctAnswer: q.correctAnswer ?? '' };
                 });
             }
-            if (stu.name && (sd.score || sd.grade || Object.keys(sd.subScores).length > 0)) stu.subjects[subj.name] = sd;
+            if (stu.name && (hasMeaningfulValue(sd.score) || hasMeaningfulValue(sd.grade) || Object.keys(sd.subScores).length > 0)) stu.subjects[subj.name] = sd;
         });
         if (stu.name) fileEntry.studentData.push(stu);
     }
@@ -5309,19 +5352,78 @@ function parseDataByHeaderRows(fileEntry, rawData, overrideHeaderRows) {
 
 function autoDetectHeaderRowCount(data) {
     if (!data.length) return 1;
-    const kp = /(分数|等级|校名|班名|级名|得分|小题|科类|类型|文理|选科)/, mr = Math.min(3, data.length);
+    var firstData=detectImportedDataStartRow(data);
+    if (firstData) return firstData;
+    const kp = /(分数|等级|等第|校名|班名|级名|排名|得分|小题|科类|类型|文理|选科)/, mr = Math.min(3, data.length);
     let d = 1;
     for (let i = 0; i < mr; i++) { const row = data[i] || []; if (row.slice(2).some(c => { const v = String(c||'').trim(); return v && kp.test(v); })) d = i + 1; }
     return Math.max(1, Math.min(d, mr));
 }
+function detectImportedDataStartRow(data) {
+    var nameCol=-1, classCol=-1;
+    data.slice(0,3).forEach(function(row) {
+        (row || []).slice(0,8).forEach(function(value,col) {
+            var text=String(value || '').trim();
+            if (/^(姓名|名字|人名)$/.test(text)) nameCol=col;
+            if (/^(班级|行政班|行政班级)$/.test(text)) classCol=col;
+        });
+    });
+    if (nameCol<0 || classCol<0) return 0;
+    for (var r=1; r<=3 && r<data.length; r++) {
+        var row=data[r] || [], name=String(row[nameCol] || '').trim(), cls=String(row[classCol] || '').trim();
+        if (name && cls && !/^(姓名|名字|人名)$/.test(name) && !/^(班级|行政班|行政班级)$/.test(cls)) return r;
+    }
+    return 0;
+}
 function resolveHeaderRowCount(rawData, override) { let c = parseInt(override, 10); if (isNaN(c)) c = 1; return Math.max(1, Math.min(c, rawData.length || 1, 3)); }
+function getImportedHeaderRows(fileEntry, rawData, count) {
+    var rows = rawData.slice(0,count).map(function(row){ return (row || []).slice(); });
+    // 保留原始表格；只在解析副本中恢复 Excel 合并表头。
+    (fileEntry.headerMerges || []).forEach(function(merge) {
+        if (!merge || !merge.s || !merge.e || merge.s.r >= count) return;
+        var value = rows[merge.s.r] && rows[merge.s.r][merge.s.c];
+        if (!hasMeaningfulValue(value)) return;
+        // 仅恢复横向范围，纵向合并不能把父题号复制成一个虚假的子题号。
+        for (var c=merge.s.c; c<=merge.e.c; c++) {
+            if (!hasMeaningfulValue(rows[merge.s.r][c])) rows[merge.s.r][c] = value;
+        }
+    });
+    return rows;
+}
+
+function getQuestionMaxScoreFromHeaderRows(rows, col) {
+    for (var r=rows.length-1; r>=0; r--) {
+        var text = String((rows[r] || [])[col] ?? '').normalize('NFKC').trim();
+        var match = text.match(/\(\s*([0-9]+(?:\.[0-9]+)?)\s*分\s*\)/)
+            || text.match(/(?:满分|分值)\s*[:：=]?\s*([0-9]+(?:\.[0-9]+)?)\s*(?:分)?/)
+            || text.match(/(?:^|\s)([0-9]+(?:\.[0-9]+)?)\s*分\s*$/);
+        if (match && Number(match[1]) > 0) return Number(match[1]);
+        if (/^\d+(?:\.\d+)?$/.test(text) && (rows[r] || []).slice(0,3).some(function(v){ return /^(满分|分值)(?:\s*\(分\))?$/.test(String(v || '').normalize('NFKC').trim()); })) return Number(text) || null;
+    }
+    return null;
+}
+
 function extractSubjectAndField(hrArr, ci, prev, fks) {
-    const gv = (ri) => String((hrArr[ri]||[])[ci]||'').trim();
+    const gv = (ri) => String((hrArr[ri]||[])[ci] ?? '').normalize('NFKC').trim();
+    const aliases = { '分数':['分数','得分','成绩'], '等级':['等级','等第'], '校名':['校名','校排名','学校名次'], '班名':['班名','班排名','班级名次'], '级名':['级名','年级排名','年级名次'] };
     let ft = '', rfn = '';
-    for (let ri = hrArr.length - 1; ri >= 0; ri--) { const cv = gv(ri); if (!cv) continue; rfn = cv; const mk = fks.find(k => cv.includes(k)); if (mk) { ft = mk; break; } }
+    let fieldRow = -1, fieldToken = '';
+    for (let ri = hrArr.length - 1; ri >= 0; ri--) {
+        const cv = gv(ri); if (!cv) continue;
+        if (!rfn) rfn = cv;
+        for (const key of fks) {
+            const token = (aliases[key] || [key]).find(t => cv === t || (cv.endsWith(t) && !/\d|小题|本题/.test(cv)));
+            if (token) { ft=key; fieldRow=ri; fieldToken=token; break; }
+        }
+        if (ft) break;
+    }
     let sn = '';
-    for (let ri = 0; ri < hrArr.length - (ft ? 1 : 0); ri++) { let cv = gv(ri); if (!cv) continue; let cl = cv.replace(new RegExp(fks.join('|'),'g'),'').replace(/[-()（）\s]/g,'').trim(); if (cl) sn = cl; }
-    if (!sn && rfn && ft) { let cl = rfn.replace(ft,'').replace(/[-()（）\s]/g,'').trim(); if (cl) sn = cl; }
+    for (let ri = 0; ri < hrArr.length; ri++) {
+        let cl = gv(ri);
+        if (ri === fieldRow) cl = cl.slice(0,cl.length-fieldToken.length);
+        cl = cl.replace(/\(\s*\d+(?:\.\d+)?\s*分\s*\)/g,'').replace(/[-()\s_:：]/g,'').trim();
+        if (cl && !/\d|题|答案|满分|分值/.test(cl) && !Object.values(aliases).flat().includes(cl)) { sn=cl; break; }
+    }
     if (!sn) sn = prev;
     return { subjectName: sn, fieldType: ft, rawFieldName: ft ? '' : rfn };
 }
@@ -6209,90 +6311,142 @@ function renderCrossExamSankey(batchTop10s) {
 // ============================================================
 //  COLLECTIVE ANALYSIS TAB (adapted from 单科分析V3)
 // ============================================================
-function buildCollectiveDataFromCombined() {
-    if (!combinedStudentData.length) return { headers: [], data: [], classField: '', nameField: '', fullScoreField: '', classList: [], subjectList: [], subjQMap: {}, fullScoreMap: {}, correctAnswerMap: {} };
-    const KNOWN_SUBJECTS = new Set(['语文','数学','英语','英语笔试','英语听力','物理','化学','生物','历史','地理','政治','道法','总分','理综','文综','道德与法治','思想政治']);
-    const META_NAMES = new Set(['学校','考号','学号','序号','准考证','编号','姓名','名字','班级','行政班','班名','行政班级','考生类型','考生类别','科类','文理','选科','类型','校名']);
-    const analysisSubjectNames = getMergedSubjectNames(combinedStudentData, allSubjectHeaders);
-    const scoredSubjectSet = new Set(getScoredSubjectNames(combinedStudentData, allSubjectHeaders));
-    const gradedSubjectSet = new Set(getGradedSubjectNames(combinedStudentData, allSubjectHeaders));
-    const tn = getTotalSubjectName(allSubjectHeaders, combinedStudentData) || (analysisSubjectNames.length ? analysisSubjectNames[0] : '');
-    const headers = ['姓名', '班级'];
-    const subjQMap = {};
-    const subjectSet = new Set();
-    const fullScoreMap = {}; // headerKey → fullScore number
-    const correctAnswerMap = {}; // headerKey → correct answer
-    allSubjectHeaders.forEach(sh => {
-        const sn = sh.name;
-        if (META_NAMES.has(sn)) return;
-        if (!KNOWN_SUBJECTS.has(sn) && !/[\u4e00-\u9fff]/.test(sn)) return;
-        if (sh.subScoreQuestionMap && Object.keys(sh.subScoreQuestionMap).length) {
-            subjectSet.add(sn);
-            subjQMap[sn] = sh.subScoreQuestionMap;
-            Object.entries(sh.subScoreQuestionMap).forEach(function(entry) {
-                var mapKey = entry[0], q = entry[1];
-                if (!q || !q.name) return;
-                // Use mapKey for uniqueness (may include _cN suffix), clean name for display
-                var displayName = String(q.name).replace(/_c\d+$|_col\d+$/g, '');
-                var maxS = (q.maxScore != null && q.maxScore > 0) ? ('（' + q.maxScore + '分）') : '';
-                var hkey = sn + '_' + mapKey + maxS;
-                if (!headers.includes(hkey)) headers.push(hkey);
-                fullScoreMap[hkey] = q.maxScore != null && q.maxScore > 0 ? q.maxScore : null;
-                if (q.correctAnswer) correctAnswerMap[hkey] = String(q.correctAnswer).trim();
-                var akey = hkey + '_答案';
-                if (q.answerIndex !== -1 && !headers.includes(akey)) headers.push(akey);
-            });
-        } else if (scoredSubjectSet.has(sn)) {
-            subjectSet.add(sn);
-        }
+// 小题分析专用：不改写学生原始科目键，也不使用 PDF 的宽泛包含匹配。
+function getCollectiveSubjectAliases(name) {
+    var groups = [
+        ['英语','英语笔试','英文笔试','英文'],
+        ['听说','听力','英语听说','英语听力'],
+        ['道法','道德与法治','政治','思想政治','思想品德','道德','法治']
+    ];
+    var group = groups.find(function(names){ return names.indexOf(name) >= 0; }) || [name];
+    return [name].concat(group.filter(function(value){ return value !== name; }));
+}
+
+function resolveCollectiveStudentMetric(student, subject, field) {
+    var subjects = student && student.subjects || {};
+    var aliases = getCollectiveSubjectAliases(subject);
+    for (var i=0; i<aliases.length; i++) {
+        var data = subjects[aliases[i]];
+        if (data && hasMeaningfulValue(data[field])) return { value:data[field], source:aliases[i] };
+    }
+    return { value:'', source:'' };
+}
+
+function normalizeCollectiveGrade(value) {
+    return String(value == null ? '' : value).normalize('NFKC').replace(/\s+/g,'').replace(/等级$/,'').toUpperCase();
+}
+
+function collectiveScoreNumber(value) {
+    // 所有小题视图使用相同口径：空白/占位符按 0，非法非空值仍需排除。
+    if (!hasMeaningfulValue(value)) return 0;
+    var number = Number(value);
+    return Number.isFinite(number) ? number : null;
+}
+
+function buildCollectiveDataSnapshot(students, subjectHeaders) {
+    students = students || []; subjectHeaders = subjectHeaders || [];
+    var empty = { headers:[], data:[], classField:'班级', nameField:'姓名', fullScoreField:'', classList:[], subjectList:[], subjQMap:{}, fullScoreMap:{}, correctAnswerMap:{}, subjectMetricSources:{} };
+    if (!students.length) return empty;
+    var metaNames = new Set(['学校','考号','学号','序号','准考证','编号','姓名','名字','班级','行政班','班名','行政班级','考生类型','考生类别','科类','文理','选科','类型','校名']);
+    var subjectNames = getMergedSubjectNames(students, subjectHeaders).filter(function(name){ return !metaNames.has(name); });
+    var subjQMap = {}, fullScoreMap = {}, correctAnswerMap = {}, subjectMetricSources = {};
+    subjectHeaders.forEach(function(header) {
+        var name = header && header.name;
+        if (!name || metaNames.has(name)) return;
+        var map = subjQMap[name] || (subjQMap[name] = {});
+        Object.keys(header.subScoreQuestionMap || {}).forEach(function(key) {
+            map[key] = mergeImportedQuestionMetadata(map[key], header.subScoreQuestionMap[key]);
+        });
     });
-    analysisSubjectNames.forEach(function(sn) {
-        if (META_NAMES.has(sn)) return;
-        if (scoredSubjectSet.has(sn)) {
-            const hkey = sn + '_分数'; if (!headers.includes(hkey)) headers.push(hkey);
-        }
-        if (gradedSubjectSet.has(sn)) {
-            const gkey = sn + '_等级'; if (!headers.includes(gkey)) headers.push(gkey);
-        }
-    });
-    const data = combinedStudentData.map(stu => {
-        const row = { '姓名': stu.name, '班级': stu.class || '' };
-        Object.entries(subjQMap).forEach(function(subjEntry) {
-            var sn = subjEntry[0], qm = subjEntry[1];
-            const sds = stu.subjects[sn]?.subScores || {};
-            Object.entries(qm).forEach(function(qEntry) {
-                var mapKey = qEntry[0], q = qEntry[1];
-                if (!q || !q.name) return;
-                var maxS = (q.maxScore != null && q.maxScore > 0) ? ('（' + q.maxScore + '分）') : '';
-                var hkey = sn + '_' + mapKey + maxS;
-                const sq = sds[q.name];
-                row[hkey] = sq ? sq.score : '';
-                var akey = hkey + '_答案';
-                row[akey] = sq ? (sq.studentAnswer || '') : '';
+    // 旧批次若表头元数据不完整，用已保存的实际小题满分补齐；不从最高得分猜满分。
+    students.forEach(function(student) {
+        Object.keys(student.subjects || {}).forEach(function(name) {
+            if (metaNames.has(name)) return;
+            var map = subjQMap[name] || (subjQMap[name] = {});
+            var items = student.subjects[name].subScores || {};
+            Object.keys(items).forEach(function(key) {
+                var item = items[key];
+                if (!item || typeof item !== 'object') return;
+                var definition = map[key];
+                if (!definition) definition = map[key] = {name:key,scoreIndex:0,answerIndex:hasMeaningfulValue(item.studentAnswer)?0:-1};
+                if (!(Number(definition.maxScore)>0) && Number(item.maxScore)>0) definition.maxScore=Number(item.maxScore);
+                if (!hasMeaningfulValue(definition.correctAnswer) && hasMeaningfulValue(item.correctAnswer)) definition.correctAnswer=item.correctAnswer;
             });
         });
-        analysisSubjectNames.forEach(function(sn) {
-            if (META_NAMES.has(sn)) return;
-            const sd = stu.subjects ? stu.subjects[sn] : null;
-            if (scoredSubjectSet.has(sn)) row[sn + '_分数'] = sd ? sd.score : '';
-            if (gradedSubjectSet.has(sn)) row[sn + '_等级'] = sd ? sd.grade : '';
+    });
+    var headers = ['姓名','班级'], definitions = [], subjectSet = new Set();
+    Object.keys(subjQMap).forEach(function(subject) {
+        var map = subjQMap[subject];
+        Object.keys(map).forEach(function(key) {
+            var question = map[key];
+            if (!question || !question.name) return;
+            var max = Number(question.maxScore)>0 ? Number(question.maxScore) : null;
+            var header = subject+'_'+key+(max ? '（'+max+'分）' : '');
+            // 答案列不得凭空变成一道计分题。
+            var hasScore = Number.isInteger(question.scoreIndex) && question.scoreIndex>=0;
+            if (!hasScore) hasScore=students.some(function(student) {
+                var sd=student.subjects && student.subjects[subject], item=sd && sd.subScores && (sd.subScores[key] || sd.subScores[question.name]);
+                return item && hasMeaningfulValue(item.score);
+            });
+            if (hasScore) { headers.push(header); fullScoreMap[header]=max; }
+            var hasAnswer = Number.isInteger(question.answerIndex) && question.answerIndex>=0;
+            if (hasAnswer) headers.push(header+'_答案');
+            if (hasMeaningfulValue(question.correctAnswer)) correctAnswerMap[header]=String(question.correctAnswer).trim();
+            definitions.push({subject:subject,key:key,question:question,header:header,hasScore:hasScore,hasAnswer:hasAnswer});
+            if (hasScore || hasAnswer) subjectSet.add(subject);
+        });
+    });
+    subjectNames.forEach(function(subject) {
+        subjectMetricSources[subject]={score:[],grade:[]};
+        ['score','grade'].forEach(function(field) {
+            var sources = new Set();
+            students.forEach(function(student) {
+                var metric = resolveCollectiveStudentMetric(student,subject,field);
+                if (metric.source) sources.add(metric.source);
+            });
+            subjectMetricSources[subject][field]=Array.from(sources);
+            if (sources.size) headers.push(subject+(field==='score'?'_分数':'_等级'));
+            if (field==='score' && sources.size) subjectSet.add(subject);
+        });
+    });
+    var data=students.map(function(student) {
+        var row={'姓名':student.name,'班级':student.class || ''};
+        definitions.forEach(function(definition) {
+            var sd=student.subjects && student.subjects[definition.subject];
+            var items=sd && sd.subScores || {};
+            var item=items[definition.key] || items[definition.question.name];
+            if (definition.hasScore) {
+                var value=item && typeof item==='object'?item.score:item;
+                row[definition.header]=hasMeaningfulValue(value)?value:0;
+            }
+            if (definition.hasAnswer) row[definition.header+'_答案']=item && item.studentAnswer || '';
+        });
+        subjectNames.forEach(function(subject) {
+            var source=subjectMetricSources[subject];
+            if (source.score.length) row[subject+'_分数']=resolveCollectiveStudentMetric(student,subject,'score').value;
+            if (source.grade.length) row[subject+'_等级']=normalizeCollectiveGrade(resolveCollectiveStudentMetric(student,subject,'grade').value);
         });
         return row;
     });
-    const classList = [...new Set(data.map(r => r['班级']).filter(Boolean))].sort((a,b) => (a+'').localeCompare(b+'','zh'));
-    const subjectList = Array.from(subjectSet).sort((a,b) => (a+'').localeCompare(b+'','zh'));
-    const fn = tn + '_分数';
-    return { headers, data, classField: '班级', nameField: '姓名', fullScoreField: fn, classList, subjectList, subjQMap, fullScoreMap, correctAnswerMap };
+    var total=getTotalSubjectName(subjectHeaders,students) || subjectNames[0] || '';
+    return {headers:headers,data:data,classField:'班级',nameField:'姓名',fullScoreField:total?total+'_分数':'',
+        classList:Array.from(new Set(data.map(function(row){return row['班级'];}).filter(Boolean))).sort(function(a,b){return String(a).localeCompare(String(b),'zh-CN');}),
+        subjectList:Array.from(subjectSet).sort(function(a,b){return a.localeCompare(b,'zh-CN');}),
+        subjQMap:subjQMap,fullScoreMap:fullScoreMap,correctAnswerMap:correctAnswerMap,subjectMetricSources:subjectMetricSources};
+}
+
+function buildCollectiveDataFromCombined() {
+    return buildCollectiveDataSnapshot(combinedStudentData,allSubjectHeaders);
 }
 
 function renderCollectiveAll() {
+    renderCollectiveClassFilter();
+    renderCollectiveSubjectFilter();
+    renderCollectiveDiagnosis();
     if (!combinedStudentData.length) {
         document.getElementById('allStatsTitle').textContent = '请先在「上传管理」上传包含小题分数的数据';
         return;
     }
-    renderCollectiveClassFilter();
-    renderCollectiveSubjectFilter();
-    renderCollectiveDiagnosis();
     renderCollectiveTables();
     renderCollectiveRankBar();
     document.getElementById('rankedAnalysisResult').innerHTML = '';
@@ -6350,8 +6504,10 @@ function renderScoreDistChart() {
 function renderCollectiveClassFilter() {
     const sel = document.getElementById('collectiveClassFilter');
     const cd = buildCollectiveDataFromCombined();
+    const previous = String(sel.value || '');
     sel.innerHTML = '<option value="">全部班级</option>';
     cd.classList.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });
+    if (cd.classList.some(c => String(c) === previous)) sel.value = previous;
 }
 
 function renderCollectiveSubjectFilter() {
@@ -6401,7 +6557,7 @@ function buildCollectiveQuestionModels(fd, subjectName) {
         var header = fd.headers[item.scoreIdx];
         var students = [];
         (fd.data || []).forEach(function(row) {
-            var score = diagSafeNumber(row[header]);
+            var score = collectiveScoreNumber(row[header]);
             if (score === null || score < 0 || score > full) return;
             students.push({
                 row: row,
@@ -6483,7 +6639,7 @@ function splitCollectiveAbilityTiers(fd, questions, baselines, subjectName) {
         var gradeGroups = {};
         rows.forEach(function(row) {
             var raw = row[gradeField];
-            var grade = raw === null || raw === undefined ? '' : String(raw).trim();
+            var grade = normalizeCollectiveGrade(raw);
             if (!grade) return;
             if (!gradeGroups[grade]) gradeGroups[grade] = [];
             gradeGroups[grade].push(row);
@@ -6511,7 +6667,11 @@ function splitCollectiveAbilityTiers(fd, questions, baselines, subjectName) {
 
         // 只要存在真实等级就直接使用。即使全班都属于同一等级，
         // “同等级本题均值”仍可作为个性异常的参照，不再强行回退到人为分层。
-        if (gradeTiers.length >= 1) return gradeTiers;
+        if (gradeTiers.length >= 1) {
+            var missing=rows.filter(function(row){return !normalizeCollectiveGrade(row[gradeField]);});
+            if (missing.length) gradeTiers.push({key:'grade:unmatched',label:'未匹配等级',rows:missing,source:'ungraded',gradeField:gradeField});
+            return gradeTiers;
+        }
     }
 
     // 没有可比较的等级组时，回退到当前筛选范围内的 30% / 40% / 30% 相对分层。
@@ -6539,8 +6699,13 @@ function splitCollectiveAbilityTiers(fd, questions, baselines, subjectName) {
     ].filter(function(t) { return t.rows.length >= 3; });
 }
 
+function getCollectiveThresholdRate() {
+    var value=Number(collectiveThreshold);
+    return Math.max(0,Math.min(1,(isFinite(value)?value:60)/100));
+}
+
 function calculateCollectiveDiagnosis(fd, subjectName) {
-    var threshold = Math.max(0, Math.min(1, (Number(collectiveThreshold) || 60) / 100));
+    var threshold = getCollectiveThresholdRate();
     var questions = buildCollectiveQuestionModels(fd, subjectName);
     var baselineInfo = buildCollectiveStudentBaselines(questions);
     var baselines = baselineInfo.averages;
@@ -6700,7 +6865,7 @@ function getCollectiveHeatmapSourceRef(q) {
         });
         var startCol=subjectCols.length ? Math.min.apply(null,subjectCols) : 0;
         var shr=resolveHeaderRowCount(fe.rawData, fe.headerRows);
-        var ref=getCanonicalQuestionRefFromHeaderRows(fe.rawData.slice(0,shr), ci, subjectName, startCol);
+        var ref=getCanonicalQuestionRefFromHeaderRows(getImportedHeaderRows(fe,fe.rawData,shr), ci, subjectName, startCol);
         if (ref) return ref;
     }
     return null;
@@ -6763,7 +6928,7 @@ function buildCollectiveHeatmapModel(fd, subjectName) {
     if (!questions.length) return null;
     var baselineInfo = buildCollectiveStudentBaselines(questions);
     var tiers = splitCollectiveAbilityTiers(fd, questions, baselineInfo.averages, subjectName);
-    var threshold = Math.max(0, Math.min(1, (Number(collectiveThreshold) || 60) / 100));
+    var threshold = getCollectiveThresholdRate();
     var commonMap = new Map();
     var individualMap = new Map();
     (diagnosis.common || []).forEach(function(entry) { commonMap.set(entry.scoreHeader || entry.title, entry); });
@@ -6864,7 +7029,27 @@ function resolveCollectiveHeatmapSubject(fd, selectedSubject) {
     return { subjectName:'', subjects:subjects, requiresSelection:subjects.length > 1 };
 }
 
-function renderCollectiveHeatmap(fd, subjectName) {
+function resetCollectiveHeatmapChart(chartEl) {
+    if (chartEl.__chart) { try { chartEl.__chart.dispose(); } catch(e) {} }
+    chartEl.__chart = null;
+    chartEl.innerHTML = '';
+}
+
+function showCollectiveHeatmapStatus(chartEl, scrollEl, emptyEl, message) {
+    resetCollectiveHeatmapChart(chartEl);
+    scrollEl.style.display = 'none';
+    if (emptyEl) { emptyEl.innerHTML=message; emptyEl.style.display='block'; }
+}
+
+function getCollectiveHeatmapGroupingText(model) {
+    var graded=model.rows.some(function(row){return row.source==='grade';});
+    if (!graded) return model.rows.some(function(row){return row.source==='percentile';}) ? ' · 相对分层（无可用本学科等级）' : '';
+    var sources=model.fd.subjectMetricSources && model.fd.subjectMetricSources[model.subjectName];
+    var names=sources && sources.grade || [];
+    return ' · 按本学科等级' + (names.some(function(name){return name!==model.subjectName;}) ? '（来源：'+names.join('、')+'）' : '');
+}
+
+function renderCollectiveHeatmap() {
     var chartEl = document.getElementById('collectiveHeatmapChart');
     var scrollEl = document.getElementById('collectiveHeatmapScroll');
     var emptyEl = document.getElementById('collectiveHeatmapEmpty');
@@ -6872,26 +7057,18 @@ function renderCollectiveHeatmap(fd, subjectName) {
     var legendEl = document.getElementById('collectiveHeatmapLegendText');
     if (!chartEl || !scrollEl) return;
 
-    if (!fd) fd = getCollectiveFilteredData();
-    // 页面当前筛选值是唯一可信来源。即使某个较早的重绘调用传入了旧 subjectName，
-    // 也不能覆盖用户此刻已经选中的科目。
-    var liveSubjectEl = document.getElementById('collectiveSubjectFilter');
-    if (liveSubjectEl) subjectName = String(liveSubjectEl.value || '').trim();
-    else if (subjectName == null) subjectName = '';
+    // 所有入口均在此一次读取当前数据和筛选，避免参数与页面状态形成两套来源。
+    var fd = getCollectiveFilteredData();
+    var subjectName = String(getSelectedSubject() || '').trim();
 
     var subjectResolution = resolveCollectiveHeatmapSubject(fd, subjectName);
     if (subjectResolution.requiresSelection) {
         collectiveHeatmapContext = null;
-        if (chartEl.__chart) { try { chartEl.__chart.dispose(); } catch(e) {} chartEl.__chart = null; }
         var subjectText = subjectResolution.subjects.join('、');
-        chartEl.innerHTML = '<div style="height:100%;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;text-align:center;color:#475569;font-size:14px;line-height:1.8;">'
+        showCollectiveHeatmapStatus(chartEl,scrollEl,emptyEl,'<div style="padding:24px;text-align:center;color:#475569;font-size:14px;line-height:1.8;">'
             + '<div><div style="font-size:16px;font-weight:700;color:#334155;margin-bottom:6px;">检测到多个科目的小题数据</div>'
             + '<div>当前包含：' + escapeHtml(subjectText) + '</div>'
-            + '<div>请先在上方“筛选科目”中选择一个科目查看。</div></div></div>';
-        chartEl.style.width = '100%';
-        chartEl.style.height = '170px';
-        scrollEl.style.display = 'block';
-        if (emptyEl) emptyEl.style.display = 'none';
+            + '<div>请先在上方“筛选科目”中选择一个科目查看。</div></div></div>');
         if (summaryEl) summaryEl.textContent = '检测到 ' + subjectResolution.subjects.length + ' 个小题科目 · 请选择科目';
         if (legendEl) legendEl.textContent = '热力图按所选科目的本学科等级分层；无本学科等级时才使用相对分层';
         return;
@@ -6902,10 +7079,8 @@ function renderCollectiveHeatmap(fd, subjectName) {
     collectiveHeatmapContext = model;
 
     if (!model || !model.questions.length) {
-        if (chartEl.__chart) { try { chartEl.__chart.dispose(); } catch(e) {} chartEl.__chart = null; }
-        chartEl.innerHTML = '';
-        scrollEl.style.display = 'none';
-        if (emptyEl) emptyEl.style.display = 'block';
+        var missingFull=(fd.headers || []).filter(function(header){return (!subjectName || utilGetSubjectFromHeader(header)===subjectName) && !header.endsWith('_答案') && !header.endsWith('_分数') && !header.endsWith('_等级') && header.includes('_') && !(Number(fd.fullScoreMap[header])>0);});
+        showCollectiveHeatmapStatus(chartEl,scrollEl,emptyEl,missingFull.length ? '有小题得分，但未识别到满分表头：'+missingFull.map(escapeHtml).join('、')+'。请核对上传表格的表头行数。' : '暂无可绘制的小题数据。');
         if (summaryEl) summaryEl.textContent = '暂无数据';
         return;
     }
@@ -6928,7 +7103,7 @@ function renderCollectiveHeatmap(fd, subjectName) {
 
     if (summaryEl) {
         summaryEl.textContent = '共 ' + model.questions.length + ' 题 · 共性异常 ' + model.commonCount + ' 题 · 存在个性异常 ' + model.individualQuestionCount + ' 题'
-            + (onlyAbnormal ? ' · 当前仅显示异常题 ' + questions.length + ' 题' : '');
+            + (onlyAbnormal ? ' · 当前仅显示异常题 ' + questions.length + ' 题' : '') + getCollectiveHeatmapGroupingText(model);
     }
     if (legendEl) {
         legendEl.textContent = mode === 'anomaly'
@@ -6937,10 +7112,7 @@ function renderCollectiveHeatmap(fd, subjectName) {
     }
 
     if (!questions.length) {
-        if (chartEl.__chart) { try { chartEl.__chart.dispose(); } catch(e) {} chartEl.__chart = null; }
-        chartEl.innerHTML = '<div style="padding:28px;text-align:center;color:#94a3b8;">当前筛选范围内没有异常题。</div>';
-        chartEl.style.width = '100%';
-        chartEl.style.height = '120px';
+        showCollectiveHeatmapStatus(chartEl,scrollEl,emptyEl,'当前筛选范围内没有异常题。');
         return;
     }
 
@@ -6949,11 +7121,11 @@ function renderCollectiveHeatmap(fd, subjectName) {
     var data = [];
     questions.forEach(function(qm, xi) {
         qm.cells.forEach(function(cell, yi) {
-            if (cell.avgRate == null) return;
-            var value = mode === 'rate' ? cell.avgRate * 100 : (cell.anomalyRate == null ? 0 : cell.anomalyRate * 100);
+            var value = cell.avgRate == null ? -1 : (mode === 'rate' ? cell.avgRate * 100 : (cell.anomalyRate == null ? 0 : cell.anomalyRate * 100));
             data.push({
                 value:[xi, yi, Math.round(value * 10) / 10],
-                heatMeta:{ questionIndex:qm.index, rowIndex:yi }
+                heatMeta:{ questionIndex:qm.index, rowIndex:yi },
+                label:{color:value<0?'#64748b':(mode==='rate'?(value<22 || value>80):(value>65))?'#ffffff':'#1f2937'}
             });
         });
     });
@@ -6965,10 +7137,9 @@ function renderCollectiveHeatmap(fd, subjectName) {
     chartEl.style.width = chartWidth + 'px';
     chartEl.style.height = chartHeight + 'px';
 
-    if (chartEl.__chart) { try { chartEl.__chart.dispose(); } catch(e) {} }
+    resetCollectiveHeatmapChart(chartEl);
     var chart = echarts.init(chartEl, null, {renderer:'svg'});
     chartEl.__chart = chart;
-    var showLabels = questions.length <= 24;
     var colors = mode === 'anomaly'
         ? ['#f8fafc','#ffedd5','#fdba74','#f97316','#dc2626','#7f1d1d']
         : ['#b91c1c','#f97316','#fde68a','#bfdbfe','#2563eb'];
@@ -7014,23 +7185,23 @@ function renderCollectiveHeatmap(fd, subjectName) {
             axisLabel:{fontSize:12,color:'#334155',fontWeight:700}
         },
         visualMap:{
-            min:0,max:100,
+            min:0,max:100,dimension:2,
             orient:'horizontal',
             left:'center',
             bottom:18,
             calculable:false,
             text: mode === 'anomaly' ? ['高异常','低异常'] : ['高得分率','低得分率'],
             textStyle:{fontSize:11,color:'#64748b'},
-            inRange:{color:colors}
+            inRange:{color:colors},outOfRange:{color:['#f1f5f9']}
         },
         series:[{
             type:'heatmap',
             data:data,
             progressive:0,
             label:{
-                show:showLabels,
+                show:true,
                 fontSize:10,
-                formatter:function(p){ return Math.round(p.value[2]) + '%'; },
+                formatter:function(p){ return p.value[2]<0 ? '—' : Math.round(p.value[2]) + '%'; },
                 color:'#1f2937'
             },
             itemStyle:{borderColor:'#ffffff',borderWidth:2},
@@ -7049,10 +7220,7 @@ function renderCollectiveStudentOverviewHeatmap(model, onlyAbnormal, chartEl, sc
     var questions = onlyAbnormal ? model.questions.filter(function(qm) { return qm.isAbnormal; }) : model.questions.slice();
     questions = sortCollectiveHeatmapQuestions(questions);
     if (!questions.length) {
-        if (chartEl.__chart) { try { chartEl.__chart.dispose(); } catch(e) {} chartEl.__chart = null; }
-        chartEl.innerHTML = '<div style="padding:28px;text-align:center;color:#94a3b8;">当前筛选范围内没有异常题。</div>';
-        chartEl.style.width = '100%';
-        chartEl.style.height = '120px';
+        showCollectiveHeatmapStatus(chartEl,scrollEl,document.getElementById('collectiveHeatmapEmpty'),'当前筛选范围内没有异常题。');
         if (summaryEl) summaryEl.textContent = '当前没有可显示的异常题';
         return;
     }
@@ -7132,7 +7300,7 @@ function renderCollectiveStudentOverviewHeatmap(model, onlyAbnormal, chartEl, sc
         legendEl.textContent = '学生 × 小题：颜色表示本题低于该生其余小题平均的幅度；越红表示越偏离个人常态';
     }
 
-    if (chartEl.__chart) { try { chartEl.__chart.dispose(); } catch(e) {} }
+    resetCollectiveHeatmapChart(chartEl);
     var chart = echarts.init(chartEl, null, {renderer:'svg'});
     chartEl.__chart = chart;
     var maxVal = Math.max(40, Math.ceil(Math.max.apply(null, data.map(function(d){ return Number(d.value[2]) || 0; })) / 10) * 10);
@@ -7238,9 +7406,7 @@ function showCollectiveHeatmapCellDetail(questionIndex, rowIndex) {
 }
 
 function renderCollectiveDiagnosis() {
-    var fd = getCollectiveFilteredData();
-    var subjectName = getSelectedSubject();
-    renderCollectiveHeatmap(fd, subjectName);
+    renderCollectiveHeatmap();
 }
 
 function bindCollectiveDiagnosisButtons() {
@@ -7638,90 +7804,7 @@ async function qkClearCurrent() {
     renderCollectiveTables();
 }
 function qkBuildCollectiveDataFromBatchSnapshot(batch) {
-    var students = (batch && batch.combinedStudentData) || [];
-    var subjectHeaders = (batch && batch.allSubjectHeaders) || [];
-    if (!students.length) return { headers:[], data:[], classField:'', nameField:'', fullScoreField:'', classList:[], subjectList:[], subjQMap:{}, fullScoreMap:{}, correctAnswerMap:{} };
-
-    var KNOWN_SUBJECTS = new Set(['语文','数学','英语','英语笔试','英语听力','物理','化学','生物','历史','地理','政治','道法','总分','理综','文综','道德与法治','思想政治']);
-    var META_NAMES = new Set(['学校','考号','学号','序号','准考证','编号','姓名','名字','班级','行政班','班名','行政班级','考生类型','考生类别','科类','文理','选科','类型','校名']);
-    var analysisSubjectNames = getMergedSubjectNames(students, subjectHeaders);
-    var scoredSubjectSet = new Set(getScoredSubjectNames(students, subjectHeaders));
-    var gradedSubjectSet = new Set(getGradedSubjectNames(students, subjectHeaders));
-    var totalSubject = getTotalSubjectName(subjectHeaders, students) || (analysisSubjectNames.length ? analysisSubjectNames[0] : '');
-    var headers = ['姓名','班级'];
-    var subjQMap = {}, subjectSet = new Set(), fullScoreMap = {}, correctAnswerMap = {};
-
-    subjectHeaders.forEach(function(sh) {
-        var sn = sh.name;
-        if (META_NAMES.has(sn)) return;
-        if (!KNOWN_SUBJECTS.has(sn) && !/[\u4e00-\u9fff]/.test(sn)) return;
-        if (sh.subScoreQuestionMap && Object.keys(sh.subScoreQuestionMap).length) {
-            subjectSet.add(sn);
-            subjQMap[sn] = sh.subScoreQuestionMap;
-            Object.entries(sh.subScoreQuestionMap).forEach(function(entry) {
-                var mapKey = entry[0], q = entry[1];
-                if (!q || !q.name) return;
-                var maxS = (q.maxScore != null && q.maxScore > 0) ? ('（' + q.maxScore + '分）') : '';
-                var hkey = sn + '_' + mapKey + maxS;
-                if (!headers.includes(hkey)) headers.push(hkey);
-                fullScoreMap[hkey] = q.maxScore != null && q.maxScore > 0 ? q.maxScore : null;
-                if (q.correctAnswer) correctAnswerMap[hkey] = String(q.correctAnswer).trim();
-                var akey = hkey + '_答案';
-                if (q.answerIndex !== -1 && !headers.includes(akey)) headers.push(akey);
-            });
-        } else if (scoredSubjectSet.has(sn)) {
-            subjectSet.add(sn);
-        }
-    });
-
-    analysisSubjectNames.forEach(function(sn) {
-        if (META_NAMES.has(sn)) return;
-        if (scoredSubjectSet.has(sn)) {
-            var scoreKey = sn + '_分数';
-            if (!headers.includes(scoreKey)) headers.push(scoreKey);
-        }
-        if (gradedSubjectSet.has(sn)) {
-            var gradeKey = sn + '_等级';
-            if (!headers.includes(gradeKey)) headers.push(gradeKey);
-        }
-    });
-
-    var data = students.map(function(stu) {
-        var row = { '姓名':stu.name, '班级':stu.class || '' };
-        Object.entries(subjQMap).forEach(function(subjectEntry) {
-            var sn = subjectEntry[0], qm = subjectEntry[1];
-            var subScores = stu.subjects && stu.subjects[sn] ? (stu.subjects[sn].subScores || {}) : {};
-            Object.entries(qm).forEach(function(qEntry) {
-                var mapKey=qEntry[0], q=qEntry[1];
-                if (!q || !q.name) return;
-                var maxS = (q.maxScore != null && q.maxScore > 0) ? ('（' + q.maxScore + '分）') : '';
-                var hkey = sn + '_' + mapKey + maxS;
-                var sq = subScores[q.name];
-                row[hkey] = sq ? sq.score : '';
-                row[hkey + '_答案'] = sq ? (sq.studentAnswer || '') : '';
-            });
-        });
-        analysisSubjectNames.forEach(function(sn) {
-            if (META_NAMES.has(sn)) return;
-            var sd = stu.subjects && stu.subjects[sn];
-            if (scoredSubjectSet.has(sn)) row[sn + '_分数'] = sd ? sd.score : '';
-            if (gradedSubjectSet.has(sn)) row[sn + '_等级'] = sd ? sd.grade : '';
-        });
-        return row;
-    });
-
-    return {
-        headers:headers,
-        data:data,
-        classField:'班级',
-        nameField:'姓名',
-        fullScoreField:totalSubject ? totalSubject + '_分数' : '',
-        classList:Array.from(new Set(data.map(function(r){ return r['班级']; }).filter(Boolean))),
-        subjectList:Array.from(subjectSet),
-        subjQMap:subjQMap,
-        fullScoreMap:fullScoreMap,
-        correctAnswerMap:correctAnswerMap
-    };
+    return buildCollectiveDataSnapshot(batch && batch.combinedStudentData, batch && batch.allSubjectHeaders);
 }
 
 function qkFindStudentRowInSnapshot(fd, name, className) {
@@ -8338,7 +8421,7 @@ function renderCollectiveTables() {
     const allRows = [], lowRows = [];
     Object.keys(qd).forEach(t => {
         const item = qd[t]; if (item.scoreIdx == null) return;
-        const scores = fd.data.map(r => { const v = r[fd.headers[item.scoreIdx]]; return typeof v === 'string' ? parseFloat(v) || 0 : (v || 0); }).filter(s => !isNaN(s));
+        const scores = fd.data.map(r => collectiveScoreNumber(r[fd.headers[item.scoreIdx]])).filter(s => s!==null && s>=0 && (!(Number(item.fullScore)>0) || s<=Number(item.fullScore)));
         const avg = scores.length ? scores.reduce((a,b) => a + b, 0) / scores.length : 0;
         const avgStr = scores.length ? avg.toFixed(2) : '-';
         const max = scores.length ? Math.max(...scores) : '-';
@@ -8394,11 +8477,8 @@ function calculateQuestionGroupLowStudents(rows, scoreHeader, fullScore) {
     var hasFullScore = isFinite(fs) && fs > 0;
     var valid = [];
     (rows || []).forEach(function(row) {
-        var raw = row ? row[scoreHeader] : null;
-        if (raw === null || raw === undefined || String(raw).trim() === '') return;
-        if (typeof raw === 'string' && !/^\s*[+-]?(?:\d+(?:\.\d*)?|\.\d+)\s*$/.test(raw)) return;
-        var score = Number(raw);
-        if (!isFinite(score) || score < 0 || (hasFullScore && score > fs)) return;
+        var score = collectiveScoreNumber(row ? row[scoreHeader] : null);
+        if (score===null || score < 0 || (hasFullScore && score > fs)) return;
         valid.push({ row: row, score: score, rate: null });
     });
     if (!valid.length) return { error: 'noValidScores', validCount: 0, averageScore: null, averageRate: null, lowStudents: [] };
@@ -8646,9 +8726,9 @@ function showQuestionLowStudents(title) {
     }
     var thresholdVal = fullScore * collectiveThreshold / 100;
     var lowStudents = fd.data.filter(function(r) {
-        var score = parseFloat(r[header]);
-        return !isNaN(score) && score < thresholdVal;
-    }).sort(function(a,b) { return parseFloat(a[header]) - parseFloat(b[header]); });
+        var score = collectiveScoreNumber(r[header]);
+        return score!==null && score>=0 && score < thresholdVal;
+    }).sort(function(a,b) { return collectiveScoreNumber(a[header]) - collectiveScoreNumber(b[header]); });
     if (!lowStudents.length) {
         showStudentListModal('提示', '题目「' + title.replace(/</g,'&lt;') + '」：<b>无学生低于阈值</b>（' + thresholdVal.toFixed(1) + ' 分 = ' + fullScore + ' × ' + collectiveThreshold + '%），' + ct + '，科目：' + (ss||'全部'));
         return;
@@ -8658,7 +8738,7 @@ function showQuestionLowStudents(title) {
     var html = '<div style="font-size:12px;color:#888;margin-bottom:6px;">' + info + '</div>';
     html += '<div style="overflow-x:auto;"><table style="font-size:13px;width:100%;border-collapse:collapse;"><thead><tr><th>#</th><th>姓名</th><th>班级</th><th>得分</th><th>满分</th><th>得分率</th><th>学生答案</th></tr></thead><tbody>';
     lowStudents.forEach(function(r, i) {
-        var score = parseFloat(r[header]);
+        var score = collectiveScoreNumber(r[header]);
         var rate = (score / fullScore * 100).toFixed(1) + '%';
         var ans = item.ansIdx != null ? (r[fd.headers[item.ansIdx]] || '-') : '-';
         html += '<tr><td>' + (i+1) + '</td><td>' + escapeHtml(r[fd.nameField]||'') + '</td><td>' + escapeHtml(r[fd.classField]||'') + '</td><td style="color:#e74c3c;font-weight:bold;">' + score + '</td><td>' + fullScore + '</td><td>' + rate + '</td><td>' + escapeHtml(ans) + '</td></tr>';
