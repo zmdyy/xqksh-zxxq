@@ -8040,7 +8040,7 @@ function notebookLineMajor(text) {
 }
 
 async function notebookCropPdfPage(page, topPdfY, bottomPdfY) {
-    var scale = 3.0;
+    var scale = 4.0;
     var viewport = page.getViewport({ scale: scale });
     var canvas = document.createElement('canvas');
     canvas.width = Math.ceil(viewport.width);
