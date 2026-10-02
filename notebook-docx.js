@@ -54,24 +54,47 @@ function docxInfoCell(label, value, accent) {
         docxBlock(docxStyledRun(label + '：', {size:20,color:'64748B',bold:true}) + docxStyledRun(value, {size:21,color:accent || '1F2937',bold:true}), {after:0,line:280}) +
         '</w:tc>';
 }
-function docxInfoTable(scoreText, studentAnswer, correctAnswer) {
-    function row(label, value, accent) {
-        return '<w:tr><w:tc><w:tcPr><w:tcW w:w="9200" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="F8FAFC"/>' +
-            '<w:tcMar><w:top w:w="90" w:type="dxa"/><w:bottom w:w="90" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr>' +
-            docxBlock(
-                docxStyledRun(label + '：', {size:20,color:'64748B',bold:true}) +
-                docxStyledRun(value, {size:21,color:accent,bold:true}),
-                {after:0,line:280}
-            ) +
-            '</w:tc></w:tr>';
+function docxInfoTable(batchText, questionText, scoreText, studentAnswer, correctAnswer, sourceText) {
+    function cell(value, width, color, bold) {
+        var text = String(value == null ? '' : value);
+        return '<w:tc><w:tcPr><w:tcW w:w="' + width + '" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="F8FAFC"/>' +
+            '<w:tcMar><w:top w:w="90" w:type="dxa"/><w:bottom w:w="90" w:type="dxa"/><w:left w:w="90" w:type="dxa"/><w:right w:w="90" w:type="dxa"/></w:tcMar></w:tcPr>' +
+            docxBlock(text ? docxStyledRun(text, {size:19,color:color || '334155',bold:!!bold}) : '', {after:0,line:260,align:'center'}) +
+            '</w:tc>';
     }
     return '<w:tbl><w:tblPr><w:tblW w:w="9200" w:type="dxa"/><w:tblLayout w:type="fixed"/>' +
-        '<w:tblBorders><w:top w:val="single" w:sz="4" w:color="E2E8F0"/><w:left w:val="single" w:sz="4" w:color="E2E8F0"/><w:bottom w:val="single" w:sz="4" w:color="E2E8F0"/><w:right w:val="single" w:sz="4" w:color="E2E8F0"/><w:insideH w:val="single" w:sz="4" w:color="E2E8F0"/></w:tblBorders></w:tblPr>' +
-        row('得分', scoreText, 'DC2626') +
-        row('我的答案', studentAnswer, 'DC2626') +
-        row('正确答案', correctAnswer, '059669') +
-        '</w:tbl><w:p><w:pPr><w:spacing w:after="120"/></w:pPr></w:p>';
+        '<w:tblBorders><w:top w:val="single" w:sz="4" w:color="E2E8F0"/><w:left w:val="single" w:sz="4" w:color="E2E8F0"/><w:bottom w:val="single" w:sz="4" w:color="E2E8F0"/><w:right w:val="single" w:sz="4" w:color="E2E8F0"/><w:insideV w:val="single" w:sz="4" w:color="E2E8F0"/></w:tblBorders></w:tblPr>' +
+        '<w:tr>' +
+        cell(batchText, 1050, '475569', true) +
+        cell(questionText, 1300, '111827', true) +
+        cell(scoreText, 1500, 'DC2626', true) +
+        cell(studentAnswer, 2100, 'DC2626', true) +
+        cell(correctAnswer, 2100, '059669', true) +
+        cell(sourceText, 1150, '64748B', false) +
+        '</w:tr></w:tbl><w:p><w:pPr><w:spacing w:after="100"/></w:pPr></w:p>';
 }
+
+function notebookQuestionLabel(itemName) {
+    var s = String(itemName == null ? '' : itemName).trim();
+    var m = s.match(/第\s*(\d{1,3})\s*题/) || s.match(/(\d{1,3})/);
+    return m ? ('第' + m[1] + '题') : (s || '未命名题目');
+}
+
+function notebookCompactAnswer(value) {
+    var s = String(value == null ? '' : value).trim();
+    if (!s) return '';
+    var parts = s.split(/[；;]/).map(function(part) { return part.trim(); }).filter(Boolean);
+    var kept = parts.filter(function(part) {
+        var v = part.replace(/^[^：:]{1,30}[：:]\s*/, '').trim();
+        v = v.replace(/^[（(]\s*|\s*[）)]$/g, '').trim();
+        if (!v) return false;
+        if (/^(?:空白|未作答|未答|无答案|未提供)$/i.test(v)) return false;
+        if (/^[-—_.·…，,、\s]+$/.test(v)) return false;
+        return true;
+    });
+    return kept.join('；');
+}
+
 function notebookCleanAnswer(value, fallback) {
     var s = String(value == null ? '' : value).trim();
     if (!s || /^[-—_.·…，,；;\s]+$/.test(s)) return fallback;
@@ -704,24 +727,19 @@ async function exportErrorNotebookWord() {
             for (var n = 0; n < subj.items.length; n++) {
                 var it = subj.items[n];
                 var ratePct = Math.round((it.rate || 0) * 100);
-                var title = (n + 1) + '. ' + (it.itemName || '未命名题目');
-                var batchText = it.batchLabel ? ('  [' + it.batchLabel + ']') : '';
-
-                bodyXml += docxBlock(
-                    docxStyledRun(title, {size:24,bold:true,color:'111827'}) +
-                    docxStyledRun(batchText, {size:18,color:'64748B'}),
-                    {before:n ? 220 : 40,after:100,keepNext:true,shading:'F8FAFC'}
-                );
-
-                var stuAns = notebookCleanAnswer(it.studentAnswer, '空白');
-                var correctAns = notebookCleanAnswer(it.correctAnswer, '未提供');
-                bodyXml += docxInfoTable(it.score + '/' + it.maxScore + '（' + ratePct + '%）', stuAns, correctAns);
-
+                var batchText = String(it.batchLabel || '').trim();
+                var questionText = notebookQuestionLabel(it.itemName);
+                var stuAns = notebookCompactAnswer(it.studentAnswer);
+                var correctAns = notebookCompactAnswer(it.correctAnswer);
                 var sourceText = it.parseSource ? it.parseSource.replace('mineru_precise','MinerU 精准').replace('mineru','MinerU 轻量').replace('vision','AI视觉').replace('local','pdf.js') : '';
-                bodyXml += docxBlock(
-                    docxStyledRun('原题', {size:20,bold:true,color:'475569'}) +
-                    (sourceText ? docxStyledRun('  ·  ' + sourceText, {size:17,color:'94A3B8'}) : ''),
-                    {after:70,keepNext:true}
+
+                bodyXml += docxInfoTable(
+                    batchText,
+                    questionText,
+                    it.score + '/' + it.maxScore + '（' + ratePct + '%）',
+                    stuAns,
+                    correctAns,
+                    sourceText
                 );
 
                 var rawStem = resolveNotebookExportStem(it);
