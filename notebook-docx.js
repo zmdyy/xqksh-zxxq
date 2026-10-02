@@ -55,14 +55,22 @@ function docxInfoCell(label, value, accent) {
         '</w:tc>';
 }
 function docxInfoTable(scoreText, studentAnswer, correctAnswer) {
-    return '<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:tblLayout w:type="fixed"/>' +
-        '<w:tblBorders><w:top w:val="single" w:sz="4" w:color="E2E8F0"/><w:left w:val="single" w:sz="4" w:color="E2E8F0"/><w:bottom w:val="single" w:sz="4" w:color="E2E8F0"/><w:right w:val="single" w:sz="4" w:color="E2E8F0"/><w:insideH w:val="single" w:sz="4" w:color="E2E8F0"/><w:insideV w:val="single" w:sz="4" w:color="E2E8F0"/></w:tblBorders></w:tblPr>' +
-        '<w:tr>' +
-        docxInfoCell('得分', scoreText, 'DC2626') +
-        docxInfoCell('我的答案', studentAnswer, 'DC2626') +
-        docxInfoCell('正确答案', correctAnswer, '059669') +
-        '</w:tr></w:tbl>' +
-        '<w:p><w:pPr><w:spacing w:after="120"/></w:pPr></w:p>';
+    function row(label, value, accent) {
+        return '<w:tr><w:tc><w:tcPr><w:tcW w:w="9200" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="F8FAFC"/>' +
+            '<w:tcMar><w:top w:w="90" w:type="dxa"/><w:bottom w:w="90" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr>' +
+            docxBlock(
+                docxStyledRun(label + '：', {size:20,color:'64748B',bold:true}) +
+                docxStyledRun(value, {size:21,color:accent,bold:true}),
+                {after:0,line:280}
+            ) +
+            '</w:tc></w:tr>';
+    }
+    return '<w:tbl><w:tblPr><w:tblW w:w="9200" w:type="dxa"/><w:tblLayout w:type="fixed"/>' +
+        '<w:tblBorders><w:top w:val="single" w:sz="4" w:color="E2E8F0"/><w:left w:val="single" w:sz="4" w:color="E2E8F0"/><w:bottom w:val="single" w:sz="4" w:color="E2E8F0"/><w:right w:val="single" w:sz="4" w:color="E2E8F0"/><w:insideH w:val="single" w:sz="4" w:color="E2E8F0"/></w:tblBorders></w:tblPr>' +
+        row('得分', scoreText, 'DC2626') +
+        row('我的答案', studentAnswer, 'DC2626') +
+        row('正确答案', correctAnswer, '059669') +
+        '</w:tbl><w:p><w:pPr><w:spacing w:after="120"/></w:pPr></w:p>';
 }
 function notebookCleanAnswer(value, fallback) {
     var s = String(value == null ? '' : value).trim();
@@ -639,6 +647,27 @@ function notebookQuestionSuggestsFigure(md) {
     return /(如图|图示|图甲|图乙|图丙|图丁|电路图|装置图|图\s*\d+)/.test(String(md || ''));
 }
 
+function resolveNotebookExportStem(item) {
+    var raw = String(item && item.stemMarkdown || '');
+    if (raw.trim()) return raw;
+    try {
+        if (typeof DataPool === 'undefined' || !item || !item.batchId) return raw;
+        var batch = DataPool.batches && DataPool.batches.find(function(b) { return b.id === item.batchId; });
+        if (!batch) return raw;
+        if (typeof extractCompleteQuestionTextFromPdf === 'function') {
+            var complete = extractCompleteQuestionTextFromPdf(batch, item.subjectName, item.lookupItemName || item.itemName);
+            if (complete && complete.text) return complete.text;
+        }
+        if (typeof extractQuestionTextFromPdf === 'function') {
+            var fallback = extractQuestionTextFromPdf(batch, item.subjectName, item.lookupItemName || item.itemName);
+            if (fallback) return fallback;
+        }
+    } catch(e) {
+        console.warn('Word导出重新定位原题失败', e);
+    }
+    return raw;
+}
+
 async function exportErrorNotebookWord() {
     var payload = window.lastErrorNotebookExport;
     var titleEl = document.getElementById('errorNotebookTitle');
@@ -695,9 +724,10 @@ async function exportErrorNotebookWord() {
                     {after:70,keepNext:true}
                 );
 
-                var preparedStem = it.stemMarkdown ? preprocess(it.stemMarkdown) : '';
+                var rawStem = resolveNotebookExportStem(it);
+                var preparedStem = rawStem ? preprocess(rawStem) : '';
                 var structuredUsed = false;
-                if (preparedStem && notebookMarkdownHasUsefulText(preparedStem)) {
+                if (preparedStem && (notebookMarkdownHasUsefulText(preparedStem) || notebookMarkdownHasRenderableImage(preparedStem))) {
                     loadingDiv.textContent = '正在排版图文原题：' + subj.name + ' ' + (it.itemName || '');
                     bodyXml += await markdownStemToDocxBody(preparedStem, mediaBag);
                     structuredUsed = true;
@@ -723,7 +753,7 @@ async function exportErrorNotebookWord() {
                 }
 
                 if (!structuredUsed && !preparedStem) {
-                    bodyXml += docxBlock(docxStyledRun('未能从试卷中定位原题。', {size:19,color:'94A3B8'}), {after:100});
+                    bodyXml += docxBlock(docxStyledRun('未能从当前批次的试卷/Markdown中定位原题。', {size:19,color:'94A3B8'}), {after:100});
                 }
 
                 bodyXml += docxBlock('', {after:60,borderBottom:'E5E7EB'});
