@@ -1437,7 +1437,7 @@
                     <div id="crossExamSankeyChart" style="width:100%;height:620px;"></div>
                 </div>
                 <div id="crossExamCountTableWrap" style="margin-top:10px;padding-top:10px;border-top:1px solid #eef1f4;">
-                    <table id="crossExamCountTableSimple" style="width:100%;border-collapse:collapse;font-size:12px;"></table>
+                    <table id="crossExamCountTableSimple" style="width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px;"></table>
                 </div>
             </div>
         </div>
@@ -5486,17 +5486,34 @@ function renderCrossExamSankey(batchTop10s) {
     }
 
     if (countTable) {
-        var tableHtml = '<thead><tr>' +
-            '<th style="text-align:left;padding:6px 10px;border-bottom:1px solid #cfd6dd;color:#4D4D4D;font-weight:700;">学生姓名</th>' +
-            '<th style="width:120px;text-align:center;padding:6px 10px;border-bottom:1px solid #cfd6dd;color:#4D4D4D;font-weight:700;">上榜次数</th>' +
-            '</tr></thead><tbody>';
+        var groupedByCount = {};
+        for (var ci = totalExamCount; ci >= 1; ci--) groupedByCount[ci] = [];
         stuList.forEach(function(s) {
-            tableHtml += '<tr>' +
-                '<td style="padding:6px 10px;border-bottom:1px solid #eef1f4;color:#272727;">' + crossExamEscapeHtml(s.name) + '</td>' +
-                '<td style="padding:6px 10px;border-bottom:1px solid #eef1f4;text-align:center;font-weight:700;color:' + crossExamNodeColor(s.count, totalExamCount) + ';">' + s.count + '/' + totalExamCount + '</td>' +
-                '</tr>';
+            if (!groupedByCount[s.count]) groupedByCount[s.count] = [];
+            groupedByCount[s.count].push(s.name);
         });
-        tableHtml += '</tbody>';
+
+        function countHeaderStyle(count) {
+            if (count === totalExamCount) return 'background:#0F4D92;color:#fff;';
+            if (count >= Math.max(2, Math.ceil(totalExamCount * 0.6))) return 'background:#EAF2F9;color:#0F4D92;';
+            if (count >= 2) return 'background:#EDF7F7;color:#2F747C;';
+            return 'background:#F3F4F6;color:#4D4D4D;';
+        }
+
+        var tableHtml = '<thead><tr>';
+        for (var hc = totalExamCount; hc >= 1; hc--) {
+            tableHtml += '<th style="' + countHeaderStyle(hc) +
+                'padding:7px 6px;border:1px solid #dfe5ec;text-align:center;font-size:12px;font-weight:700;white-space:nowrap;">' +
+                hc + '次</th>';
+        }
+        tableHtml += '</tr></thead><tbody><tr>';
+        for (var bc = totalExamCount; bc >= 1; bc--) {
+            var names = groupedByCount[bc] || [];
+            tableHtml += '<td style="padding:9px 8px;border:1px solid #e5e9ee;text-align:center;vertical-align:top;color:#272727;line-height:1.8;word-break:break-word;background:#fff;">' +
+                (names.length ? names.map(crossExamEscapeHtml).join('、') : '<span style="color:#b0b6bd;">—</span>') +
+                '</td>';
+        }
+        tableHtml += '</tr></tbody>';
         countTable.innerHTML = tableHtml;
     }
 
