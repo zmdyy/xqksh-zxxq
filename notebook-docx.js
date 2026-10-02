@@ -727,15 +727,42 @@ async function exportErrorNotebookWord() {
                 var rawStem = resolveNotebookExportStem(it);
                 var preparedStem = rawStem ? preprocess(rawStem) : '';
                 var structuredUsed = false;
-                if (preparedStem && (notebookMarkdownHasUsefulText(preparedStem) || notebookMarkdownHasRenderableImage(preparedStem))) {
+                var localPdfSnapshotUsed = false;
+
+                // pdf.js 来源优先使用整题截图：截图已经包含题干、公式和图，
+                // 不再重复输出文字，避免 Word 中一题占用两份空间。
+                if (it.parseSource === 'local' && typeof window.getErrorNotebookQuestionSnapshots === 'function' && it.batchId) {
+                    try {
+                        loadingDiv.textContent = '正在生成整题截图：' + subj.name + ' ' + (it.itemName || '');
+                        var localSnapshots = await window.getErrorNotebookQuestionSnapshots(it);
+                        if (localSnapshots && localSnapshots.length) {
+                            for (var lsi = 0; lsi < localSnapshots.length; lsi++) {
+                                var localShotXml = await docxImageParagraphFromSource(localSnapshots[lsi], mediaBag, 5850000, 6900000);
+                                if (localShotXml) {
+                                    bodyXml += localShotXml;
+                                    localPdfSnapshotUsed = true;
+                                }
+                            }
+                            if (localPdfSnapshotUsed) structuredUsed = true;
+                        }
+                    } catch (localSnapErr) {
+                        console.warn('pdf.js整题截图失败，回退到文字原题', localSnapErr);
+                    }
+                }
+
+                // MinerU/Markdown 等结构化来源继续保留文字 + 原图；
+                // pdf.js 只有在整题截图失败时才回退到文字。
+                if (!localPdfSnapshotUsed && preparedStem && (notebookMarkdownHasUsefulText(preparedStem) || notebookMarkdownHasRenderableImage(preparedStem))) {
                     loadingDiv.textContent = '正在排版图文原题：' + subj.name + ' ' + (it.itemName || '');
                     bodyXml += await markdownStemToDocxBody(preparedStem, mediaBag);
                     structuredUsed = true;
                 }
 
-                // PDF整题截图只作为兜底，不再作为默认输出。
-                var needSnapshotFallback = !structuredUsed || notebookMarkdownHasBrokenImageCue(preparedStem) ||
-                    (notebookQuestionSuggestsFigure(preparedStem) && !notebookMarkdownHasRenderableImage(preparedStem));
+                // 非 pdf.js 来源若图片缺失，再用原 PDF 整题截图补充。
+                var needSnapshotFallback = !localPdfSnapshotUsed && (
+                    !structuredUsed || notebookMarkdownHasBrokenImageCue(preparedStem) ||
+                    (notebookQuestionSuggestsFigure(preparedStem) && !notebookMarkdownHasRenderableImage(preparedStem))
+                );
                 if (needSnapshotFallback && typeof window.getErrorNotebookQuestionSnapshots === 'function' && it.batchId) {
                     try {
                         loadingDiv.textContent = '正在补充原卷图示：' + subj.name + ' ' + (it.itemName || '');
