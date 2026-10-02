@@ -5328,10 +5328,53 @@ function extractSubjectAndField(hrArr, ci, prev, fks) {
 function hasMeaningfulValue(v) { if (v === null || v === undefined) return false; if (typeof v === 'number') return !isNaN(v); if (typeof v === 'string') { const t = v.trim(); return t && t !== '-' && t !== '--'; } return true; }
 function hasMeaningfulRank(v) { const p = parseInt(v, 10); return !isNaN(p) && p > 0; }
 function validateSubjectScore(sd) { return sd && hasMeaningfulValue(sd.score); }
+
+// ===== 合并数据层：分析模块只认学生实际数据，不再依赖 Excel 列索引 =====
+function getMergedSubjectNames(data, hds) {
+    var names = [], seen = new Set();
+    (hds || []).forEach(function(h) {
+        var name = String(h && h.name || '').trim();
+        if (name && !seen.has(name)) { seen.add(name); names.push(name); }
+    });
+    (data || []).forEach(function(stu) {
+        Object.keys(stu && stu.subjects ? stu.subjects : {}).forEach(function(name) {
+            name = String(name || '').trim();
+            if (name && !seen.has(name)) { seen.add(name); names.push(name); }
+        });
+    });
+    return names;
+}
+function subjectHasScoreData(data, subjectName) {
+    return (data || []).some(function(stu) {
+        var sd = stu && stu.subjects ? stu.subjects[subjectName] : null;
+        return !!(sd && hasMeaningfulValue(sd.score));
+    });
+}
+function subjectHasGradeData(data, subjectName) {
+    return (data || []).some(function(stu) {
+        var sd = stu && stu.subjects ? stu.subjects[subjectName] : null;
+        return !!(sd && hasMeaningfulValue(sd.grade));
+    });
+}
+function getScoredSubjectNames(data, hds) {
+    return getMergedSubjectNames(data, hds).filter(function(name) { return subjectHasScoreData(data, name); });
+}
+function getGradedSubjectNames(data, hds) {
+    return getMergedSubjectNames(data, hds).filter(function(name) { return subjectHasGradeData(data, name); });
+}
 function getRankValue(sd, rt) { if (!sd) return null; let raw; if (rt==='校名') raw = sd.schoolRank; else if (rt==='班名') raw = sd.classRank; else raw = sd.gradeRank; const p = parseInt(raw, 10); return isNaN(p) ? null : p; }
-function getTotalSubjectName(hds) { const t = hds.find(s => s.name && s.name.replace(/\s/g,'').includes('总分')); return t ? t.name : ''; }
-function applyFallbackGradeRanks(data, hds) { const tn = getTotalSubjectName(hds); if (!tn) return; applyScoreRankingForSubject(data, tn, 'gradeRank'); }
-function calculateFallbackRanks(data, hds) { if (!hds.length || !data.length) return; hds.forEach(s => { if (s.scoreIndex === -1) return; ['schoolRank','classRank','gradeRank'].forEach(rt => applyScoreRankingForSubject(data, s.name, rt)); }); }
+function getTotalSubjectName(hds, data) {
+    var names = getMergedSubjectNames(data || [], hds || []);
+    var t = names.find(function(name) { return name && name.replace(/\s/g,'').includes('总分'); });
+    return t || '';
+}
+function applyFallbackGradeRanks(data, hds) { const tn = getTotalSubjectName(hds, data); if (!tn) return; applyScoreRankingForSubject(data, tn, 'gradeRank'); }
+function calculateFallbackRanks(data, hds) {
+    if (!data || !data.length) return;
+    getScoredSubjectNames(data, hds).forEach(function(subjectName) {
+        ['schoolRank','classRank','gradeRank'].forEach(function(rt) { applyScoreRankingForSubject(data, subjectName, rt); });
+    });
+}
 function applyScoreRankingForSubject(data, sn, tf) {
     if (!sn || !tf) return;
     const nc = (v) => String(v||'未知班级').trim()||'未知班级';
@@ -5672,11 +5715,10 @@ function getRankedRangeFromBatch(batch, startRank, endRank) {
     var data = batch.combinedStudentData;
     var headers = batch.allSubjectHeaders;
     if (!data || !data.length || !headers || !headers.length) return [];
-    var totalName = getTotalSubjectName(headers);
+    var totalName = getTotalSubjectName(headers, data);
     if (!totalName) {
-        for (var hi = 0; hi < headers.length; hi++) {
-            if (headers[hi].scoreIndex !== -1) { totalName = headers[hi].name; break; }
-        }
+        var scoredNames = getScoredSubjectNames(data, headers);
+        if (scoredNames.length) totalName = scoredNames[0];
     }
     if (!totalName) return [];
     var withScore = [];
@@ -6163,7 +6205,10 @@ function buildCollectiveDataFromCombined() {
     if (!combinedStudentData.length) return { headers: [], data: [], classField: '', nameField: '', fullScoreField: '', classList: [], subjectList: [], subjQMap: {}, fullScoreMap: {}, correctAnswerMap: {} };
     const KNOWN_SUBJECTS = new Set(['语文','数学','英语','英语笔试','英语听力','物理','化学','生物','历史','地理','政治','道法','总分','理综','文综','道德与法治','思想政治']);
     const META_NAMES = new Set(['学校','考号','学号','序号','准考证','编号','姓名','名字','班级','行政班','班名','行政班级','考生类型','考生类别','科类','文理','选科','类型','校名']);
-    const tn = getTotalSubjectName(allSubjectHeaders) || (allSubjectHeaders.length ? allSubjectHeaders[0].name : '');
+    const analysisSubjectNames = getMergedSubjectNames(combinedStudentData, allSubjectHeaders);
+    const scoredSubjectSet = new Set(getScoredSubjectNames(combinedStudentData, allSubjectHeaders));
+    const gradedSubjectSet = new Set(getGradedSubjectNames(combinedStudentData, allSubjectHeaders));
+    const tn = getTotalSubjectName(allSubjectHeaders, combinedStudentData) || (analysisSubjectNames.length ? analysisSubjectNames[0] : '');
     const headers = ['姓名', '班级'];
     const subjQMap = {};
     const subjectSet = new Set();
@@ -6189,22 +6234,18 @@ function buildCollectiveDataFromCombined() {
                 var akey = hkey + '_答案';
                 if (q.answerIndex !== -1 && !headers.includes(akey)) headers.push(akey);
             });
-        } else if (KNOWN_SUBJECTS.has(sn) || sh.scoreIndex !== -1) {
+        } else if (scoredSubjectSet.has(sn)) {
             subjectSet.add(sn);
         }
     });
-    allSubjectHeaders.forEach(sh => {
-        const sn = sh.name;
+    analysisSubjectNames.forEach(function(sn) {
         if (META_NAMES.has(sn)) return;
-        const hkey = sn + '_分数'; if (!headers.includes(hkey)) headers.push(hkey);
-        // 不只依赖 gradeIndex。旧批次或“主成绩表 + 小题表”合并后可能缺失该元数据，
-        // 只要学生实际数据里存在本学科等级，就应恢复“科目_等级”字段。
-        const hasGradeMeta = Number.isInteger(sh.gradeIndex) && sh.gradeIndex >= 0;
-        const hasGradeData = combinedStudentData.some(function(stu) {
-            const sd = stu && stu.subjects ? stu.subjects[sn] : null;
-            return sd && hasMeaningfulValue(sd.grade);
-        });
-        if (hasGradeMeta || hasGradeData) { const gkey = sn + '_等级'; if (!headers.includes(gkey)) headers.push(gkey); }
+        if (scoredSubjectSet.has(sn)) {
+            const hkey = sn + '_分数'; if (!headers.includes(hkey)) headers.push(hkey);
+        }
+        if (gradedSubjectSet.has(sn)) {
+            const gkey = sn + '_等级'; if (!headers.includes(gkey)) headers.push(gkey);
+        }
     });
     const data = combinedStudentData.map(stu => {
         const row = { '姓名': stu.name, '班级': stu.class || '' };
@@ -6222,17 +6263,11 @@ function buildCollectiveDataFromCombined() {
                 row[akey] = sq ? (sq.studentAnswer || '') : '';
             });
         });
-        allSubjectHeaders.forEach(sh => {
-            const sn = sh.name; if (META_NAMES.has(sn)) return;
-            const sd = stu.subjects[sn];
-            row[sn + '_分数'] = sd ? sd.score : '';
-            // 与上方字段探测保持一致：有真实等级数据时，即使 gradeIndex 元数据缺失也写入等级。
-            const hasGradeMeta = Number.isInteger(sh.gradeIndex) && sh.gradeIndex >= 0;
-            const hasGradeData = combinedStudentData.some(function(s) {
-                const ssd = s && s.subjects ? s.subjects[sn] : null;
-                return ssd && hasMeaningfulValue(ssd.grade);
-            });
-            if (hasGradeMeta || hasGradeData) row[sn + '_等级'] = sd ? sd.grade : '';
+        analysisSubjectNames.forEach(function(sn) {
+            if (META_NAMES.has(sn)) return;
+            const sd = stu.subjects ? stu.subjects[sn] : null;
+            if (scoredSubjectSet.has(sn)) row[sn + '_分数'] = sd ? sd.score : '';
+            if (gradedSubjectSet.has(sn)) row[sn + '_等级'] = sd ? sd.grade : '';
         });
         return row;
     });
@@ -7601,7 +7636,10 @@ function qkBuildCollectiveDataFromBatchSnapshot(batch) {
 
     var KNOWN_SUBJECTS = new Set(['语文','数学','英语','英语笔试','英语听力','物理','化学','生物','历史','地理','政治','道法','总分','理综','文综','道德与法治','思想政治']);
     var META_NAMES = new Set(['学校','考号','学号','序号','准考证','编号','姓名','名字','班级','行政班','班名','行政班级','考生类型','考生类别','科类','文理','选科','类型','校名']);
-    var totalSubject = getTotalSubjectName(subjectHeaders) || (subjectHeaders.length ? subjectHeaders[0].name : '');
+    var analysisSubjectNames = getMergedSubjectNames(students, subjectHeaders);
+    var scoredSubjectSet = new Set(getScoredSubjectNames(students, subjectHeaders));
+    var gradedSubjectSet = new Set(getGradedSubjectNames(students, subjectHeaders));
+    var totalSubject = getTotalSubjectName(subjectHeaders, students) || (analysisSubjectNames.length ? analysisSubjectNames[0] : '');
     var headers = ['姓名','班级'];
     var subjQMap = {}, subjectSet = new Set(), fullScoreMap = {}, correctAnswerMap = {};
 
@@ -7623,17 +7661,18 @@ function qkBuildCollectiveDataFromBatchSnapshot(batch) {
                 var akey = hkey + '_答案';
                 if (q.answerIndex !== -1 && !headers.includes(akey)) headers.push(akey);
             });
-        } else if (KNOWN_SUBJECTS.has(sn) || sh.scoreIndex !== -1) {
+        } else if (scoredSubjectSet.has(sn)) {
             subjectSet.add(sn);
         }
     });
 
-    subjectHeaders.forEach(function(sh) {
-        var sn = sh.name;
+    analysisSubjectNames.forEach(function(sn) {
         if (META_NAMES.has(sn)) return;
-        var scoreKey = sn + '_分数';
-        if (!headers.includes(scoreKey)) headers.push(scoreKey);
-        if (sh.gradeIndex !== -1) {
+        if (scoredSubjectSet.has(sn)) {
+            var scoreKey = sn + '_分数';
+            if (!headers.includes(scoreKey)) headers.push(scoreKey);
+        }
+        if (gradedSubjectSet.has(sn)) {
             var gradeKey = sn + '_等级';
             if (!headers.includes(gradeKey)) headers.push(gradeKey);
         }
@@ -7654,12 +7693,11 @@ function qkBuildCollectiveDataFromBatchSnapshot(batch) {
                 row[hkey + '_答案'] = sq ? (sq.studentAnswer || '') : '';
             });
         });
-        subjectHeaders.forEach(function(sh) {
-            var sn = sh.name;
+        analysisSubjectNames.forEach(function(sn) {
             if (META_NAMES.has(sn)) return;
             var sd = stu.subjects && stu.subjects[sn];
-            row[sn + '_分数'] = sd ? sd.score : '';
-            if (sh.gradeIndex !== -1) row[sn + '_等级'] = sd ? sd.grade : '';
+            if (scoredSubjectSet.has(sn)) row[sn + '_分数'] = sd ? sd.score : '';
+            if (gradedSubjectSet.has(sn)) row[sn + '_等级'] = sd ? sd.grade : '';
         });
         return row;
     });
@@ -12189,10 +12227,10 @@ function getClassAverageRankSnapshot(data, subjectName, className) {
 function getClassSubjectRankRowsForReport(className, compareBatch) {
     var totalName = getTotalSubjectName(allSubjectHeaders);
     var subjectNames = [];
-    if (totalName) subjectNames.push(totalName);
-    (allSubjectHeaders || []).forEach(function(h) {
-        if (!h || h.scoreIndex === -1 || !h.name || h.name === totalName) return;
-        if (subjectNames.indexOf(h.name) < 0) subjectNames.push(h.name);
+    if (totalName && subjectHasScoreData(combinedStudentData, totalName)) subjectNames.push(totalName);
+    getScoredSubjectNames(combinedStudentData, allSubjectHeaders).forEach(function(name) {
+        if (!name || name === totalName) return;
+        if (subjectNames.indexOf(name) < 0) subjectNames.push(name);
     });
     return subjectNames.map(function(subjectName) {
         var current = getClassAverageRankSnapshot(combinedStudentData, subjectName, className);
@@ -12469,9 +12507,9 @@ function renderClassTierChart(scores, students, totalName) {
 function getClassReportTotalFullMark(totalName) {
     var configured = getSubjectFullMarksFromInputs();
     var fullMarks = expandSubjectFullMarks(configured, combinedStudentData);
-    var subjectNames = allSubjectHeaders.filter(function(header) {
-        return header && header.scoreIndex !== -1 && header.name !== totalName;
-    }).map(function(header) { return String(header.name || '').replace(/\s/g, ''); });
+    var subjectNames = getScoredSubjectNames(combinedStudentData, allSubjectHeaders)
+        .filter(function(name) { return name !== totalName; })
+        .map(function(name) { return String(name || '').replace(/\s/g, ''); });
     var englishCombinedNames = ['英语合并', '英语总分', '英语合', '英语/听说'];
     var hasEnglishCombined = subjectNames.some(function(name) { return englishCombinedNames.indexOf(name) >= 0; });
     var hasEnglishWritten = subjectNames.some(function(name) { return name === '英语' || name === '英语笔试'; });
@@ -16192,13 +16230,8 @@ function generateSingleSubjectClassReport(classNames, subjectName, threshold, ti
     // Validate grade data if grade mode selected
     var tierFallbackNote = '';
     if (tierMode === 'grade') {
-        var sh = allSubjectHeaders.find(function(h) { return h.name === subjectName; });
-        var hasGradeCol = sh && sh.gradeIndex !== -1;
-        var hasGradeVal = students.some(function(s) {
-            var sd = s.subjects[subjectName];
-            return sd && sd.grade && String(sd.grade).trim() !== '';
-        });
-        if (!hasGradeCol || !hasGradeVal) {
+        var hasGradeVal = subjectHasGradeData(students, subjectName);
+        if (!hasGradeVal) {
             tierMode = 'rank';
             tierFallbackNote = '> ⚠️ 所选科目无等级数据，已自动切换为排名分层';
         }
@@ -17463,13 +17496,13 @@ function renderClassDiffAll() {
     // Populate rank sorting subject dropdown
     var rankSubjectSel = document.getElementById('classDiffRankSubject');
     var prevVal = rankSubjectSel.value;
-    var scoredSubjects = allSubjectHeaders.filter(function(sh) { return sh.scoreIndex !== -1; });
+    var scoredSubjects = getScoredSubjectNames(combinedStudentData, allSubjectHeaders);
     rankSubjectSel.innerHTML = '';
-    var totalName = getTotalSubjectName(allSubjectHeaders);
-    scoredSubjects.forEach(function(sh) {
+    var totalName = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
+    scoredSubjects.forEach(function(subjectName) {
         var opt = document.createElement('option');
-        opt.value = sh.name;
-        opt.textContent = sh.name;
+        opt.value = subjectName;
+        opt.textContent = subjectName;
         rankSubjectSel.appendChild(opt);
     });
     if (prevVal && Array.from(rankSubjectSel.options).some(function(o) { return o.value === prevVal; })) {
@@ -17482,10 +17515,10 @@ function renderClassDiffAll() {
     var boxSubjSel = document.getElementById('classDiffBoxSubject');
     var prevBoxVal = boxSubjSel.value;
     boxSubjSel.innerHTML = '';
-    scoredSubjects.forEach(function(sh) {
+    scoredSubjects.forEach(function(subjectName) {
         var opt = document.createElement('option');
-        opt.value = sh.name;
-        opt.textContent = sh.name;
+        opt.value = subjectName;
+        opt.textContent = subjectName;
         boxSubjSel.appendChild(opt);
     });
     if (prevBoxVal && Array.from(boxSubjSel.options).some(function(o) { return o.value === prevBoxVal; })) {
@@ -17497,12 +17530,12 @@ function renderClassDiffAll() {
 }
 
 function renderClassDiffMeanTable() {
-    // Get subjects that have scoreIndex, excluding metadata-only entries
-    var subjectHeaders = allSubjectHeaders.filter(function(sh) { return sh.scoreIndex !== -1; });
-    var totalName = getTotalSubjectName(allSubjectHeaders);
+    // 分析层直接依据合并后的学生分数数据确定科目，不依赖原 Excel 的 scoreIndex。
+    var scoredSubjects = getScoredSubjectNames(combinedStudentData, allSubjectHeaders);
+    var totalName = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
     // Build display list: subjects + total at end
-    var displaySubjects = subjectHeaders.filter(function(sh) { return sh.name !== totalName; }).map(function(sh) { return sh.name; });
-    if (totalName) displaySubjects.push(totalName);
+    var displaySubjects = scoredSubjects.filter(function(name) { return name !== totalName; });
+    if (totalName && scoredSubjects.indexOf(totalName) >= 0) displaySubjects.push(totalName);
     if (!displaySubjects.length) {
         document.getElementById('classDiffMeanSection').style.display = 'none';
         return;
@@ -17956,10 +17989,10 @@ async function exportHeatmapSubjectRosterImage() {
 // Re-render heatmap when bucket size or class changes
 function reRenderHeatmap() {
     var stats = [], classNames = [], displaySubjects = [];
-    var totalName = getTotalSubjectName(allSubjectHeaders);
-    var subjectHeaders = allSubjectHeaders.filter(function(sh) { return sh.scoreIndex !== -1; });
-    displaySubjects = subjectHeaders.filter(function(sh) { return sh.name !== totalName; }).map(function(sh) { return sh.name; });
-    if (totalName) displaySubjects.push(totalName);
+    var totalName = getTotalSubjectName(allSubjectHeaders, combinedStudentData);
+    var scoredSubjects = getScoredSubjectNames(combinedStudentData, allSubjectHeaders);
+    displaySubjects = scoredSubjects.filter(function(name) { return name !== totalName; });
+    if (totalName && scoredSubjects.indexOf(totalName) >= 0) displaySubjects.push(totalName);
     renderClassDiffHeatmap(stats, classNames, displaySubjects);
 }
 document.getElementById('heatmapBucketSelect').addEventListener('change', reRenderHeatmap);
@@ -18049,7 +18082,7 @@ async function exportClassDiffGradeSubjectImage() {
 
 function renderClassDiffGradeDistribution() {
     gradeDistributionExportContext = null;
-    var gradeSubjects = allSubjectHeaders.filter(function(sh) { return sh.gradeIndex !== -1; });
+    var gradeSubjects = getGradedSubjectNames(combinedStudentData, allSubjectHeaders).map(function(name) { return { name:name }; });
     if (!gradeSubjects.length) {
         document.getElementById('classDiffGradeSection').style.display = 'none';
         return;
