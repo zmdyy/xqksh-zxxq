@@ -47,12 +47,32 @@ else if(phase==='question'&&m&&txt.length>3){curr={n:m[1],text:m[2],images:[],ty
 else if(curr&&txt)curr.text+=(curr.text?'\n':'')+txt;
 if(curr)curr.images.push(...await imagesFrom(p))}}
 if(!questions.length)throw Error('没有识别到编号题（格式应类似 1．题干）');let added=0,merged=0;for(let s of questions){let ans=answers.get(s.n),id='q'+hash(norm(s.text)+'|'+s.images.map(x=>hash(x.data||'')).join('|')),q={id,source:file.name,sourceNo:s.n,type:s.type,stem:s.text,answer:ans?.text||'',images:s.images,answerImages:ans?.images||[],difficulty:'',tags:[],concept_ids:[],relation:'pending',review:'pending',revision:1,parts:[],sourceRefs:[{file:file.name,no:s.n}],createdAt:now(),updatedAt:now()};let old=state.questions.find(x=>x.id===id&&sameMedia(x.images,q.images));if(old){old.sourceRefs=old.sourceRefs||[];if(!old.sourceRefs.some(x=>x.file===file.name&&x.no===s.n))old.sourceRefs.push({file:file.name,no:s.n});if(!old.answer&&q.answer)old.answer=q.answer;if(!old.answerImages?.length&&q.answerImages.length)old.answerImages=q.answerImages;applyIndex(old);await put('questions',old);merged++;continue}if(state.questions.some(x=>x.id===id))q.id+='-'+hash(file.name+s.n);applyIndex(q);state.questions.push(q);await put('questions',q);added++}tell(file.name+'：新入库 '+added+' 道，合并一致题 '+merged+' 道。仍需审核答案及图片。')}
+
+async function importPrivateZip(file){
+if(!window.JSZip)throw Error('缺少 JSZip');
+const zip=await JSZip.loadAsync(await file.arrayBuffer());
+const entry=zip.file('bank.json');if(!entry)throw Error('压缩包缺少 bank.json');
+const j=JSON.parse(await entry.async('text'));
+if(j.format!=='physics-training-bank-v1'||!Array.isArray(j.questions))throw Error('非物理训练题库私人导入包');
+if(!confirm('检测到 '+j.questions.length+' 道待审核题目。全部仅保存到本机浏览器，不上传GitHub。确认导入？'))return;
+const cache={};
+for(const q of j.questions){
+for(const arr of [q.images||[],q.answerImages||[]]){
+for(const im of arr){if(!im.ref||im.data)continue;let ref=im.ref,blob=zip.file(ref);if(!blob)throw Error('缺少图片：'+ref);
+if(!cache[ref]){const ext=ref.split('.').pop().toLowerCase(),mime=ext==='jpg'||ext==='jpeg'?'image/jpeg':ext==='svg'?'image/svg+xml':ext==='gif'?'image/gif':'image/png';cache[ref]='data:'+mime+';base64,'+await blob.async('base64')}
+im.data=cache[ref];delete im.ref}
+}
+}
+await restoreObject(j);
+tell('私人题库包已导入 '+j.questions.length+' 条。答案、公式与子题配图均需教师核对，不自动公开。')
+}
+
 async function importJson(file){let j=JSON.parse(await file.text());if(j.format==='physics-training-bank-v1'){if(confirm('恢复题库备份？相同ID的题目与历史将更新。'))await restoreObject(j);return}let arr=Array.isArray(j)?j:(j.questions||j.items);if(!Array.isArray(arr))throw Error('JSON不是题目数组或题库备份');let n=0;for(let x of arr){if(!x.stem&&!x.text)continue;let q={id:x.id||'q'+hash(norm(x.stem||x.text)),source:x.source||file.name,sourceNo:x.sourceNo||x.question_no||'',type:x.type||'其他',stem:x.stem||x.text,answer:x.answer||'',images:x.images||[],answerImages:x.answerImages||[],tags:uniqueTags(x.tags||x.knowledge_points),difficulty:x.difficulty||'',concept_ids:[],relation:x.relation||'pending',review:'pending',revision:1,parts:x.parts||[],sourceRefs:x.sourceRefs||[],createdAt:now(),updatedAt:now()};if(state.questions.some(y=>y.id===q.id))continue;applyConcepts(q);state.questions.push(q);await put('questions',q);n++}tell('新导入 '+n+' 条 JSON 记录。没有完整图文的记录不能直接打印。')}
 
 function bind(){
 for(let id of ['search','classFilter'])$(id).addEventListener('input',render);
 for(let id of ['conceptFilter','conceptFilter2','typeFilter','difficultyFilter','usedFilter','relationFilter','reviewFilter'])$(id).addEventListener('change',render);
-$('fileInput').addEventListener('change',async e=>{let files=Array.from(e.target.files||[]);e.target.value='';for(let file of files){try{tell('正在本地处理 '+file.name);if(/\.docx$/i.test(file.name))await parseDocx(file);else if(/\.doc$/i.test(file.name))await parseDocIndex(file);else if(/\.json$/i.test(file.name))await importJson(file);else throw Error('文件格式不支持')}catch(ex){tell(file.name+'：'+ex.message,true);console.error(ex)}}render()});
+$('fileInput').addEventListener('change',async e=>{let files=Array.from(e.target.files||[]);e.target.value='';for(let file of files){try{tell('正在本地处理 '+file.name);if(/\.docx$/i.test(file.name))await parseDocx(file);else if(/\.doc$/i.test(file.name))await parseDocIndex(file);else if(/\.json$/i.test(file.name))await importJson(file);else if(/\.zip$/i.test(file.name))await importPrivateZip(file);else throw Error('文件格式不支持')}catch(ex){tell(file.name+'：'+ex.message,true);console.error(ex)}}render()});
 $('results').addEventListener('click',e=>{let b=e.target.closest('button');if(!b)return;if(b.dataset.add)addQuestion(b.dataset.add);if(b.dataset.edit)openEditor(b.dataset.edit)});
 $('basket').addEventListener('click',e=>{let b=e.target.closest('button');if(!b)return;let val=b.dataset.remove??b.dataset.up??b.dataset.down;if(val==null)return;let n=Number(val);if(b.dataset.remove!=null)state.basket.splice(n,1);else if(b.dataset.up!=null&&n>0)[state.basket[n-1],state.basket[n]]=[state.basket[n],state.basket[n-1]];else if(b.dataset.down!=null&&n<state.basket.length-1)[state.basket[n+1],state.basket[n]]=[state.basket[n],state.basket[n+1]];renderBasket()});
 $('clearBasketBtn').onclick=()=>{state.basket=[];renderBasket()};
