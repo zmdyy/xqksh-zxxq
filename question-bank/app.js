@@ -62,7 +62,14 @@ $('backupBtn').onclick=()=>backup(false);$('backupHistoryBtn').onclick=()=>backu
 }
 function field(name,id,value,textarea){return '<label class="wide">'+esc(name)+(textarea?'<textarea id="'+id+'">'+esc(value)+'</textarea>':'<input id="'+id+'" value="'+esc(value)+'">')+'</label>'}
 function splitParts(stem){let s=String(stem||''),re=/[（(]\s*(\d{1,2})\s*[）)]/g,m,marks=[];while((m=re.exec(s)))marks.push({index:m.index,end:re.lastIndex,id:m[1],label:'('+m[1]+')'});if(marks.length<2||marks[0].id!=='1'||marks[1].id!=='2')return [];return marks.map((p,i)=>({id:String(i+1),label:p.label,sharedContext:s.slice(0,marks[0].index).trim(),stem:s.slice(p.end,marks[i+1]?.index??s.length).trim()}))}
-function partsEditor(q){$('partsEditor').innerHTML=(q.parts||[]).length?'<h3>独立子题（教师核对图片归属）</h3>'+(q.parts||[]).map((p,i)=>'<label style="display:block;margin:8px 0">'+esc(p.label)+'<textarea id="part_'+i+'" style="min-height:74px;width:100%">'+esc(p.stem)+'</textarea></label>').join(''):'<p class="hint">默认保留整题，识别子题后仍需人工核对共用材料、条件及配图。</p>'}
+function partsEditor(q){
+const rows=(q.parts||[]).map((p,i)=>{
+const thumbs=(q.images||[]).map((m,j)=>'<label class="part-image"><input type="checkbox" data-part-image="'+i+':'+j+'" '+((p.imageIndexes||[]).includes(j)?'checked':'')+'><img alt="题目原图" src="'+esc(mediaSrc(m))+'">原图'+(j+1)+'</label>').join('');
+const answers=(q.answerImages||[]).map((m,j)=>'<label class="part-image"><input type="checkbox" data-part-answer-image="'+i+':'+j+'" '+((p.answerImageIndexes||[]).includes(j)?'checked':'')+'><img alt="答案图" src="'+esc(mediaSrc(m))+'">答案图'+(j+1)+'</label>').join('');
+return '<div class="part-review"><strong>'+esc(p.label)+'</strong><label>子题题干（自动继承公共情境）<textarea id="part_'+i+'">'+esc(p.stem)+'</textarea></label><label>此小问的答案与简短解析<textarea id="partAnswer_'+i+'">'+esc(p.answer||'')+'</textarea></label><div class="part-image-picker"><b>本小问需要的原图（逐张勾选，勿带入其他小问图片）</b>'+thumbs+'</div><div class="part-image-picker"><b>此小问对应的答案图</b>'+answers+'</div></div>'
+}).join('');
+$('partsEditor').innerHTML=(q.parts||[]).length?'<h3>独立小问 · 图与答案须教师逐项核对</h3>'+rows:'<p class="hint">默认保持整题；只有子题能独立完成才拆分。</p>'
+}
 function openEditor(id){let q=state.questions.find(x=>x.id===id);if(!q)return;state.current=id;$('editorTitle').textContent='审核题目 · '+q.source+' · 第'+q.sourceNo+'题';
 $('editorBody').innerHTML='<div class="editor-fields">'+field('题干（包含公共情境）','editStem',q.stem,true)+field('答案与简短解析','editAnswer',q.answer,true)+field('知识点（用分号分隔）','editTags',(q.tags||[]).join('；'))+
 '<label>题型<select id="editType">'+['作图题','选择题','填空题','实验题','计算题','综合题','其他'].map(x=>'<option '+(q.type===x?'selected':'')+'>'+x+'</option>').join('')+'</select></label>'+
@@ -76,7 +83,12 @@ partsEditor(q);
 $('autoSplit').onclick=()=>{q.parts=splitParts(q.stem);partsEditor(q);if(!q.parts.length)alert('没有检测到明确的（1）（2）连续小问，保留整题。')};
 $('clearParts').onclick=()=>{q.parts=[];partsEditor(q)};
 $('editorBody').onclick=async e=>{let b=e.target.closest('button');if(!b)return;if(b.dataset.redraw!=null)openDraw(q,Number(b.dataset.redraw));if(b.dataset.toggle!=null){let m=q.images[Number(b.dataset.toggle)];m.useRedraw=!m.useRedraw;await put('questions',q);openEditor(q.id)}};
-$('saveEditor').onclick=async()=>{q.stem=$('editStem').value.trim();q.answer=$('editAnswer').value.trim();q.tags=uniqueTags($('editTags').value);q.type=$('editType').value;q.difficulty=$('editDifficulty').value;q.relation=$('editRelation').value;q.review=$('editReview').value;q.parts=(q.parts||[]).map((p,i)=>({...p,stem:($('part_'+i)?.value||p.stem).trim()}));q.revision++;q.updatedAt=now();applyConcepts(q);try{await put('questions',q);$('editorDialog').close();render();tell('已保存题目，历史使用事件继续保留原版本信息。')}catch(e){tell(e.message,true)}};
+$('saveEditor').onclick=async()=>{q.stem=$('editStem').value.trim();q.answer=$('editAnswer').value.trim();q.tags=uniqueTags($('editTags').value);q.type=$('editType').value;q.difficulty=$('editDifficulty').value;q.relation=$('editRelation').value;q.review=$('editReview').value;q.parts=(q.parts||[]).map((p,i)=>{
+const checked=kind=>Array.from($('partsEditor').querySelectorAll('input[data-part-'+kind+']')).filter(el=>el.checked&&el.dataset['part'+kind.split('-').map(v=>v[0].toUpperCase()+v.slice(1)).join('')].startsWith(i+':')).map(el=>Number(el.value));
+const imgSel=Array.from($('partsEditor').querySelectorAll('[data-part-image]')).filter(el=>el.checked&&el.dataset.partImage.startsWith(i+':')).map(el=>Number(el.dataset.partImage.split(':')[1]));
+const ansSel=Array.from($('partsEditor').querySelectorAll('[data-part-answer-image]')).filter(el=>el.checked&&el.dataset.partAnswerImage.startsWith(i+':')).map(el=>Number(el.dataset.partAnswerImage.split(':')[1]));
+return {...p,stem:($('part_'+i)?.value||p.stem).trim(),answer:($('partAnswer_'+i)?.value||'').trim(),imageIndexes:imgSel,answerImageIndexes:ansSel,verifiedImages:true}
+});q.revision++;q.updatedAt=now();applyConcepts(q);try{await put('questions',q);$('editorDialog').close();render();tell('已保存题目，历史使用事件继续保留原版本信息。')}catch(e){tell(e.message,true)}};
 $('removeEditor').onclick=async()=>{if(!confirm('从当前浏览器本地题库删除？原始文件不会被删除，历史事件保留。'))return;await del('questions',id);state.questions=state.questions.filter(x=>x.id!==id);state.basket=state.basket.filter(x=>x.split('::')[0]!==id);$('editorDialog').close();render()};
 $('editorDialog').showModal()}
 function download(blob,name){let url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2500)}
@@ -85,7 +97,18 @@ async function restore(file){let j=JSON.parse(await file.text());if(j.format!=='
 async function restoreObject(j){for(let q of j.questions||[]){let i=state.questions.findIndex(x=>x.id===q.id);if(i>=0)state.questions[i]=q;else state.questions.push(q);applyConcepts(q);await put('questions',q)}for(let e of j.events||[]){let i=state.events.findIndex(x=>x.id===e.id);if(i>=0)state.events[i]=e;else state.events.push(e);await put('events',e)}state.meta={...state.meta,...(j.meta||{})};await put('settings',{id:'meta',value:state.meta})}
 async function assignBasket(){if(!state.basket.length)return tell('试题篮为空',true);let cl=prompt('实际布置给哪个班级？',$('classFilter').value||'801');if(!cl||!cl.trim())return;let day=prompt('实际布置日期（YYYY-MM-DD）',today());if(!day)return;if(!/^\d{4}-\d{2}-\d{2}$/.test(day))return tell('日期格式错误',true);let title=prompt('练习名称','物理精准练习')||'物理精准练习';let items=state.basket.map(id=>({id,revision:findQuestion(id)?.revision||1})),fingerprint=hash(cl.trim()+'|'+day+'|'+items.map(x=>x.id).sort().join('|'));if(state.events.some(e=>e.status==='assigned'&&e.fingerprint===fingerprint))return tell('同班同日同一套题已记录，避免重复计次。',true);if(!confirm('已经实际布置或印发给学生？只有确认后才计入使用次数。'))return;let ev={id:uid(),fingerprint,className:cl.trim(),date:day+'T12:00:00',title,items,status:'assigned',createdAt:now()};state.events.push(ev);await put('events',ev);$('classFilter').value=cl.trim();render();tell('已记录 '+cl+' 班实际布置 '+items.length+'题。')}
 
-function printable(id){let q=findQuestion(id);if(!q)return null;let pid=id.split('::')[1],p=(q.parts||[]).find(x=>x.id===pid);return {id,q,stem:p?[p.sharedContext,p.label+' '+p.stem].filter(Boolean).join('\n'):q.stem,answer:q.answer||'答案暂缺，请教师审核后使用',images:(q.images||[]).map(mediaSrc).filter(Boolean),answerImages:(q.answerImages||[]).map(mediaSrc).filter(Boolean)}}
+function printable(id){
+const q=findQuestion(id);if(!q)return null;
+const pid=id.split('::')[1],p=(q.parts||[]).find(x=>x.id===pid);
+if(pid&&!p)throw Error('子题不存在：'+id);
+if(p&&q.images?.length&&!p.verifiedImages)throw Error('第'+q.sourceNo+p.label+'题的配图尚未确认，请在“审核 / 拆题”中勾选属于此小问的原图。');
+const subset=(arr,indexes)=>p&&Array.isArray(indexes)?indexes.map(i=>arr[i]).filter(Boolean):arr;
+return {id,q,
+stem:p?[p.sharedContext,p.label+' '+p.stem].filter(Boolean).join('\n'):q.stem,
+answer:p?(p.answer||'该小问答案尚未单独审核'):q.answer||'答案暂缺，请教师审核后使用',
+images:subset(q.images||[],p?.imageIndexes).map(mediaSrc).filter(Boolean),
+answerImages:subset(q.answerImages||[],p?.answerImageIndexes).map(mediaSrc).filter(Boolean)}
+}
 function autoLayout(arr){let mode=$('layout').value;if(mode!=='auto')return mode;return arr.every(x=>x.stem.length<145&&x.images.length<=1&&x.q.type!=='实验题')?'double':'single'}
 function feedbackHtml(){return $('feedback').checked?'<table class="feedback"><tr><th colspan="2">完成后勾选（不影响评分）</th></tr><tr><td>完成：□ 独立　□ 某一步卡住　□ 需要提示</td><td>针对性：□ 正好　□ 部分相关　□ 不适合</td></tr><tr><td colspan="2">困难：□ 题图理解　□ 规律记忆　□ 步骤衔接　□ 作图表达　□ 其他：________</td></tr></table>':''}
 function paperImages(imgs){return imgs.length?'<div class="images">'+imgs.map(s=>'<img alt="题目插图" src="'+esc(s)+'">').join('')+'</div>':''}
