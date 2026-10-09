@@ -24,7 +24,12 @@ async function init(){try{db=await openDB();state.questions=await getAll('questi
 async function loadCatalog(){try{let r=await fetch('../data/knowledge/exam-annotation-catalog.json');if(!r.ok)throw Error('HTTP '+r.status);let j=await r.json();state.catalog=j.concepts||[];state.catalog.forEach(c=>{state.catalogByName.set(norm(c.name),c);state.catalogById.set(c.concept_id,c)});for(let id of ['conceptFilter','conceptFilter2'])$(''+id).insertAdjacentHTML('beforeend',state.catalog.map(c=>'<option value="'+esc(c.name)+'">'+esc(c.module+' / '+c.name)+'</option>').join(''));state.questions.forEach(applyConcepts)}catch(e){tell('知识点目录暂不可用，仍可通过题目文字检索。',true)}}
 function actualAssignments(id,cls){return state.events.filter(e=>e.status==='assigned'&&(!cls||e.className===cls)&&e.items.some(t=>t.id.split('::')[0]===id))}
 function usedRecently(id,cls){return actualAssignments(id,cls).some(e=>new Date(e.date).getTime()>Date.now()-30*86400000)}
-function matches(q){let term=norm($('search').value);if(term&&!norm([q.stem,q.source,q.sourceNo,(q.tags||[]).join(' '),q.type].join(' ')).includes(term))return false;let a=$('conceptFilter').value,b=$('conceptFilter2').value,m=$('relationFilter').value;if(a&&b){if(m==='any'){if(!(q.tags||[]).includes(a)&&!(q.tags||[]).includes(b))return false}else{if(!(q.tags||[]).includes(a)||!(q.tags||[]).includes(b))return false;if(m==='cross'&&q.relation!=='cross')return false;if(m==='parallel'&&!['parallel','options'].includes(q.relation))return false}}else if(a&&!(q.tags||[]).includes(a))return false;else if(b&&!(q.tags||[]).includes(b))return false;
+function tagMatches(q,label){
+const target=norm(label);if(!target)return true;
+if((q.tags||[]).some(t=>{const v=norm(t);return v===target||(Math.min(v.length,target.length)>=3&&(v.includes(target)||target.includes(v)))}))return true;
+const cid=state.catalogByName.get(target)?.concept_id;return Boolean(cid&&(q.concept_ids||[]).includes(cid))
+}
+function matches(q){let term=norm($('search').value);if(term&&!norm([q.stem,q.source,q.sourceNo,(q.tags||[]).join(' '),q.type].join(' ')).includes(term))return false;let a=$('conceptFilter').value,b=$('conceptFilter2').value,m=$('relationFilter').value;if(a&&b){if(m==='any'){if(!tagMatches(q,a)&&!tagMatches(q,b))return false}else{if(!tagMatches(q,a)||!tagMatches(q,b))return false;if(m==='cross'&&q.relation!=='cross')return false;if(m==='parallel'&&!['parallel','options'].includes(q.relation))return false}}else if(a&&!tagMatches(q,a))return false;else if(b&&!tagMatches(q,b))return false;
 if($('typeFilter').value&&q.type!==$('typeFilter').value)return false;if($('difficultyFilter').value&&q.difficulty!==$('difficultyFilter').value)return false;if($('reviewFilter').value&&q.review!==$('reviewFilter').value)return false;let status=$('usedFilter').value,cls=$('classFilter').value.trim();if(status==='unused'&&actualAssignments(q.id,'').length)return false;if(status==='used'&&!actualAssignments(q.id,'').length)return false;if(status==='recent'&&usedRecently(q.id,cls))return false;return true}
 function mediaSrc(img){return img&&img.useRedraw&&img.redrawPng?img.redrawPng:(img?.data||img?.src||'')}
 function findQuestion(id){return state.questions.find(q=>q.id===id.split('::')[0])}
@@ -149,7 +154,7 @@ let lows=Array.from($('printPreview').querySelectorAll('img')).filter(im=>im.nat
 $('previewStatus').textContent=(bad.length?bad.join('、')+'内容溢出：请删题或调整栏数。':'A4 正反面符合当前浏览器预览尺寸。')+(lows?' '+lows+'幅图像像素偏低，请试印核查。':'');
 $('previewStatus').dataset.overflow=bad.length?'yes':'no'}
 async function exportWord(){
-try{let p=buildPages();if(!state.preview){await showPreview();tell('请先核对预览，再点击“导出 Word”。');return}if(state.preview.layout!==p.layout||state.preview.front!==p.front||state.preview.back!==p.back){await showPreview();tell('内容或设置已经变化，请重新核对预览。');return}
+try{let p=buildPages();let notApproved=p.items.filter(x=>x.q.review!=='approved');if(notApproved.length)throw Error('有 '+notApproved.length+' 道题尚未教师审核。请先打开“审核 / 拆题”，核对题干、图、答案后标记已审核。');if(!state.preview){await showPreview();tell('请先核对预览，再点击“导出 Word”。');return}if(state.preview.layout!==p.layout||state.preview.front!==p.front||state.preview.back!==p.back){await showPreview();tell('内容或设置已经变化，请重新核对预览。');return}
 if($('previewStatus').dataset.overflow==='yes')throw Error('正反面有内容溢出，请减少题目或切换布局');
 if(!window.htmlDocx||typeof htmlDocx.asBlob!=='function')throw Error('html-docx.js 未加载，无法生成 Word');
 let blob=htmlDocx.asBlob(printDocHtml(p),{orientation:'portrait',margins:{top:794,right:850,bottom:794,left:850}});
