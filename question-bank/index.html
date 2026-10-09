@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>物理精准练习题库 · 学情可视化</title>
+<link rel="stylesheet" href="./style.css">
+<script src="../jszip.min.js"></script>
+<script src="../html-docx.js"></script>
+</head>
+<body>
+<header class="topbar"><div><a href="../index.html">← 学情分析</a><a href="../knowledge/index.html">✦ 知识星球</a><h1>物理精准练习题库</h1><span class="sub">教师选题 · 一页练习 · 背面答案 · 本地保存</span></div><div class="top-actions"><button id="backupBtn" class="muted">备份题库与记录</button><label class="button muted">恢复备份<input type="file" id="restoreInput" accept=".json" hidden></label></div></header>
+<main>
+<div class="privacy">本页面在浏览器本地解析和保存教师上传的题目，<strong>不会自动上传到公开 GitHub 仓库</strong>。请定期导出备份；换设备不会自动同步。知识星球的84道迷思诊断题不纳入训练题库。</div>
+<div class="toolbar">
+<label class="button primary">＋ 导入 Word / 题目目录 / JSON<input id="fileInput" type="file" accept=".docx,.doc,.json" multiple hidden></label>
+<input id="search" placeholder="搜索题干、知识点、题号、来源" aria-label="搜索题目">
+<select id="conceptFilter" aria-label="按知识点筛选"><option value="">全部知识点</option></select>
+<select id="typeFilter" aria-label="按题型筛选"><option value="">全部题型</option><option>作图题</option><option>选择题</option><option>填空题</option><option>实验题</option><option>计算题</option><option>综合题</option><option>其他</option></select>
+<select id="difficultyFilter"><option value="">全部难度</option><option>容易</option><option>普通</option><option>困难</option></select>
+<select id="usedFilter"><option value="">全部使用状态</option><option value="unused">从未布置</option><option value="recent">本班30天内未使用</option><option value="used">已布置过</option></select>
+</div>
+<div class="filters"><label>关联知识点 <select id="conceptFilter2"><option value="">不限定</option></select></label><label>知识点关系 <select id="relationFilter"><option value="any">任一知识点 / 单点检索</option><option value="both">两个标签同时存在</option><option value="cross">必须联合运用</option><option value="parallel">并列小问 / 选项辨析</option></select></label><label>检索班级 <input id="classFilter" value="801" maxlength="24"></label><label>题目状态 <select id="reviewFilter"><option value="">全部</option><option value="approved">已审核</option><option value="pending">待审核</option></select></label></div>
+<div id="status" role="status"></div>
+<div class="workspace">
+<section class="library"><div class="section-title"><h2>题目资源</h2><span id="count"></span></div><div id="results" class="results"><p class="empty">尚无题目。点击左上角导入 .docx 题目和配套 .doc 目录。也可以先查看示例题。</p></div></section>
+<aside class="sidebar">
+<div class="section-title"><h2>试题篮</h2><span id="basketCount">0道</span></div>
+<div id="basket" class="basket"></div>
+<div class="layout-options"><label>排版 <select id="layout"><option value="auto">自动</option><option value="single">单栏</option><option value="double">双栏</option></select></label><label>答案 <select id="answerMode"><option value="back">第2页（双面打印）</option><option value="separate">答案另页</option></select></label><label><input type="checkbox" id="feedback" checked> 末尾附紧凑反馈表</label></div>
+<div class="buttons"><button id="previewBtn" class="primary">预览 A4 正反面</button><button id="wordBtn">导出一个 Word</button><button id="assignBtn">确认实际布置</button><button id="clearBasketBtn" class="muted">清空试题篮</button></div>
+<div class="info">建议一次1—3题。仅“确认实际布置”计入使用次数；加入试题篮、预览或导出均不计次。若超出一页，将提示删题或调整排版，不自动缩成小字。</div>
+<h3>使用历史</h3><div id="usageSummary" class="history"></div><button id="backupHistoryBtn" class="muted">备份记录</button>
+</aside>
+</div>
+</main>
+<dialog id="editorDialog" class="dialog"><form method="dialog"><button class="close">×</button></form><h2 id="editorTitle">题目审核</h2><div id="editorBody"></div></dialog>
+<dialog id="previewDialog" class="preview-dialog"><div class="preview-head"><h2>打印预览</h2><div><span id="previewStatus"></span><button id="previewExportBtn">导出 Word</button><button id="previewCloseBtn" class="muted">关闭</button></div></div><div id="printPreview" class="sheet-container"></div></dialog>
+<dialog id="drawDialog" class="dialog"><form method="dialog"><button class="close">×</button></form><h2>教师手工重绘 · SVG</h2><p class="hint">原图始终保留。右侧手工绘制的SVG不包含左侧低清原图。请核对物理结构后点击“采用重绘图”。</p><div class="draw-cols"><div><strong>原图（只作为对照）</strong><img id="drawOriginal" alt="原始题图"></div><div><strong>可编辑矢量画布</strong><svg id="drawCanvas" viewBox="0 0 800 500" aria-label="SVG手绘"></svg></div></div><div class="buttons"><select id="drawMode"><option value="line">直线（点两次）</option><option value="arrow">箭头（点两次）</option><option value="rect">矩形（点两次）</option><option value="ellipse">椭圆（点两次）</option><option value="text">文字（点一次）</option></select><input id="drawText" value="F" aria-label="要添加的文字"><button id="drawUndo">撤销一步</button><button id="drawReset">清空重画</button><button id="drawSave" class="primary">采用重绘图（保留原图）</button></div></dialog>
+<script src="./app.js"></script>
+</body>
+</html>
