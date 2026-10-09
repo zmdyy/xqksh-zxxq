@@ -3326,11 +3326,16 @@ function renderDiagnosticIntro(star) {
   const group = diagnosticGroupByConcept.get(star.id);
   activeDiagnosticSession = null;
   panelDiagnostic.innerHTML = '';
-  if (!group || star.nodeType === 'meta' || star.nodeType === 'satellite') {
+  if (star.nodeType === 'meta' || star.nodeType === 'satellite') {
     panelDiagnosticWrap.style.display = 'none';
     return;
   }
   panelDiagnosticWrap.style.display = 'block';
+  const bankLink = '<a href="../question-bank/index.html?concept_id=' + encodeURIComponent(star.id) + '" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;margin-top:10px;padding:11px;border-radius:10px;background:#155e75;color:white;font-weight:800">▣ 此知识点的精准训练题库 ↗</a>';
+  if (!group) {
+    panelDiagnostic.innerHTML = '<div class="diag-intro">该知识点暂无独立迷思诊断题，可进入训练题库筛选巩固题。</div>' + bankLink;
+    return;
+  }
   const last = getDiagnosticResult(star.id);
   panelDiagnostic.innerHTML =
     '<div class="diag-intro"><strong>' + group.questions.length + ' 道微型诊断题</strong> · 点击后将在页面中央打开大题卡。' +
@@ -3338,6 +3343,7 @@ function renderDiagnosticIntro(star) {
     (last ? '<br><span style="color:rgba(216,179,90,.9)">上次结果：' + last.correct_count + '/' + last.total + '，可重新诊断。</span>' : '') +
     '</div>' +
     '<button type="button" class="diag-btn" id="diagStartBtn" style="margin-top:11px">打开迷思诊断（' + group.questions.length + '题）</button>';
+  panelDiagnostic.insertAdjacentHTML('beforeend', bankLink);
   const btn = document.getElementById('diagStartBtn');
   if (btn) btn.onclick = function(e) {
     e.preventDefault(); e.stopPropagation();
