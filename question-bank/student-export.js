@@ -2,7 +2,7 @@
    直接复用同仓库 StudentNameSearch 的中文 / 全拼 / 首字母评分算法。 */
 (function(root){
 'use strict';
-let students=[],selected=null,eventsReader=()=>[],currentIndex=-1;
+let students=[],selected=null,eventsReader=()=>[],onSelectionChange=()=>{},currentIndex=-1;
 const $=id=>document.getElementById(id);
 const safe=s=>String(s??'').trim();
 const makeKey=e=>[e.className,e.rawName,e.displayName].join('\u001f');
@@ -80,7 +80,7 @@ function renderSuggestions(){
  }
  list.hidden=false;$('studentPicker').setAttribute('aria-expanded','true');
 }
-function select(entry){selected=entry;$('studentPicker').value=entry.displayName;$('studentSuggestions').hidden=true;$('studentPicker').setAttribute('aria-expanded','false');renderSelected()}
+function select(entry){selected=entry;onSelectionChange();$('studentPicker').value=entry.displayName;$('studentSuggestions').hidden=true;$('studentPicker').setAttribute('aria-expanded','false');renderSelected()}
 function renderHistory(){
  const el=$('studentExportHistory');el.replaceChildren();
  if(!selected||!isStudentMode()){el.textContent='选择一名学生后，可查看该生曾导出过的具体题目。';return}
@@ -96,8 +96,8 @@ function renderHistory(){
  }
 }
 async function init(opts){
- eventsReader=opts?.getEvents||(()=>[]);
- $('studentPicker').addEventListener('input',()=>{selected=null;renderSelected();renderSuggestions()});
+ eventsReader=opts?.getEvents||(()=>[]);onSelectionChange=opts?.onSelectionChange||(()=>{});
+ $('studentPicker').addEventListener('input',()=>{selected=null;onSelectionChange();renderSelected();renderSuggestions()});
  $('studentPicker').addEventListener('keydown',e=>{
    if(e.key==='Escape'){$('studentSuggestions').hidden=true;return}
    if(e.key==='Enter'){let r=matches();if(r.length===1){e.preventDefault();select(r[0])}else if(currentIndex>=0&&r[currentIndex]){e.preventDefault();select(r[currentIndex])}return}
@@ -107,7 +107,7 @@ async function init(opts){
      rows.forEach((row,i)=>row.classList.toggle('active',i===currentIndex));
    }
  });
- $('studentExportMode').addEventListener('change',renderSelected);
+ $('studentExportMode').addEventListener('change',()=>{onSelectionChange();renderSelected()});
  $('studentReloadRoster').addEventListener('click',reloadRoster);
  renderSelected();await reloadRoster();
 }
