@@ -12,3 +12,26 @@
 #previewDialog .sheet.paper .foot{left:15mm;right:15mm;bottom:14mm;width:auto}
 #previewDialog .sheet.paper .images img{max-height:84mm}
 #previewDialog .sheet.paper .double .images img{max-height:58mm}
+
+/* 按学生导出：姓名搜索与历史 */
+.student-export-panel{margin-top:13px;padding:13px 10px;border:1px solid #d5e4f2;border-radius:10px;background:#fbfdff}
+.student-export-panel .section-title h2{font-size:16px}
+.student-export-hint{font-size:12px;line-height:1.55;color:#52647a;margin:9px 0}
+.student-mode{display:flex;align-items:center;gap:8px;font-weight:650;font-size:13px;margin:10px 0}
+.student-select-wrap{position:relative}
+#studentPicker{width:100%;min-height:39px;border:1px solid #b9cbdc;padding:8px 10px;border-radius:7px;background:white;color:#1e3247}
+#studentPicker:focus{outline:2px solid #83b8e2}
+.student-suggestions{position:absolute;left:0;right:0;top:calc(100% + 3px);z-index:50;border:1px solid #b9cfe1;border-radius:8px;background:white;box-shadow:0 12px 25px #132f482f;max-height:255px;overflow:auto}
+.student-suggestions[hidden]{display:none}
+.student-suggestion{display:flex;width:100%;border:0;border-radius:0;justify-content:space-between;text-align:left;align-items:center;padding:10px 11px;gap:8px;border-bottom:1px solid #eef1f4;font-weight:400}
+.student-suggestion:hover,.student-suggestion.active{background:#e5f1fb}
+.student-suggestion small{color:#62788a}
+.student-selected{font-size:12px;color:#8b5424;margin-top:7px;line-height:1.5}
+.student-selected.selected{color:#116e50;font-weight:700}
+.student-roster-status{font-size:11px;color:#6e7f8e;margin:7px 0}
+.student-empty-result{font-size:12px;color:#697e90;padding:10px}
+.student-export-history{font-size:12px;line-height:1.6;border-top:1px solid #dce5f0;margin-top:9px;padding-top:8px;max-height:255px;overflow-y:auto;word-break:break-word}
+.student-history-heading{font-weight:700;margin-bottom:6px}
+.student-export-history details{padding:6px 0;border-top:1px solid #e4ecf5}
+.student-export-history details summary{cursor:pointer;color:#345a7a}
+.student-history-questions{white-space:pre-wrap;padding:7px 8px;background:#edf5fc;margin-top:5px;border-radius:6px}
