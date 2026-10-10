@@ -42,7 +42,7 @@ async function reloadRoster(){
    }
    students=result.sort((a,b)=>a.className.localeCompare(b.className,'zh-CN')||a.displayName.localeCompare(b.displayName,'zh-CN'));
    status.textContent=students.length?'已读取 '+students.length+' 名学生（'+batches.length+' 个成绩批次），姓名仅用于本地组卷。':'未找到已保存的学生名单。请先在学情分析主页上传成绩并保存批次。';
-   if(selected){const oldKey=selected.studentKey;selected=students.find(e=>e.studentKey===oldKey)||null;if(!selected)onSelectionChange()}
+   if(selected&&!selected.manual){const oldKey=selected.studentKey;selected=students.find(e=>e.studentKey===oldKey)||null;if(!selected)onSelectionChange()}
    renderSelected();renderSuggestions();
  }catch(e){status.textContent='读取失败：'+e.message;students=[];selected=null;renderSelected()}
 }
@@ -81,6 +81,36 @@ function renderSuggestions(){
  list.hidden=false;$('studentPicker').setAttribute('aria-expanded','true');
 }
 function select(entry){selected=entry;onSelectionChange();$('studentPicker').value=entry.displayName;$('studentSuggestions').hidden=true;$('studentPicker').setAttribute('aria-expanded','false');renderSelected()}
+
+function searchRoster(text,limit=20){
+ if(!root.StudentNameSearch)return [];
+ return root.StudentNameSearch.search(students,String(text||''),{limit});
+}
+function chooseStudent(entry){
+ if(!entry||!entry.displayName||!entry.studentKey)throw Error('必须明确选择已有学生');
+ $('studentExportMode').checked=true;
+ select(entry);
+ return getSelection();
+}
+function selectManualStudent(name,className){
+ name=safe(name);className=safe(className);
+ if(!name||name.length>40)throw Error('请填写有效的学生姓名（不超过40字符）');
+ if(!className||className.length>24)throw Error('请填写学生所在班级');
+ const duplicate=students.filter(x=>x.className===className&&x.displayName===name);
+ if(duplicate.length){
+   return chooseStudent(duplicate[0]);
+ }
+ selected=root.StudentNameSearch.indexStudent({name,displayName:name,class:className});
+ selected.manual=true;
+ selected.studentKey=makeKey(selected);
+ $('studentExportMode').checked=true;
+ onSelectionChange();
+ $('studentPicker').value=name;
+ $('studentSuggestions').hidden=true;
+ renderSelected();
+ return getSelection();
+}
+
 function renderHistory(){
  const el=$('studentExportHistory');el.replaceChildren();
  if(!selected||!isStudentMode()){el.textContent='选择一名学生后，可查看该生曾导出过的具体题目。';return}
@@ -111,5 +141,5 @@ async function init(opts){
  $('studentReloadRoster').addEventListener('click',reloadRoster);
  renderSelected();await reloadRoster();
 }
-root.StudentPracticeExport={init,getSelection,isStudentMode,renderHistory,reloadRoster,makeKey};
+root.StudentPracticeExport={init,getSelection,isStudentMode,renderHistory,reloadRoster,makeKey,searchRoster,chooseStudent,selectManualStudent};
 })(typeof window!=='undefined'?window:globalThis);
