@@ -43,10 +43,30 @@ function mergeExisting(target,source){
  target.warnings=Array.from(new Set([...(target.warnings||[]),...(source.warnings||[])]));
  return target;
 }
+function applyQualityRepair(target,source,now){
+ const quality=Array.isArray(source.qualityFixes)?source.qualityFixes:[];
+ const fields=new Set(quality.filter(x=>x&&['stem','answer'].includes(x.field)).map(x=>x.field));
+ const incomingRevision=Number(source.revision||1),currentRevision=Number(target.revision||1);
+ if(!fields.size||!Number.isFinite(incomingRevision)||incomingRevision<=currentRevision)return false;
+ if(target.review==='approved'||String(target.source||'')!==String(source.source||'')||
+    String(target.sourceNo||'')!==String(source.sourceNo||''))return false;
+ for(const field of fields){
+   if(typeof source[field]==='string'&&source[field].trim())target[field]=source[field];
+ }
+ // Picture restoration is allowed only if the original question had no picture.
+ if(fields.has('stem')&&!(target.images||[]).length&&(source.images||[]).length)
+   target.images=source.images;
+ target.qualityFixes=[...(target.qualityFixes||[]),...quality];
+ target.revision=incomingRevision;
+ mergeExisting(target,source);
+ target.updatedAt=now();
+ return true;
+}
 async function mergeQuestions(incoming,options){
  const {questions,save,updateConcepts,now,hash}=options;
- const index=new Map(),stats={added:0,merged:0,suspected:0,referenceUpdates:0};
+ const index=new Map(),byId=new Map(),stats={added:0,merged:0,suspected:0,referenceUpdates:0,qualityUpdated:0,qualitySkipped:0};
  for(const q of questions){
+   byId.set(q.id,q);
    let key=normalizeStem(q.stem);if(!index.has(key))index.set(key,[]);index.get(key).push(q);
  }
  for(const item of incoming||[]){
@@ -54,6 +74,15 @@ async function mergeQuestions(incoming,options){
    item.images=item.images||[];item.answerImages=item.answerImages||[];
    item.tags=item.tags||[];item.sourceRefs=item.sourceRefs||[{file:item.source,no:item.sourceNo}];
    item.review='pending';
+   const oldById=byId.get(item.id);
+   if(oldById){
+     const changed=applyQualityRepair(oldById,item,now);
+     if(changed)stats.qualityUpdated++;
+     else if(Array.isArray(item.qualityFixes)&&item.qualityFixes.length)stats.qualitySkipped++;
+     mergeExisting(oldById,item);
+     updateConcepts(oldById);await save(oldById);
+     stats.merged++;continue;  // same stable ID must never create a second record
+   }
    const key=normalizeStem(item.stem),similar=index.get(key)||[];
    const duplicate=similar.find(x=>sameQuestion(x,item));
    if(duplicate){
@@ -67,7 +96,7 @@ async function mergeQuestions(incoming,options){
    }
    if(questions.some(x=>x.id===item.id))item.id+='-'+hash(item.source+':'+item.sourceNo).slice(0,7);
    updateConcepts(item);await save(item);
-   questions.push(item);
+   questions.push(item);byId.set(item.id,item);
    if(!index.has(key))index.set(key,[]);index.get(key).push(item);
    stats.added++;
  }
@@ -79,5 +108,5 @@ async function mergeQuestions(incoming,options){
  }
  return stats;
 }
-root.QuestionBankMerge={normalizeStem,imagesMatch,sameQuestion,mergeExisting,mergeQuestions};
+root.QuestionBankMerge={normalizeStem,imagesMatch,sameQuestion,mergeQuestions,applyQualityRepair};
 })(typeof window!=='undefined'?window:globalThis);
