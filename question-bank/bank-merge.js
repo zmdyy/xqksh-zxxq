@@ -31,13 +31,28 @@ function attachRepairCandidates(target,source){
    incoming.forEach((m,i)=>{
      if(!m?.repair?.candidateData||!old[i])return;
      const curr=old[i],repair=m.repair;
-     // Never override a teacher-confirmed drawing, manually drawn image, or a newer revision.
-     if(curr.repair?.status==='approved'||curr.useRedraw)return;
+     // Keep the teacher's approved image, but permit a separate raster alternative for review.
+     if(curr.repair?.status==='approved'){
+       if(repair.alternativeCandidateData&&!curr.repair.alternativeCandidateData){
+         curr.repair.alternativeCandidateData=repair.alternativeCandidateData;
+         inserted++;
+       }
+       return;
+     }
+     if(curr.useRedraw)return;
      const hashesAgree=Boolean(curr.contentHash&&m.contentHash&&curr.contentHash===m.contentHash);
      const identicalOriginal=Boolean(curr.data&&m.data&&curr.data===m.data);
      const originalInRepair=Boolean(curr.data&&repair.originalData&&curr.data===repair.originalData);
      if(!hashesAgree&&!identicalOriginal&&!originalInRepair)return;
-     if(curr.repair?.status==='rejected')return;
+     // A rejected auto-vector trace may receive a substantially different PNG
+     // proposal; the previous rejection is retained, and the official original remains.
+     if(curr.repair?.status==='rejected'){
+       const freshAlternative=repair.previousReview?.status==='rejected' &&
+         /PNG/.test(repair.method||'') && /矢量/.test(curr.repair.method||'');
+       if(!freshAlternative)return;
+       curr.repair={...repair,status:'pending'};
+       inserted++;return;
+     }
      if(repair.status==='approved'){
        if(target.review==='approved'||Number(target.revision||1)>Number(source.revision||1))return;
        const original=repair.originalData||curr.data;
