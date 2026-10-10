@@ -20,7 +20,7 @@ function getAll(table){return new Promise((yes,no)=>{const r=db.transaction(tabl
 function getOne(table,id){return new Promise((yes,no)=>{const r=db.transaction(table).objectStore(table).get(id);r.onsuccess=()=>yes(r.result);r.onerror=()=>no(r.error)})}
 function put(table,val){return new Promise((yes,no)=>{const tx=db.transaction(table,'readwrite');tx.objectStore(table).put(val);tx.oncomplete=()=>yes();tx.onerror=()=>no(tx.error||Error('本地存储失败，可能空间不足'))})}
 function del(table,id){return new Promise((yes,no)=>{const tx=db.transaction(table,'readwrite');tx.objectStore(table).delete(id);tx.oncomplete=()=>yes();tx.onerror=()=>no(tx.error)})}
-async function init(){try{db=await openDB();state.questions=await getAll('questions');state.events=await getAll('events');let m=await getOne('settings','meta');state.meta=m?m.value:{};await loadCatalog();bind();window.PhysicsBankInlineDetails?.init?.({getQuestions:()=>state.questions,catalogById:state.catalogById,catalogByName:state.catalogByName,focusConcept,resetDetailFilters});if(window.StudentPracticeExport){await window.StudentPracticeExport.init({getEvents:()=>state.events,onSelectionChange:invalidateWordDownload})}const params=new URLSearchParams(location.search);const cid=params.get('concept_id'),cname=params.get('concept_name');if(cname){focusConcept(cname)}else if(cid){const c=state.catalogById.get(cid);if(c){$('conceptFilter').value=c.name;tell('已从知识星球定位：'+c.name)}}render()}catch(e){console.error(e);tell('题库启动失败：'+e.message,true)}}
+async function init(){try{db=await openDB();state.questions=await getAll('questions');state.events=await getAll('events');let m=await getOne('settings','meta');state.meta=m?m.value:{};await loadCatalog();bind();window.PhysicsBankInlineDetails?.init?.({getQuestions:()=>state.questions,catalogById:state.catalogById,catalogByName:state.catalogByName,focusConcept,resetDetailFilters});window.PhysicsImageRepair?.init?.({getQuestions:()=>state.questions,getEvents:()=>state.events,getMeta:()=>state.meta,save:q=>put('questions',q),onChange:()=>{invalidateWordDownload();render()}});if(window.StudentPracticeExport){await window.StudentPracticeExport.init({getEvents:()=>state.events,onSelectionChange:invalidateWordDownload})}const params=new URLSearchParams(location.search);const cid=params.get('concept_id'),cname=params.get('concept_name');if(cname){focusConcept(cname)}else if(cid){const c=state.catalogById.get(cid);if(c){$('conceptFilter').value=c.name;tell('已从知识星球定位：'+c.name)}}render()}catch(e){console.error(e);tell('题库启动失败：'+e.message,true)}}
 async function loadCatalog(){try{let r=await fetch('../data/knowledge/exam-annotation-catalog.json');if(!r.ok)throw Error('HTTP '+r.status);let j=await r.json();state.catalog=j.concepts||[];state.catalog.forEach(c=>{state.catalogByName.set(norm(c.name),c);state.catalogById.set(c.concept_id,c)});for(let id of ['conceptFilter','conceptFilter2'])$(''+id).insertAdjacentHTML('beforeend',state.catalog.map(c=>'<option value="'+esc(c.name)+'">'+esc(c.module+' / '+c.name)+'</option>').join(''));state.questions.forEach(applyConcepts)}catch(e){tell('知识点目录暂不可用，仍可通过题目文字检索。',true)}}
 function actualAssignments(id,cls){return state.events.filter(e=>e.status==='assigned'&&(!cls||e.className===cls)&&e.items.some(t=>t.id.split('::')[0]===id))}
 function usedRecently(id,cls){return actualAssignments(id,cls).some(e=>new Date(e.date).getTime()>Date.now()-30*86400000)}
@@ -143,17 +143,27 @@ async function importPrivateZip(file){
  if(j.format!=='physics-training-bank-v1'||!Array.isArray(j.questions))throw Error('不是标准 physics-training-bank-v1 题库');
  if(!confirm('检测到 '+j.questions.length+' 道候选题。将与本地题库逐题比对，相同ID且版本更高的质量修订会更新尚未审核的题目；已审核题目和教师更高版本不会被覆盖。\n全部仅保存到当前浏览器。是否导入？'))return;
  const cache={};
+ async function fromZip(ref){
+   if(!ref)return null;
+   if(cache[ref])return cache[ref];
+   const binary=zip.file(ref);if(!binary)throw Error('题库图像资源缺失：'+ref);
+   const ext=ref.split('.').pop().toLowerCase();
+   const mime=ext==='jpg'||ext==='jpeg'?'image/jpeg':ext==='gif'?'image/gif':ext==='svg'?'image/svg+xml':ext==='emf'?'application/x-emf':ext==='wmf'?'application/x-wmf':'image/png';
+   cache[ref]='data:'+mime+';base64,'+await binary.async('base64');
+   return cache[ref];
+ }
  for(const q of j.questions){
    for(const arr of [q.images||[],q.answerImages||[]]){
      for(const im of arr){
-       if(!im.ref||im.data)continue;
-       const ref=im.ref,blob=zip.file(ref);if(!blob)throw Error('题图缺失：'+ref);
-       if(!cache[ref]){
-         const ext=ref.split('.').pop().toLowerCase();
-         const mime=ext==='jpg'||ext==='jpeg'?'image/jpeg':ext==='gif'?'image/gif':ext==='svg'?'image/svg+xml':ext==='emf'?'application/x-emf':ext==='wmf'?'application/x-wmf':'image/png';
-         cache[ref]='data:'+mime+';base64,'+await blob.async('base64');
-       }
-       im.data=cache[ref];delete im.ref;
+       if(im.ref&&!im.data){im.data=await fromZip(im.ref);delete im.ref}
+       const repair=im.repair;
+       if(!repair)continue;
+       if(repair.candidateRef)repair.candidateData=await fromZip(repair.candidateRef);
+       if(repair.previewPngRef)repair.previewPngData=await fromZip(repair.previewPngRef);
+       if(repair.status==='approved'){
+         if(repair.originalRef)repair.originalData=await fromZip(repair.originalRef);
+         if(!repair.candidateData)repair.candidateData=im.data;
+       }else if(repair.status!=='rejected')repair.status='pending';
      }
    }
  }
@@ -166,7 +176,7 @@ async function importPrivateZip(file){
  });
  
  const deletion=await removeExcludedQuestions(j.excludedQuestionIds||[]);
- tell('导入完成：新增 '+out.added+' 道，合并同题 '+out.merged+' 道，更新质量修订 '+out.qualityUpdated+' 道；删除严重缺陷题 '+deletion.removed+' 道'+(deletion.protected?'（'+deletion.protected+' 道教师已审核题保留待决定）':'')+'；修订冲突 '+out.qualitySkipped+' 道，疑似变式 '+out.suspected+' 道。');
+ tell('题库导入完成：新增 '+out.added+' 道，同题合并 '+out.merged+' 道，质量修订 '+out.qualityUpdated+' 道。图像审核候选可通过顶部“图像修复审核”查看，确认后导出完整 ZIP。');
  render();
 }
 
