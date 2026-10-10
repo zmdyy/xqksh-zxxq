@@ -137,7 +137,7 @@ async function createDocx(options){
  zip.file('_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="'+REL+'/officeDocument" Target="word/document.xml"/></Relationships>');
  zip.file('word/document.xml',doc);
  zip.file('word/_rels/document.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+rels.map(r=>'<Relationship Id="'+r.id+'" Type="'+PICREL+'" Target="'+r.target+'"/>').join('')+'</Relationships>');
- const result=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}});
+ const result=await zip.generateAsync({type:'blob',mimeType:MIME,compression:'DEFLATE',compressionOptions:{level:6}});
  if(!result || result.size<500)throw Error('Word 文件生成结果异常');
  return result;
 }
