@@ -253,12 +253,99 @@ function buildPages(forcedLayout){
  return {front,back,layout,items};
 }
 function printDocHtml(p){return '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><style>'+PAPER_STYLE+'</style></head><body>'+p.front+p.back+'</body></html>'}
+function drawPreview(p){
+ state.preview=p;
+ const convert=x=>x.replace('class="sheet"','class="paper sheet"');
+ $('printPreview').innerHTML='<style>'+PAPER_STYLE+'</style>'
+   +convert(p.front).replace('id="frontSheet"','id="previewFront"')
+   +convert(p.back).replace('id="backSheet"','id="previewBack"');
+}
+async function waitForPreviewMedia(){
+ await Promise.allSettled(Array.from($('printPreview').querySelectorAll('img')).map(img=>img.decode?.()));
+ if(typeof requestAnimationFrame==='function')await new Promise(resolve=>requestAnimationFrame(()=>resolve()));
+}
+function inspectPageFit(){
+ const issues=[],scores=[];
+ for(const [i,id] of ['previewFront','previewBack'].entries()){
+   const sheet=$(id),label=i===0?'正面':'背面';
+   if(!sheet){issues.push(label);scores.push(9999);continue}
+   const sheetRect=sheet.getBoundingClientRect(),foot=sheet.querySelector('.foot'),footRect=foot?.getBoundingClientRect();
+   if(!footRect||!sheetRect.height){issues.push(label);scores.push(9999);continue}
+   // 预留安全空间，避免 Word 与浏览器字体度量略有差别时分页。
+   const safeBottom=footRect.top-25;
+   const content=Array.from(sheet.querySelectorAll('.questions,.paper-column,.question,.answer,.feedback'));
+   let overflow=0;
+   const maxRight=sheetRect.right-42;
+   for(const el of content){
+     const rect=el.getBoundingClientRect();
+     overflow=Math.max(overflow,rect.bottom-safeBottom);
+     if(rect.right>maxRight+3)overflow=Math.max(overflow,rect.right-maxRight);
+     if(el.classList.contains('questions')&&el.scrollWidth>el.clientWidth+3){
+       overflow=Math.max(overflow,el.scrollWidth-el.clientWidth);
+     }
+   }
+   const images=Array.from(sheet.querySelectorAll('img'));
+   if(images.some(img=>img.complete&&img.naturalWidth===0))overflow=Math.max(overflow,1000);
+   scores.push(Math.max(0,overflow));
+   if(overflow>1)issues.push(label);
+ }
+ return {fits:issues.length===0,issues,score:scores.reduce((a,b)=>a+b,0)};
+}
+function checkPageOverflow(probe,layout,autoSwitched){
+ const result=probe||inspectPageFit();
+ const lowImages=Array.from($('printPreview').querySelectorAll('img'))
+   .filter(img=>img.naturalWidth>0&&img.naturalWidth<300).length;
+ const layoutLabel=layout==='double'?'双栏':'单栏';
+ let message=result.fits?'A4正反面已检查，采用'+layoutLabel+'。':
+   result.issues.join('、')+'排版超出A4安全区域：两种版式都无法保证一页，请减少题目或题图。';
+ if(autoSwitched&&result.fits)message='已自动从单栏切换到双栏；'+message;
+ if(lowImages)message+=' '+lowImages+'幅原图清晰度较低，建议检查印刷效果。';
+ $('previewStatus').textContent=message;
+ $('previewStatus').dataset.overflow=result.fits?'no':'yes';
+ const info=$('layoutDecision');
+ if(info){
+   info.textContent=$('layout').value==='auto'
+    ?(result.fits?(autoSwitched?'自动排版：单栏超出A4，已切换为双栏（正反面均通过检查）。':'自动排版：单栏可容纳正反面内容。'):'自动排版：单栏与双栏均超出A4，请减少题量。')
+    :('手动选择：'+layoutLabel+(result.fits?'，正反面已通过浏览器预览检查。':'，内容超出A4，请调整。'));
+   info.classList.toggle('warning',!result.fits);
+ }
+ return result.fits;
+}
 async function showPreview(){
-try{let p=buildPages();state.preview=p;const convert=x=>x.replace('class="sheet"','class="paper sheet"');$('printPreview').innerHTML='<style>'+PAPER_STYLE+'</style>'+convert(p.front).replace('id="frontSheet"','id="previewFront"')+convert(p.back).replace('id="backSheet"','id="previewBack"');$('previewStatus').textContent='正在检查页面...';$('previewStatus').dataset.overflow='yes';$('previewDialog').showModal();await Promise.allSettled(Array.from($('printPreview').querySelectorAll('img')).map(img=>img.decode()));checkPageOverflow()}catch(e){tell('预览失败：'+e.message,true)}}
-function checkPageOverflow(){let bad=[];for(let [i,id] of ['previewFront','previewBack'].entries()){const root=$(id);if(!root)continue;let foot=root.querySelector('.foot'),last=root.querySelector('.feedback')||root.querySelector('.questions'),pageRect=root.getBoundingClientRect();if(last&&foot&&(last.getBoundingClientRect().bottom>foot.getBoundingClientRect().top-5||last.getBoundingClientRect().bottom>pageRect.bottom-22))bad.push(i===0?'正面':'背面')}
-let lows=Array.from($('printPreview').querySelectorAll('img')).filter(im=>im.naturalWidth&&im.naturalWidth<300).length;
-$('previewStatus').textContent=(bad.length?bad.join('、')+'内容溢出：请删题或调整栏数。':'A4 正反面符合当前浏览器预览尺寸。')+(lows?' '+lows+'幅图像像素偏低，请试印核查。':'');
-$('previewStatus').dataset.overflow=bad.length?'yes':'no'}
+ try{
+   $('previewStatus').textContent='正在依据A4尺寸检查版式…';
+   $('previewStatus').dataset.overflow='yes';
+   if(!$('previewDialog').open)$('previewDialog').showModal();
+   const chosen=$('layout').value;
+   let p=buildPages(chosen==='auto'?'single':chosen);
+   drawPreview(p);
+   await waitForPreviewMedia();
+   let fit=inspectPageFit(),autoSwitched=false;
+   if(chosen==='auto'&&!fit.fits){
+     const single={...fit,p};
+     p=buildPages('double');
+     drawPreview(p);
+     await waitForPreviewMedia();
+     const double=inspectPageFit();
+     if(double.fits||double.score<=single.score){
+       fit=double;autoSwitched=true;
+     }else{
+       p=single.p;
+       fit=single;
+       drawPreview(p);
+       await waitForPreviewMedia();
+     }
+   }
+   checkPageOverflow(fit,p.layout,autoSwitched);
+   return p;
+ }catch(e){
+   state.preview=null;
+   $('previewStatus').textContent='预览失败：'+(e.message||e);
+   $('previewStatus').dataset.overflow='yes';
+   tell('预览失败：'+e.message,true);
+   return null;
+ }
+}
 let wordDownloadUrl=null;
 let exportingWord=false;
 function invalidateWordDownload(){
