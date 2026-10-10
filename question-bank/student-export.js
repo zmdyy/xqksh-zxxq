@@ -42,7 +42,7 @@ async function reloadRoster(){
    }
    students=result.sort((a,b)=>a.className.localeCompare(b.className,'zh-CN')||a.displayName.localeCompare(b.displayName,'zh-CN'));
    status.textContent=students.length?'已读取 '+students.length+' 名学生（'+batches.length+' 个成绩批次），姓名仅用于本地组卷。':'未找到已保存的学生名单。请先在学情分析主页上传成绩并保存批次。';
-   if(selected){selected=students.find(e=>e.studentKey===selected.studentKey)||selected}
+   if(selected){const oldKey=selected.studentKey;selected=students.find(e=>e.studentKey===oldKey)||null;if(!selected)onSelectionChange()}
    renderSelected();renderSuggestions();
  }catch(e){status.textContent='读取失败：'+e.message;students=[];selected=null;renderSelected()}
 }
