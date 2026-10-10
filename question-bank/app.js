@@ -215,6 +215,10 @@ async function exportWord(){
      feedback:$('feedback').checked
    });
    if(!(blob instanceof Blob)||blob.size<500)throw Error('生成的 Word 文件数据为空');
+   // 生成过程中如果教师切换到了另一名学生，禁止为先前的学生保存/记账。
+   const modeNow=Boolean(window.StudentPracticeExport?.isStudentMode?.());
+   const selectedNow=modeNow?window.StudentPracticeExport.getSelection():null;
+   if(modeNow!==studentMode||(student&&(selectedNow?.key!==student.key)))throw Error('生成过程中选择的学生发生变化，请重新导出，避免误记到其他学生名下。');
    const filename=student
      ?safeFilePart(student.className||'班级')+'_'+safeFilePart(student.name)+'_物理精准练习_'+today()+'.docx'
      :'physics_practice_'+today()+(p.layout==='double'?'_2col':'_1col')+'.docx';
