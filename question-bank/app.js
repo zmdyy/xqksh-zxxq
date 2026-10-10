@@ -20,7 +20,7 @@ function getAll(table){return new Promise((yes,no)=>{const r=db.transaction(tabl
 function getOne(table,id){return new Promise((yes,no)=>{const r=db.transaction(table).objectStore(table).get(id);r.onsuccess=()=>yes(r.result);r.onerror=()=>no(r.error)})}
 function put(table,val){return new Promise((yes,no)=>{const tx=db.transaction(table,'readwrite');tx.objectStore(table).put(val);tx.oncomplete=()=>yes();tx.onerror=()=>no(tx.error||Error('本地存储失败，可能空间不足'))})}
 function del(table,id){return new Promise((yes,no)=>{const tx=db.transaction(table,'readwrite');tx.objectStore(table).delete(id);tx.oncomplete=()=>yes();tx.onerror=()=>no(tx.error)})}
-async function init(){try{db=await openDB();state.questions=await getAll('questions');state.events=await getAll('events');let m=await getOne('settings','meta');state.meta=m?m.value:{};await loadCatalog();bind();let cid=new URLSearchParams(location.search).get('concept_id');if(cid){let c=state.catalogById.get(cid);if(c){$('conceptFilter').value=c.name;tell('已从知识星球定位：'+c.name)}}render()}catch(e){console.error(e);tell('题库启动失败：'+e.message,true)}}
+async function init(){try{db=await openDB();state.questions=await getAll('questions');state.events=await getAll('events');let m=await getOne('settings','meta');state.meta=m?m.value:{};await loadCatalog();bind();if(window.StudentPracticeExport){await window.StudentPracticeExport.init({getEvents:()=>state.events,onSelectionChange:invalidateWordDownload})}let cid=new URLSearchParams(location.search).get('concept_id');if(cid){let c=state.catalogById.get(cid);if(c){$('conceptFilter').value=c.name;tell('已从知识星球定位：'+c.name)}}render()}catch(e){console.error(e);tell('题库启动失败：'+e.message,true)}}
 async function loadCatalog(){try{let r=await fetch('../data/knowledge/exam-annotation-catalog.json');if(!r.ok)throw Error('HTTP '+r.status);let j=await r.json();state.catalog=j.concepts||[];state.catalog.forEach(c=>{state.catalogByName.set(norm(c.name),c);state.catalogById.set(c.concept_id,c)});for(let id of ['conceptFilter','conceptFilter2'])$(''+id).insertAdjacentHTML('beforeend',state.catalog.map(c=>'<option value="'+esc(c.name)+'">'+esc(c.module+' / '+c.name)+'</option>').join(''));state.questions.forEach(applyConcepts)}catch(e){tell('知识点目录暂不可用，仍可通过题目文字检索。',true)}}
 function actualAssignments(id,cls){return state.events.filter(e=>e.status==='assigned'&&(!cls||e.className===cls)&&e.items.some(t=>t.id.split('::')[0]===id))}
 function usedRecently(id,cls){return actualAssignments(id,cls).some(e=>new Date(e.date).getTime()>Date.now()-30*86400000)}
@@ -36,7 +36,7 @@ function findQuestion(id){return state.questions.find(q=>q.id===id.split('::')[0
 function selectedLabel(id){const q=findQuestion(id);if(!q)return '题目不存在';let pi=id.split('::')[1],p=(q.parts||[]).find(x=>x.id===pi);return(q.sourceNo||'')+(p?p.label:'')+' · '+(p?p.stem:q.stem||'').slice(0,36)}
 function addQuestion(id){if(state.basket.includes(id))return tell('这道题已经在试题篮');let parent=id.split('::')[0];if(state.basket.some(x=>x.split('::')[0]===parent&&(x===parent||id===parent)))return tell('不能同时加入整题和该题的某个小问。',true);state.basket.push(id);renderBasket();tell('已加入试题篮：'+selectedLabel(id))}
 function render(){let qs=state.questions.filter(matches);$('count').textContent=qs.length+' / '+state.questions.length+'条';$('results').innerHTML=qs.length?qs.slice(0,60).map(q=>{let name=({'cross':'真实交叉','single':'单知识点','parallel':'并列小问','options':'选项辨析','pending':'关系待审'})[q.relation||'pending'];let quality=q.hasMath?' ⚠ Word公式需逐题核对':'';let pics=(q.images||[]).slice(0,3).map(x=>'<img src="'+esc(mediaSrc(x))+'" alt="原题图" loading="lazy">').join('');let parts=(q.parts||[]).map(p=>'<div class="basket-item"><span class="title">'+esc(p.label+' '+p.stem.slice(0,40))+'</span><button class="small" data-add="'+esc(q.id+'::'+p.id)+'">＋此小问</button></div>').join('');
-return '<article class="qcard"><div class="qtop"><strong>'+esc(q.type+' · 第'+(q.sourceNo||'?')+'题')+'</strong><div class="right"><span class="tag">'+esc(q.difficulty||'难度待审')+'</span><span class="tag '+(q.review==='approved'?'approved':'')+'">'+(q.review==='approved'?'已审核':'待审核')+'</span></div></div><div class="qsource">'+esc(q.source)+' · '+esc(name)+' · '+esc(quality)+' · 已布置 '+actualAssignments(q.id,'').length+' 次</div><div class="qstem">'+esc((q.stem||'').slice(0,260))+'</div><div class="qimage">'+pics+'</div><div class="qfooter"><div class="qfootleft">'+(q.tags||[]).slice(0,8).map(x=>'<span class="tag">'+esc(x)+'</span>').join('')+'</div><div class="qfootright"><button class="small" data-edit="'+esc(q.id)+'">审核 / 拆题</button><button class="small primary" data-add="'+esc(q.id)+'">＋整题</button></div></div>'+(parts?'<details><summary>独立子题 ('+q.parts.length+')</summary>'+parts+'</details>':'')+'</article>'}).join('')+(qs.length>60?'<p class="hint">仅显示前60条，请进一步筛选。</p>':''):'<p class="empty">未找到题目。可以导入原始 Word，或调整筛选条件。</p>';renderBasket();renderUsage()}
+return '<article class="qcard"><div class="qtop"><strong>'+esc(q.type+' · 第'+(q.sourceNo||'?')+'题')+'</strong><div class="right"><span class="tag">'+esc(q.difficulty||'难度待审')+'</span><span class="tag '+(q.review==='approved'?'approved':'')+'">'+(q.review==='approved'?'已审核':'待审核')+'</span></div></div><div class="qsource">'+esc(q.source)+' · '+esc(name)+' · '+esc(quality)+' · 已布置 '+actualAssignments(q.id,'').length+' 次</div><div class="qstem">'+esc((q.stem||'').slice(0,260))+'</div><div class="qimage">'+pics+'</div><div class="qfooter"><div class="qfootleft">'+(q.tags||[]).slice(0,8).map(x=>'<span class="tag">'+esc(x)+'</span>').join('')+'</div><div class="qfootright"><button class="small" data-edit="'+esc(q.id)+'">审核 / 拆题</button><button class="small primary" data-add="'+esc(q.id)+'">＋整题</button></div></div>'+(parts?'<details><summary>独立子题 ('+q.parts.length+')</summary>'+parts+'</details>':'')+'</article>'}).join('')+(qs.length>60?'<p class="hint">仅显示前60条，请进一步筛选。</p>':''):'<p class="empty">未找到题目。可以导入原始 Word，或调整筛选条件。</p>';renderBasket();renderUsage();window.StudentPracticeExport?.renderHistory?.()}
 function renderBasket(){$('basketCount').textContent=state.basket.length+'道';$('basket').innerHTML=state.basket.length?state.basket.map((id,i)=>'<div class="basket-item"><span class="title">'+esc((i+1)+'. '+selectedLabel(id))+'</span><button data-up="'+i+'" '+(!i?'disabled':'')+'>↑</button><button data-down="'+i+'" '+(i===state.basket.length-1?'disabled':'')+'>↓</button><button data-remove="'+i+'">×</button></div>').join(''):'<p class="hint">尚未选题；可选整题或经审核的独立小问。</p>'}
 function renderUsage(){let cls=$('classFilter').value.trim();let list=state.events.filter(e=>e.status==='assigned'&&(!cls||e.className===cls)).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,12);$('usageSummary').innerHTML=list.length?list.map(e=>'<div class="event"><b>'+esc(e.className)+'</b> · '+esc(e.date.slice(0,10))+' · '+e.items.length+'题<br>'+esc(e.title||'精准练习')+'<br><button class="small" data-feedback-event="'+esc(e.id)+'">录入反馈</button> <button class="small" data-cancel-event="'+esc(e.id)+'">撤回布置</button>'+(e.feedback?'<br>'+esc(e.feedback.note||'已反馈'):'')+'</div>').join(''):'<p class="hint">本班尚无已确认的使用记录。</p>'}
 function applyIndex(q){for(let r of q.sourceRefs||[{file:q.source,no:q.sourceNo}]){let d=state.meta[sourceBase(r.file)]?.[r.no];if(!d)continue;q.difficulty=q.difficulty||d.difficulty;q.type=q.type==='其他'?d.type:q.type;q.tags=q.tags?.length?q.tags:d.tags;applyConcepts(q);return true}return false}
@@ -119,7 +119,7 @@ $('editorDialog').showModal()}
 function download(blob,name){let url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2500)}
 async function backup(onlyHistory){let j={format:'physics-training-bank-v1',exportedAt:now(),questions:onlyHistory?[]:state.questions,events:state.events,meta:onlyHistory?{}:state.meta};download(new Blob([JSON.stringify(j)],{type:'application/json'}),(onlyHistory?'题目使用历史_':'私人题库完整备份_')+today()+'.json');tell('本地备份已导出，请避免公开传播第三方题目。')}
 async function restore(file){let j=JSON.parse(await file.text());if(j.format!=='physics-training-bank-v1')throw Error('这不是可识别的题库备份');if(!confirm('确定导入备份？同ID记录会更新，其他记录保留。'))return;await restoreObject(j);render();tell('已恢复题库与使用记录')}
-async function restoreObject(j){for(let q of j.questions||[]){let i=state.questions.findIndex(x=>x.id===q.id);if(i>=0)state.questions[i]=q;else state.questions.push(q);applyConcepts(q);await put('questions',q)}for(let e of j.events||[]){let i=state.events.findIndex(x=>x.id===e.id);if(i>=0)state.events[i]=e;else state.events.push(e);await put('events',e)}state.meta={...state.meta,...(j.meta||{})};await put('settings',{id:'meta',value:state.meta})}
+async function restoreObject(j){for(let q of j.questions||[]){let i=state.questions.findIndex(x=>x.id===q.id);if(i>=0)state.questions[i]=q;else state.questions.push(q);applyConcepts(q);await put('questions',q)}for(let e of j.events||[]){let i=state.events.findIndex(x=>x.id===e.id);if(i>=0)state.events[i]=e;else state.events.push(e);await put('events',e)}state.meta={...state.meta,...(j.meta||{})};await put('settings',{id:'meta',value:state.meta});window.StudentPracticeExport?.renderHistory?.()}
 async function assignBasket(){if(!state.basket.length)return tell('试题篮为空',true);let cl=prompt('实际布置给哪个班级？',$('classFilter').value||'801');if(!cl||!cl.trim())return;let day=prompt('实际布置日期（YYYY-MM-DD）',today());if(!day)return;if(!/^\d{4}-\d{2}-\d{2}$/.test(day))return tell('日期格式错误',true);let title=prompt('练习名称','物理精准练习')||'物理精准练习';let items=state.basket.map(id=>({id,revision:findQuestion(id)?.revision||1})),fingerprint=hash(cl.trim()+'|'+day+'|'+items.map(x=>x.id).sort().join('|'));if(state.events.some(e=>e.status==='assigned'&&e.fingerprint===fingerprint))return tell('同班同日同一套题已记录，避免重复计次。',true);if(!confirm('已经实际布置或印发给学生？只有确认后才计入使用次数。'))return;let ev={id:uid(),fingerprint,className:cl.trim(),date:day+'T12:00:00',title,items,status:'assigned',createdAt:now()};state.events.push(ev);await put('events',ev);$('classFilter').value=cl.trim();render();tell('已记录 '+cl+' 班实际布置 '+items.length+'题。')}
 
 function printable(id){
@@ -142,7 +142,7 @@ function buildPages(){
 let items=state.basket.map(printable).filter(Boolean);if(!items.length)throw Error('请先添加题目到试题篮');
 if(items.some(x=>!x.q.stem.trim()))throw Error('有题目正文为空，请先审核');
 let layout=autoLayout(items),title='物理精准练习 · '+today();
-let front='<div class="sheet" id="frontSheet"><h2>'+title+'</h2><div class="meta">班级：________　姓名：________　日期：________　　少量多次 · 独立完成</div><div class="questions '+(layout==='double'?'double':'')+'">'+items.map((x,i)=>'<div class="question"><div class="stem"><b>'+(i+1)+'.</b> '+esc(x.stem)+'</div>'+paperImages(x.images)+'</div>').join('')+'</div>'+feedbackHtml()+'<div class="foot"><span>请在独立完成后核对背面答案</span><span>1 / 2</span></div></div>';
+let front='<div class="sheet" id="frontSheet"><h2>'+title+'</h2><div class="meta">'+(window.StudentPracticeExport?.getSelection?.()?'班级：'+esc(window.StudentPracticeExport.getSelection().className||'未设置')+'　姓名：'+esc(window.StudentPracticeExport.getSelection().name):'班级：________　姓名：________')+'　日期：________　　少量多次 · 独立完成</div><div class="questions '+(layout==='double'?'double':'')+'">'+items.map((x,i)=>'<div class="question"><div class="stem"><b>'+(i+1)+'.</b> '+esc(x.stem)+'</div>'+paperImages(x.images)+'</div>').join('')+'</div>'+feedbackHtml()+'<div class="foot"><span>请在独立完成后核对背面答案</span><span>1 / 2</span></div></div>';
 let back='<div class="sheet" id="backSheet"><h2>参考答案 · 自我核对</h2><div class="meta">与正面题号对应'+($('answerMode').value==='separate'?' · 此页可单独打印':' · 默认双面打印')+'</div><div class="questions '+(layout==='double'?'double':'')+'">'+items.map((x,i)=>'<div class="answer"><b>'+(i+1)+'.</b>'+paperImages(x.answerImages)+'<p>'+esc(x.answer)+'</p></div>').join('')+'</div><table class="feedback"><tr><td>核对后：□ 能独立重做　□ 看懂但仍有困难　□ 还需要教师讲解</td></tr></table><div class="foot"><span>建议用新情境的题目验证是否真正掌握</span><span>2 / 2</span></div></div>';
 return {front,back,layout,items};
 }
@@ -154,6 +154,24 @@ let lows=Array.from($('printPreview').querySelectorAll('img')).filter(im=>im.nat
 $('previewStatus').textContent=(bad.length?bad.join('、')+'内容溢出：请删题或调整栏数。':'A4 正反面符合当前浏览器预览尺寸。')+(lows?' '+lows+'幅图像像素偏低，请试印核查。':'');
 $('previewStatus').dataset.overflow=bad.length?'yes':'no'}
 let wordDownloadUrl=null;
+let exportingWord=false;
+function invalidateWordDownload(){
+  if(wordDownloadUrl){URL.revokeObjectURL(wordDownloadUrl);wordDownloadUrl=null}
+  for(const id of ['wordDownloadLink','previewDownloadLink']){
+    const link=$(id);if(link){link.removeAttribute('href');link.style.display='none'}
+  }
+  state.preview=null;
+}
+function safeFilePart(value){
+  return String(value||'').trim().replace(/[\\/:*?"<>|\x00-\x1f]/g,'_').replace(/\s+/g,'').replace(/[. ]+$/g,'').slice(0,50)||'unnamed';
+}
+function exportedItemsSnapshot(items){
+  return items.map(item=>{
+    const id=item.id,sep=id.indexOf('::'),parent=item.q,partId=sep>=0?id.slice(sep+2):'';
+    const part=partId?(parent.parts||[]).find(x=>String(x.id)===partId):null;
+    return {id,revision:parent.revision||1,source:parent.source||'',sourceNo:String(parent.sourceNo||''),partLabel:part?.label||'',stemPreview:String(item.stem||'').slice(0,90)};
+  });
+}
 async function exportWord(){
  const notice=$('previewStatus');
  const noticeError=message=>{
@@ -161,9 +179,14 @@ async function exportWord(){
    notice.textContent='导出 Word：'+message;
    notice.style.color='#a12729';
  };
+ if(exportingWord)return;
+ exportingWord=true;
+ for(const id of ['wordBtn','previewExportBtn'])$(id).disabled=true;
  try{
+   const studentMode=Boolean(window.StudentPracticeExport?.isStudentMode?.());
+   const student=studentMode?window.StudentPracticeExport.getSelection():null;
+   if(studentMode&&!student)throw Error('请先在“按学生导出”搜索框选中一名学生；如果只是普通练习，可取消勾选“按学生姓名命名”。');
    let p=buildPages();
-   // 主页面的「导出一个Word」首次点击，也应直接完成整个流程，而非只弹出预览。
    const outdated=!state.preview||state.preview.front!==p.front||state.preview.back!==p.back||state.preview.layout!==p.layout;
    if(outdated){
      await showPreview();
@@ -176,39 +199,55 @@ async function exportWord(){
    }
    const pending=p.items.filter(x=>x.q.review!=='approved');
    if(pending.length){
-     const ok=confirm('当前有 '+pending.length+' 道题尚未标记为「教师已审核」。\n请确认题干、公式、题图和答案是否正确。\n是否仍要导出这次练习？');
+     const ok=confirm('当前有 '+pending.length+' 道题尚未标记为“教师已审核”。\n请确认题干、公式、题图和答案是否正确。\n是否仍要导出这次练习？');
      if(!ok){notice.textContent='已取消导出；题目与试题篮均已保留。';return}
    }
    if(!window.PhysicsWordExport?.createDocx)throw Error('Word 生成程序加载失败，请按 Ctrl+F5 刷新页面');
    notice.style.color='#436484';
-   notice.textContent='正在生成Word（题图较大时可能需要几秒钟）…';
+   notice.textContent='正在生成 Word（图片较多时可能需要几秒钟）…';
    const blob=await window.PhysicsWordExport.createDocx({
      items:p.items,
      title:'物理精准练习',
      date:today(),
+     student,
      layout:p.layout,
      answerMode:$('answerMode').value,
      feedback:$('feedback').checked
    });
-   if(!(blob instanceof Blob)||blob.size<500)throw Error('生成的Word文件数据为空');
-   const filename='physics_practice_'+today()+(p.layout==='double'?'_2col':'_1col')+'.docx';
+   if(!(blob instanceof Blob)||blob.size<500)throw Error('生成的 Word 文件数据为空');
+   const filename=student
+     ?safeFilePart(student.className||'班级')+'_'+safeFilePart(student.name)+'_物理精准练习_'+today()+'.docx'
+     :'physics_practice_'+today()+(p.layout==='double'?'_2col':'_1col')+'.docx';
    if(wordDownloadUrl)URL.revokeObjectURL(wordDownloadUrl);
    wordDownloadUrl=URL.createObjectURL(blob);
    for(const id of ['wordDownloadLink','previewDownloadLink']){
-     const link=$(id);
-     link.href=wordDownloadUrl;
-     link.download=filename;
-     link.style.display='inline-flex';
+     const link=$(id);link.href=wordDownloadUrl;link.download=filename;link.style.display='inline-flex';
+   }
+   let savedHistory=true;
+   if(student){
+     // 仅记录 DOCX 成功生成并发起下载，不等同于学生已收到/已完成。
+     const record={
+       id:uid(),kind:'student-word-export',status:'generated',
+       student:{key:student.key,name:student.name,rawName:student.rawName,className:student.className},
+       date:now(),filename,layout:p.layout,items:exportedItemsSnapshot(p.items)
+     };
+     try{await put('events',record);state.events.push(record);window.StudentPracticeExport?.renderHistory?.()}
+     catch(e){savedHistory=false;console.error('[题库]学生导出记录保存失败',e)}
    }
    $('wordDownloadLink').click();
-   notice.textContent='Word 已生成：'+filename+'（'+Math.round(blob.size/1024)+' KB）。若浏览器没有开始下载，请点击「点击保存 Word」。';
-   notice.style.color='#17633f';
-   tell('Word 已生成并尝试下载。如未自动保存，点击「保存已生成的 Word」。');
+   notice.textContent='Word 已生成：'+filename+'（'+Math.round(blob.size/1024)+' KB）。'+(student?(savedHistory?'已在 '+student.name+' 名下记录 '+p.items.length+' 道题。':'注意：个人导出历史未保存，请检查浏览器存储空间。'):'')
+     +' 若浏览器未自动保存，请点击“点击保存 Word”。';
+   notice.style.color=savedHistory?'#17633f':'#a12729';
+   tell('Word 已生成并发起下载。'+(student?(savedHistory?'已记录学生导出历史。':'但个人历史保存失败。'):'')+' 如未下载请点击“保存已生成的 Word”。',!savedHistory);
  }catch(e){
    noticeError(e.message||String(e));
    console.error('[题库 Word 导出失败]',e);
+ }finally{
+   exportingWord=false;
+   for(const id of ['wordBtn','previewExportBtn'])$(id).disabled=false;
  }
 }
+
 function openDraw(q,i){
 let m=q.images[i];if(!m)return;state.draw={qid:q.id,imgIndex:i,pending:null};
 $('drawOriginal').src=m.data||m.src||'';const svg=$('drawCanvas'),ns='http://www.w3.org/2000/svg';svg.innerHTML='<defs><marker id="qbArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#111"/></marker></defs>';
