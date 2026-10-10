@@ -29,7 +29,7 @@ const target=norm(label);if(!target)return true;
 if((q.tags||[]).some(t=>{const v=norm(t);return v===target||(Math.min(v.length,target.length)>=3&&(v.includes(target)||target.includes(v)))}))return true;
 const cid=state.catalogByName.get(target)?.concept_id;return Boolean(cid&&(q.concept_ids||[]).includes(cid))
 }
-function matches(q){let term=norm($('search').value);if(term&&!norm([q.stem,q.source,q.sourceNo,(q.tags||[]).join(' '),q.type].join(' ')).includes(term))return false;let a=$('conceptFilter').value,b=$('conceptFilter2').value,m=$('relationFilter').value;if(a&&b){if(m==='any'){if(!tagMatches(q,a)&&!tagMatches(q,b))return false}else{if(!tagMatches(q,a)||!tagMatches(q,b))return false;if(m==='cross'&&q.relation!=='cross')return false;if(m==='parallel'&&!['parallel','options'].includes(q.relation))return false}}else if(a&&!tagMatches(q,a))return false;else if(b&&!tagMatches(q,b))return false;
+function matches(q){let term=norm($('search').value);if(term&&!norm([q.stem,q.source,q.sourceNo,(q.tags||[]).join(' '),q.type].join(' ')).includes(term))return false;let a=$('conceptFilter').value,b=$('conceptFilter2').value,m=$('relationFilter').value;if(a&&b){if(m==='any'){if(!tagMatches(q,a)&&!tagMatches(q,b))return false}else if(!tagMatches(q,a)||!tagMatches(q,b))return false}else if(a&&!tagMatches(q,a))return false;else if(b&&!tagMatches(q,b))return false;if(m==='cross'&&q.relation!=='cross')return false;if(m==='parallel'&&!['parallel','options'].includes(q.relation))return false;
 if($('typeFilter').value&&q.type!==$('typeFilter').value)return false;if($('difficultyFilter').value&&q.difficulty!==$('difficultyFilter').value)return false;if($('reviewFilter').value&&q.review!==$('reviewFilter').value)return false;let status=$('usedFilter').value,cls=$('classFilter').value.trim();if(status==='unused'&&actualAssignments(q.id,'').length)return false;if(status==='used'&&!actualAssignments(q.id,'').length)return false;if(status==='recent'&&usedRecently(q.id,cls))return false;return true}
 function mediaSrc(img){return img&&img.useRedraw&&img.redrawPng?img.redrawPng:(img?.data||img?.src||'')}
 function findQuestion(id){return state.questions.find(q=>q.id===id.split('::')[0])}
@@ -53,8 +53,39 @@ function resetDetailFilters(){
  $('detailSearch').value='';
  window.PhysicsBankInlineDetails?.refreshIfOpen?.();
 }
+const BANK_FILTER_IDS=['search','conceptFilter','conceptFilter2','relationFilter','typeFilter','difficultyFilter','reviewFilter','usedFilter','classFilter'];
+function resetQuestionFilters(){
+ for(const id of BANK_FILTER_IDS){
+   const field=$(id);
+   field.value=id==='relationFilter'?'any':id==='classFilter'?'801':'';
+ }
+ render();
+ tell('筛选条件已重置');
+}
+function renderActiveFilters(){
+ const host=$('activeFilterSummary');
+ if(!host)return;
+ const names={
+   search:'关键词',conceptFilter:'主要知识点',conceptFilter2:'关联知识点',
+   relationFilter:'知识点关系',typeFilter:'题型',difficultyFilter:'难度',
+   reviewFilter:'审核状态',usedFilter:'布置记录',classFilter:'班级'
+ };
+ const active=[];
+ for(const id of BANK_FILTER_IDS){
+   const field=$(id),value=(field?.value||'').trim();
+   if(!value||(id==='relationFilter'&&value==='any')||(id==='classFilter'&&(value==='801'||!$('usedFilter').value)))continue;
+   const selected=field.tagName==='SELECT'?field.options[field.selectedIndex]?.textContent:value;
+   active.push({id,label:names[id]+'：'+(selected||value)});
+ }
+ host.hidden=!active.length;
+ host.innerHTML=active.length?
+   '<span>当前筛选</span>'+active.map(x=>
+     '<button type="button" class="bank-filter-chip" data-clear-filter="'+x.id+'" aria-label="移除'+esc(x.label)+'">'+esc(x.label)+' ×</button>'
+   ).join(''):'';
+}
+
 function render(){let qs=state.questions.filter(matches);$('count').textContent=qs.length+' / '+state.questions.length+'条';$('results').innerHTML=qs.length?qs.slice(0,60).map(q=>{let name=({'cross':'真实交叉','single':'单知识点','parallel':'并列小问','options':'选项辨析','pending':'关系待审'})[q.relation||'pending'];let quality=q.hasMath?' ⚠ Word公式需逐题核对':'';let pics=(q.images||[]).slice(0,3).map(x=>'<img src="'+esc(mediaSrc(x))+'" alt="原题图" loading="lazy">').join('');let parts=(q.parts||[]).map(p=>'<div class="basket-item"><span class="title">'+esc(p.label+' '+p.stem.slice(0,40))+'</span><button class="small" data-add="'+esc(q.id+'::'+p.id)+'">＋此小问</button></div>').join('');
-return '<article class="qcard"><div class="qtop"><strong>'+esc(q.type+' · 第'+(q.sourceNo||'?')+'题')+'</strong><div class="right"><span class="tag">'+esc(q.difficulty||'难度待审')+'</span><span class="tag '+(q.review==='approved'?'approved':'')+'">'+(q.review==='approved'?'已审核':'待审核')+'</span></div></div><div class="qsource">'+esc(q.source)+' · '+esc(name)+' · '+esc(quality)+' · 已布置 '+actualAssignments(q.id,'').length+' 次</div><div class="qstem">'+esc((q.stem||'').slice(0,260))+'</div><div class="qimage">'+pics+'</div><div class="qfooter"><div class="qfootleft">'+(q.tags||[]).slice(0,8).map(x=>'<span class="tag">'+esc(x)+'</span>').join('')+'</div><div class="qfootright"><button class="small" data-edit="'+esc(q.id)+'">审核 / 拆题</button><button class="small primary" data-add="'+esc(q.id)+'">＋整题</button></div></div>'+(parts?'<details><summary>独立子题 ('+q.parts.length+')</summary>'+parts+'</details>':'')+'</article>'}).join('')+(qs.length>60?'<p class="hint">仅显示前60条，请进一步筛选。</p>':''):'<p class="empty">未找到题目。可以导入原始 Word，或调整筛选条件。</p>';renderBasket();renderUsage();window.StudentPracticeExport?.renderHistory?.();window.PhysicsBankInlineDetails?.refreshIfOpen?.()}
+return '<article class="qcard"><div class="qtop"><strong>'+esc(q.type+' · 第'+(q.sourceNo||'?')+'题')+'</strong><div class="right"><span class="tag">'+esc(q.difficulty||'难度待审')+'</span><span class="tag '+(q.review==='approved'?'approved':'')+'">'+(q.review==='approved'?'已审核':'待审核')+'</span></div></div><div class="qsource">'+esc(q.source)+' · '+esc(name)+' · '+esc(quality)+' · 已布置 '+actualAssignments(q.id,'').length+' 次</div><div class="qstem">'+esc((q.stem||'').slice(0,260))+'</div><div class="qimage">'+pics+'</div><div class="qfooter"><div class="qfootleft">'+(q.tags||[]).slice(0,8).map(x=>'<span class="tag">'+esc(x)+'</span>').join('')+'</div><div class="qfootright"><button class="small" data-edit="'+esc(q.id)+'">审核 / 拆题</button><button class="small primary" data-add="'+esc(q.id)+'">＋整题</button></div></div>'+(parts?'<details><summary>独立子题 ('+q.parts.length+')</summary>'+parts+'</details>':'')+'</article>'}).join('')+(qs.length>60?'<p class="hint">仅显示前60条，请进一步筛选。</p>':''):'<p class="empty">未找到题目。可以导入原始 Word，或调整筛选条件。</p>';renderBasket();renderUsage();renderActiveFilters();window.StudentPracticeExport?.renderHistory?.();window.PhysicsBankInlineDetails?.refreshIfOpen?.()}
 function renderBasket(){$('basketCount').textContent=state.basket.length+'道';$('basket').innerHTML=state.basket.length?state.basket.map((id,i)=>'<div class="basket-item"><span class="title">'+esc((i+1)+'. '+selectedLabel(id))+'</span><button data-up="'+i+'" '+(!i?'disabled':'')+'>↑</button><button data-down="'+i+'" '+(i===state.basket.length-1?'disabled':'')+'>↓</button><button data-remove="'+i+'">×</button></div>').join(''):'<p class="hint">尚未选题；可选整题或经审核的独立小问。</p>'}
 function renderUsage(){let cls=$('classFilter').value.trim();let list=state.events.filter(e=>e.status==='assigned'&&(!cls||e.className===cls)).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,12);$('usageSummary').innerHTML=list.length?list.map(e=>'<div class="event"><b>'+esc(e.className)+'</b> · '+esc(e.date.slice(0,10))+' · '+e.items.length+'题<br>'+esc(e.title||'精准练习')+'<br><button class="small" data-feedback-event="'+esc(e.id)+'">录入反馈</button> <button class="small" data-cancel-event="'+esc(e.id)+'">撤回布置</button>'+(e.feedback?'<br>'+esc(e.feedback.note||'已反馈'):'')+'</div>').join(''):'<p class="hint">本班尚无已确认的使用记录。</p>'}
 function applyIndex(q){for(let r of q.sourceRefs||[{file:q.source,no:q.sourceNo}]){let d=state.meta[sourceBase(r.file)]?.[r.no];if(!d)continue;q.difficulty=q.difficulty||d.difficulty;q.type=q.type==='其他'?d.type:q.type;q.tags=q.tags?.length?q.tags:d.tags;applyConcepts(q);return true}return false}
@@ -123,6 +154,14 @@ async function importPrivateZip(file){
 async function importJson(file){let j=JSON.parse(await file.text());if(j.format==='physics-training-bank-v1'){if(confirm('将JSON题目去重后合并到当前题库？如需恢复使用历史，请使用页面顶部的“恢复备份”。')){const out=await window.QuestionBankMerge.mergeQuestions(j.questions,{questions:state.questions,save:q=>put('questions',q),updateConcepts:applyConcepts,now,hash});tell('JSON新增 '+out.added+' 道，自动合并重复 '+out.merged+' 道。')}return}let arr=Array.isArray(j)?j:(j.questions||j.items);if(!Array.isArray(arr))throw Error('JSON不是题目数组或题库备份');let n=0;for(let x of arr){if(!x.stem&&!x.text)continue;let q={id:x.id||'q'+hash(norm(x.stem||x.text)),source:x.source||file.name,sourceNo:x.sourceNo||x.question_no||'',type:x.type||'其他',stem:x.stem||x.text,answer:x.answer||'',images:x.images||[],answerImages:x.answerImages||[],tags:uniqueTags(x.tags||x.knowledge_points),difficulty:x.difficulty||'',concept_ids:[],relation:x.relation||'pending',review:'pending',revision:1,parts:x.parts||[],sourceRefs:x.sourceRefs||[],createdAt:now(),updatedAt:now()};if(state.questions.some(y=>y.id===q.id))continue;applyConcepts(q);state.questions.push(q);await put('questions',q);n++}tell('新导入 '+n+' 条 JSON 记录。没有完整图文的记录不能直接打印。')}
 
 function bind(){
+$('resetFiltersBtn').addEventListener('click',resetQuestionFilters);
+$('activeFilterSummary').addEventListener('click',e=>{
+ const chip=e.target.closest('[data-clear-filter]');if(!chip)return;
+ const id=chip.dataset.clearFilter;
+ if(!BANK_FILTER_IDS.includes(id))return;
+ $(id).value=id==='relationFilter'?'any':id==='classFilter'?'801':'';
+ render();
+});
 for(let id of ['search','classFilter'])$(id).addEventListener('input',render);
 for(let id of ['conceptFilter','conceptFilter2','typeFilter','difficultyFilter','usedFilter','relationFilter','reviewFilter'])$(id).addEventListener('change',render);
 $('fileInput').addEventListener('change',async e=>{let files=Array.from(e.target.files||[]);e.target.value='';for(let file of files){try{tell('正在本地处理 '+file.name);if(/\.docx$/i.test(file.name))await parseDocx(file);else if(/\.doc$/i.test(file.name))await parseDocIndex(file);else if(/\.json$/i.test(file.name))await importJson(file);else if(/\.zip$/i.test(file.name))await importPrivateZip(file);else throw Error('文件格式不支持')}catch(ex){tell(file.name+'：'+ex.message,true);console.error(ex)}}render()});
