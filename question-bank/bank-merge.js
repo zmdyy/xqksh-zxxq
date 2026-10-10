@@ -45,7 +45,7 @@ function mergeExisting(target,source){
 }
 function applyQualityRepair(target,source,now){
  const quality=Array.isArray(source.qualityFixes)?source.qualityFixes:[];
- const fields=new Set(quality.filter(x=>x&&['stem','answer'].includes(x.field)).map(x=>x.field));
+ const fields=new Set(quality.filter(x=>x&&['stem','answer','type'].includes(x.field)).map(x=>x.field));
  const incomingRevision=Number(source.revision||1),currentRevision=Number(target.revision||1);
  if(!fields.size||!Number.isFinite(incomingRevision)||incomingRevision<=currentRevision)return false;
  if(target.review==='approved'||String(target.source||'')!==String(source.source||'')||
