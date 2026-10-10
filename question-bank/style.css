@@ -35,3 +35,42 @@
 .student-export-history details{padding:6px 0;border-top:1px solid #e4ecf5}
 .student-export-history details summary{cursor:pointer;color:#345a7a}
 .student-history-questions{white-space:pre-wrap;padding:7px 8px;background:#edf5fc;margin-top:5px;border-radius:6px}
+
+/* 题库明细：知识点覆盖、类型和难度可视化 */
+.bank-details{margin:14px 0 18px;padding:16px 18px 20px;background:white;border:1px solid #dbe3ee;border-radius:12px;box-shadow:0 3px 20px #273b5510}
+.detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.detail-head h2{font-size:19px;margin:2px 0 4px;color:#263e58}
+.detail-head p{font-size:12px;color:#728094;margin:0}
+.detail-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.detail-actions label{font-size:12px;color:#516578;display:flex;align-items:center;gap:5px}
+.detail-actions select{height:35px;padding:0 8px;border:1px solid #cbd5e1;border-radius:6px;background:white}
+.detail-actions button{height:35px}
+#detailContent[hidden]{display:none}
+.detail-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:15px 0}
+.detail-kpi{display:flex;flex-direction:column;gap:6px;background:#f1f6fb;border:1px solid #e0eaf4;border-radius:9px;padding:12px 14px}
+.detail-kpi small{font-size:12px;color:#66778b}.detail-kpi b{font-size:26px;font-weight:750;color:#245578;line-height:1.1;font-variant-numeric:tabular-nums}
+.detail-charts{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(240px,.85fr);gap:13px}
+.detail-chart-main,.detail-pies>div{border:1px solid #e1e8f1;border-radius:9px;padding:12px 13px;background:#fff;min-width:0}
+.detail-chart-title{font-size:14px;font-weight:700;color:#304b65;display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between}
+.detail-chart-title span{color:#788a9b;font-weight:400;font-size:11px}
+.detail-pies{display:grid;grid-template-rows:1fr 1fr;gap:13px}
+#detailTypeChart,#detailDifficultyChart{height:250px;min-height:210px}
+#detailConceptChart{min-height:320px;max-height:1500px;overflow:auto}
+.detail-table-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:18px 0 9px}
+.detail-table-head h3{font-size:15px;margin:0}
+.detail-table-head>div{display:flex;gap:8px;flex-wrap:wrap}
+#detailSearch{min-width:230px;padding:8px 10px;border:1px solid #cbd5e1;border-radius:6px}
+.detail-table-scroller{overflow:auto;max-height:490px;border:1px solid #dfe6ef;border-radius:8px}
+.detail-table{border-collapse:collapse;width:100%;min-width:900px;font-size:12px;font-variant-numeric:tabular-nums}
+.detail-table td,.detail-table th{border-bottom:1px solid #e9eef4;text-align:right;padding:10px 8px;white-space:nowrap}
+.detail-table td:first-child,.detail-table th:first-child{text-align:left;position:sticky;left:0;background:white;min-width:175px;z-index:1}
+.detail-table th{position:sticky;top:0;background:#f2f6fa;color:#52667c;z-index:2}
+.detail-table th:first-child{background:#f2f6fa;z-index:3}
+.detail-table tr:hover td{background:#f5faff}
+.detail-table tr:hover td:first-child{background:#edf6ff}
+.detail-table td small{display:block;color:#8190a0;font-size:10px}
+.detail-concept-link{border:0;background:none;color:#155e88;cursor:pointer;font-size:12px;padding:0;text-align:left;font-weight:700}
+.detail-concept-link:hover{text-decoration:underline}
+.detail-foot{font-size:11px;color:#677990;margin-top:8px;line-height:1.6}
+@media(max-width:1150px){.detail-charts{grid-template-columns:1fr}.detail-pies{grid-template-columns:1fr 1fr;grid-template-rows:none}}
+@media(max-width:850px){.detail-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.detail-pies{grid-template-columns:1fr}.detail-actions{width:100%}}
