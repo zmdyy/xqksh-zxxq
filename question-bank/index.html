@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>物理精准练习题库 · 学情可视化</title>
-<link rel="stylesheet" href="./style.css?v=20261010inline2">
+<link rel="stylesheet" href="./style.css?v=20261010inline3">
 <script src="../jszip.min.js"></script>
 <script src="./bank-merge.js?v=20261010curriculum101"></script>
 <script src="../pinyin-pro.js"></script>
 <script src="../student-name-search.js?v=1"></script>
-<script src="./student-export.js?v=20261010inline2"></script>
+<script src="./student-export.js?v=20261010inline3"></script>
 <script src="./word-export.js?v=20261010student2"></script>
 </head>
 <body>
@@ -53,21 +53,25 @@
 <aside class="sidebar">
 <div class="section-title"><h2>试题篮</h2><span id="basketCount">0道</span></div>
 <div id="basket" class="basket"></div>
-<section class="student-export-panel" aria-labelledby="studentExportHeading">
-  <div class="section-title"><h2 id="studentExportHeading">按学生导出</h2><button id="studentReloadRoster" class="small muted" type="button">刷新学生名单</button></div>
-  <div class="student-export-hint">姓名来自本浏览器“学情分析 → 已保存的成绩批次”。中文、拼音和首字母均可检索。选中具体学生后，自动保存该生的导出题目历史。</div>
-  <label class="student-mode"><input type="checkbox" id="studentExportMode" checked>按学生姓名命名并记录题目历史</label>
-  <div class="student-select-wrap">
-    <input id="studentPicker" type="text" placeholder="搜索姓名 / 全拼 / 首字母（如 zhj）" autocomplete="off" aria-label="选择导出学生" aria-controls="studentSuggestions" aria-expanded="false">
-    <div id="studentSuggestions" class="student-suggestions" role="listbox" hidden></div>
+<section class="print-settings" aria-label="组卷设置">
+  <div class="section-title"><h2>组卷设置</h2><span>A4 · 少量多次</span></div>
+  <div class="print-setting-fields">
+    <label for="layout">版面布局<select id="layout"><option value="auto">自动选择</option><option value="single">单栏</option><option value="double">双栏</option></select></label>
+    <label for="answerMode">答案位置<select id="answerMode"><option value="back">背面答案（推荐）</option><option value="separate">答案另页</option></select></label>
   </div>
-  <div id="studentSelected" class="student-selected" role="status">未选中学生；按学生导出前需要选择一名学生。</div>
-  <div id="studentRosterStatus" class="student-roster-status"></div>
-  <div id="studentExportHistory" class="student-export-history"></div>
+  <label class="print-feedback-setting"><input type="checkbox" id="feedback" checked> 附学生反馈表格</label>
+  <p class="print-setting-hint">默认正面一页练习、背面一页答案；根据题图大小自动调整栏数，超出一页会提示删题。</p>
+  <div class="print-action-primary">
+    <button id="previewBtn" type="button">预览 A4</button>
+    <button id="wordBtn" type="button" class="primary">导出 Word</button>
+  </div>
+  <a id="wordDownloadLink" class="button primary" style="display:none" download>保存已生成的 Word</a>
+  <div class="print-action-secondary">
+    <button id="assignBtn" type="button" class="muted">确认实际布置</button>
+    <button id="clearBasketBtn" type="button" class="muted">清空试题篮</button>
+  </div>
+  <p class="print-setting-hint">导出 Word 时弹出学生姓名选择；不填姓名也可选择通用练习。生成记录与实际布置记录分开保存。</p>
 </section>
-<div class="layout-options"><label>排版 <select id="layout"><option value="auto">自动</option><option value="single">单栏</option><option value="double">双栏</option></select></label><label>答案 <select id="answerMode"><option value="back">第2页（双面打印）</option><option value="separate">答案另页</option></select></label><label><input type="checkbox" id="feedback" checked> 末尾附紧凑反馈表</label></div>
-<div class="buttons"><button id="previewBtn" class="primary">预览 A4 正反面</button><button id="wordBtn">导出一个 Word</button><a id="wordDownloadLink" class="button primary" style="display:none" download>保存已生成的 Word</a><button id="assignBtn">确认实际布置</button><button id="clearBasketBtn" class="muted">清空试题篮</button></div>
-<div class="info">建议一次1—3题。仅“确认实际布置”计入使用次数；加入试题篮、预览或导出均不计次。若超出一页，将提示删题或调整排版，不自动缩成小字。</div>
 <h3>使用历史</h3><div id="usageSummary" class="history"></div><button id="backupHistoryBtn" class="muted">备份记录</button>
 </aside>
 </div>
@@ -80,6 +84,7 @@
   <div id="exportStudentMatches" class="export-student-matches" role="listbox" aria-label="匹配的学生" aria-live="polite"></div>
   <label for="exportStudentClass">班级（手动录入时使用）</label>
   <input id="exportStudentClass" type="text" maxlength="24" placeholder="例如 801">
+  <div id="exportStudentHistory" class="export-student-history" aria-live="polite"></div>
   <p id="exportStudentHint" class="hint">只有确认姓名后才会记录个人导出历史；导出本身不代表学生已经练习。</p>
   <div id="exportStudentError" class="student-dialog-error" role="alert" hidden></div>
   <div class="student-dialog-actions">
@@ -91,6 +96,7 @@
 <dialog id="editorDialog" class="dialog"><form method="dialog"><button class="close">×</button></form><h2 id="editorTitle">题目审核</h2><div id="editorBody"></div></dialog>
 <dialog id="previewDialog" class="preview-dialog"><div class="preview-head"><h2>打印预览</h2><div><span id="previewStatus" role="status" aria-live="polite"></span><button id="previewExportBtn">导出 Word</button><a id="previewDownloadLink" class="button primary" style="display:none" download>点击保存 Word</a><button id="previewCloseBtn" class="muted">关闭</button></div></div><div id="printPreview" class="sheet-container"></div></dialog>
 <dialog id="drawDialog" class="dialog"><form method="dialog"><button class="close">×</button></form><h2>教师手工重绘 · SVG</h2><p class="hint">原图始终保留。右侧手工绘制的SVG不包含左侧低清原图。请核对物理结构后点击“采用重绘图”。</p><div class="draw-cols"><div><strong>原图（只作为对照）</strong><img id="drawOriginal" alt="原始题图"></div><div><strong>可编辑矢量画布</strong><svg id="drawCanvas" viewBox="0 0 800 500" aria-label="SVG手绘"></svg></div></div><div class="buttons"><select id="drawMode"><option value="line">直线（点两次）</option><option value="arrow">箭头（点两次）</option><option value="rect">矩形（点两次）</option><option value="ellipse">椭圆（点两次）</option><option value="text">文字（点一次）</option></select><input id="drawText" value="F" aria-label="要添加的文字"><button id="drawUndo">撤销一步</button><button id="drawReset">清空重画</button><button id="drawSave" class="primary">采用重绘图（保留原图）</button></div></dialog>
-<script src="./app.js?v=20261010inline2"></script>
+<script src="./inline-details.js?v=20261010inline3"></script>
+<script src="./app.js?v=20261010inline3"></script>
 </body>
 </html>
