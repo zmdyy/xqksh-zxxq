@@ -4,16 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>物理精准练习题库 · 学情可视化</title>
-<link rel="stylesheet" href="./style.css?v=20261010dashboard1">
+<link rel="stylesheet" href="./style.css?v=20261010inline2">
 <script src="../jszip.min.js"></script>
 <script src="./bank-merge.js?v=20261010curriculum101"></script>
 <script src="../pinyin-pro.js"></script>
 <script src="../student-name-search.js?v=1"></script>
-<script src="./student-export.js?v=2"></script>
+<script src="./student-export.js?v=20261010inline2"></script>
 <script src="./word-export.js?v=20261010student2"></script>
 </head>
 <body>
-<header class="topbar"><div><a href="../index.html">← 学情分析</a><a href="../knowledge/index.html">✦ 知识星球</a><h1>物理精准练习题库</h1><span class="sub">教师选题 · 一页练习 · 背面答案 · 本地保存</span></div><div class="top-actions"><a href="./dashboard.html" class="button primary" id="bankDetailsButton" title="查看各知识点题量、题型与难度">▤ 题库明细</a><button id="backupBtn" class="muted">备份题库与记录</button><label class="button muted">恢复备份<input type="file" id="restoreInput" accept=".json" hidden></label></div></header>
+<header class="topbar"><div><a href="../index.html">← 学情分析</a><a href="../knowledge/index.html">✦ 知识星球</a><h1>物理精准练习题库</h1><span class="sub">教师选题 · 一页练习 · 背面答案 · 本地保存</span></div><div class="top-actions"><button type="button" class="primary" id="bankDetailsButton" aria-expanded="false" aria-controls="bankDetailsPanel" title="展开或收起知识点统计">▤ 题库明细</button><button id="backupBtn" class="muted">备份题库与记录</button><label class="button muted">恢复备份<input type="file" id="restoreInput" accept=".json" hidden></label></div></header>
 <main>
 <div class="privacy">本页面在浏览器本地解析和保存教师上传的题目，<strong>不会自动上传到公开 GitHub 仓库</strong>。请定期导出备份；换设备不会自动同步。知识星球的84道迷思诊断题不纳入训练题库。</div>
 <div class="toolbar">
@@ -26,6 +26,28 @@
 </div>
 <div class="filters"><label>关联知识点 <select id="conceptFilter2"><option value="">不限定</option></select></label><label>知识点关系 <select id="relationFilter"><option value="any">任一知识点 / 单点检索</option><option value="both">两个标签同时存在</option><option value="cross">必须联合运用</option><option value="parallel">并列小问 / 选项辨析</option></select></label><label>检索班级 <input id="classFilter" value="801" maxlength="24"></label><label>题目状态 <select id="reviewFilter"><option value="">全部</option><option value="approved">已审核</option><option value="pending">待审核</option></select></label></div>
 <div id="status" role="status"></div>
+<section id="bankDetailsPanel" class="bank-details" hidden aria-label="题库明细可视化">
+  <div class="detail-head">
+    <div><h2>题库明细 · 知识点覆盖</h2><p>按真实题目ID统计，交叉知识点允许一题关联多个知识点，实际总题数不重复累加。</p></div>
+    <div class="detail-actions"><label>数据范围 <select id="detailScope"><option value="all">全部题目</option><option value="approved">仅已审核</option></select></label>
+      <label>知识点条形分布 <select id="detailMetric"><option value="type">按题型</option><option value="difficulty">按难度</option></select></label>
+      <label>展示 <select id="detailTop"><option value="20">前20个</option><option value="40">前40个</option><option value="all">全部</option></select></label>
+    </div>
+  </div>
+  <div id="detailContent">
+    <div class="detail-kpis" id="detailKpis"><span>题库导入后自动统计</span></div>
+    <div class="detail-charts">
+      <div class="detail-chart-main"><div class="detail-chart-title">知识点题量结构 <span>点击知识点定位下方题目</span></div><div id="detailConceptChart" role="img" aria-label="知识点题型或难度堆叠条形图"></div></div>
+      <div class="detail-pies">
+        <div><div class="detail-chart-title">题型组成</div><div id="detailTypeChart" role="img" aria-label="题型分布圆环图"></div></div>
+        <div><div class="detail-chart-title">难度分布 <span>未评定单独统计</span></div><div id="detailDifficultyChart" role="img" aria-label="难度分布圆环图"></div></div>
+      </div>
+    </div>
+    <div class="detail-table-head"><h3>知识点明细表</h3><div><input id="detailSearch" type="search" placeholder="搜索知识点 / 模块" aria-label="筛选知识点明细"><button id="detailReset" class="muted">重置统计筛选</button></div></div>
+    <div class="detail-table-scroller"><table class="detail-table"><thead><tr><th>知识点 / 所属模块</th><th>题量</th><th>选择</th><th>填空</th><th>实验</th><th>作图</th><th>计算</th><th>综合</th><th>容易</th><th>普通</th><th>困难</th><th>未评定</th></tr></thead><tbody id="detailConceptRows"></tbody></table></div>
+    <div id="detailFoot" class="detail-foot"></div>
+  </div>
+</section>
 <div class="workspace">
 <section class="library"><div class="section-title"><h2>题目资源</h2><span id="count"></span></div><div id="results" class="results"><p class="empty">尚无题目。点击左上角导入 .docx 题目和配套 .doc 目录。也可以先查看示例题。</p></div></section>
 <aside class="sidebar">
@@ -50,9 +72,25 @@
 </aside>
 </div>
 </main>
+<dialog id="studentNameDialog" class="student-name-dialog" aria-labelledby="studentNameTitle">
+  <h2 id="studentNameTitle">选择学生后导出 Word</h2>
+  <p class="hint">输入中文姓名、完整拼音或首字母，从已有学生名单选择。若学生不在名单中，可填写姓名与班级手动登记。</p>
+  <label for="exportStudentName">学生姓名 / 拼音 / 首字母</label>
+  <input id="exportStudentName" type="text" autocomplete="off" placeholder="例如：张三、zhangsan、zs" aria-describedby="exportStudentHint">
+  <div id="exportStudentMatches" class="export-student-matches" role="listbox" aria-label="匹配的学生" aria-live="polite"></div>
+  <label for="exportStudentClass">班级（手动录入时使用）</label>
+  <input id="exportStudentClass" type="text" maxlength="24" placeholder="例如 801">
+  <p id="exportStudentHint" class="hint">只有确认姓名后才会记录个人导出历史；导出本身不代表学生已经练习。</p>
+  <div id="exportStudentError" class="student-dialog-error" role="alert" hidden></div>
+  <div class="student-dialog-actions">
+    <button type="button" id="exportStudentCancel" class="muted">取消</button>
+    <button type="button" id="exportGenericWord" class="muted">不填写姓名，导出通用练习</button>
+    <button type="button" id="exportConfirmStudent" class="primary">确认姓名并导出</button>
+  </div>
+</dialog>
 <dialog id="editorDialog" class="dialog"><form method="dialog"><button class="close">×</button></form><h2 id="editorTitle">题目审核</h2><div id="editorBody"></div></dialog>
 <dialog id="previewDialog" class="preview-dialog"><div class="preview-head"><h2>打印预览</h2><div><span id="previewStatus" role="status" aria-live="polite"></span><button id="previewExportBtn">导出 Word</button><a id="previewDownloadLink" class="button primary" style="display:none" download>点击保存 Word</a><button id="previewCloseBtn" class="muted">关闭</button></div></div><div id="printPreview" class="sheet-container"></div></dialog>
 <dialog id="drawDialog" class="dialog"><form method="dialog"><button class="close">×</button></form><h2>教师手工重绘 · SVG</h2><p class="hint">原图始终保留。右侧手工绘制的SVG不包含左侧低清原图。请核对物理结构后点击“采用重绘图”。</p><div class="draw-cols"><div><strong>原图（只作为对照）</strong><img id="drawOriginal" alt="原始题图"></div><div><strong>可编辑矢量画布</strong><svg id="drawCanvas" viewBox="0 0 800 500" aria-label="SVG手绘"></svg></div></div><div class="buttons"><select id="drawMode"><option value="line">直线（点两次）</option><option value="arrow">箭头（点两次）</option><option value="rect">矩形（点两次）</option><option value="ellipse">椭圆（点两次）</option><option value="text">文字（点一次）</option></select><input id="drawText" value="F" aria-label="要添加的文字"><button id="drawUndo">撤销一步</button><button id="drawReset">清空重画</button><button id="drawSave" class="primary">采用重绘图（保留原图）</button></div></dialog>
-<script src="./app.js?v=20261010dashboard1"></script>
+<script src="./app.js?v=20261010inline2"></script>
 </body>
 </html>
