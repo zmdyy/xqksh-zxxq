@@ -100,3 +100,13 @@
 - 计数：每条实际题目按ID计数一次；一道题可关联多个知识点，对各知识点都计数，合计关联量可大于实际题量。
 - 数据来自浏览器IndexedDB，导入或修改审核后同步刷新；已有84道迷思诊断题仍独立保留。
 - 回归测试：tests/question-bank-merge-details.test.cjs。
+
+
+## 独立题库明细页面（2026-10-10）
+
+- 原主页 \`question-bank/index.html\` 不再直接渲染大幅图表，顶部只显示「题库明细」按钮。
+- 点击打开 \`question-bank/dashboard.html\`，展示知识点题量、题型、难度、堆叠条形图、圆环图和统计明细表。
+- \`dashboard.js\` 只读相同站点的 \`PhysicsTrainingBankV1 / questions\`（IndexedDB），不复制或清空题库，也不需要重新导入 ZIP。
+- 点击条形图或知识点明细表会跳转回 \`question-bank/index.html?concept_name=...\`，自动筛选相应知识点。
+- 主页不再加载 ECharts 和明细统计脚本，降低选题页面的初始负担。
+- 回归测试：\`tests/question-bank-dashboard-page.test.cjs\`。
