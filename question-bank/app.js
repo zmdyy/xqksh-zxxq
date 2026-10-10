@@ -118,6 +118,23 @@ const result=await window.QuestionBankMerge.mergeQuestions(batch,{
 tell(file.name+'：新增 '+result.added+' 道，自动合并重复 '+result.merged+' 道，疑似变式保留 '+result.suspected+' 道。请核对答案、公式和图片。');
 }
 
+async function removeExcludedQuestions(ids){
+ const set=new Set((ids||[]).map(String).filter(Boolean));
+ if(!set.size)return {removed:0,protected:0};
+ const found=state.questions.filter(q=>set.has(q.id));
+ if(!found.length)return {removed:0,protected:0};
+ const protectedQuestions=found.filter(q=>q.review==='approved');
+ const toRemove=found.filter(q=>q.review!=='approved');
+ if(toRemove.length){
+   if(!confirm('修订包要求从题库删除 '+toRemove.length+' 道有明确质量问题的题目（残缺公式或缺标准答案图）。删除不会清空历史布置记录，是否确认？'))return {removed:0,protected:protectedQuestions.length,cancelled:true};
+   for(const q of toRemove)await del('questions',q.id);
+   state.questions=state.questions.filter(q=>!set.has(q.id)||q.review==='approved');
+   state.basket=state.basket.filter(id=>!set.has(String(id).split('::')[0]));
+   invalidateWordDownload();render();
+ }
+ return {removed:toRemove.length,protected:protectedQuestions.length};
+}
+
 async function importPrivateZip(file){
  if(!window.JSZip||!window.QuestionBankMerge)throw Error('缺少ZIP解析器或去重模块，请刷新页面');
  const zip=await JSZip.loadAsync(await file.arrayBuffer());
@@ -148,7 +165,9 @@ async function importPrivateZip(file){
    provenanceUpdates:j.provenanceUpdates||[]
  });
  
- tell('导入完成：新增 '+out.added+' 道，合并同题 '+out.merged+' 道，其中应用质量修订 '+out.qualityUpdated+' 道；待人工处理修订冲突 '+out.qualitySkipped+' 道，疑似变式保留 '+out.suspected+' 道。');
+ const deletion=await removeExcludedQuestions(j.excludedQuestionIds||[]);
+ tell('导入完成：新增 '+out.added+' 道，合并同题 '+out.merged+' 道，更新质量修订 '+out.qualityUpdated+' 道；删除严重缺陷题 '+deletion.removed+' 道'+(deletion.protected?'（'+deletion.protected+' 道教师已审核题保留待决定）':'')+'；修订冲突 '+out.qualitySkipped+' 道，疑似变式 '+out.suspected+' 道。');
+ render();
 }
 
 async function importJson(file){let j=JSON.parse(await file.text());if(j.format==='physics-training-bank-v1'){if(confirm('将JSON题目去重后合并到当前题库？如需恢复使用历史，请使用页面顶部的“恢复备份”。')){const out=await window.QuestionBankMerge.mergeQuestions(j.questions,{questions:state.questions,save:q=>put('questions',q),updateConcepts:applyConcepts,now,hash});tell('JSON新增 '+out.added+' 道，自动合并重复 '+out.merged+' 道。')}return}let arr=Array.isArray(j)?j:(j.questions||j.items);if(!Array.isArray(arr))throw Error('JSON不是题目数组或题库备份');let n=0;for(let x of arr){if(!x.stem&&!x.text)continue;let q={id:x.id||'q'+hash(norm(x.stem||x.text)),source:x.source||file.name,sourceNo:x.sourceNo||x.question_no||'',type:x.type||'其他',stem:x.stem||x.text,answer:x.answer||'',images:x.images||[],answerImages:x.answerImages||[],tags:uniqueTags(x.tags||x.knowledge_points),difficulty:x.difficulty||'',concept_ids:[],relation:x.relation||'pending',review:'pending',revision:1,parts:x.parts||[],sourceRefs:x.sourceRefs||[],createdAt:now(),updatedAt:now()};if(state.questions.some(y=>y.id===q.id))continue;applyConcepts(q);state.questions.push(q);await put('questions',q);n++}tell('新导入 '+n+' 条 JSON 记录。没有完整图文的记录不能直接打印。')}
