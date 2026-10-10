@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>题库明细 · 知识点覆盖</title>
+<link rel="stylesheet" href="./style.css?v=20261010dashboard1">
+<script src="../echarts.min.js"></script>
+<script src="./details.js?v=20261010b"></script>
+<script src="./dashboard.js?v=20261010dashboard1" defer></script>
+</head>
+<body>
+<header class="topbar">
+  <div><a href="./index.html">← 返回题库选题</a><a href="../index.html">学情分析</a><h1>题库明细 · 知识点覆盖</h1><span class="sub">独立统计页面 · 只读取本浏览器题库</span></div>
+  <div class="top-actions"><a class="button muted" href="./index.html">返回题目列表</a></div>
+</header>
+<main class="dashboard-page">
+<div class="privacy">该页面读取当前浏览器已导入的题库数据，不会上传题干、学生信息或题目图片。题库数据仍通过原题库页面导入和管理。</div>
+<div id="dashboardStatus" role="status" aria-live="polite" class="dashboard-status">正在读取本地题库…</div>
+<section id="bankDetails" class="bank-details" aria-label="题库明细可视化">
+  <div class="detail-head">
+    <div><h2>题库明细 · 知识点覆盖</h2><p>按真实题目ID统计，交叉知识点允许一题关联多个知识点，实际总题数不重复累加。</p></div>
+    <div class="detail-actions"><label>数据范围 <select id="detailScope"><option value="all">全部题目</option><option value="approved">仅已审核</option></select></label>
+      <label>知识点条形分布 <select id="detailMetric"><option value="type">按题型</option><option value="difficulty">按难度</option></select></label>
+      <label>展示 <select id="detailTop"><option value="20">前20个</option><option value="40">前40个</option><option value="all">全部</option></select></label>
+      <button id="detailToggle" class="muted" aria-expanded="true" aria-controls="detailContent">收起明细</button>
+    </div>
+  </div>
+  <div id="detailContent">
+    <div class="detail-kpis" id="detailKpis"><span>题库导入后自动统计</span></div>
+    <div class="detail-charts">
+      <div class="detail-chart-main"><div class="detail-chart-title">知识点题量结构 <span>点击某个知识点可筛选题目</span></div><div id="detailConceptChart" role="img" aria-label="知识点题型或难度堆叠条形图"></div></div>
+      <div class="detail-pies">
+        <div><div class="detail-chart-title">题型组成</div><div id="detailTypeChart" role="img" aria-label="题型分布圆环图"></div></div>
+        <div><div class="detail-chart-title">难度分布 <span>未评定单独统计</span></div><div id="detailDifficultyChart" role="img" aria-label="难度分布圆环图"></div></div>
+      </div>
+    </div>
+    <div class="detail-table-head"><h3>知识点明细表</h3><div><input id="detailSearch" type="search" placeholder="搜索知识点 / 模块" aria-label="筛选知识点明细"><button id="detailReset" class="muted">清除题库筛选</button></div></div>
+    <div class="detail-table-scroller"><table class="detail-table"><thead><tr><th>知识点 / 所属模块</th><th>题量</th><th>选择</th><th>填空</th><th>实验</th><th>作图</th><th>计算</th><th>综合</th><th>容易</th><th>普通</th><th>困难</th><th>未评定</th></tr></thead><tbody id="detailConceptRows"></tbody></table></div>
+    <div id="detailFoot" class="detail-foot"></div>
+  </div>
+</section>
+</main>
+</body>
+</html>
