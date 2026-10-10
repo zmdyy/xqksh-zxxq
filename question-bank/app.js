@@ -153,14 +153,62 @@ function checkPageOverflow(){let bad=[];for(let [i,id] of ['previewFront','previ
 let lows=Array.from($('printPreview').querySelectorAll('img')).filter(im=>im.naturalWidth&&im.naturalWidth<300).length;
 $('previewStatus').textContent=(bad.length?bad.join('、')+'内容溢出：请删题或调整栏数。':'A4 正反面符合当前浏览器预览尺寸。')+(lows?' '+lows+'幅图像像素偏低，请试印核查。':'');
 $('previewStatus').dataset.overflow=bad.length?'yes':'no'}
+let wordDownloadUrl=null;
 async function exportWord(){
-try{let p=buildPages();let notApproved=p.items.filter(x=>x.q.review!=='approved');if(notApproved.length)throw Error('有 '+notApproved.length+' 道题尚未教师审核。请先打开“审核 / 拆题”，核对题干、图、答案后标记已审核。');if(!state.preview){await showPreview();tell('请先核对预览，再点击“导出 Word”。');return}if(state.preview.layout!==p.layout||state.preview.front!==p.front||state.preview.back!==p.back){await showPreview();tell('内容或设置已经变化，请重新核对预览。');return}
-if($('previewStatus').dataset.overflow==='yes')throw Error('正反面有内容溢出，请减少题目或切换布局');
-if(!window.htmlDocx||typeof htmlDocx.asBlob!=='function')throw Error('html-docx.js 未加载，无法生成 Word');
-let blob=htmlDocx.asBlob(printDocHtml(p),{orientation:'portrait',margins:{top:794,right:850,bottom:794,left:850}});
-download(blob,'物理精准练习_'+today()+(p.layout==='double'?'_双栏':'_单栏')+'.docx');
-tell('已导出一份两页 Word（正面练习、背面答案）。首次打印请检查Word的分页。')
-}catch(e){tell('导出失败：'+e.message,true);console.error(e)}}
+ const notice=$('previewStatus');
+ const noticeError=message=>{
+   tell('导出 Word：'+message,true);
+   notice.textContent='导出 Word：'+message;
+   notice.style.color='#a12729';
+ };
+ try{
+   let p=buildPages();
+   // 主页面的「导出一个Word」首次点击，也应直接完成整个流程，而非只弹出预览。
+   const outdated=!state.preview||state.preview.front!==p.front||state.preview.back!==p.back||state.preview.layout!==p.layout;
+   if(outdated){
+     await showPreview();
+     p=buildPages();
+     if(!state.preview)throw Error('无法创建预览，请先检查试题内容');
+   }
+   if(notice.dataset.overflow==='yes'){
+     noticeError('正面或答案页超出一页A4，请减少题目或切换单双栏。');
+     return;
+   }
+   const pending=p.items.filter(x=>x.q.review!=='approved');
+   if(pending.length){
+     const ok=confirm('当前有 '+pending.length+' 道题尚未标记为「教师已审核」。\n请确认题干、公式、题图和答案是否正确。\n是否仍要导出这次练习？');
+     if(!ok){notice.textContent='已取消导出；题目与试题篮均已保留。';return}
+   }
+   if(!window.PhysicsWordExport?.createDocx)throw Error('Word 生成程序加载失败，请按 Ctrl+F5 刷新页面');
+   notice.style.color='#436484';
+   notice.textContent='正在生成Word（题图较大时可能需要几秒钟）…';
+   const blob=await window.PhysicsWordExport.createDocx({
+     items:p.items,
+     title:'物理精准练习',
+     date:today(),
+     layout:p.layout,
+     answerMode:$('answerMode').value,
+     feedback:$('feedback').checked
+   });
+   if(!(blob instanceof Blob)||blob.size<500)throw Error('生成的Word文件数据为空');
+   const filename='physics_practice_'+today()+(p.layout==='double'?'_2col':'_1col')+'.docx';
+   if(wordDownloadUrl)URL.revokeObjectURL(wordDownloadUrl);
+   wordDownloadUrl=URL.createObjectURL(blob);
+   for(const id of ['wordDownloadLink','previewDownloadLink']){
+     const link=$(id);
+     link.href=wordDownloadUrl;
+     link.download=filename;
+     link.style.display='inline-flex';
+   }
+   $('wordDownloadLink').click();
+   notice.textContent='Word 已生成：'+filename+'（'+Math.round(blob.size/1024)+' KB）。若浏览器没有开始下载，请点击「点击保存 Word」。';
+   notice.style.color='#17633f';
+   tell('Word 已生成并尝试下载。如未自动保存，点击「保存已生成的 Word」。');
+ }catch(e){
+   noticeError(e.message||String(e));
+   console.error('[题库 Word 导出失败]',e);
+ }
+}
 function openDraw(q,i){
 let m=q.images[i];if(!m)return;state.draw={qid:q.id,imgIndex:i,pending:null};
 $('drawOriginal').src=m.data||m.src||'';const svg=$('drawCanvas'),ns='http://www.w3.org/2000/svg';svg.innerHTML='<defs><marker id="qbArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#111"/></marker></defs>';
