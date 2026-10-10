@@ -121,8 +121,8 @@ function chooseManual(name,className){
  if(name.length>40)throw new Error('学生姓名不能超过40个字符');
  if(!className)throw new Error('请输入班级，避免同名学生的记录混淆');
  if(className.length>24)throw new Error('班级名称不能超过24个字符');
- if(/^[a-z\s]+$/i.test(name)){
-   throw new Error('输入的是拼音或首字母，请点击上方匹配的学生；未在名单中的学生请填写中文姓名。');
+ if(/^[a-z\s]+$/i.test(name)&&searchRoster(name,5).length){
+   throw new Error('已找到匹配的学生，请从上方名单选择，避免把拼音误当作新姓名。');
  }
  const exist=students.find(x=>x.className===className&&(x.displayName===name||x.rawName===name));
  if(exist)return asSelected(exist);
@@ -162,6 +162,14 @@ function bindEvents(){
  $('exportStudentClass').addEventListener('input',()=>{
    // Editing the class after choosing roster result switches to explicit manual mode.
    if(currentCandidate&&currentCandidate.className!==clean($('exportStudentClass').value))currentCandidate=null;
+   $('exportStudentError').hidden=true;
+ });
+ $('exportStudentClass').addEventListener('input',()=>{
+   if(currentCandidate&&currentCandidate.className!==clean($('exportStudentClass').value)){
+     currentCandidate=null;
+     renderMatches();
+     renderHistory();
+   }
    $('exportStudentError').hidden=true;
  });
  $('exportConfirmStudent').addEventListener('click',()=>{
