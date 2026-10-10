@@ -24,7 +24,27 @@ function sameQuestion(a,b){
  const an=normalizeStem(a.stem),bn=normalizeStem(b.stem);
  return an===bn&&imagesMatch(a.images,b.images)&&(an.length>10||((a.images||[]).length>0));
 }
+function attachRepairCandidates(target,source){
+ let inserted=0;
+ for(const side of ['images','answerImages']){
+   const old=target[side]||[],incoming=source[side]||[];
+   incoming.forEach((m,i)=>{
+     if(!m?.repair?.candidateData||!old[i])return;
+     const curr=old[i];
+     // Preserve a previously approved replacement or an independently redrawn teacher image.
+     if(curr.repair?.status==='approved'||curr.useRedraw)return;
+     const hashesAgree=Boolean(curr.contentHash&&m.contentHash&&curr.contentHash===m.contentHash);
+     const identicalOriginal=Boolean(curr.data&&m.data&&curr.data===m.data);
+     if(!hashesAgree&&!identicalOriginal)return;
+     if(curr.repair?.status==='rejected')return;
+     curr.repair={...m.repair,status:'pending'};
+     inserted++;
+   });
+ }
+ return inserted;
+}
 function mergeExisting(target,source){
+ attachRepairCandidates(target,source);
  const refs=target.sourceRefs||[{file:target.source,no:target.sourceNo}];
  const keys=new Set(refs.map(r=>r.file+'#'+r.no));
  for(const x of source.sourceRefs||[{file:source.source,no:source.sourceNo}]){
@@ -109,5 +129,5 @@ async function mergeQuestions(incoming,options){
  }
  return stats;
 }
-root.QuestionBankMerge={normalizeStem,imagesMatch,sameQuestion,mergeQuestions,applyQualityRepair};
+root.QuestionBankMerge={normalizeStem,imagesMatch,sameQuestion,mergeQuestions,applyQualityRepair,attachRepairCandidates};
 })(typeof window!=='undefined'?window:globalThis);
