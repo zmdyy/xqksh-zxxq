@@ -298,3 +298,15 @@
 .repair-none{grid-column:1/-1;padding:25px;color:#63768a;text-align:center}
 @media(max-width:900px){.repair-cards{grid-template-columns:1fr}.repair-dialog{height:96vh;max-height:96vh}.repair-tools input{width:100%;min-width:0}.repair-footer{flex-wrap:wrap}}
 @media(max-width:540px){.repair-compare img{height:140px}.repair-cards{height:calc(100% - 300px);padding:9px}.repair-footer>button{width:100%}.repair-head{padding:12px}.repair-tools{padding:9px}}
+
+/* 一道题只显示一张审核卡，卡片内按不同原图组织，避免重复审核 */
+.repair-cards{grid-template-columns:minmax(0,1fr)}
+.repair-question-card{width:100%;padding:15px}
+.repair-question-card>.repair-card-heading{font-size:15px}
+.repair-question-card .repair-question{min-height:0}
+.repair-subfigure{margin:13px 0 0;border:1px solid #dbe6f0;padding:10px;border-radius:9px;background:#fbfdff}
+.repair-subfigure-label{font-size:12px;font-weight:700;color:#365673;margin-bottom:9px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.repair-subfigure .repair-compare{grid-template-columns:repeat(auto-fit,minmax(185px,1fr))}
+.repair-subfigure .repair-compare img{height:210px}
+.repair-state.mixed{background:#fff0d9;color:#975923}
+@media(max-width:650px){.repair-subfigure .repair-compare{grid-template-columns:1fr 1fr}.repair-subfigure .repair-compare img{height:155px}}
