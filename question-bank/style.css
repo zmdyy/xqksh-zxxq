@@ -74,3 +74,12 @@
 .detail-foot{font-size:11px;color:#677990;margin-top:8px;line-height:1.6}
 @media(max-width:1150px){.detail-charts{grid-template-columns:1fr}.detail-pies{grid-template-columns:1fr 1fr;grid-template-rows:none}}
 @media(max-width:850px){.detail-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.detail-pies{grid-template-columns:1fr}.detail-actions{width:100%}}
+
+/* 题库明细独立页面；主页面不再载入图表脚本。 */
+.dashboard-page{max-width:1660px}
+.dashboard-page .bank-details{margin-top:12px}
+.dashboard-status{margin:12px 0;padding:10px 13px;background:#edf6fc;border:1px solid #c8ddeb;border-radius:8px;color:#265c7c;line-height:1.6}
+.dashboard-status.error{background:#fff4ec;border-color:#e6c7a5;color:#954b25}
+.dashboard-page .detail-chart-main{min-width:0}
+.dashboard-page .detail-pies{min-width:0}
+@media(max-width:900px){.dashboard-page .detail-head{display:block}.dashboard-page .detail-actions{margin-top:12px}}
