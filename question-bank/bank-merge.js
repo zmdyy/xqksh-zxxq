@@ -30,14 +30,23 @@ function attachRepairCandidates(target,source){
    const old=target[side]||[],incoming=source[side]||[];
    incoming.forEach((m,i)=>{
      if(!m?.repair?.candidateData||!old[i])return;
-     const curr=old[i];
-     // Preserve a previously approved replacement or an independently redrawn teacher image.
+     const curr=old[i],repair=m.repair;
+     // Never override a teacher-confirmed drawing, manually drawn image, or a newer revision.
      if(curr.repair?.status==='approved'||curr.useRedraw)return;
      const hashesAgree=Boolean(curr.contentHash&&m.contentHash&&curr.contentHash===m.contentHash);
      const identicalOriginal=Boolean(curr.data&&m.data&&curr.data===m.data);
-     if(!hashesAgree&&!identicalOriginal)return;
+     const originalInRepair=Boolean(curr.data&&repair.originalData&&curr.data===repair.originalData);
+     if(!hashesAgree&&!identicalOriginal&&!originalInRepair)return;
      if(curr.repair?.status==='rejected')return;
-     curr.repair={...m.repair,status:'pending'};
+     if(repair.status==='approved'){
+       if(target.review==='approved'||Number(target.revision||1)>Number(source.revision||1))return;
+       const original=repair.originalData||curr.data;
+       curr.data=m.data;curr.useRedraw=false;
+       curr.repair={...repair,originalData:original,status:'approved'};
+       target.revision=Math.max(Number(target.revision||1),Number(source.revision||1));
+     }else{
+       curr.repair={...repair,status:'pending'};
+     }
      inserted++;
    });
  }
