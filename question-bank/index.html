@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>物理精准练习题库 · 学情可视化</title>
-<link rel="stylesheet" href="./style.css?v=20261010filters1">
+<link rel="stylesheet" href="./style.css?v=20261010layout1">
 <script src="../jszip.min.js"></script>
 <script src="./bank-merge.js?v=20261010curriculum101"></script>
 <script src="../pinyin-pro.js"></script>
@@ -15,7 +15,8 @@
 <body>
 <header class="topbar"><div><a href="../index.html">← 学情分析</a><a href="../knowledge/index.html">✦ 知识星球</a><h1>物理精准练习题库</h1></div><div class="top-actions"><button type="button" class="primary" id="bankDetailsButton" aria-expanded="false" aria-controls="bankDetailsPanel" title="展开或收起知识点统计">▤ 题库明细</button><button id="backupBtn" class="muted">备份题库与记录</button><label class="button muted">恢复备份<input type="file" id="restoreInput" accept=".json" hidden></label></div></header>
 <main>
-<section class="bank-query-panel" aria-label="题库检索与筛选">
+<section class="bank-query-panel workflow-section" aria-label="题库检索与筛选">
+  <div class="workflow-heading"><div class="workflow-step"><span aria-hidden="true">01</span><div><h2>检索与筛选</h2><p>先定位知识点，再选择合适的练习题</p></div></div><span class="workflow-side-note">题库管理</span></div>
   <div class="bank-query-main">
     <label class="button primary bank-import-button">＋ 导入题目
       <input id="fileInput" type="file" accept=".docx,.doc,.json,.zip" multiple hidden>
@@ -97,18 +98,21 @@
   </div>
 </section>
 <div class="workspace">
-<section class="library"><div class="section-title"><h2>题目资源</h2><span id="count"></span></div><div id="results" class="results"><p class="empty">尚无题目。点击左上角导入 .docx 题目和配套 .doc 目录。也可以先查看示例题。</p></div></section>
+<section class="library workflow-section"><div class="section-title section-heading"><div class="workflow-step"><span aria-hidden="true">02</span><div><h2>题目资源</h2><p>查看题干与原图，点击“＋整题”加入试题篮</p></div></div><span id="count"></span></div><div id="results" class="results"><p class="empty">尚无题目。点击左上角导入 .docx 题目和配套 .doc 目录。也可以先查看示例题。</p></div></section>
 <aside class="sidebar">
-<div class="section-title"><h2>试题篮</h2><span id="basketCount">0道</span></div>
-<div id="basket" class="basket"></div>
-<section class="print-settings" aria-label="组卷设置">
-  <div class="section-title"><h2>组卷设置</h2><span>A4 · 少量多次</span></div>
+<section class="basket-section workflow-section">
+  <div class="section-title section-heading"><div class="workflow-step"><span aria-hidden="true">03</span><div><h2>试题篮</h2><p>调整题目顺序，安排针对性练习</p></div></div><span id="basketCount">0道</span></div>
+  <div id="basket" class="basket"></div>
+</section>
+<section class="print-settings workflow-section" aria-label="组卷设置">
+  <div class="section-title section-heading"><div class="workflow-step"><span aria-hidden="true">04</span><div><h2>组卷设置</h2><p>一页 A4 练习，背面放参考答案</p></div></div></div>
   <div class="print-setting-fields">
     <label for="layout">版面布局<select id="layout"><option value="auto">自动选择</option><option value="single">单栏</option><option value="double">双栏</option></select></label>
     <label for="answerMode">答案位置<select id="answerMode"><option value="back">背面答案（推荐）</option><option value="separate">答案另页</option></select></label>
   </div>
   <label class="print-feedback-setting"><input type="checkbox" id="feedback" checked> 附学生反馈表格</label>
-  <p class="print-setting-hint">默认正面一页练习、背面一页答案；根据题图大小自动调整栏数，超出一页会提示删题。</p>
+  <div id="layoutDecision" class="layout-decision" aria-live="polite">当前为自动排版：预览时按正反面内容检查，并选择适合的一栏或两栏。</div>
+  <p class="print-setting-hint">自动排版先尝试单栏，若 A4 超出则尝试双栏；两种均不适合时提示减少题目。</p>
   <div class="print-action-primary">
     <button id="previewBtn" type="button">预览 A4</button>
     <button id="wordBtn" type="button" class="primary">导出 Word</button>
@@ -120,7 +124,7 @@
   </div>
   <p class="print-setting-hint">导出 Word 时弹出学生姓名选择；不填姓名也可选择通用练习。生成记录与实际布置记录分开保存。</p>
 </section>
-<h3>使用历史</h3><div id="usageSummary" class="history"></div><button id="backupHistoryBtn" class="muted">备份记录</button>
+<details class="usage-section workflow-section"><summary>实际布置历史 <span>点击展开</span></summary><div id="usageSummary" class="history"></div><button id="backupHistoryBtn" class="muted">备份记录</button></details>
 </aside>
 </div>
 </main>
@@ -145,6 +149,6 @@
 <dialog id="previewDialog" class="preview-dialog"><div class="preview-head"><h2>打印预览</h2><div><span id="previewStatus" role="status" aria-live="polite"></span><button id="previewExportBtn">导出 Word</button><a id="previewDownloadLink" class="button primary" style="display:none" download>点击保存 Word</a><button id="previewCloseBtn" class="muted">关闭</button></div></div><div id="printPreview" class="sheet-container"></div></dialog>
 <dialog id="drawDialog" class="dialog"><form method="dialog"><button class="close">×</button></form><h2>教师手工重绘 · SVG</h2><p class="hint">原图始终保留。右侧手工绘制的SVG不包含左侧低清原图。请核对物理结构后点击“采用重绘图”。</p><div class="draw-cols"><div><strong>原图（只作为对照）</strong><img id="drawOriginal" alt="原始题图"></div><div><strong>可编辑矢量画布</strong><svg id="drawCanvas" viewBox="0 0 800 500" aria-label="SVG手绘"></svg></div></div><div class="buttons"><select id="drawMode"><option value="line">直线（点两次）</option><option value="arrow">箭头（点两次）</option><option value="rect">矩形（点两次）</option><option value="ellipse">椭圆（点两次）</option><option value="text">文字（点一次）</option></select><input id="drawText" value="F" aria-label="要添加的文字"><button id="drawUndo">撤销一步</button><button id="drawReset">清空重画</button><button id="drawSave" class="primary">采用重绘图（保留原图）</button></div></dialog>
 <script src="./inline-details.js?v=20261010inline3"></script>
-<script src="./app.js?v=20261010filters1"></script>
+<script src="./app.js?v=20261010layout1"></script>
 </body>
 </html>
