@@ -160,6 +160,8 @@ async function importPrivateZip(file){
        if(!repair)continue;
        if(repair.candidateRef)repair.candidateData=await fromZip(repair.candidateRef);
        if(repair.previewPngRef)repair.previewPngData=await fromZip(repair.previewPngRef);
+       if(repair.alternativeCandidateRef)repair.alternativeCandidateData=await fromZip(repair.alternativeCandidateRef);
+       if(repair.legacyCandidateRef)repair.legacyCandidateData=await fromZip(repair.legacyCandidateRef);
        if(repair.status==='approved'){
          if(repair.originalRef)repair.originalData=await fromZip(repair.originalRef);
          if(!repair.candidateData)repair.candidateData=im.data;
