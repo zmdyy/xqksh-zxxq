@@ -45,12 +45,13 @@ function mergeExisting(target,source){
 }
 function applyQualityRepair(target,source,now){
  const quality=Array.isArray(source.qualityFixes)?source.qualityFixes:[];
- const fields=new Set(quality.filter(x=>x&&['stem','answer','type'].includes(x.field)).map(x=>x.field));
+ const fields=new Set(quality.filter(x=>x&&['stem','answer','type','tags'].includes(x.field)).map(x=>x.field));
  const incomingRevision=Number(source.revision||1),currentRevision=Number(target.revision||1);
  if(!fields.size||!Number.isFinite(incomingRevision)||incomingRevision<=currentRevision)return false;
  if(target.review==='approved'||String(target.source||'')!==String(source.source||'')||
     String(target.sourceNo||'')!==String(source.sourceNo||''))return false;
  for(const field of fields){
+   if(field==='tags'&&Array.isArray(source.tags)){target.tags=[...source.tags];continue}
    if(typeof source[field]==='string'&&source[field].trim())target[field]=source[field];
  }
  // Picture restoration is allowed only if the original question had no picture.
