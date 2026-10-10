@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>物理精准练习题库 · 学情可视化</title>
-<link rel="stylesheet" href="./style.css?v=20261010inline4">
+<link rel="stylesheet" href="./style.css?v=20261010filters1">
 <script src="../jszip.min.js"></script>
 <script src="./bank-merge.js?v=20261010curriculum101"></script>
 <script src="../pinyin-pro.js"></script>
@@ -13,18 +13,66 @@
 <script src="./word-export.js?v=20261010student2"></script>
 </head>
 <body>
-<header class="topbar"><div><a href="../index.html">← 学情分析</a><a href="../knowledge/index.html">✦ 知识星球</a><h1>物理精准练习题库</h1><span class="sub">教师选题 · 一页练习 · 背面答案 · 本地保存</span></div><div class="top-actions"><button type="button" class="primary" id="bankDetailsButton" aria-expanded="false" aria-controls="bankDetailsPanel" title="展开或收起知识点统计">▤ 题库明细</button><button id="backupBtn" class="muted">备份题库与记录</button><label class="button muted">恢复备份<input type="file" id="restoreInput" accept=".json" hidden></label></div></header>
+<header class="topbar"><div><a href="../index.html">← 学情分析</a><a href="../knowledge/index.html">✦ 知识星球</a><h1>物理精准练习题库</h1></div><div class="top-actions"><button type="button" class="primary" id="bankDetailsButton" aria-expanded="false" aria-controls="bankDetailsPanel" title="展开或收起知识点统计">▤ 题库明细</button><button id="backupBtn" class="muted">备份题库与记录</button><label class="button muted">恢复备份<input type="file" id="restoreInput" accept=".json" hidden></label></div></header>
 <main>
-<div class="privacy">本页面在浏览器本地解析和保存教师上传的题目，<strong>不会自动上传到公开 GitHub 仓库</strong>。请定期导出备份；换设备不会自动同步。知识星球的84道迷思诊断题不纳入训练题库。</div>
-<div class="toolbar">
-<label class="button primary">＋ 导入题库 ZIP / Word / JSON<input id="fileInput" type="file" accept=".docx,.doc,.json,.zip" multiple hidden></label>
-<input id="search" placeholder="搜索题干、知识点、题号、来源" aria-label="搜索题目">
-<select id="conceptFilter" aria-label="按知识点筛选"><option value="">全部知识点</option></select>
-<select id="typeFilter" aria-label="按题型筛选"><option value="">全部题型</option><option>作图题</option><option>选择题</option><option>填空题</option><option>实验题</option><option>计算题</option><option>综合题</option><option>其他</option></select>
-<select id="difficultyFilter"><option value="">全部难度</option><option>容易</option><option>普通</option><option>困难</option></select>
-<select id="usedFilter"><option value="">全部使用状态</option><option value="unused">从未布置</option><option value="recent">本班30天内未使用</option><option value="used">已布置过</option></select>
-</div>
-<div class="filters"><label>关联知识点 <select id="conceptFilter2"><option value="">不限定</option></select></label><label>知识点关系 <select id="relationFilter"><option value="any">任一知识点 / 单点检索</option><option value="both">两个标签同时存在</option><option value="cross">必须联合运用</option><option value="parallel">并列小问 / 选项辨析</option></select></label><label>检索班级 <input id="classFilter" value="801" maxlength="24"></label><label>题目状态 <select id="reviewFilter"><option value="">全部</option><option value="approved">已审核</option><option value="pending">待审核</option></select></label></div>
+<section class="bank-query-panel" aria-label="题库检索与筛选">
+  <div class="bank-query-main">
+    <label class="button primary bank-import-button">＋ 导入题目
+      <input id="fileInput" type="file" accept=".docx,.doc,.json,.zip" multiple hidden>
+    </label>
+    <label class="bank-search-field" for="search">
+      <span class="bank-search-icon" aria-hidden="true">⌕</span>
+      <input id="search" type="search" placeholder="搜索题干、知识点、题号或来源" autocomplete="off" aria-label="搜索题库">
+    </label>
+    <button id="resetFiltersBtn" class="bank-reset-button" type="button">重置筛选</button>
+  </div>
+  <div class="bank-query-group">
+    <div class="bank-query-heading">
+      <strong>知识点定位</strong><small>筛选知识内容</small>
+    </div>
+    <div class="bank-query-fields bank-query-knowledge">
+      <label for="conceptFilter">主要知识点
+        <select id="conceptFilter"><option value="">全部知识点</option></select>
+      </label>
+      <label for="conceptFilter2">关联知识点
+        <select id="conceptFilter2"><option value="">不限</option></select>
+      </label>
+      <label for="relationFilter">知识点关系
+        <select id="relationFilter">
+          <option value="any">任一匹配</option>
+          <option value="both">同时涉及</option>
+          <option value="cross">真正交叉应用</option>
+          <option value="parallel">并列小问 / 选项辨析</option>
+        </select>
+      </label>
+    </div>
+  </div>
+  <div class="bank-query-group bank-query-group-last">
+    <div class="bank-query-heading">
+      <strong>题目条件</strong><small>缩小检索范围</small>
+    </div>
+    <div class="bank-query-fields bank-query-conditions">
+      <label for="typeFilter">题型
+        <select id="typeFilter"><option value="">全部题型</option>
+          <option>选择题</option><option>填空题</option><option>实验题</option><option>作图题</option><option>计算题</option><option>综合题</option><option>其他</option>
+        </select>
+      </label>
+      <label for="difficultyFilter">难度
+        <select id="difficultyFilter"><option value="">全部难度</option><option>容易</option><option>普通</option><option>困难</option></select>
+      </label>
+      <label for="reviewFilter">审核状态
+        <select id="reviewFilter"><option value="">全部状态</option><option value="approved">已审核</option><option value="pending">待审核</option></select>
+      </label>
+      <label for="usedFilter">布置记录
+        <select id="usedFilter"><option value="">不限</option><option value="unused">从未布置</option><option value="recent">本班近30天未使用</option><option value="used">曾经布置</option></select>
+      </label>
+      <label for="classFilter">班级
+        <input id="classFilter" value="801" maxlength="24" aria-label="班级，用于筛选该班30天内未使用的题目及布置记录">
+      </label>
+    </div>
+  </div>
+  <div id="activeFilterSummary" class="bank-active-filters" aria-live="polite" hidden></div>
+</section>
 <div id="status" role="status"></div>
 <section id="bankDetailsPanel" class="bank-details" hidden aria-label="题库明细可视化">
   <div class="detail-head">
@@ -97,6 +145,6 @@
 <dialog id="previewDialog" class="preview-dialog"><div class="preview-head"><h2>打印预览</h2><div><span id="previewStatus" role="status" aria-live="polite"></span><button id="previewExportBtn">导出 Word</button><a id="previewDownloadLink" class="button primary" style="display:none" download>点击保存 Word</a><button id="previewCloseBtn" class="muted">关闭</button></div></div><div id="printPreview" class="sheet-container"></div></dialog>
 <dialog id="drawDialog" class="dialog"><form method="dialog"><button class="close">×</button></form><h2>教师手工重绘 · SVG</h2><p class="hint">原图始终保留。右侧手工绘制的SVG不包含左侧低清原图。请核对物理结构后点击“采用重绘图”。</p><div class="draw-cols"><div><strong>原图（只作为对照）</strong><img id="drawOriginal" alt="原始题图"></div><div><strong>可编辑矢量画布</strong><svg id="drawCanvas" viewBox="0 0 800 500" aria-label="SVG手绘"></svg></div></div><div class="buttons"><select id="drawMode"><option value="line">直线（点两次）</option><option value="arrow">箭头（点两次）</option><option value="rect">矩形（点两次）</option><option value="ellipse">椭圆（点两次）</option><option value="text">文字（点一次）</option></select><input id="drawText" value="F" aria-label="要添加的文字"><button id="drawUndo">撤销一步</button><button id="drawReset">清空重画</button><button id="drawSave" class="primary">采用重绘图（保留原图）</button></div></dialog>
 <script src="./inline-details.js?v=20261010inline3"></script>
-<script src="./app.js?v=20261010inline4"></script>
+<script src="./app.js?v=20261010filters1"></script>
 </body>
 </html>
