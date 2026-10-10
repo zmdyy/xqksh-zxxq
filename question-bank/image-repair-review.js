@@ -5,85 +5,101 @@
 'use strict';
 const $=id=>document.getElementById(id);
 let api=null,filter='pending',word='',page=0,busy=false;
-const PER_PAGE=12;
+const PER_PAGE=4;
+let visibleGroups=[];
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const now=()=>new Date().toISOString();
 function items(){
- const out=[];
+ const groups=new Map();
  for(const q of api.getQuestions()){
    for(const side of ['images','answerImages']){
      (q[side]||[]).forEach((im,index)=>{
-       if(im?.repair?.candidateData||im?.repair?.status==='approved'){
-         out.push({q,side,index,im,repair:im.repair});
-       }
+       if(!im?.repair?.candidateData&&im?.repair?.status!=='approved')return;
+       const rep=im.repair;
+       // Use the ORIGINAL identity, not the high-res output (which may differ after approval).
+       const identity=im.contentHash||rep.originalRef||rep.originalData||
+         (rep.status==='approved'?'confirmed-'+side+'-'+index:(im.data||im.src||''));
+       const key=q.id+'|'+identity;
+       let g=groups.get(key);
+       if(!g){g={q,side,index,im,repair:rep,slots:[],status:rep.status};groups.set(key,g)}
+       g.slots.push({q,side,index,im,repair:rep});
+       if(g.status!==rep.status)g.status='mixed';
      });
    }
  }
- return out;
+ return Array.from(groups.values());
 }
 function count(){
- const all=items(),approved=all.filter(i=>i.repair.status==='approved');
- return {all:all.length,questions:new Set(all.map(i=>i.q.id)).size,approved:approved.length,pending:all.filter(i=>i.repair.status==='pending').length,rejected:all.filter(i=>i.repair.status==='rejected').length};
+ const all=items();
+ return {all:all.length,questions:new Set(all.map(i=>i.q.id)).size,
+  approved:all.filter(i=>i.status==='approved').length,
+  pending:all.filter(i=>i.status==='pending'||i.status==='mixed').length,
+  rejected:all.filter(i=>i.status==='rejected').length,
+  duplicatePositions:all.reduce((n,g)=>n+g.slots.length-1,0)};
 }
 function oldSrc(item){return item.repair.originalData||item.im.data||item.im.src||''}
 function newSrc(item){return item.repair.candidateData||(item.repair.status==='approved'?item.im.data:'')}
-function render(){
- const c=count(),summary=$('repairProgress');
- summary.textContent='涉及 '+c.questions+' 道题、'+c.all+' 处图片 · 已确认 '+c.approved+' · 待审核 '+c.pending+' · 保留原图 '+c.rejected;
- let result=items().filter(x=>(filter==='all'||x.repair.status===filter)&&
+function filteredGroups(){
+ return items().filter(x=>(filter==='all'||x.status===filter||(filter==='pending'&&x.status==='mixed'))&&
   (!word||[x.q.id,x.q.source,x.q.sourceNo,x.q.stem,x.q.answer].join(' ').toLowerCase().includes(word.toLowerCase())));
- const pages=Math.max(1,Math.ceil(result.length/PER_PAGE));page=Math.min(page,pages-1);
- $('repairPager').textContent=(result.length?(page*PER_PAGE+1):0)+'–'+Math.min((page+1)*PER_PAGE,result.length)+' / '+result.length+'幅';
- $('repairPrev').disabled=page===0;
- $('repairNext').disabled=page+1>=pages;
- const start=page*PER_PAGE,shown=result.slice(start,start+PER_PAGE);
- $('repairCards').innerHTML=shown.length?shown.map(({q,side,index,im,repair},j)=>{
-   const key=start+j;
-   const original=oldSrc(shown[j]),candidate=newSrc(shown[j]);
-   const isApproved=repair.status==='approved',isRejected=repair.status==='rejected';
-   const title=(side==='images'?'题干图':'答案图')+' '+(index+1);
-   return '<article class="repair-card" data-repair-pos="'+key+'">'
-     +'<div class="repair-card-heading"><b>'+escape(q.id)+' · '+escape(title)+'</b><span class="repair-state '+escape(repair.status)+'">'+
-     (isApproved?'已确认采用':isRejected?'保留原图':'待审核')+'</span></div>'
-     +'<p class="repair-question">'+escape(q.source||'')+' · 第'+escape(q.sourceNo||'')+'题 · '+escape((q.stem||'').slice(0,110))+'</p>'
-     +'<div class="repair-compare">'
-     +'<figure><figcaption>原图 · 始终保留</figcaption><img loading="lazy" alt="原始题图" src="'+escape(original)+'"></figure>'
-     +'<figure><figcaption>修复候选 · '+escape(repair.method||'')+'</figcaption><img loading="lazy" alt="高清修复候选" src="'+escape(candidate)+'"></figure></div>'
-     +'<div class="repair-card-actions"><span>'+escape(repair.originalWidth)+'×'+escape(repair.originalHeight)+'px · 请核查连线、箭头、刻度和数值</span>'
-     +(isApproved?'<button data-repair-action="undo" data-key="'+key+'">恢复原图</button>'
-     :'<button class="primary" data-repair-action="approve" data-key="'+key+'">确认采用修复图</button>'
-      +'<button class="muted" data-repair-action="reject" data-key="'+key+'">保留原图</button>')
-     +'</div></article>';
- }).join(''):'<p class="repair-none">'+(c.all?'此条件下没有待审核图像。':'尚未导入带修复候选的私人 ZIP。请先导入本次96题候选包。')+'</p>';
- $('repairExportBtn').disabled=!c.all||busy;
 }
-function recordUndo(repair,item){
- if(!repair.originalData)repair.originalData=item.im.data;
+function render(){
+ const c=count();
+ $('repairProgress').textContent='涉及 '+c.questions+' 道题、'+c.all+' 张不同图片（合并 '+c.duplicatePositions+' 处重复引用） · 已确认 '+c.approved+' · 待核 '+c.pending+' · 保留原图 '+c.rejected;
+ visibleGroups=filteredGroups();
+ const questions=[];
+ for(const group of visibleGroups){
+   let pageGroup=questions.find(entry=>entry.q.id===group.q.id);
+   if(!pageGroup){pageGroup={q:group.q,images:[]};questions.push(pageGroup)}
+   pageGroup.images.push(group);
+ }
+ const pages=Math.max(1,Math.ceil(questions.length/PER_PAGE));page=Math.max(0,Math.min(page,pages-1));
+ const show=questions.slice(page*PER_PAGE,(page+1)*PER_PAGE);
+ $('repairPager').textContent=(questions.length?page*PER_PAGE+1:0)+'–'+Math.min((page+1)*PER_PAGE,questions.length)+' / '+questions.length+'道题';
+ $('repairPrev').disabled=page===0;$('repairNext').disabled=page+1>=pages;
+ $('repairCards').innerHTML=show.length?show.map(({q,images})=>
+  '<article class="repair-card repair-question-card"><div class="repair-card-heading"><b>'+escape(q.id)+' · 第'+escape(q.sourceNo||'?')+'题</b><span>'+images.length+'张不同图片</span></div>'+
+  '<p class="repair-question">'+escape(q.source||'')+' · '+escape((q.stem||'').slice(0,130))+'</p>'+
+  images.map(group=>{
+   const key=visibleGroups.indexOf(group),orig=oldSrc(group),candidate=newSrc(group);
+   const approved=group.status==='approved',rejected=group.status==='rejected',mixed=group.status==='mixed';
+   return '<section class="repair-subfigure"><div class="repair-subfigure-label">'+(group.side==='images'?'题干图':'答案图')+' '+(group.index+1)+
+     (group.slots.length>1?' · 同图在原题中引用'+group.slots.length+'次':'')+
+     ' <span class="repair-state '+escape(group.status)+'">'+(approved?'已确认':rejected?'保留原图':mixed?'重复图状态不一致':'待核对')+'</span></div>'+
+   '<div class="repair-compare"><figure><figcaption>原图（保留）</figcaption><img loading="lazy" alt="原始图" src="'+escape(orig)+'"></figure>'+
+   '<figure><figcaption>候选图 · '+escape(group.repair.method||'')+'</figcaption><img loading="lazy" alt="修复候选" src="'+escape(candidate)+'"></figure></div>'+
+   '<div class="repair-card-actions"><span>原始尺寸：'+escape(group.repair.originalWidth)+'×'+escape(group.repair.originalHeight)+' px。先检查物理关系、文字和刻度。</span>'+
+     (approved?'<button data-repair-action="undo" data-key="'+key+'">恢复原图</button>':
+      '<button data-repair-action="approve" data-key="'+key+'" class="primary">确认采用</button><button data-repair-action="reject" data-key="'+key+'" class="muted">保留原图</button>')+
+   '</div></section>'
+  }).join('')+'</article>'
+ ).join(''):'<p class="repair-none">'+(c.all?'此条件下没有待核对的题目。':'请先导入含候选图的私人题库ZIP。')+'</p>';
+ $('repairExportBtn').disabled=!c.all||busy;
 }
 async function act(item,action){
  if(!item||busy)return;
  busy=true;
  try{
-   const {q,im,repair}=item;
-   if(action==='approve'){
-     if(!repair.candidateData)throw Error('候选图未加载，无法采用');
-     recordUndo(repair,item);
-     im.data=repair.candidateData;
-     im.useRedraw=false;
-     repair.status='approved';
-     repair.approvedAt=now();
-     repair.reviewType='image-fidelity-only';
-   }else if(action==='reject'){
-     if(repair.status==='approved'&&repair.originalData)im.data=repair.originalData;
-     repair.status='rejected';repair.approvedAt=null;
-   }else if(action==='undo'){
-     if(!repair.originalData)throw Error('原图未找到，已阻止恢复');
-     im.data=repair.originalData;
-     repair.status='pending';repair.approvedAt=null;
+   const q=item.q;
+   if(item.status==='mixed'&&!confirm('同一原图的重复引用已有不同的审核结果。确定将这些位置统一应用本次选择吗？'))return;
+   for(const slot of item.slots){
+     const {im,repair}=slot;
+     if(action==='approve'){
+       if(!repair.candidateData)throw Error('候选图未加载');
+       if(!repair.originalData)repair.originalData=im.data;
+       im.data=repair.candidateData;im.useRedraw=false;
+       repair.status='approved';repair.approvedAt=now();repair.reviewType='image-fidelity-only';
+     }else if(action==='reject'){
+       if(repair.status==='approved'&&repair.originalData)im.data=repair.originalData;
+       repair.status='rejected';repair.approvedAt=null;
+     }else if(action==='undo'){
+       if(!repair.originalData)throw Error('原图缺失，不能恢复');
+       im.data=repair.originalData;repair.status='pending';repair.approvedAt=null;
+     }
    }
    q.revision=Number(q.revision||1)+1;q.updatedAt=now();
    await api.save(q);api.onChange();
-   $('repairNotice').textContent='已保存：'+q.id+' · '+(repair.status==='approved'?'正式题图已替换；原图仍在':'保持/恢复原图');
+   $('repairNotice').textContent='已保存 '+q.id+'（'+item.slots.length+'处相同图片同步处理）';
  }catch(e){$('repairNotice').textContent='保存失败：'+e.message;console.error(e)}
  finally{busy=false;render()}
 }
@@ -157,7 +173,7 @@ async function exportZip(){
 }
 function init(options){
  api=options;
- $('repairManagerBtn')?.addEventListener('click',()=>{$('repairDialog').showModal();filter='pending';page=0;render()});
+ $('repairManagerBtn')?.addEventListener('click',()=>{$('repairDialog').showModal();filter='all';$('repairStatusFilter').value='all';page=0;render()});
  $('repairCloseBtn')?.addEventListener('click',()=>$('repairDialog').close());
  $('repairStatusFilter')?.addEventListener('change',e=>{filter=e.target.value;page=0;render()});
  $('repairSearch')?.addEventListener('input',e=>{word=e.target.value.trim();page=0;render()});
@@ -165,9 +181,7 @@ function init(options){
  $('repairNext')?.addEventListener('click',()=>{page++;render()});
  $('repairCards')?.addEventListener('click',async e=>{
    const btn=e.target.closest('[data-repair-action]');if(!btn)return;
-   const list=items().filter(x=>(filter==='all'||x.repair.status===filter)&&
-     (!word||[x.q.id,x.q.source,x.q.sourceNo,x.q.stem,x.q.answer].join(' ').toLowerCase().includes(word.toLowerCase())));
-   await act(list[Number(btn.dataset.key)],btn.dataset.repairAction);
+   await act(visibleGroups[Number(btn.dataset.key)],btn.dataset.repairAction);
  });
  $('repairExportBtn')?.addEventListener('click',exportZip);
 }
