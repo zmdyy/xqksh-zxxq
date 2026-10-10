@@ -2,7 +2,7 @@
   "name": "xqksh-zxxq-seating",
   "private": true,
   "scripts": {
-    "test": "node tests/seating-sync-scope.test.cjs && node tests/seating.test.cjs && node tests/seating-academic.test.cjs && node tests/seating-layout.test.cjs && node tests/seating-dispersion.test.cjs && node tests/question-bank.test.cjs && node tests/question-bank-word.test.cjs && node tests/question-bank-export-flow.test.cjs && node tests/question-bank-student-export.test.cjs && node tests/question-bank-merge-details.test.cjs && node tests/question-bank-dashboard-page.test.cjs && node tests/question-bank-inline-dialog.test.cjs && node tests/question-bank-filter-layout.test.cjs && node tests/question-bank-auto-a4.test.cjs && node tests/question-bank-quality-deletion.test.cjs",
+    "test": "node tests/seating-sync-scope.test.cjs && node tests/seating.test.cjs && node tests/seating-academic.test.cjs && node tests/seating-layout.test.cjs && node tests/seating-dispersion.test.cjs && node tests/question-bank.test.cjs && node tests/question-bank-word.test.cjs && node tests/question-bank-export-flow.test.cjs && node tests/question-bank-student-export.test.cjs && node tests/question-bank-merge-details.test.cjs && node tests/question-bank-dashboard-page.test.cjs && node tests/question-bank-inline-dialog.test.cjs && node tests/question-bank-filter-layout.test.cjs && node tests/question-bank-auto-a4.test.cjs && node tests/question-bank-quality-deletion.test.cjs && node tests/question-bank-image-repair.test.cjs",
     "test:browser": "node tests/seating-browser.test.cjs && node tests/seating-search-browser.test.cjs && node tests/seating-layout-browser.test.cjs"
   },
   "devDependencies": {
