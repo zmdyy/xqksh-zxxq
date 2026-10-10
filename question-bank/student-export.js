@@ -7,7 +7,7 @@ const $=id=>document.getElementById(id);
 let students=[],selected=null,mode='student',eventsReader=()=>[],onSelectionChange=()=>{};
 let activeResolve=null,currentCandidate=null,loaded=false;
 const clean=x=>String(x||'').trim();
-const keyOf=e=>[e.className,e.rawName,e.displayName].join('\u001f');
+const keyOf=e=>[root.StudentNameSearch?.normalizeClassName(e.className)||e.className,e.displayName].join('\u001f');
 function readBatches(){
  return new Promise((resolve,reject)=>{
    if(!root.indexedDB)return reject(new Error('当前浏览器不支持本地学生名单'));
@@ -74,7 +74,10 @@ function renderHistory(){
  const holder=$('exportStudentHistory');if(!holder)return;
  holder.replaceChildren();
  if(!currentCandidate?.studentKey)return;
- const records=eventsReader().filter(x=>x.kind==='student-word-export'&&x.student?.key===currentCandidate.studentKey);
+ const records=eventsReader().filter(x=>x.kind==='student-word-export'&&x.student&&
+     (x.student.key===currentCandidate.studentKey||
+       ((root.StudentNameSearch?.normalizeClassName(x.student.className)||x.student.className)===currentCandidate.className &&
+       x.student.name===currentCandidate.displayName)));
  if(!records.length){holder.textContent='该学生目前没有生成过的练习。';return}
  const unique=new Set(records.flatMap(x=>(x.items||[]).map(i=>i.id))).size;
  holder.textContent='已为该生生成 '+records.length+' 份 Word，涉及 '+unique+' 道不同题目/子题。';
@@ -116,7 +119,7 @@ function finish(result){
  if(callback)callback(result);
 }
 function chooseManual(name,className){
- name=clean(name);className=clean(className);
+ name=clean(name);className=root.StudentNameSearch.normalizeClassName(clean(className));
  if(!name)throw new Error('请输入学生姓名');
  if(name.length>40)throw new Error('学生姓名不能超过40个字符');
  if(!className)throw new Error('请输入班级，避免同名学生的记录混淆');
@@ -160,12 +163,7 @@ function bindEvents(){
    $('exportConfirmStudent').click();
  });
  $('exportStudentClass').addEventListener('input',()=>{
-   // Editing the class after choosing roster result switches to explicit manual mode.
-   if(currentCandidate&&currentCandidate.className!==clean($('exportStudentClass').value))currentCandidate=null;
-   $('exportStudentError').hidden=true;
- });
- $('exportStudentClass').addEventListener('input',()=>{
-   if(currentCandidate&&currentCandidate.className!==clean($('exportStudentClass').value)){
+   if(currentCandidate&&currentCandidate.className!==root.StudentNameSearch.normalizeClassName(clean($('exportStudentClass').value))){
      currentCandidate=null;
      renderMatches();
      renderHistory();
