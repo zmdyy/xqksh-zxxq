@@ -67,10 +67,13 @@ function render(){
      (group.slots.length>1?' · 同图在原题中引用'+group.slots.length+'次':'')+
      ' <span class="repair-state '+escape(group.status)+'">'+(approved?'已确认':rejected?'保留原图':mixed?'重复图状态不一致':'待核对')+'</span></div>'+
    '<div class="repair-compare"><figure><figcaption>原图（保留）</figcaption><img loading="lazy" alt="原始图" src="'+escape(orig)+'"></figure>'+
-   '<figure><figcaption>候选图 · '+escape(group.repair.method||'')+'</figcaption><img loading="lazy" alt="修复候选" src="'+escape(candidate)+'"></figure></div>'+
+   '<figure><figcaption>当前候选 · '+escape(group.repair.method||'')+'</figcaption><img loading="lazy" alt="修复候选" src="'+escape(candidate)+'"></figure>'+
+   (group.repair.alternativeCandidateData?'<figure><figcaption>备选：原图高清增强PNG</figcaption><img loading="lazy" alt="忠实原图增强候选" src="'+escape(group.repair.alternativeCandidateData)+'"></figure>':'')+
+   '</div>'+
    '<div class="repair-card-actions"><span>原始尺寸：'+escape(group.repair.originalWidth)+'×'+escape(group.repair.originalHeight)+' px。先检查物理关系、文字和刻度。</span>'+
      (approved?'<button data-repair-action="undo" data-key="'+key+'">恢复原图</button>':
       '<button data-repair-action="approve" data-key="'+key+'" class="primary">确认采用</button><button data-repair-action="reject" data-key="'+key+'" class="muted">保留原图</button>')+
+     (group.repair.alternativeCandidateData?'<button data-repair-action="approveAlternate" data-key="'+key+'">确认采用高清PNG</button>':'')+
    '</div></section>'
   }).join('')+'</article>'
  ).join(''):'<p class="repair-none">'+(c.all?'此条件下没有待核对的题目。':'请先导入含候选图的私人题库ZIP。')+'</p>';
@@ -84,10 +87,17 @@ async function act(item,action){
    if(item.status==='mixed'&&!confirm('同一原图的重复引用已有不同的审核结果。确定将这些位置统一应用本次选择吗？'))return;
    for(const slot of item.slots){
      const {im,repair}=slot;
-     if(action==='approve'){
-       if(!repair.candidateData)throw Error('候选图未加载');
+     if(action==='approve'||action==='approveAlternate'){
+       const candidate=action==='approveAlternate'?repair.alternativeCandidateData:repair.candidateData;
+       if(!candidate)throw Error('选中的修复候选未加载');
        if(!repair.originalData)repair.originalData=im.data;
-       im.data=repair.candidateData;im.useRedraw=false;
+       if(action==='approveAlternate'){
+         repair.legacyCandidateData=repair.candidateData;
+         repair.candidateData=candidate;
+         repair.method='原图忠实增强PNG（非结构重画）';
+         delete repair.alternativeCandidateData;
+       }
+       im.data=candidate;im.useRedraw=false;
        repair.status='approved';repair.approvedAt=now();repair.reviewType='image-fidelity-only';
      }else if(action==='reject'){
        if(repair.status==='approved'&&repair.originalData)im.data=repair.originalData;
@@ -142,7 +152,9 @@ async function exportZip(){
            if(original)review.originalRef=addData(original,'repair-originals');
            if(candidate)review.candidateRef=addData(candidate,'repair-candidates');
            if(review.previewPngData)review.previewPngRef=addData(review.previewPngData,'repair-candidates');
-           delete review.originalData;delete review.candidateData;delete review.previewPngData;
+           if(review.alternativeCandidateData)review.alternativeCandidateRef=addData(review.alternativeCandidateData,'repair-candidates');
+           if(review.legacyCandidateData)review.legacyCandidateRef=addData(review.legacyCandidateData,'repair-candidates');
+           delete review.originalData;delete review.candidateData;delete review.previewPngData;delete review.alternativeCandidateData;delete review.legacyCandidateData;
            copy.repair=review;
          }
          return copy;
