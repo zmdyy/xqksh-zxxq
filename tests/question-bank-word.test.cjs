@@ -30,7 +30,7 @@ for(const layout of ['single','double']){
   assert.ok(exported.files.has('word/media/image2.png'),'answer image embedded');
   assert.ok(String(exported.files.get('word/_rels/document.xml.rels')).includes('image2.png'));
   assert.ok(String(exported.files.get('[Content_Types].xml')).includes('image/png'));
-  assert.ok(String(exported.files.get('word/document.xml')).includes('<w:tbl>')=== (layout==='double'||true)); // feedback also uses a table
+  assert.equal((x.match(/<w:tbl>/g)||[]).length,layout==='double'?4:2,'single/double layout table count');
 }
 await assert.rejects(root.PhysicsWordExport.createDocx({JSZip:ZipFake,items:[]}),/试题篮为空/);
 console.log('PASS: OOXML single/double, page break, image relationships, feedback, empty basket');
