@@ -34,7 +34,7 @@ if($('typeFilter').value&&q.type!==$('typeFilter').value)return false;if($('diff
 function mediaSrc(img){return img&&img.useRedraw&&img.redrawPng?img.redrawPng:(img?.data||img?.src||'')}
 function findQuestion(id){return state.questions.find(q=>q.id===id.split('::')[0])}
 function selectedLabel(id){const q=findQuestion(id);if(!q)return '题目不存在';let pi=id.split('::')[1],p=(q.parts||[]).find(x=>x.id===pi);return(q.sourceNo||'')+(p?p.label:'')+' · '+(p?p.stem:q.stem||'').slice(0,36)}
-function addQuestion(id){if(state.basket.includes(id))return tell('这道题已经在试题篮');let parent=id.split('::')[0];if(state.basket.some(x=>x.split('::')[0]===parent&&(x===parent||id===parent)))return tell('不能同时加入整题和该题的某个小问。',true);state.basket.push(id);renderBasket();tell('已加入试题篮：'+selectedLabel(id))}
+function addQuestion(id){if(state.basket.includes(id))return tell('这道题已经在试题篮');let parent=id.split('::')[0];if(state.basket.some(x=>x.split('::')[0]===parent&&(x===parent||id===parent)))return tell('不能同时加入整题和该题的某个小问。',true);state.basket.push(id);invalidateWordDownload();renderBasket();tell('已加入试题篮：'+selectedLabel(id))}
 
 function focusConcept(label){
  const select=$('conceptFilter');
@@ -166,9 +166,21 @@ for(let id of ['search','classFilter'])$(id).addEventListener('input',render);
 for(let id of ['conceptFilter','conceptFilter2','typeFilter','difficultyFilter','usedFilter','relationFilter','reviewFilter'])$(id).addEventListener('change',render);
 $('fileInput').addEventListener('change',async e=>{let files=Array.from(e.target.files||[]);e.target.value='';for(let file of files){try{tell('正在本地处理 '+file.name);if(/\.docx$/i.test(file.name))await parseDocx(file);else if(/\.doc$/i.test(file.name))await parseDocIndex(file);else if(/\.json$/i.test(file.name))await importJson(file);else if(/\.zip$/i.test(file.name))await importPrivateZip(file);else throw Error('文件格式不支持')}catch(ex){tell(file.name+'：'+ex.message,true);console.error(ex)}}render()});
 $('results').addEventListener('click',e=>{let b=e.target.closest('button');if(!b)return;if(b.dataset.add)addQuestion(b.dataset.add);if(b.dataset.edit)openEditor(b.dataset.edit)});
-$('basket').addEventListener('click',e=>{let b=e.target.closest('button');if(!b)return;let val=b.dataset.remove??b.dataset.up??b.dataset.down;if(val==null)return;let n=Number(val);if(b.dataset.remove!=null)state.basket.splice(n,1);else if(b.dataset.up!=null&&n>0)[state.basket[n-1],state.basket[n]]=[state.basket[n],state.basket[n-1]];else if(b.dataset.down!=null&&n<state.basket.length-1)[state.basket[n+1],state.basket[n]]=[state.basket[n],state.basket[n+1]];renderBasket()});
-$('clearBasketBtn').onclick=()=>{state.basket=[];renderBasket()};
+$('basket').addEventListener('click',e=>{let b=e.target.closest('button');if(!b)return;let val=b.dataset.remove??b.dataset.up??b.dataset.down;if(val==null)return;let n=Number(val);if(b.dataset.remove!=null)state.basket.splice(n,1);else if(b.dataset.up!=null&&n>0)[state.basket[n-1],state.basket[n]]=[state.basket[n],state.basket[n-1]];else if(b.dataset.down!=null&&n<state.basket.length-1)[state.basket[n+1],state.basket[n]]=[state.basket[n],state.basket[n+1]];invalidateWordDownload();renderBasket()});
+$('clearBasketBtn').onclick=()=>{state.basket=[];invalidateWordDownload();renderBasket()};
 $('previewBtn').onclick=showPreview;$('wordBtn').onclick=exportWord;$('previewExportBtn').onclick=exportWord;$('previewCloseBtn').onclick=()=>$('previewDialog').close();$('assignBtn').onclick=assignBasket;
+ for(const id of ['layout','answerMode','feedback']){
+   $(id).addEventListener('change',()=>{
+     invalidateWordDownload();
+     const hint=$('layoutDecision');
+     if(hint){
+       hint.classList.remove('warning');
+       hint.textContent=$('layout').value==='auto'
+         ?'自动排版：预览时先检查单栏，放不下会自动尝试双栏。'
+         :'手动排版：预览时检查正面与答案页是否完整。';
+     }
+   });
+ }
 $('usageSummary').addEventListener('click',async e=>{let b=e.target.closest('button');if(!b)return;let id=b.dataset.feedbackEvent||b.dataset.cancelEvent,ev=state.events.find(x=>x.id===id);if(!ev)return;if(b.dataset.cancelEvent){if(!confirm('撤回这次布置？事件仍保留，不再计入次数。'))return;ev.status='cancelled'}else{let note=prompt('教师汇总：学生数量、卡点、针对性评价、是否需要继续训练（不写学生隐私）',ev.feedback?.note||'');if(note===null)return;ev.feedback={note,updatedAt:now()}}await put('events',ev);render()});
 $('backupBtn').onclick=()=>backup(false);$('backupHistoryBtn').onclick=()=>backup(true);$('restoreInput').onchange=async e=>{let f=e.target.files[0];e.target.value='';if(f)try{await restore(f)}catch(ex){tell(ex.message,true)}};
 }
@@ -384,15 +396,18 @@ async function exportWord(){
    const studentMode=response.mode==='student';
    const student=response.student||null;
    if(studentMode&&!student)throw Error('请选择一个有效的学生姓名');
-   let p=buildPages();
-   const outdated=!state.preview||state.preview.front!==p.front||state.preview.back!==p.back||state.preview.layout!==p.layout;
+   // 使用预览确定的实际单/双栏，避免“预览双栏但下载单栏”。
+   // 仅在题目、答案、学生或设置发生变化时重新评估；自动模式不会因初选单栏误判过期。
+   const requested=$('layout').value;
+   const candidate=buildPages(requested==='auto'&&state.preview?state.preview.layout:undefined);
+   const outdated=!state.preview||state.preview.front!==candidate.front||state.preview.back!==candidate.back;
    if(outdated){
-     await showPreview();
-     p=buildPages();
-     if(!state.preview)throw Error('无法创建预览，请先检查试题内容');
+     const evaluated=await showPreview();
+     if(!evaluated)throw Error('无法完成A4预览，请检查题目内容');
    }
+   const p=state.preview;
    if(notice.dataset.overflow==='yes'){
-     noticeError('正面或答案页超出一页A4，请减少题目或切换单双栏。');
+     noticeError('自动检查后正面或答案页仍超出A4，请减少题目，或修改图片大小与排版。');
      return;
    }
    const pending=p.items.filter(x=>x.q.review!=='approved');
