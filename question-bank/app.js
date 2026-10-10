@@ -221,17 +221,36 @@ answer:p?(p.answer||'该小问答案尚未单独审核'):q.answer||'答案暂缺
 images:subset(q.images||[],p?.imageIndexes).map(mediaSrc).filter(Boolean),
 answerImages:subset(q.answerImages||[],p?.answerImageIndexes).map(mediaSrc).filter(Boolean)}
 }
-function autoLayout(arr){let mode=$('layout').value;if(mode!=='auto')return mode;return arr.every(x=>x.stem.length<145&&x.images.length<=1&&x.q.type!=='实验题')?'double':'single'}
+function autoLayout(){return $('layout').value==='auto'?'single':$('layout').value}
 function feedbackHtml(){return $('feedback').checked?'<table class="feedback"><tr><th colspan="2">完成后勾选（不影响评分）</th></tr><tr><td>完成：□ 独立　□ 某一步卡住　□ 需要提示</td><td>针对性：□ 正好　□ 部分相关　□ 不适合</td></tr><tr><td colspan="2">困难：□ 题图理解　□ 规律记忆　□ 步骤衔接　□ 作图表达　□ 其他：________</td></tr></table>':''}
 function paperImages(imgs){return imgs.length?'<div class="images">'+imgs.map(s=>'<img alt="题目插图" src="'+esc(s)+'">').join('')+'</div>':''}
-const PAPER_STYLE='@page{size:A4;margin:14mm 15mm}*{box-sizing:border-box}body{margin:0;background:white;color:#111;font:11pt "Microsoft YaHei",SimSun,sans-serif}.sheet{height:269mm;overflow:hidden;position:relative;page-break-after:always}.sheet:last-child{page-break-after:auto}.sheet h2{text-align:center;font-size:17pt;margin:0 0 5mm}.sheet .meta{text-align:center;font-size:10pt;border-bottom:1px solid #888;padding-bottom:4mm;margin-bottom:5mm}.sheet .questions.double{columns:2;column-gap:9mm;column-rule:1px solid #eee}.sheet .question,.sheet .answer{break-inside:avoid;page-break-inside:avoid;margin-bottom:5mm}.sheet .stem{white-space:pre-wrap;line-height:1.58;margin-bottom:3mm}.sheet .images{display:flex;flex-wrap:wrap;gap:3mm}.sheet .images img{max-width:100%;max-height:83mm;width:auto;height:auto;object-fit:contain}.sheet .double .images img{max-height:58mm}.sheet .answer .images img{max-height:77mm}.sheet .answer p{white-space:pre-wrap;line-height:1.6;margin:2mm 0}.sheet .feedback{width:100%;border-collapse:collapse;font-size:9pt;margin-top:4mm}.sheet .feedback td,.sheet .feedback th{border:1px solid #aaa;padding:2mm;text-align:left}.sheet .foot{position:absolute;bottom:0;width:100%;display:flex;justify-content:space-between;color:#777;font-size:9pt}';
-function buildPages(){
-let items=state.basket.map(printable).filter(Boolean);if(!items.length)throw Error('请先添加题目到试题篮');
-if(items.some(x=>!x.q.stem.trim()))throw Error('有题目正文为空，请先审核');
-let layout=autoLayout(items),title='物理精准练习 · '+today();
-let front='<div class="sheet" id="frontSheet"><h2>'+title+'</h2><div class="meta">'+(window.StudentPracticeExport?.getSelection?.()?'班级：'+esc(window.StudentPracticeExport.getSelection().className||'未设置')+'　姓名：'+esc(window.StudentPracticeExport.getSelection().name):'班级：________　姓名：________')+'　日期：________　　少量多次 · 独立完成</div><div class="questions '+(layout==='double'?'double':'')+'">'+items.map((x,i)=>'<div class="question"><div class="stem"><b>'+(i+1)+'.</b> '+esc(x.stem)+'</div>'+paperImages(x.images)+'</div>').join('')+'</div>'+feedbackHtml()+'<div class="foot"><span>请在独立完成后核对背面答案</span><span>1 / 2</span></div></div>';
-let back='<div class="sheet" id="backSheet"><h2>参考答案 · 自我核对</h2><div class="meta">与正面题号对应'+($('answerMode').value==='separate'?' · 此页可单独打印':' · 默认双面打印')+'</div><div class="questions '+(layout==='double'?'double':'')+'">'+items.map((x,i)=>'<div class="answer"><b>'+(i+1)+'.</b>'+paperImages(x.answerImages)+'<p>'+esc(x.answer)+'</p></div>').join('')+'</div><table class="feedback"><tr><td>核对后：□ 能独立重做　□ 看懂但仍有困难　□ 还需要教师讲解</td></tr></table><div class="foot"><span>建议用新情境的题目验证是否真正掌握</span><span>2 / 2</span></div></div>';
-return {front,back,layout,items};
+const PAPER_STYLE='@page{size:A4;margin:14mm 15mm}*{box-sizing:border-box}body{margin:0;background:white;color:#111;font:11pt "Microsoft YaHei",SimSun,sans-serif}.sheet{height:269mm;overflow:hidden;position:relative;page-break-after:always}.sheet:last-child{page-break-after:auto}.sheet h2{text-align:center;font-size:17pt;margin:0 0 5mm}.sheet .meta{text-align:center;font-size:10pt;border-bottom:1px solid #888;padding-bottom:4mm;margin-bottom:5mm}.sheet .questions.double{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9mm;align-items:start}.sheet .paper-column{min-width:0}.sheet .question,.sheet .answer{break-inside:avoid;page-break-inside:avoid;margin-bottom:5mm}.sheet .stem{white-space:pre-wrap;line-height:1.58;margin-bottom:3mm}.sheet .images{display:flex;flex-wrap:wrap;gap:3mm}.sheet .images img{max-width:100%;max-height:67mm;width:auto;height:auto;object-fit:contain}.sheet .double .images img{max-height:49.5mm}.sheet .answer .images img{max-height:67mm}.sheet .double .answer .images img{max-height:49.5mm}.sheet .answer p{white-space:pre-wrap;line-height:1.6;margin:2mm 0}.sheet .feedback{width:100%;border-collapse:collapse;font-size:9pt;margin-top:4mm}.sheet .feedback td,.sheet .feedback th{border:1px solid #aaa;padding:2mm;text-align:left}.sheet .foot{position:absolute;bottom:0;width:100%;display:flex;justify-content:space-between;color:#777;font-size:9pt}';
+function renderPaperQuestions(items,layout,answerSide){
+ const blocks=items.map((item,i)=>answerSide
+   ?'<div class="answer"><b>'+(i+1)+'.</b>'+paperImages(item.answerImages)+'<p>'+esc(item.answer)+'</p></div>'
+   :'<div class="question"><div class="stem"><b>'+(i+1)+'.</b> '+esc(item.stem)+'</div>'+paperImages(item.images)+'</div>');
+ if(layout==='double'){
+   const col=(parity)=>blocks.filter((x,i)=>i%2===parity).join('');
+   return '<div class="questions double"><div class="paper-column">'+col(0)+'</div><div class="paper-column">'+col(1)+'</div></div>';
+ }
+ return '<div class="questions single">'+blocks.join('')+'</div>';
+}
+function buildPages(forcedLayout){
+ let items=state.basket.map(printable).filter(Boolean);
+ if(!items.length)throw Error('请先添加题目到试题篮');
+ if(items.some(x=>!x.stem.trim()))throw Error('有题目正文为空，请先审核');
+ const layout=forcedLayout||autoLayout(),title='物理精准练习 · '+today();
+ const student=window.StudentPracticeExport?.getSelection?.();
+ const meta=student?'班级：'+esc(student.className||'未设置')+'　姓名：'+esc(student.name):'班级：________　姓名：________';
+ const front='<div class="sheet" id="frontSheet"><h2>'+title+'</h2><div class="meta">'+meta+'　日期：________　　少量多次 · 独立完成</div>'
+   +renderPaperQuestions(items,layout,false)+feedbackHtml()
+   +'<div class="foot"><span>请在独立完成后核对背面答案</span><span>1 / 2</span></div></div>';
+ const back='<div class="sheet" id="backSheet"><h2>参考答案 · 自我核对</h2><div class="meta">与正面题号对应'
+   +($('answerMode').value==='separate'?' · 此页可单独打印':' · 默认双面打印')
+   +'</div>'+renderPaperQuestions(items,layout,true)
+   +'<table class="feedback"><tr><td>核对后：□ 能独立重做　□ 看懂但仍有困难　□ 还需要教师讲解</td></tr></table>'
+   +'<div class="foot"><span>建议用新情境的题目验证是否真正掌握</span><span>2 / 2</span></div></div>';
+ return {front,back,layout,items};
 }
 function printDocHtml(p){return '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><style>'+PAPER_STYLE+'</style></head><body>'+p.front+p.back+'</body></html>'}
 async function showPreview(){
