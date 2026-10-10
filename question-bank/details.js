@@ -53,10 +53,11 @@ function showPie(id,data,colors){
    color:colors,
    tooltip:{trigger:'item',formatter:'{b}：{c} 道（{d}%）'},
    legend:{bottom:0,type:'scroll',textStyle:{fontSize:11}},
+   graphic:data.length?[]:[{type:'text',left:'center',top:'40%',style:{text:'暂无数据',fill:'#8b9cad',fontSize:13}}],
    series:[{type:'pie',radius:['45%','68%'],center:['50%','41%'],avoidLabelOverlap:true,
      itemStyle:{borderColor:'#fff',borderWidth:2},
      label:{show:false},emphasis:{label:{show:true,formatter:'{b}\n{c} 道',fontSize:13}},
-     data:data.length?data:[{name:'无数据',value:1,itemStyle:{color:'#e4e9ef'}}]
+     data:data.length?data:[]
    }]
  },true);
 }
