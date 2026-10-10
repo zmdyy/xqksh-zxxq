@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>物理精准练习题库 · 学情可视化</title>
-<link rel="stylesheet" href="./style.css?v=20261010layout2">
+<link rel="stylesheet" href="./style.css?v=20261010repair1">
 <script src="../jszip.min.js"></script>
 <script src="./bank-merge.js?v=20261010experiment3"></script>
 <script src="../pinyin-pro.js"></script>
@@ -13,7 +13,7 @@
 <script src="./word-export.js?v=20261010student2"></script>
 </head>
 <body>
-<header class="topbar"><div><a href="../index.html">← 学情分析</a><a href="../knowledge/index.html">✦ 知识星球</a><h1>物理精准练习题库</h1></div><div class="top-actions"><button type="button" class="primary" id="bankDetailsButton" aria-expanded="false" aria-controls="bankDetailsPanel" title="展开或收起知识点统计">▤ 题库明细</button><button id="backupBtn" class="muted">备份题库与记录</button><label class="button muted">恢复备份<input type="file" id="restoreInput" accept=".json" hidden></label></div></header>
+<header class="topbar"><div><a href="../index.html">← 学情分析</a><a href="../knowledge/index.html">✦ 知识星球</a><h1>物理精准练习题库</h1></div><div class="top-actions"><button type="button" class="primary" id="bankDetailsButton" aria-expanded="false" aria-controls="bankDetailsPanel" title="展开或收起知识点统计">▤ 题库明细</button><button type="button" id="repairManagerBtn" class="muted" title="对照原始图和增强候选，确认后才替换正式图片">图像修复审核</button><button id="backupBtn" class="muted">备份题库与记录</button><label class="button muted">恢复备份<input type="file" id="restoreInput" accept=".json" hidden></label></div></header>
 <main>
 <section class="bank-query-panel workflow-section" aria-label="题库检索与筛选">
   <div class="workflow-heading"><div class="workflow-step"><span aria-hidden="true">01</span><div><h2>检索与筛选</h2><p>先定位知识点，再选择合适的练习题</p></div></div><span class="workflow-side-note">题库管理</span></div>
@@ -145,10 +145,25 @@
     <button type="button" id="exportConfirmStudent" class="primary">确认姓名并导出</button>
   </div>
 </dialog>
+<dialog id="repairDialog" class="repair-dialog" aria-labelledby="repairTitle">
+ <div class="repair-head"><div><h2 id="repairTitle">图像修复审核</h2><p>逐图确认后才采用新图。原图永久保留，可随时恢复；未确认图仍按原图组卷。</p></div><button id="repairCloseBtn" type="button" class="muted">关闭</button></div>
+ <div class="repair-tools">
+   <strong id="repairProgress">正在读取题库中的修复候选…</strong>
+   <label>审核状态 <select id="repairStatusFilter"><option value="pending">待审核</option><option value="approved">已确认</option><option value="rejected">保留原图</option><option value="all">全部图像</option></select></label>
+   <input id="repairSearch" type="search" aria-label="搜索需要修复的题目" placeholder="题号、来源或题干关键词">
+ </div>
+ <div id="repairCards" class="repair-cards"></div>
+ <div class="repair-footer">
+   <div><button id="repairPrev" class="muted">上一页</button><span id="repairPager"></span><button id="repairNext" class="muted">下一页</button></div>
+   <button id="repairExportBtn" class="primary">导出已确认修复的完整题库 ZIP</button>
+ </div>
+ <p id="repairNotice" role="status" aria-live="polite" class="repair-notice">自动SVG描摹或增强PNG不会自动纠正错误电路、光路和标注，请认真核对。</p>
+</dialog>
 <dialog id="editorDialog" class="dialog"><form method="dialog"><button class="close">×</button></form><h2 id="editorTitle">题目审核</h2><div id="editorBody"></div></dialog>
 <dialog id="previewDialog" class="preview-dialog"><div class="preview-head"><h2>打印预览</h2><div><span id="previewStatus" role="status" aria-live="polite"></span><button id="previewExportBtn">导出 Word</button><a id="previewDownloadLink" class="button primary" style="display:none" download>点击保存 Word</a><button id="previewCloseBtn" class="muted">关闭</button></div></div><div id="printPreview" class="sheet-container"></div></dialog>
 <dialog id="drawDialog" class="dialog"><form method="dialog"><button class="close">×</button></form><h2>教师手工重绘 · SVG</h2><p class="hint">原图始终保留。右侧手工绘制的SVG不包含左侧低清原图。请核对物理结构后点击“采用重绘图”。</p><div class="draw-cols"><div><strong>原图（只作为对照）</strong><img id="drawOriginal" alt="原始题图"></div><div><strong>可编辑矢量画布</strong><svg id="drawCanvas" viewBox="0 0 800 500" aria-label="SVG手绘"></svg></div></div><div class="buttons"><select id="drawMode"><option value="line">直线（点两次）</option><option value="arrow">箭头（点两次）</option><option value="rect">矩形（点两次）</option><option value="ellipse">椭圆（点两次）</option><option value="text">文字（点一次）</option></select><input id="drawText" value="F" aria-label="要添加的文字"><button id="drawUndo">撤销一步</button><button id="drawReset">清空重画</button><button id="drawSave" class="primary">采用重绘图（保留原图）</button></div></dialog>
 <script src="./inline-details.js?v=20261010inline3"></script>
-<script src="./app.js?v=20261010phase2"></script>
+<script src="./image-repair-review.js?v=20261010repair1"></script>
+<script src="./app.js?v=20261010repair1"></script>
 </body>
 </html>
