@@ -78,6 +78,6 @@
 <dialog id="editorDialog" class="dialog"><form method="dialog"><button class="close">×</button></form><h2 id="editorTitle">题目审核</h2><div id="editorBody"></div></dialog>
 <dialog id="previewDialog" class="preview-dialog"><div class="preview-head"><h2>打印预览</h2><div><span id="previewStatus" role="status" aria-live="polite"></span><button id="previewExportBtn">导出 Word</button><a id="previewDownloadLink" class="button primary" style="display:none" download>点击保存 Word</a><button id="previewCloseBtn" class="muted">关闭</button></div></div><div id="printPreview" class="sheet-container"></div></dialog>
 <dialog id="drawDialog" class="dialog"><form method="dialog"><button class="close">×</button></form><h2>教师手工重绘 · SVG</h2><p class="hint">原图始终保留。右侧手工绘制的SVG不包含左侧低清原图。请核对物理结构后点击“采用重绘图”。</p><div class="draw-cols"><div><strong>原图（只作为对照）</strong><img id="drawOriginal" alt="原始题图"></div><div><strong>可编辑矢量画布</strong><svg id="drawCanvas" viewBox="0 0 800 500" aria-label="SVG手绘"></svg></div></div><div class="buttons"><select id="drawMode"><option value="line">直线（点两次）</option><option value="arrow">箭头（点两次）</option><option value="rect">矩形（点两次）</option><option value="ellipse">椭圆（点两次）</option><option value="text">文字（点一次）</option></select><input id="drawText" value="F" aria-label="要添加的文字"><button id="drawUndo">撤销一步</button><button id="drawReset">清空重画</button><button id="drawSave" class="primary">采用重绘图（保留原图）</button></div></dialog>
-<script src="./app.js?v=20261010bankstats1"></script>
+<script src="./app.js?v=20261010bankstats3"></script>
 </body>
 </html>
