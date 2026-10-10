@@ -124,7 +124,7 @@ async function importPrivateZip(file){
  const fileEntry=zip.file('bank.json');if(!fileEntry)throw Error('ZIP中没有bank.json');
  const j=JSON.parse(await fileEntry.async('text'));
  if(j.format!=='physics-training-bank-v1'||!Array.isArray(j.questions))throw Error('不是标准 physics-training-bank-v1 题库');
- if(!confirm('检测到 '+j.questions.length+' 道候选题。将与本地题库逐题比对，确认完全重复的题合并来源，数值或配图不同的变式题保留。\n全部仅保存到当前浏览器。是否导入？'))return;
+ if(!confirm('检测到 '+j.questions.length+' 道候选题。将与本地题库逐题比对，相同ID且版本更高的质量修订会更新尚未审核的题目；已审核题目和教师更高版本不会被覆盖。\n全部仅保存到当前浏览器。是否导入？'))return;
  const cache={};
  for(const q of j.questions){
    for(const arr of [q.images||[],q.answerImages||[]]){
@@ -148,7 +148,7 @@ async function importPrivateZip(file){
    provenanceUpdates:j.provenanceUpdates||[]
  });
  
- tell('增量导入完成：新增 '+out.added+' 道、合并确认重复 '+out.merged+' 道、疑似变式保留 '+out.suspected+' 道。已记录全部可确认的题目来源。');
+ tell('导入完成：新增 '+out.added+' 道，合并同题 '+out.merged+' 道，其中应用质量修订 '+out.qualityUpdated+' 道；待人工处理修订冲突 '+out.qualitySkipped+' 道，疑似变式保留 '+out.suspected+' 道。');
 }
 
 async function importJson(file){let j=JSON.parse(await file.text());if(j.format==='physics-training-bank-v1'){if(confirm('将JSON题目去重后合并到当前题库？如需恢复使用历史，请使用页面顶部的“恢复备份”。')){const out=await window.QuestionBankMerge.mergeQuestions(j.questions,{questions:state.questions,save:q=>put('questions',q),updateConcepts:applyConcepts,now,hash});tell('JSON新增 '+out.added+' 道，自动合并重复 '+out.merged+' 道。')}return}let arr=Array.isArray(j)?j:(j.questions||j.items);if(!Array.isArray(arr))throw Error('JSON不是题目数组或题库备份');let n=0;for(let x of arr){if(!x.stem&&!x.text)continue;let q={id:x.id||'q'+hash(norm(x.stem||x.text)),source:x.source||file.name,sourceNo:x.sourceNo||x.question_no||'',type:x.type||'其他',stem:x.stem||x.text,answer:x.answer||'',images:x.images||[],answerImages:x.answerImages||[],tags:uniqueTags(x.tags||x.knowledge_points),difficulty:x.difficulty||'',concept_ids:[],relation:x.relation||'pending',review:'pending',revision:1,parts:x.parts||[],sourceRefs:x.sourceRefs||[],createdAt:now(),updatedAt:now()};if(state.questions.some(y=>y.id===q.id))continue;applyConcepts(q);state.questions.push(q);await put('questions',q);n++}tell('新导入 '+n+' 条 JSON 记录。没有完整图文的记录不能直接打印。')}
