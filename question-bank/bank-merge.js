@@ -36,6 +36,10 @@ function mergeExisting(target,source){
  if(!target.answer&&source.answer)target.answer=source.answer;
  if(!target.answerImages?.length&&source.answerImages?.length)target.answerImages=source.answerImages;
  if(!target.tags?.length&&source.tags?.length)target.tags=source.tags.slice();
+ if((!target.relation||target.relation==='pending')&&source.relation&&source.relation!=='pending')target.relation=source.relation;
+ if(!target.curriculum2022&&source.curriculum2022)target.curriculum2022=source.curriculum2022;
+ if(!target.knowledgeReview&&source.knowledgeReview)target.knowledgeReview=source.knowledgeReview;
+ if(!target.concept_ids?.length&&source.concept_ids?.length)target.concept_ids=source.concept_ids.slice();
  target.warnings=Array.from(new Set([...(target.warnings||[]),...(source.warnings||[])]));
  return target;
 }
