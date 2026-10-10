@@ -14,7 +14,7 @@ function textRun(s,bold=false,size=21){
   return '<w:r><w:rPr><w:rFonts w:ascii="Microsoft YaHei" w:eastAsia="Microsoft YaHei"/>'+(bold?'<w:b/>':'')+'<w:sz w:val="'+size+'"/></w:rPr><w:t xml:space="preserve">'+escapeXml(uncode(s))+'</w:t></w:r>';
 }
 function paragraph(text,opts={}){
- const align=opts.align?'<w:jc w:val="'+opts.align+'"/>':'';
+ const align='<w:jc w:val="'+(opts.align||'left')+'"/><w:snapToGrid w:val="0"/>';
  const space='<w:spacing w:before="'+(opts.before||0)+'" w:after="'+(opts.after??100)+'" w:line="330" w:lineRule="auto"/>';
  const pPr='<w:pPr>'+align+space+(opts.keep?'<w:keepNext/>':'')+'</w:pPr>';
  const runs=String(text??'').split('\n').map((line,i)=>(i?'<w:r><w:br/></w:r>':'')+textRun(line,opts.bold,opts.size||21)).join('');
@@ -114,7 +114,9 @@ async function createDocx(options){
  const title=options.title||'物理精准练习';
  const date=options.date||new Date().toISOString().slice(0,10);
  let body=paragraph(title+' · '+date,{align:'center',bold:true,size:30,after:170});
- body+=paragraph('班级：________　姓名：________　日期：________　　少量多次 · 独立完成',{align:'center',size:19,after:190});
+ const personal=options.student;
+ const nameLine=personal?('班级：'+(personal.className||'________')+'　姓名：'+personal.name+'　日期：________　　少量多次 · 独立完成'):'班级：________　姓名：________　日期：________　　少量多次 · 独立完成';
+ body+=paragraph(nameLine,{align:'center',size:19,after:190});
  body+=await pageItems(false,options.layout||'single');
  if(options.feedback!==false)body+=smallTable([
    ['完成后勾选（不影响评分）'],
@@ -124,7 +126,7 @@ async function createDocx(options){
  ]);
  body+=pageBreak();
  body+=paragraph('参考答案 · 自我核对',{align:'center',bold:true,size:30,after:170});
- body+=paragraph('答案与正面题号对应',{align:'center',size:19,after:170});
+ body+=paragraph('答案与正面题号对应'+(personal?' · '+personal.name:''),{align:'center',size:19,after:170});
  body+=await pageItems(true,options.layout||'single');
  body+=smallTable([['核对后：□ 能独立重做　□ 看懂但有困难　□ 需要教师讲解']]);
  const doc='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="'+W+'" xmlns:r="'+REL+'"><w:body>'+body+
