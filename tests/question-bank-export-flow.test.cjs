@@ -6,11 +6,24 @@ const patched=source.replace(/init\(\);\s*\}\)\(\);\s*$/,'window.__test={state,b
 assert.notEqual(source,patched);
 let downloads=0,calls=0,confirmCount=0;
 class MockBlob{constructor(){this.size=2200}}
+const geom=bottom=>({classList:{contains(){return false}},clientWidth:120,scrollWidth:120,
+ getBoundingClientRect(){return {top:50,bottom,left:60,right:500,height:bottom-50}}});
+const page={
+ querySelector(sel){return sel==='.foot'?{getBoundingClientRect(){return{top:970,bottom:1000}}}:null},
+ querySelectorAll(sel){return sel==='img'?[]:[geom(750),geom(790)]},
+ getBoundingClientRect(){return{top:0,bottom:1120,left:0,right:700,height:1120}}
+};
 const elements={
-layout:{value:'single'},feedback:{checked:true},answerMode:{value:'back'},
-status:{textContent:'',className:''},previewStatus:{dataset:{overflow:'no'},style:{}},
-printPreview:{innerHTML:'',querySelectorAll:()=>[]},previewFront:{querySelector:()=>null},previewBack:{querySelector:()=>null},
-previewDialog:{showModal(){}},wordDownloadLink:{style:{},click(){downloads++}},previewDownloadLink:{style:{}}
+ layout:{value:'single'},feedback:{checked:true},answerMode:{value:'back'},
+ status:{textContent:'',className:''},
+ previewStatus:{dataset:{overflow:'no'},style:{},textContent:''},
+ layoutDecision:{classList:{toggle(){},remove(){}},textContent:''},
+ printPreview:{innerHTML:'',querySelectorAll:()=>[]},
+ previewFront:page,previewBack:page,
+ previewDialog:{open:false,showModal(){this.open=true}},
+ wordBtn:{disabled:false},previewExportBtn:{disabled:false},
+ wordDownloadLink:{style:{},click(){downloads++}},
+ previewDownloadLink:{style:{}}
 };
 const window={PhysicsWordExport:{async createDocx(){calls++;return new MockBlob()}}};
 let urlIndex=0;
