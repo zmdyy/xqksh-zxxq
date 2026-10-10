@@ -22,7 +22,7 @@ function imagesMatch(a,b){
 }
 function sameQuestion(a,b){
  const an=normalizeStem(a.stem),bn=normalizeStem(b.stem);
- return an.length>10&&an===bn&&imagesMatch(a.images,b.images);
+ return an===bn&&imagesMatch(a.images,b.images)&&(an.length>10||((a.images||[]).length>0));
 }
 function mergeExisting(target,source){
  const refs=target.sourceRefs||[{file:target.source,no:target.sourceNo}];
