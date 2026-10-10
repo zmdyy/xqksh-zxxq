@@ -55,7 +55,7 @@
 .detail-chart-title span{color:#788a9b;font-weight:400;font-size:11px}
 .detail-pies{display:grid;grid-template-rows:1fr 1fr;gap:13px}
 #detailTypeChart,#detailDifficultyChart{height:250px;min-height:210px}
-#detailConceptChart{min-height:320px;max-height:1500px;overflow:auto}
+#detailConceptChart{min-height:320px;overflow:visible}
 .detail-table-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:18px 0 9px}
 .detail-table-head h3{font-size:15px;margin:0}
 .detail-table-head>div{display:flex;gap:8px;flex-wrap:wrap}
