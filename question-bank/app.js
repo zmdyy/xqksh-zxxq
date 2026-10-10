@@ -69,7 +69,23 @@ if(phase==='answer'&&a){curr={n:a[1],text:a[2],images:[]};answers.set(curr.n,cur
 else if(phase==='question'&&m){curr={n:m[1],text:m[2],images:[],type};questions.push(curr)}
 else if(curr&&txt)curr.text+=(curr.text?'\n':'')+txt;
 if(curr)curr.images.push(...await imagesFrom(p))}}
-if(!questions.length)throw Error('没有识别到编号题（格式应类似 1．题干）');let added=0,merged=0;for(let s of questions){let ans=answers.get(s.n),id='q'+hash(norm(s.text)+'|'+s.images.map(x=>hash(x.data||'')).join('|')),q={id,source:file.name,sourceNo:s.n,type:s.type,stem:s.text,answer:ans?.text||'',images:s.images,answerImages:ans?.images||[],difficulty:'',tags:[],concept_ids:[],relation:'pending',review:'pending',revision:1,parts:[],sourceRefs:[{file:file.name,no:s.n}],createdAt:now(),updatedAt:now()};let old=state.questions.find(x=>norm(x.stem)===norm(q.stem)&&sameMedia(x.images||[],q.images));if(old){old.sourceRefs=old.sourceRefs||[];if(!old.sourceRefs.some(x=>x.file===file.name&&x.no===s.n))old.sourceRefs.push({file:file.name,no:s.n});if(!old.answer&&q.answer)old.answer=q.answer;if(!old.answerImages?.length&&q.answerImages.length)old.answerImages=q.answerImages;applyIndex(old);await put('questions',old);merged++;continue}if(state.questions.some(x=>x.id===id))q.id+='-'+hash(file.name+s.n);applyIndex(q);state.questions.push(q);await put('questions',q);added++}detailVersion++;tell(file.name+'：新入库 '+added+' 道，合并一致题 '+merged+' 道。仍需审核答案及图片。')}
+if(!questions.length)throw Error('没有识别到编号题（格式应类似 1．题干）');
+const batch=[];
+for(const item of questions){
+ let ans=answers.get(item.n);
+ const id='q'+hash(norm(item.text)+'|'+item.images.map(x=>hash(x.data||'')).join('|'));
+ const q={id,source:file.name,sourceNo:item.n,type:item.type,
+   stem:item.text,answer:ans?.text||'',images:item.images,answerImages:ans?.images||[],
+   difficulty:'',tags:[],concept_ids:[],relation:'pending',review:'pending',revision:1,
+   parts:[],sourceRefs:[{file:file.name,no:item.n}],createdAt:now(),updatedAt:now()};
+ applyIndex(q);batch.push(q);
+}
+const result=await window.QuestionBankMerge.mergeQuestions(batch,{
+ questions:state.questions,save:q=>put('questions',q),updateConcepts:applyConcepts,now,hash
+});
+detailVersion++;
+tell(file.name+'：新增 '+result.added+' 道，自动合并重复 '+result.merged+' 道，疑似变式保留 '+result.suspected+' 道。请核对答案、公式和图片。');
+}
 
 async function importPrivateZip(file){
  if(!window.JSZip||!window.QuestionBankMerge)throw Error('缺少ZIP解析器或去重模块，请刷新页面');
