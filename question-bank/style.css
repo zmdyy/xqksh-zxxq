@@ -120,3 +120,86 @@
 .student-dialog-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:18px}
 .student-dialog-actions button{min-height:39px}
 @media(max-width:580px){.student-dialog-actions{display:grid;grid-template-columns:1fr 1fr}.student-dialog-actions #exportConfirmStudent{grid-column:1/-1;grid-row:1}.print-setting-fields label{grid-template-columns:1fr}.print-action-secondary{flex-wrap:wrap}}
+
+/* 题库检索区：替换旧的无分组 toolbar / filters，两层条件栏与搜索区明确分离 */
+.bank-query-panel{
+  background:#fff;border:1px solid #d9e3ed;border-radius:12px;
+  box-shadow:0 3px 18px #273b5510;margin:0 0 14px;padding:14px 17px 10px;
+}
+.bank-query-main{
+  display:grid;grid-template-columns:auto minmax(240px,1fr) auto;
+  align-items:center;gap:12px;padding-bottom:14px;
+}
+.bank-import-button{min-width:147px;min-height:44px;white-space:nowrap;font-size:13px;cursor:pointer}
+.bank-search-field{
+  display:flex;align-items:center;position:relative;min-width:0;min-height:44px;
+}
+.bank-search-icon{
+  position:absolute;left:14px;pointer-events:none;color:#687b90;font-size:23px;line-height:1;
+  font-weight:400;transform:translateY(-1px)
+}
+.bank-query-panel #search{
+  display:block;min-width:0;max-width:none;width:100%;height:44px;flex:none;
+  padding:0 15px 0 43px;border:1px solid #c7d4e2;border-radius:8px;
+  background:#f9fbfe;font-size:14px;outline:none;box-shadow:none;
+}
+.bank-query-panel #search:focus{background:white;border-color:#377aa9;box-shadow:0 0 0 3px #dfeff9}
+.bank-reset-button{
+  min-height:44px;padding:0 18px;border-color:#d4dee9;color:#547086;
+  background:#fff;font-size:13px;font-weight:600;white-space:nowrap;
+}
+.bank-reset-button:hover{background:#eff6fc;color:#245e88}
+.bank-query-group{
+  display:grid;grid-template-columns:112px minmax(0,1fr);align-items:center;
+  column-gap:17px;border-top:1px solid #e6ecf4;padding:12px 0;
+}
+.bank-query-group-last{padding-bottom:5px}
+.bank-query-heading{display:flex;flex-direction:column;gap:3px}
+.bank-query-heading strong{font-size:14px;font-weight:700;color:#314a62}
+.bank-query-heading small{font-size:11px;font-weight:400;color:#8696a8}
+.bank-query-fields{display:grid;gap:12px;min-width:0}
+.bank-query-knowledge{grid-template-columns:repeat(3,minmax(0,1fr))}
+.bank-query-conditions{grid-template-columns:repeat(5,minmax(0,1fr))}
+.bank-query-fields>label{
+  min-width:0;display:flex;flex-direction:column;gap:5px;
+  color:#5a6d82;font-size:12px;font-weight:600;
+}
+.bank-query-fields select,.bank-query-fields input{
+  width:100%;min-width:0;max-width:none;height:38px;border:1px solid #cbd7e3;
+  padding:0 11px;border-radius:7px;background:#fff;color:#23384c;
+  font-size:13px;font-weight:400;outline:none;
+}
+.bank-query-fields select:focus,.bank-query-fields input:focus{
+  border-color:#377aa9;box-shadow:0 0 0 2px #dfedf7;
+}
+.bank-query-fields select:hover,.bank-query-fields input:hover{border-color:#93aec5}
+.bank-active-filters{padding:10px 0 3px 129px;border-top:1px solid #e7eef5;display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.bank-active-filters[hidden]{display:none}
+.bank-active-filters span{font-size:12px;color:#60758a}
+.bank-active-filters .bank-filter-chip{
+  border:1px solid #cbddea;background:#f2f7fc;color:#2f5b7f;
+  padding:5px 9px;font-weight:500;font-size:11px;border-radius:6px;white-space:normal;
+}
+.bank-active-filters .bank-filter-chip:hover{background:#e2f0fa}
+#status:empty{display:none}
+#status:not(:empty){min-height:0;margin:0 0 13px}
+@media(max-width:1240px){
+  .bank-query-conditions{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:860px){
+  .bank-query-main{grid-template-columns:auto minmax(0,1fr);gap:9px}
+  .bank-reset-button{grid-column:1/-1;justify-self:end;min-height:34px}
+  .bank-query-group{grid-template-columns:1fr;gap:10px}
+  .bank-query-heading{flex-direction:row;gap:12px;align-items:baseline}
+  .bank-active-filters{padding-left:0}
+}
+@media(max-width:650px){
+  .bank-query-panel{padding:12px 12px 9px}
+  .bank-query-main{grid-template-columns:1fr}
+  .bank-import-button{width:100%;justify-content:center}
+  .bank-reset-button{grid-column:auto;width:100%}
+  .bank-query-knowledge,.bank-query-conditions{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+}
+@media(max-width:440px){
+  .bank-query-knowledge,.bank-query-conditions{grid-template-columns:1fr}
+}
