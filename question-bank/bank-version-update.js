@@ -2,7 +2,7 @@
 (function(root){
 'use strict';
 const now=()=>new Date().toISOString();
-function plain(q){return [q.stem||'',q.answer||'',q.type||'',JSON.stringify(q.tags||[]),q.relation||''].join('\u001d')}
+function plain(q){return [q.stem||'',q.answer||'',q.type||'',JSON.stringify(q.tags||[]),q.relation||'',JSON.stringify(q.archivedAsDuplicate||null)].join('\u001d')}
 function mediaFingerprint(q){return ['images','answerImages'].map(k=>(q[k]||[]).map(i=>i.contentHash?'hash:'+i.contentHash:(i.ref?'unverified':'unverified')).join(';')).join('|')}
 function decodedMediaEqual(a,b){
  for(const side of ['images','answerImages']){
@@ -29,6 +29,7 @@ function preserve(old,incoming,changed){
  const q={...incoming};
  // 不丢教师的历史记录、使用标记以及修复前的原图。模型修复涉及字段时不继承旧的“已通过”结论。
  q.qualityReviewV1={...(incoming.qualityReviewV1||{}),...(old.qualityReviewV1||{})};
+ if(incoming.qualityReviewV1?.duplicate?.status==='resolved')q.qualityReviewV1.duplicate={...incoming.qualityReviewV1.duplicate};
  q.qualityReviewEventsV2=[...(old.qualityReviewEventsV2||[])];
  for(const evt of incoming.qualityReviewEventsV2||[]){
   if(!q.qualityReviewEventsV2.some(x=>x.id===evt.id))q.qualityReviewEventsV2.push(evt);
@@ -84,7 +85,7 @@ function compare(current,payload){
    const incomingReview=next.qualityReviewV1||{},currentReview=old.qualityReviewV1||{};
    const review={...currentReview};
    for(const [d,value] of Object.entries(incomingReview)){
-    if(!review[d]||review[d].status==='pending'){
+    if(!review[d]||review[d].status==='pending'||(d==='duplicate'&&value.status==='resolved'&&review[d]?.status!=='resolved')){
       review[d]=value;changedMetadata=true;
     }
    }
