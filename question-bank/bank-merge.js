@@ -83,6 +83,12 @@ function mergeExisting(target,source){
  if((!target.relation||target.relation==='pending')&&source.relation&&source.relation!=='pending')target.relation=source.relation;
  if(!target.curriculum2022&&source.curriculum2022)target.curriculum2022=source.curriculum2022;
  if(!target.knowledgeReview&&source.knowledgeReview)target.knowledgeReview=source.knowledgeReview;
+ if(source.qualityReviewV1){
+   target.qualityReviewV1={...source.qualityReviewV1,...(target.qualityReviewV1||{})};
+ }
+ if(Array.isArray(source.qualityEditHistory)&&!(target.qualityEditHistory||[]).length)
+   target.qualityEditHistory=source.qualityEditHistory.slice();
+ 
  if(source.typeAudit20261011){
    if(!target.typeAudit20261011) target.typeAudit20261011={...source.typeAudit20261011};
    else {
