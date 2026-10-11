@@ -197,5 +197,11 @@ function init(options){
  });
  $('repairExportBtn')?.addEventListener('click',exportZip);
 }
-root.PhysicsImageRepair={init,items,count,exportZip};
+async function actFor(qid,side,index,action){
+ const target=items().find(x=>x.q.id===qid&&x.side===side&&x.index===index);
+ if(!target)throw Error('找不到该图片的修复候选：'+qid+' / '+side+'/'+index);
+ await act(target,action);
+ root.PhysicsQualityReview?.refresh?.();
+}
+root.PhysicsImageRepair={init,items,count,exportZip,actFor,refresh:render};
 })(typeof window!=='undefined'?window:globalThis);
