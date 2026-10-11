@@ -151,6 +151,13 @@ function detail(){
   '<div class="qr-side-link"><button type="button" data-open-original>打开原题完整编辑器</button><span id="qrMessage">'+esc(note)+'</span></div></div></div>';
  box.innerHTML='<div class="qr-review-layout">'+evidence+tools+'</div>';
 }
+function setEditFocus(enabled){
+ const on=Boolean(enabled);
+ $('qrGrid').classList.toggle('edit-focus',on);
+ const btn=$('qrFocusToggle');
+ btn.setAttribute('aria-pressed',String(on));
+ btn.textContent=on?'恢复对照比例':'扩大编辑区';
+}
 function setDrawer(open){
  drawerOpen=Boolean(open);
  const panel=$('qrDrawer'),scrim=$('qrDrawerBackdrop'),toggle=$('qrQueueToggle');
@@ -254,9 +261,10 @@ async function importReview(file){
 }
 function init(a){
  api=a;
- $('qualityReviewBtn')?.addEventListener('click',()=>{$('qualityReviewDialog').showModal();setDrawer(false);changeTab('overview')});
+ $('qualityReviewBtn')?.addEventListener('click',()=>{$('qualityReviewDialog').showModal();setDrawer(false);setEditFocus(false);changeTab('overview')});
  $('qrClose')?.addEventListener('click',()=>$('qualityReviewDialog').close());
  $('qrQueueToggle')?.addEventListener('click',()=>setDrawer(!drawerOpen));
+ $('qrFocusToggle')?.addEventListener('click',()=>setEditFocus($('qrFocusToggle').getAttribute('aria-pressed')!=='true'));
  $('qrDrawerClose')?.addEventListener('click',()=>setDrawer(false));
  $('qrDrawerBackdrop')?.addEventListener('click',()=>setDrawer(false));
  $('qrTabs')?.addEventListener('click',e=>{const b=e.target.closest('[data-dim]');if(b)changeTab(b.dataset.dim)});
