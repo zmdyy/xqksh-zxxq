@@ -127,6 +127,10 @@ function detail(){
 function render(){
  if(!api)return;
  index();tabs();queue=candidates();
+ // 修好公式、答案或图片后，风险提示可能消失：保留当前题直到完成确认。
+ if(selected&&dim!=='overview'&&scope==='risks'&&!queue.some(q=>q.id===selected)&&api.getQuestions().some(q=>q.id===selected)){
+  scope='all';$('qrScope').value='all';queue=candidates();
+ }
  if(!queue.some(q=>q.id===selected))selected=queue[0]?.id||'';
  const pos=queue.findIndex(q=>q.id===selected),page=pos<0?0:Math.floor(pos/50),rows=queue.slice(page*50,(page+1)*50);
  $('qrList').innerHTML=rows.length?rows.map((q,j)=>{
