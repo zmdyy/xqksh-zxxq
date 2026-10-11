@@ -49,3 +49,10 @@
 .qr-paging button{min-height:34px}
 .qr-empty{padding:25px 10px;color:#697e91;font-size:14px}
 @media(max-width:900px){.quality-review-dialog{width:99vw;height:96vh;max-height:96vh}.qr-grid{grid-template-columns:1fr;height:calc(100% - 315px)}.qr-queue{display:flex;gap:6px;max-height:128px;overflow:auto;border-right:0;border-bottom:1px solid #d6e1ea}.qr-queue button{min-width:185px;flex:0 0 185px}.qr-content{padding:12px 16px}.qr-tab{min-width:100px}.qr-controls input{min-width:160px}}
+
+/* 对话框整体采用弹性布局，避免大屏和小屏底部按钮被固定高度挤出。 */
+.quality-review-dialog{display:flex;flex-direction:column;overflow:hidden}
+.quality-review-dialog .qr-head,.quality-review-dialog .qr-summary,.quality-review-dialog .qr-tabs,.quality-review-dialog .qr-controls,.quality-review-dialog .qr-paging{flex-shrink:0}
+.quality-review-dialog .qr-grid{flex:1 1 auto;min-height:0;height:auto}
+.quality-review-dialog .qr-queue,.quality-review-dialog .qr-content{min-height:0}
+@media(max-width:900px){.quality-review-dialog .qr-grid{min-height:0;height:auto}.quality-review-dialog .qr-queue{flex-shrink:0;max-height:115px}}
