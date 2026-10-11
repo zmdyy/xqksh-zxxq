@@ -62,13 +62,20 @@ function preserve(old,incoming,changed){
  return q;
 }
 function compare(current,payload){
- const existing=new Map(current.map(q=>[q.id,q])),updates=[],added=[],conflicts=[];
+ const existing=new Map(current.map(q=>[q.id,q])),updates=[],added=[],conflicts=[],metadataUpdates=[];
  for(const next of payload){
   if(!next?.id||!next.stem)continue;
   const old=existing.get(next.id);
   if(!old){added.push(next);continue}
   const changed=plain(old)!==plain(next)||mediaFingerprint(old)!==mediaFingerprint(next)||Number(next.revision||1)>Number(old.revision||1)||Boolean(next.qualityFixes?.length);
-  if(!changed){ // no substantive changes; add only new metadata, preserving human review
+  if(!changed){
+   // 旧1414题库没有“346题型复核候选”记录。导入新版时补入元数据，
+   // 但不覆盖教师已有专项结论，也不替换原题图或修改答案。
+   const incoming=next.typeAudit20261011,original=old.typeAudit20261011;
+   if(incoming?.needsManualReview && !original?.needsManualReview && !original?.teacherReview){
+    const merged={...old,typeAudit20261011:{...incoming,...original}};
+    metadataUpdates.push({previous:old,next:merged});
+   }
    continue;
   }
   const newRev=Number(next.revision||1),oldRev=Number(old.revision||1);
@@ -79,7 +86,7 @@ function compare(current,payload){
    conflicts.push({id:old.id,oldRevision:oldRev,newRevision:newRev,reason:old.review==='approved'?'人工整题审核受保护':'新版修订版本号不足以安全覆盖'});
   }
  }
- return {updates,added,conflicts};
+ return {updates,added,conflicts,metadataUpdates};
 }
 function transactionApply(db,data,version,base){
  return new Promise((resolve,reject)=>{
@@ -87,6 +94,7 @@ function transactionApply(db,data,version,base){
   const qs=tx.objectStore('questions'),settings=tx.objectStore('settings');
   for(const q of data.added)qs.put(q);
   for(const u of data.updates)qs.put(u.next);
+  for(const u of data.metadataUpdates||[])qs.put(u.next);
   const checkpoint={at:now(),from:base||'',to:version,
    updated:data.updates.map(u=>{
     const old=u.previous,cur=u.next;
@@ -98,7 +106,7 @@ function transactionApply(db,data,version,base){
     if(mediaChanged){fields.images=old.images;fields.answerImages=old.answerImages}
     return {id:old.id,fields,imageBackedUp:mediaChanged};
    }),
-   addedIds:data.added.map(q=>q.id)};
+   addedIds:data.added.map(q=>q.id),metadataPrevious:(data.metadataUpdates||[]).map(u=>({id:u.previous.id,typeAudit20261011:u.previous.typeAudit20261011}))};
   settings.put({id:'bankRollbackV2',value:checkpoint});
   settings.put({id:'bankVersionV2',value:version});
   settings.put({id:'bankUpdateConflictsV2',value:data.conflicts});
@@ -153,9 +161,10 @@ async function update(file,options){
  const merged=new Map(options.getQuestions().map(q=>[q.id,q]));
  for(const q of records.added)merged.set(q.id,q);
  for(const u of records.updates)merged.set(u.next.id,u.next);
+ for(const u of records.metadataUpdates||[])merged.set(u.next.id,u.next);
  options.setQuestions(Array.from(merged.values()));
  options.onChange?.();
- return {version,previous:base,added:records.added.length,updated:records.updates.length,conflicts:records.conflicts.length,conflictIds:records.conflicts.slice(0,20).map(c=>c.id),snapshotChanges:applied.updated.length};
+ return {version,previous:base,added:records.added.length,updated:records.updates.length,metadataSynced:(records.metadataUpdates||[]).length,conflicts:records.conflicts.length,conflictIds:records.conflicts.slice(0,20).map(c=>c.id),snapshotChanges:applied.updated.length};
 }
 root.PhysicsBankVersionUpdate={compare,preserve,update,isNewer};
 })(typeof window!=='undefined'?window:globalThis);
