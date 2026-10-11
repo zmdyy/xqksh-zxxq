@@ -174,7 +174,7 @@
  <div class="qr-controls"><button type="button" id="qrQueueToggle" class="muted qr-queue-toggle" aria-expanded="false" aria-controls="qrDrawer">☰ 题目列表 <span id="qrQueueBadge"></span></button><button type="button" id="qrFocusToggle" class="muted qr-focus-toggle" aria-pressed="false" title="给公式、答案和知识点编辑留出更宽的空间">扩大编辑区</button><label>显示范围<select id="qrScope">
    <option value="risks">需要关注</option><option value="pending">尚未完成</option><option value="repair">需修复</option><option value="discuss">待讨论</option><option value="approved">已通过</option><option value="all">全部题目</option>
  </select></label><input id="qrSearch" type="search" placeholder="搜索题号、来源、题干和知识点"></div>
- <div class="qr-grid">
+ <div id="qrGrid" class="qr-grid">
    <button type="button" id="qrDrawerBackdrop" class="qr-drawer-backdrop" aria-label="关闭题目列表" hidden></button>
    <aside id="qrDrawer" class="qr-drawer" aria-label="题目列表" aria-hidden="true">
      <div class="qr-drawer-head"><strong>审核题目列表</strong><button type="button" id="qrDrawerClose" class="muted">收起列表 ×</button></div>
