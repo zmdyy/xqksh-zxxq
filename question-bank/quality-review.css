@@ -104,3 +104,8 @@
  .qr-evidence{border-right:0;border-bottom:1px solid #d4e0eb}
  .qr-side-bottom{padding:7px 10px}
 }
+
+.qr-concept-picker{padding:11px;margin:4px 0 13px;background:#eef7fd;border:1px solid #c5dbed;border-radius:8px}
+.qr-concept-picker label{margin:0 0 8px;font-weight:700}
+.qr-concept-picker input{display:block;min-width:0;width:100%;box-sizing:border-box;padding:9px 11px;min-height:38px;margin-top:7px;border:1px solid #abc6da;border-radius:6px;font-size:14px}
+.qr-concept-picker button{min-height:35px;background:#dbeefb;color:#155b91;border:1px solid #9fc5e3;border-radius:6px;font-weight:700}
