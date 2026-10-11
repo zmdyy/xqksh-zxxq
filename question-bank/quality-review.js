@@ -6,7 +6,7 @@ const DIMS=[['overview','待办总览'],['image','图片'],['formula','公式与
 const TYPES=['选择题','填空题','作图题','实验题','计算题','综合题','综合能力题','其他'];
 const TASKS=['选项判断','填空','作图/连线','实验探究','计算','数据或图像处理','综合情境'];
 const STATUS={pending:'待审核',approved:'已通过',repair:'需修复',discuss:'待讨论',stale:'内容变动待复核'};
-let api,dim='overview',scope='risks',search='',selected='',queue=[],dupMap=new Map(),risks=new Map(),note='',saving=false;
+let api,dim='overview',scope='risks',search='',selected='',queue=[],dupMap=new Map(),risks=new Map(),note='',saving=false,drawerOpen=false;
 const norm=s=>String(s||'').normalize('NFKC').toLowerCase().replace(/[\s，。；:：、,.!?？！“”'"()（）【】]/g,'');
 const hash=s=>{let h=2166136261;for(const c of String(s||'')){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return (h>>>0).toString(36)};
 const src=m=>m?.useRedraw&&m.redrawPng?m.redrawPng:m?.data||m?.src||'';
@@ -151,6 +151,15 @@ function detail(){
   '<div class="qr-side-link"><button type="button" data-open-original>打开原题完整编辑器</button><span id="qrMessage">'+esc(note)+'</span></div></div></div>';
  box.innerHTML='<div class="qr-review-layout">'+evidence+tools+'</div>';
 }
+function setDrawer(open){
+ drawerOpen=Boolean(open);
+ const panel=$('qrDrawer'),scrim=$('qrDrawerBackdrop'),toggle=$('qrQueueToggle');
+ panel.classList.toggle('open',drawerOpen);
+ panel.setAttribute('aria-hidden',String(!drawerOpen));
+ scrim.hidden=!drawerOpen;
+ toggle.setAttribute('aria-expanded',String(drawerOpen));
+ if(drawerOpen)panel.querySelector('[data-id="'+selected+'"]')?.scrollIntoView?.({block:'nearest'});
+}
 function render(){
  if(!api)return;
  index();tabs();queue=candidates();
@@ -164,7 +173,8 @@ function render(){
   const a=dim==='overview'?null:audit(q,dim);
   return '<button data-id="'+esc(q.id)+'" class="'+(q.id===selected?'active ':'')+(a?.status==='approved'?'passed':'')+'"><b>'+(page*50+j+1)+'. 第'+esc(q.sourceNo||'?')+'题 · '+esc(q.type)+'</b><small>'+esc(q.source||q.id)+'</small><small>'+esc((q.stem||'').slice(0,55))+'</small><span>'+esc(dim==='overview'?hints(q,'overview').length+'项提示':STATUS[a.status])+'</span></button>';
  }).join(''):'<p class="qr-empty">没有符合筛选条件的题目</p>';
- $('qrCount').textContent=(queue.length?page*50+1:0)+'—'+Math.min(queue.length,(page+1)*50)+' / '+queue.length;
+ $('qrCount').textContent=queue.length?'第 '+(pos+1)+' / '+queue.length+' 题':'0 / 0';
+ $('qrQueueBadge').textContent='('+queue.length+'道)';
  $('qrPrevious').disabled=pos<=0;$('qrFollowing').disabled=pos<0||pos===queue.length-1;
  detail();
 }
@@ -244,12 +254,15 @@ async function importReview(file){
 }
 function init(a){
  api=a;
- $('qualityReviewBtn')?.addEventListener('click',()=>{$('qualityReviewDialog').showModal();changeTab('overview')});
+ $('qualityReviewBtn')?.addEventListener('click',()=>{$('qualityReviewDialog').showModal();setDrawer(false);changeTab('overview')});
  $('qrClose')?.addEventListener('click',()=>$('qualityReviewDialog').close());
+ $('qrQueueToggle')?.addEventListener('click',()=>setDrawer(!drawerOpen));
+ $('qrDrawerClose')?.addEventListener('click',()=>setDrawer(false));
+ $('qrDrawerBackdrop')?.addEventListener('click',()=>setDrawer(false));
  $('qrTabs')?.addEventListener('click',e=>{const b=e.target.closest('[data-dim]');if(b)changeTab(b.dataset.dim)});
  $('qrScope')?.addEventListener('change',e=>{scope=e.target.value;selected='';render()});
  $('qrSearch')?.addEventListener('input',e=>{search=e.target.value;selected='';render()});
- $('qrList')?.addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(b){selected=b.dataset.id;render();$('qrContent').scrollTop=0}});
+ $('qrList')?.addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(b){selected=b.dataset.id;setDrawer(false);render();$('qrContent').scrollTop=0}});
  $('qrPrevious')?.addEventListener('click',()=>move(-1));$('qrFollowing')?.addEventListener('click',()=>move(1));
  $('qrContent')?.addEventListener('click',async e=>{
   const z=e.target.closest('[data-zoom]');if(z){z.classList.toggle('expanded');return}
