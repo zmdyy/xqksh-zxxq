@@ -1,0 +1,51 @@
+/* 原题库统一质量审核：教师使用，适配桌面大屏和笔记本。 */
+.quality-review-dialog{border:1px solid #c3d4e2;border-radius:14px;padding:0;max-width:none;width:min(1550px,98vw);height:min(94vh,1060px);max-height:94vh;background:#f6f9fc;color:#23354a}
+.quality-review-dialog::backdrop{background:rgba(12,29,48,.66)}
+.qr-head{padding:14px 20px;background:#fff;border-bottom:1px solid #d8e3ed;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.qr-head h2{font-size:21px;margin:0 0 3px}.qr-head p{font-size:12px;line-height:1.5;color:#597084;margin:0}
+.qr-head-buttons{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.qr-head-buttons button,.qr-head-buttons .button{min-height:36px}
+.qr-summary{padding:9px 18px;color:#455d73;font-size:12px;background:#eff5fb}
+.qr-tabs{display:flex;gap:6px;padding:9px 12px;background:#eff5fb;border-bottom:1px solid #d1deea;overflow:auto}
+.qr-tab{flex:1 0 auto;display:flex;flex-direction:column;gap:3px;align-items:flex-start;text-align:left;border-radius:8px;border:1px solid #c5d5e2;padding:8px 12px;min-width:112px;background:#fff;color:#27435c;font-weight:700;cursor:pointer}
+.qr-tab.active{background:#e4f2ff;border:2px solid #2774b5;padding:7px 11px;color:#174f82}
+.qr-tab small{font-size:11px;font-weight:400;color:#61768a}
+.qr-controls{display:flex;align-items:center;flex-wrap:wrap;gap:14px;padding:9px 16px;background:#fff;border-bottom:1px solid #dce5ed}
+.qr-controls label{font-size:13px;display:flex;align-items:center;gap:5px;color:#344e63}
+.qr-controls select{min-height:34px}.qr-controls input{min-height:34px;min-width:240px;flex:1}
+.qr-grid{display:grid;grid-template-columns:minmax(240px,26%) minmax(0,1fr);height:calc(100% - 250px);min-height:300px}
+.qr-queue{background:#f1f6fa;overflow:auto;border-right:1px solid #d6e1ea;padding:8px}
+.qr-queue button{width:100%;border:1px solid #d8e3eb;border-radius:8px;margin:4px 0;padding:10px 11px;text-align:left;display:flex;flex-direction:column;gap:4px;background:#fff;color:#294055;cursor:pointer}
+.qr-queue button.active{border:2px solid #2677bb;background:#e9f4ff;padding:9px 10px}.qr-queue button.passed{background:#effaf2}
+.qr-queue button b{font-size:13px}.qr-queue button small{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#647a8c;font-size:12px}.qr-queue button span{font-size:12px;color:#315a7b}
+.qr-content{overflow:auto;padding:18px 24px;background:#fff;overflow-wrap:anywhere}
+.qr-meta{color:#536e84;font-size:13px;margin-bottom:10px;font-weight:600}
+.qr-flags{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0}
+.qr-flags span{font-size:12px;color:#9b521c;background:#fff0de;border-radius:6px;padding:5px 7px}
+.qr-flags span.neutral{color:#63778a;background:#eef4f9}
+.qr-content h3{font-size:17px;margin:15px 0 8px;color:#263c50}.qr-content h4{font-size:14px;margin:15px 0 8px}
+.qr-stem{white-space:pre-wrap;font-size:17px;line-height:1.82;color:#111b26;background:#fff;padding:6px 0 12px}
+.qr-card{margin:16px 0;padding:14px 16px;border:1px solid #d1e0eb;background:#f9fcff;border-radius:10px}
+.qr-card p{font-size:13px;color:#50697e;line-height:1.65}
+.qr-card label,.qr-conclusion label{display:block;margin:10px 0;font-size:13px;font-weight:600;color:#324e64}
+.qr-card textarea,.qr-conclusion textarea{display:block;width:100%;min-height:85px;margin:6px 0;border:1px solid #c7d5e4;padding:9px;font:15px/1.6 "Microsoft YaHei",sans-serif;resize:vertical;border-radius:6px;background:#fff;color:#182636}
+.qr-card select{display:block;min-width:200px;margin:6px 0;min-height:35px}
+.qr-answer{margin:12px 0;border:1px solid #e1e8ee;border-radius:8px;padding:10px 14px;background:#f9fbfd}
+.qr-answer summary{font-weight:700;cursor:pointer;font-size:14px}.qr-answer pre{white-space:pre-wrap;font:14px/1.8 "Microsoft YaHei",sans-serif}
+.qr-gallery{display:flex;flex-wrap:wrap;gap:12px;align-items:start}.qr-gallery figure{border:1px solid #dce4ec;border-radius:8px;padding:10px;background:#fff;margin:0;max-width:100%;width:max-content}
+.qr-gallery figcaption{font-size:12px;color:#485d71;margin-bottom:8px}
+.qr-gallery button[data-zoom]{padding:0;border:0;background:transparent;cursor:zoom-in;display:block}
+.qr-gallery img{max-width:min(450px,65vw);max-height:300px;object-fit:contain;display:block}
+.qr-gallery button[data-zoom].expanded{position:fixed;z-index:11000;inset:4vh 4vw;background:white;padding:20px;border-radius:12px;border:2px solid #267abc;cursor:zoom-out;overflow:auto}
+.qr-gallery button[data-zoom].expanded img{max-width:85vw;max-height:84vh}
+.qr-compare{border-top:1px dashed #dbe4eb;padding-top:8px;margin-top:8px;font-size:12px;color:#486b89}
+.qr-image-tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.qr-image-tools button{font-size:12px;padding:6px 8px;min-height:32px}
+.qr-line{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #e1e8ef;font-size:14px}.qr-line b{min-width:95px}.qr-line button{font-size:12px}
+.qr-tasks{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.qr-tasks label{display:flex;gap:6px;align-items:center;font-size:13px;font-weight:400;border:1px solid #d1e0ec;padding:5px 8px;background:#fff;border-radius:7px}
+.qr-peer{border:1px solid #d8e1ea;padding:10px;border-radius:8px;margin:10px 0;font-size:13px;background:white}.qr-peer p{margin:5px 0}.qr-peer button{display:block;margin-top:9px}
+.qr-actions{display:flex;flex-wrap:wrap;gap:9px;margin:14px 0}.qr-actions button{min-height:38px}
+.qr-footer-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:14px 0;color:#667c90;font-size:13px}
+.qr-paging{border-top:1px solid #d8e2eb;display:flex;justify-content:space-between;align-items:center;padding:8px 20px;background:#fff;gap:12px}
+.qr-paging button{min-height:34px}
+.qr-empty{padding:25px 10px;color:#697e91;font-size:14px}
+@media(max-width:900px){.quality-review-dialog{width:99vw;height:96vh;max-height:96vh}.qr-grid{grid-template-columns:1fr;height:calc(100% - 315px)}.qr-queue{display:flex;gap:6px;max-height:128px;overflow:auto;border-right:0;border-bottom:1px solid #d6e1ea}.qr-queue button{min-width:185px;flex:0 0 185px}.qr-content{padding:12px 16px}.qr-tab{min-width:100px}.qr-controls input{min-width:160px}}
