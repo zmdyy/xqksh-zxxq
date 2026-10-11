@@ -15,15 +15,23 @@ function signature(q,d){
  let h=2166136261;for(const x of v[d]||''){h^=x.charCodeAt(0);h=Math.imul(h,16777619)}return (h>>>0).toString(36);
 }
 function audit(q,d){
- const r=q.qualityReviewV1?.[d];if(!r)return {status:'pending'};
+ const r=q.qualityReviewV1?.[d];if(!r)return {status:'pending',issues:{}};
  if(['approved','dismissed','modified'].includes(r.status)&&r.signature!==signature(q,d))return {...r,status:'stale'};
+ const flagged=diag.get(q.id)?.filter(x=>x.dim===d)||[];
+ const decisions=r.issues||{};
+ if(flagged.length&&Object.keys(decisions).length){
+  const unresolved=flagged.filter(x=>!decisions[x.id]||decisions[x.id].signature!==signature(q,d));
+  if(flagged.some(x=>decisions[x.id]?.status==='repair'&&decisions[x.id].signature===signature(q,d)))return {...r,status:'repair'};
+  if(!unresolved.length)return {...r,status:'dismissed'};
+  return {...r,status:'pending'};
+ }
  return r;
 }
 function buildIndexes(){
  const questions=api.getQuestions(),byStem=new Map();dupes=new Map();diag=new Map();
  for(const q of questions){
   const k=normalize(q.stem);
-  if(k.length<20)continue;
+  if(k.length<12)continue;
   if(!byStem.has(k))byStem.set(k,[]);
   byStem.get(k).push(q);
  }
@@ -31,7 +39,11 @@ function buildIndexes(){
  for(const q of questions)diag.set(q.id,D().scan(q,{duplicates:dupes,catalogByName:api.catalogByName}));
 }
 function issues(q,d){const i=diag.get(q.id)||[];return d==='overview'?i:i.filter(x=>x.dim===d)}
-function filteredIssue(q,d){const a=audit(q,d);return a.status==='dismissed'||a.status==='approved'?[]:issues(q,d)}
+function filteredIssue(q,d){
+ const a=audit(q,d),signatureNow=signature(q,d);
+ if(a.status==='approved')return [];
+ return issues(q,d).filter(x=>!(a.issues?.[x.id]?.status==='dismissed'&&a.issues[x.id]?.signature===signatureNow));
+}
 function overall(q){
  const states=MODES.slice(1).map(([d])=>audit(q,d).status);
  if(states.includes('repair'))return {code:'repair',label:'待修复'};
@@ -217,16 +229,30 @@ async function decision(action){
  if(saving||mode==='overview')return;
  const q=api.getQuestions().find(x=>x.id===id);if(!q)return;
  const verdict=mode==='duplicate'?$('qrDuplicateVerdict')?.value||'unknown':'';
- if(mode==='duplicate'&&verdict==='unknown'){message='请先选择重复题比较结论';rendered();return}
- if(mode==='duplicate'&&action==='dismissed'&&verdict==='same'){message='确认完全重复不能选择“排除疑点”，请使用“需修复”';rendered();return}
- const noteText=$('qrNote')?.value||'',issue=(issues(q,mode).find(x=>x.id===selectedIssue)||issues(q,mode)[0]);
- const at=new Date().toISOString(),entry={id:q.id+'|'+mode+'|'+at+'|'+action,dim:mode,action,at,location:issue?.location||'仅规则怀疑，尚未定位',
- type:issue?.type||'人工核验',evidence:issue?.evidence||'',snippet:issue?.detail||'',note:noteText,verdict};
- const previous=q.qualityReviewV1;
- q.qualityReviewV1={...(q.qualityReviewV1||{}),[mode]:{status:action,note:noteText,verdict,signature:signature(q,mode),reviewedAt:at}};
- q.qualityReviewEventsV2=[...(q.qualityReviewEventsV2||[]),entry];
- try{await api.save(q);api.onChange?.();message=action==='repair'?'已加入修复清单':'疑点已排除';render()}
- catch(e){q.qualityReviewV1=previous;q.qualityReviewEventsV2.pop();message='保存失败：'+e.message;rendered()}
+ if(mode==='duplicate'&&verdict==='unknown'){message='请先选择两道题的比较结论';rendered();return}
+ if(mode==='duplicate'&&action==='dismissed'&&verdict==='same'){message='完全重复的题不能排除疑点，请选择需修复';rendered();return}
+ const outstanding=filteredIssue(q,mode),issue=issues(q,mode).find(x=>x.id===selectedIssue)||outstanding[0]||issues(q,mode)[0];
+ const noteText=$('qrNote')?.value||'',at=new Date().toISOString();
+ const current=q.qualityReviewV1||{},oldRecord=current[mode]||{};
+ const signatureNow=signature(q,mode);
+ const decisions={...(oldRecord.issues||{})};
+ if(issue)decisions[issue.id]={status:action,signature:signatureNow,at,note:noteText};
+ const dimStatus=action==='repair'?'repair':(issue&&outstanding.length>1?'pending':'dismissed');
+ const nextRecord={...oldRecord,status:dimStatus,note:noteText,verdict,signature:signatureNow,reviewedAt:at,issues:decisions};
+ const entry={id:q.id+'|'+mode+'|'+at+'|'+action,dim:mode,issueId:issue?.id||'',action,at,
+  location:issue?.location||'仅规则怀疑，尚未定位',type:issue?.type||'人工确认',evidence:issue?.evidence||'',
+  snippet:issue?.detail||'',note:noteText,verdict};
+ const previous=q.qualityReviewV1,events=q.qualityReviewEventsV2;
+ q.qualityReviewV1={...current,[mode]:nextRecord};
+ q.qualityReviewEventsV2=[...(events||[]),entry];
+ try{
+  await api.save(q);api.onChange?.();
+  message=action==='repair'?'已加入修复清单':'本条疑点已排除'+(outstanding.length>1?'，还有'+(outstanding.length-1)+'条待判断':'');
+  selectedIssue='';
+  render();
+ }catch(e){
+  q.qualityReviewV1=previous;q.qualityReviewEventsV2=events;message='保存失败：'+e.message;rendered();
+ }
 }
 async function exportExcel(){
  if(!root.PhysicsQualityExport){message='Excel导出模块未加载';rendered();return}
