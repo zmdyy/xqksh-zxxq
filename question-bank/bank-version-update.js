@@ -69,16 +69,29 @@ function compare(current,payload){
   if(!old){added.push(next);continue}
   const changed=plain(old)!==plain(next)||mediaFingerprint(old)!==mediaFingerprint(next)||Number(next.revision||1)>Number(old.revision||1)||Boolean(next.qualityFixes?.length);
   if(!changed){
-   // 旧1414题库没有“346题型复核候选”记录。导入新版时补入元数据，
-   // 但不覆盖教师已有专项结论，也不替换原题图或修改答案。
-   const incoming=next.typeAudit20261011,original=old.typeAudit20261011;
-   if(incoming?.needsManualReview && !original?.needsManualReview && !original?.teacherReview){
-    const merged={...old,typeAudit20261011:{...incoming,...original}};
-    metadataUpdates.push({previous:old,next:merged});
+   // 即使题干未变，新母版中的人工审核事件、排除疑点及复核候选也需要同步。
+   const merged={...old};let changedMetadata=false;
+   const inType=next.typeAudit20261011,oldType=old.typeAudit20261011;
+   if(inType?.needsManualReview&&!oldType?.needsManualReview&&!oldType?.teacherReview){
+    merged.typeAudit20261011={...inType,...oldType};changedMetadata=true;
    }
+   const prevEvents=old.qualityReviewEventsV2||[],newEvents=next.qualityReviewEventsV2||[];
+   if(newEvents.some(evt=>!prevEvents.some(x=>x.id===evt.id))){
+    const seen=new Set();
+    merged.qualityReviewEventsV2=[...prevEvents,...newEvents].filter(evt=>{if(seen.has(evt.id))return false;seen.add(evt.id);return true});
+    changedMetadata=true;
+   }
+   const incomingReview=next.qualityReviewV1||{},currentReview=old.qualityReviewV1||{};
+   const review={...currentReview};
+   for(const [d,value] of Object.entries(incomingReview)){
+    if(!review[d]||review[d].status==='pending'){
+      review[d]=value;changedMetadata=true;
+    }
+   }
+   if(changedMetadata){merged.qualityReviewV1=review;metadataUpdates.push({previous:old,next:merged})}
    continue;
   }
-  const newRev=Number(next.revision||1),oldRev=Number(old.revision||1);
+    const newRev=Number(next.revision||1),oldRev=Number(old.revision||1);
   const isRepair=Array.isArray(next.qualityFixes)&&next.qualityFixes.length>0;
   if((newRev>oldRev||isRepair)&&old.review!=='approved'){
    updates.push({previous:old,next:preserve(old,next,true)});
