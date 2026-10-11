@@ -3,7 +3,7 @@
 'use strict';
 const now=()=>new Date().toISOString();
 function plain(q){return [q.stem||'',q.answer||'',q.type||'',JSON.stringify(q.tags||[]),q.relation||''].join('\u001d')}
-function mediaFingerprint(q){return ['images','answerImages'].map(k=>(q[k]||[]).map(i=>[i.contentHash||'',i.ref||'',i.data?.length||0,i.repair?.status||''].join(':')).join(';')).join('|')}
+function mediaFingerprint(q){return ['images','answerImages'].map(k=>(q[k]||[]).map(i=>i.contentHash?'hash:'+i.contentHash:(i.ref?'unverified':'unverified')).join(';')).join('|')}
 function isNewer(ver,prior){
  const a=String(ver||'').match(/20\d{2}[-_]?(\d{2})[-_]?(\d{2})/),b=String(prior||'').match(/20\d{2}[-_]?(\d{2})[-_]?(\d{2})/);
  if(!a||!b)return true;
@@ -48,7 +48,7 @@ function compare(current,payload){
   if(!next?.id||!next.stem)continue;
   const old=existing.get(next.id);
   if(!old){added.push(next);continue}
-  const changed=plain(old)!==plain(next)||mediaFingerprint(old)!==mediaFingerprint(next);
+  const changed=plain(old)!==plain(next)||mediaFingerprint(old)!==mediaFingerprint(next)||(Number(next.revision||1)>Number(old.revision||1)&&Array.isArray(next.qualityFixes)&&next.qualityFixes.length>0);
   if(!changed){ // no substantive changes; add only new metadata, preserving human review
    continue;
   }
