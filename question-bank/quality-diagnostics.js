@@ -12,7 +12,7 @@ function scan(q,options){
   issues.push(issue(q.id+':'+dim+':'+type+':'+(source||'none')+':'+(Number.isInteger(from)?from:'unknown')+':'+(Number.isInteger(to)?to:'unknown'),dim,type,location,evidence,detail,source,from,to));
  }
  const checks=[
-  {regex:/⟦[^⟧\n]{0,150}⟧|OLE(?:公式|对象|Object)?|公式占位(?:符)?|嵌入对象|\uFFFD/g,type:'公式占位或乱码',basis:'命中明确的占位/乱码标记，需对照原Word核对'},
+  {regex:/OLE(?:公式|对象|Object)?|公式占位(?:符)?|嵌入对象|\uFFFD/g,type:'公式占位或乱码',basis:'命中明确的OLE或乱码标记，需对照原Word核对'},
   {regex:/[=＝]\s*(?:[；;。]|$)/gm,type:'疑似算式缺失',basis:'等号后紧接结束符号，可能是公式提取不完整'}
  ];
  for(const [key,text] of [['stem',stem],['answer',answer]]){
