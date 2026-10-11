@@ -9,7 +9,7 @@ function scan(q,options){
  const issues=[],tags=q.tags||[],stem=String(q.stem||''),answer=String(q.answer||''),ids=new Set();
  function add(dim,type,location,evidence,detail,source,from,to){
   const key=[dim,type,location,from].join('|');if(ids.has(key))return;ids.add(key);
-  issues.push(issue(q.id+':'+issues.length,dim,type,location,evidence,detail,source,from,to));
+  issues.push(issue(q.id+':'+dim+':'+type+':'+(source||'none')+':'+(Number.isInteger(from)?from:'unknown')+':'+(Number.isInteger(to)?to:'unknown'),dim,type,location,evidence,detail,source,from,to));
  }
  const checks=[
   {regex:/⟦[^⟧\n]{0,150}⟧|OLE(?:公式|对象|Object)?|公式占位(?:符)?|嵌入对象|\uFFFD/g,type:'公式占位或乱码',basis:'命中明确的占位/乱码标记，需对照原Word核对'},
