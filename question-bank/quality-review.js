@@ -111,7 +111,11 @@ function special(q){
  if(dim==='image')return '<div class="qr-card"><h3>图片处理</h3><p>原图、增强候选和答案图在左侧并排显示；点击图片可放大。替换修复候选后，仍需单独确认图片质量审核。</p><button type="button" data-image-batch>高级批量图像对照与ZIP导出</button></div>';
  if(dim==='formula')return '<section class="qr-card qr-edit-fields"><label for="qrStem">题干与公式<textarea id="qrStem">'+esc(q.stem||'')+'</textarea></label><label for="qrAnswerEdit">答案、公式和计算过程<textarea id="qrAnswerEdit">'+esc(q.answer||'')+'</textarea></label></section>';
  if(dim==='answer')return '<section class="qr-card qr-edit-fields"><label for="qrAnswerEdit">答案和解析<textarea id="qrAnswerEdit">'+esc(q.answer||'')+'</textarea></label></section>';
- if(dim==='knowledge')return '<section class="qr-card qr-edit-fields"><label for="qrTags">知识点标签（分号分隔）<textarea id="qrTags">'+esc((q.tags||[]).join('；'))+'</textarea></label><label for="qrRelation">知识点关系<select id="qrRelation">'+Object.entries({pending:'待审核',single:'单知识点',cross:'真正交叉应用',parallel:'并列小问',options:'选项辨析'}).map(([k,v])=>'<option value="'+k+'"'+(q.relation===k?' selected':'')+'>'+v+'</option>').join('')+'</select></label></section>';
+ if(dim==='knowledge'){
+  const catalog=Array.from(new Map(Array.from(api.catalogByName.values()).filter(c=>c&&c.name).map(c=>[c.name,c])).values()).sort((a,b)=>a.name.localeCompare(b.name,'zh-CN'));
+  const choices='<datalist id="qrKnowledgeOptions">'+catalog.map(c=>'<option value="'+esc(c.name)+'">'+esc(c.module||'')+'</option>').join('')+'</datalist>';
+  return '<section class="qr-card qr-edit-fields"><div class="qr-concept-picker"><label for="qrKnowledgePick">从知识图谱选择知识点<input id="qrKnowledgePick" type="text" list="qrKnowledgeOptions" placeholder="输入关键词，选择现有知识点" autocomplete="off"></label>'+choices+'<button type="button" data-add-concept>＋添加到本题</button></div><label for="qrTags">本题知识点（可直接修改，用分号分隔）<textarea id="qrTags">'+esc((q.tags||[]).join('；'))+'</textarea></label><label for="qrRelation">知识点关系<select id="qrRelation">'+Object.entries({pending:'待审核',single:'单知识点',cross:'真正交叉应用',parallel:'并列小问',options:'选项辨析'}).map(([k,v])=>'<option value="'+k+'"'+(q.relation===k?' selected':'')+'>'+v+'</option>').join('')+'</select></label></section>';
+ }
  if(dim==='type'){
   const t=q.typeAudit20261011||{},old=t.teacherReview||{};
   return '<section class="qr-card qr-edit-fields"><p>原类型：'+esc(t.oldType||q.type)+'；系统建议：'+esc(t.proposedType||'无')+'</p><label for="qrType">主类型<select id="qrType">'+TYPES.map(v=>'<option'+(v===(old.type||q.type)?' selected':'')+'>'+v+'</option>').join('')+'</select></label><strong>次级考法（可多选）</strong><div class="qr-tasks">'+TASKS.map(v=>'<label><input type="checkbox" data-task="'+esc(v)+'"'+((old.tasks||q.qualityReviewV1?.type?.tasks||[]).includes(v)?' checked':'')+'>'+esc(v)+'</label>').join('')+'</div></section>';
@@ -260,6 +264,17 @@ function init(a){
    const saved=await edit(saveApprove.dataset.editAndApprove);
    if(saved)await decide('approved',rememberedNote);
    return;
+  }
+  const addConcept=e.target.closest('[data-add-concept]');
+  if(addConcept){
+    const pick=$('qrKnowledgePick'),input=$('qrTags'),val=pick?.value.trim();
+    if(!val){note='先输入或选择知识点。';const m=$('qrMessage');if(m)m.textContent=note;return}
+    const tags=Array.from(new Set(input.value.split(/[;,；，、]/).map(t=>t.trim()).filter(Boolean)));
+    if(!tags.includes(val))tags.push(val);
+    input.value=tags.join('；');pick.value='';
+    note='已加入待保存列表，点击右下角“保存修改并确认通过”写入题库。';
+    const m=$('qrMessage');if(m)m.textContent=note;
+    return;
   }
   const ed=e.target.closest('[data-edit]');if(ed){await edit(ed.dataset.edit);return}
   const dec=e.target.closest('[data-accept]');if(dec){await decide(dec.dataset.accept);return}
