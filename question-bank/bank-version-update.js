@@ -170,7 +170,11 @@ async function update(file,options){
  await decode(zip,applyList);
  // 修改是否仅为题图，在载入后再作正式比较，防止误报
  const previous=new Map(options.getQuestions().map(q=>[q.id,q]));
- records.updates=records.updates.filter(u=>plain(u.previous)!==plain(u.next)||!decodedMediaEqual(u.previous,u.next)).map(u=>({...u,next:preserve(u.previous,u.next,true)}));
+ records.updates=records.updates.filter(u=>
+  plain(u.previous)!==plain(u.next)||!decodedMediaEqual(u.previous,u.next)||
+  (u.next.qualityReviewV1?.duplicate?.status==='resolved'&&u.previous.qualityReviewV1?.duplicate?.status!=='resolved')||
+  JSON.stringify(u.next.mergedFromIds||[])!==JSON.stringify(u.previous.mergedFromIds||[])
+ ).map(u=>({...u,next:preserve(u.previous,u.next,true)}));
  const applied=await transactionApply(options.db,records,version,base);
  const merged=new Map(options.getQuestions().map(q=>[q.id,q]));
  for(const q of records.added)merged.set(q.id,q);
