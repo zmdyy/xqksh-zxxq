@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>物理精准练习题库 · 学情可视化</title>
 <link rel="stylesheet" href="./style.css?v=20261011group">
+<link rel="stylesheet" href="./type-review.css?v=20261011typeaudit1">
 <script src="../jszip.min.js"></script>
 <script src="./bank-merge.js?v=20261011faithful"></script>
 <script src="../pinyin-pro.js"></script>
@@ -13,7 +14,7 @@
 <script src="./word-export.js?v=20261010student2"></script>
 </head>
 <body>
-<header class="topbar"><div><a href="../index.html">← 学情分析</a><a href="../knowledge/index.html">✦ 知识星球</a><h1>物理精准练习题库</h1></div><div class="top-actions"><button type="button" class="primary" id="bankDetailsButton" aria-expanded="false" aria-controls="bankDetailsPanel" title="展开或收起知识点统计">▤ 题库明细</button><button type="button" id="repairManagerBtn" class="muted" title="对照原始图和增强候选，确认后才替换正式图片">图像修复审核</button><button id="backupBtn" class="muted">备份题库与记录</button><label class="button muted">恢复备份<input type="file" id="restoreInput" accept=".json" hidden></label></div></header>
+<header class="topbar"><div><a href="../index.html">← 学情分析</a><a href="../knowledge/index.html">✦ 知识星球</a><h1>物理精准练习题库</h1></div><div class="top-actions"><button type="button" class="primary" id="bankDetailsButton" aria-expanded="false" aria-controls="bankDetailsPanel" title="展开或收起知识点统计">▤ 题库明细</button><button type="button" id="typeReviewBtn" class="muted" title="在当前题库页面内逐题审核346道复杂题型">题型人工复核 · 346</button><button type="button" id="repairManagerBtn" class="muted" title="对照原始图和增强候选，确认后才替换正式图片">图像修复审核</button><button id="backupBtn" class="muted">备份题库与记录</button><label class="button muted">恢复备份<input type="file" id="restoreInput" accept=".json" hidden></label></div></header>
 <main>
 <section class="bank-query-panel workflow-section" aria-label="题库检索与筛选">
   <div class="workflow-heading"><div class="workflow-step"><span aria-hidden="true">01</span><div><h2>检索与筛选</h2><p>先定位知识点，再选择合适的练习题</p></div></div><span class="workflow-side-note">题库管理</span></div>
@@ -159,11 +160,19 @@
  </div>
  <p id="repairNotice" role="status" aria-live="polite" class="repair-notice">自动SVG描摹或增强PNG不会自动纠正错误电路、光路和标注，请认真核对。</p>
 </dialog>
+<dialog id="typeReviewDialog" class="type-review-dialog" aria-labelledby="typeReviewTitle">
+ <div class="tr-head"><div><h2 id="typeReviewTitle">题型人工复核 · 原题库内审核</h2><p>审核346道待复核题。只修改题型专项结果，不自动通过题目物理正确性审核。</p></div>
+ <div class="tr-header-tools"><button type="button" id="trExport" class="muted">导出专项审核 JSON</button><label class="button muted">导入专项记录<input type="file" id="trImport" accept=".json" hidden></label><button type="button" id="trClose" class="muted">关闭</button></div></div>
+ <div class="tr-filters"><strong id="typeReviewProgress">等待读取题库</strong><label for="trStatus">进度筛选 <select id="trStatus"><option value="pending">待审核</option><option value="all">全部</option><option value="confirmed">已确认</option><option value="discuss">待讨论</option><option value="repair">需修复</option></select></label><input id="trSearch" type="search" placeholder="搜索题号、题干、来源及知识点"></div>
+ <div class="tr-body"><nav id="typeReviewQueue" class="tr-queue" aria-label="待复核题目清单"></nav><section id="typeReviewContent" class="tr-content" aria-label="逐题审核内容"></section></div>
+ <div class="tr-bottom"><span id="trIndex">0 / 0</span><div><button type="button" id="trPrev">上一题</button> <button type="button" id="trNext">下一题</button></div><span class="tr-message">审核进度保存在原题库浏览器中 · 请定期备份</span></div>
+</dialog>
 <dialog id="editorDialog" class="dialog"><form method="dialog"><button class="close">×</button></form><h2 id="editorTitle">题目审核</h2><div id="editorBody"></div></dialog>
 <dialog id="previewDialog" class="preview-dialog"><div class="preview-head"><h2>打印预览</h2><div><span id="previewStatus" role="status" aria-live="polite"></span><button id="previewExportBtn">导出 Word</button><a id="previewDownloadLink" class="button primary" style="display:none" download>点击保存 Word</a><button id="previewCloseBtn" class="muted">关闭</button></div></div><div id="printPreview" class="sheet-container"></div></dialog>
 <dialog id="drawDialog" class="dialog"><form method="dialog"><button class="close">×</button></form><h2>教师手工重绘 · SVG</h2><p class="hint">原图始终保留。右侧手工绘制的SVG不包含左侧低清原图。请核对物理结构后点击“采用重绘图”。</p><div class="draw-cols"><div><strong>原图（只作为对照）</strong><img id="drawOriginal" alt="原始题图"></div><div><strong>可编辑矢量画布</strong><svg id="drawCanvas" viewBox="0 0 800 500" aria-label="SVG手绘"></svg></div></div><div class="buttons"><select id="drawMode"><option value="line">直线（点两次）</option><option value="arrow">箭头（点两次）</option><option value="rect">矩形（点两次）</option><option value="ellipse">椭圆（点两次）</option><option value="text">文字（点一次）</option></select><input id="drawText" value="F" aria-label="要添加的文字"><button id="drawUndo">撤销一步</button><button id="drawReset">清空重画</button><button id="drawSave" class="primary">采用重绘图（保留原图）</button></div></dialog>
 <script src="./inline-details.js?v=20261010inline3"></script>
 <script src="./image-repair-review.js?v=20261011group"></script>
-<script src="./app.js?v=20261011correct"></script>
+<script src="./type-review.js?v=20261011typeaudit1"></script>
+<script src="./app.js?v=20261011typeaudit1"></script>
 </body>
 </html>
