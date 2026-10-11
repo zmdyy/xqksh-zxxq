@@ -10,6 +10,7 @@
     const grade=s.match(/^([一二三四五六七八九十]|[1-9])年级([0-9]{1,2}|[一二两三四五六七八九十〇零]{1,3})班?$/);
     if(grade){const a=classNumber(grade[1]),b=classNumber(grade[2]);if(a!==null&&b!==null&&b>0)return a+'年级'+b+'班'}
     if(/^[1-9]\d{2}$/.test(s))return s;
+    if(/^0?[1-9]$/.test(s))return Number(s)+'班';
     const m=s.match(/^([0-9]{1,2}|[一二两三四五六七八九十〇零]{1,3})班?$/);if(m){const n=classNumber(m[1]);if(n!==null&&n>0&&n<100)return n+'班'}
     return original;
   }
