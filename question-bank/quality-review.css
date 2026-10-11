@@ -109,3 +109,55 @@
 .qr-concept-picker label{margin:0 0 8px;font-weight:700}
 .qr-concept-picker input{display:block;min-width:0;width:100%;box-sizing:border-box;padding:9px 11px;min-height:38px;margin-top:7px;border:1px solid #abc6da;border-radius:6px;font-size:14px}
 .qr-concept-picker button{min-height:35px;background:#dbeefb;color:#155b91;border:1px solid #9fc5e3;border-radius:6px;font-weight:700}
+
+/* V4 正式布局：默认仅原题/审核两栏，题号列表以抽屉按需打开。 */
+.quality-review-dialog{width:min(1900px,calc(100vw - 24px));max-width:calc(100vw - 24px);height:min(96vh,1200px);max-height:96vh}
+.quality-review-dialog .qr-head{padding:10px 19px;gap:12px}
+.quality-review-dialog .qr-head h2{font-size:20px}
+.quality-review-dialog .qr-head p{font-size:12px}
+.quality-review-dialog .qr-summary{padding:6px 18px}
+.quality-review-dialog .qr-tabs{padding:6px 12px}
+.quality-review-dialog .qr-tab{min-width:115px;padding:6px 10px;gap:2px}
+.quality-review-dialog .qr-tab.active{padding:5px 9px}
+.quality-review-dialog .qr-controls{padding:8px 15px;gap:10px}
+.quality-review-dialog .qr-grid{position:relative;display:block;flex:1 1 auto;min-height:0;height:auto;overflow:hidden}
+.quality-review-dialog .qr-content{width:100%;height:100%;min-height:0;overflow:hidden}
+.quality-review-dialog .qr-review-layout{height:100%;grid-template-columns:minmax(0,50%) minmax(0,50%)}
+.quality-review-dialog .qr-evidence{min-width:0;padding:14px 22px 22px}
+.quality-review-dialog .qr-side{min-width:0;min-height:0}
+.quality-review-dialog .qr-side-title{padding:11px 17px 9px}
+.quality-review-dialog .qr-side-scroll{padding:12px 16px 8px}
+.quality-review-dialog .qr-side-scroll .qr-edit-fields textarea{min-height:clamp(190px,30vh,360px);max-height:none;resize:vertical;font-size:15px;line-height:1.7}
+.quality-review-dialog .qr-side-scroll #qrAnswerEdit{min-height:clamp(230px,38vh,450px)}
+.quality-review-dialog .qr-side-bottom{padding:9px 16px;gap:6px 10px;box-shadow:0 -3px 9px #1d394910}
+.quality-review-dialog .qr-side-bottom>button{min-height:40px}
+.quality-review-dialog .qr-side-bottom>.qr-other-actions button{min-height:31px}
+.quality-review-dialog .qr-side-bottom>.qr-side-link{padding-top:4px}
+.quality-review-dialog .qr-paging{padding:7px 18px}
+.qr-queue-toggle{white-space:nowrap;flex:0 0 auto;min-height:38px;background:#e8f3fb;border-color:#98bddb;color:#195783;font-weight:700;padding:7px 12px;border-radius:8px}
+.qr-queue-toggle[aria-expanded="true"]{background:#cee7fa;border-color:#297ab7}
+.qr-queue-toggle span{font-size:12px;font-weight:400;margin-left:4px}
+.quality-review-dialog .qr-drawer{position:absolute;top:0;bottom:0;left:0;width:clamp(305px,31vw,470px);max-width:calc(100vw - 60px);display:flex;flex-direction:column;z-index:12;background:#f4f8fc;border-right:1px solid #b4c9d9;box-shadow:5px 0 24px #18324b30;transform:translateX(-105%);visibility:hidden;pointer-events:none;transition:transform .17s ease,visibility .17s ease;min-height:0}
+.quality-review-dialog .qr-drawer.open{transform:translateX(0);visibility:visible;pointer-events:auto}
+.quality-review-dialog .qr-drawer-head{flex:0 0 auto;display:flex;justify-content:space-between;align-items:center;gap:8px;background:white;border-bottom:1px solid #dae4ed;padding:12px 14px;color:#28475f}
+.quality-review-dialog .qr-drawer-head button{min-height:34px;padding:5px 10px}
+.quality-review-dialog .qr-drawer .qr-queue{display:block;flex:1 1 auto;min-height:0;max-height:none;width:100%;overflow:auto;padding:9px 10px;border:0;background:transparent}
+.quality-review-dialog .qr-drawer .qr-queue button{width:100%;max-width:none;min-width:0;display:flex;flex-direction:column;margin:5px 0}
+.quality-review-dialog .qr-drawer-backdrop{position:absolute;z-index:11;inset:0;display:block;border:0;background:rgba(14,35,52,.22);cursor:pointer;padding:0}
+.quality-review-dialog .qr-drawer-backdrop[hidden]{display:none}
+@media(max-width:1150px){
+ .quality-review-dialog .qr-review-layout{grid-template-columns:minmax(0,47%) minmax(0,53%)}
+ .quality-review-dialog .qr-evidence{padding:11px 13px}
+ .quality-review-dialog .qr-side-scroll{padding:10px 12px}
+}
+@media(max-width:740px){
+ .quality-review-dialog .qr-review-layout{grid-template-columns:1fr;grid-template-rows:minmax(165px,41%) minmax(0,59%)}
+ .quality-review-dialog .qr-content{flex:initial}
+ .quality-review-dialog .qr-drawer{width:min(88vw,380px)}
+ .quality-review-dialog .qr-drawer .qr-queue{display:block;max-height:none}
+ .quality-review-dialog .qr-evidence{padding:10px 13px}
+ .quality-review-dialog .qr-side-scroll .qr-edit-fields textarea{min-height:130px}
+ .quality-review-dialog .qr-side-scroll #qrAnswerEdit{min-height:150px}
+ .quality-review-dialog .qr-head p{display:none}
+ .quality-review-dialog .qr-tab{min-width:105px}
+}
