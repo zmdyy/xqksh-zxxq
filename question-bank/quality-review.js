@@ -223,7 +223,7 @@ async function decide(status, noteOverride){
  if(saved==='type'){q.typeAudit20261011=q.typeAudit20261011||{};q.typeAudit20261011.teacherReview={...(q.typeAudit20261011.teacherReview||{}),status:status==='approved'?'confirmed':status,type:q.type,note:review[saved].note,reviewedAt:review[saved].reviewedAt}}
  try{await api.save(q);api.onChange?.();note='已保存'+STATUS[status]+'，未改变整题物理正确性的审核状态。';if(status==='approved'&&scope!=='all')selected=queue.find(x=>x.id!==id)?.id||id;render()}catch(e){note='保存失败：'+e.message;detail()}
 }
-function changeTab(d){dim=d;scope='risks';search='';selected='';note='';$('qrScope').value='risks';$('qrSearch').value='';render()}
+function changeTab(d){dim=d;scope='risks';search='';note='';$('qrScope').value='risks';$('qrSearch').value='';render();$('qrContent').scrollTop=0}
 function move(step){const pos=queue.findIndex(q=>q.id===selected);if(pos+step<0||pos+step>=queue.length)return;selected=queue[pos+step].id;note='';render();$('qrContent').scrollTop=0}
 function focus(id){dim='duplicate';scope='all';search='';selected=id;$('qrScope').value='all';$('qrSearch').value='';render()}
 function download(x,name){const blob=new Blob([JSON.stringify(x,null,2)],{type:'application/json;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000)}
