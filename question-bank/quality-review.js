@@ -165,28 +165,52 @@ function render(){
  detail();
 }
 async function saveQ(q,updates,label,history){
- if(saving)return;saving=true;
+ if(saving)return false;
+ saving=true;
+ const before={stem:q.stem,answer:q.answer,type:q.type,tags:[...(q.tags||[])],relation:q.relation,concept_ids:[...(q.concept_ids||[])],revision:q.revision,updatedAt:q.updatedAt,typeAudit20261011:q.typeAudit20261011,qualityEditHistory:q.qualityEditHistory};
  try{
-  const before={stem:q.stem,answer:q.answer,type:q.type,tags:[...(q.tags||[])],relation:q.relation};
-  Object.assign(q,updates);q.updatedAt=new Date().toISOString();q.revision=Number(q.revision||1)+1;
-  if(history)q.qualityEditHistory=(q.qualityEditHistory||[]).concat([{at:q.updatedAt,label,before}]).slice(-15);
-  if(label==='knowledge')api.updateConcepts?.(q);await api.save(q);api.onChange?.();note='修改已保存。关联审核结果会根据内容变化重新提示核验。';render();
- }catch(e){note='保存失败：'+e.message;detail()}finally{saving=false}
+  Object.assign(q,updates);
+  q.updatedAt=new Date().toISOString();
+  q.revision=Number(q.revision||1)+1;
+  if(history)q.qualityEditHistory=(q.qualityEditHistory||[]).concat([{at:q.updatedAt,label,before:{stem:before.stem,answer:before.answer,type:before.type,tags:before.tags,relation:before.relation}}]).slice(-15);
+  if(label==='knowledge')api.updateConcepts?.(q);
+  await api.save(q);
+  api.onChange?.();
+  note='修改已保存。内容发生变化的审核项，需要重新核验。';
+  render();
+  return true;
+ }catch(e){
+  Object.assign(q,before);
+  note='保存失败：'+(e.message||e);
+  detail();return false;
+ }finally{saving=false}
 }
 async function edit(mode){
- const q=api.getQuestions().find(x=>x.id===selected);if(!q)return;
- if(mode==='formula'){const stem=$('qrStem').value,answer=$('qrAnswerEdit').value;if(!stem.trim())return alert('题干不能为空');if(stem!==q.stem||answer!==q.answer)await saveQ(q,{stem,answer},mode,true)}
- if(mode==='answer'){const answer=$('qrAnswerEdit').value;if(answer!==q.answer)await saveQ(q,{answer},mode,true)}
+ const q=api.getQuestions().find(x=>x.id===selected);if(!q)return false;
+ if(mode==='formula'){
+  const stem=$('qrStem').value,answer=$('qrAnswerEdit').value;
+  if(!stem.trim()){note='题干不能为空，未保存。';detail();return false}
+  return stem!==q.stem||answer!==q.answer?await saveQ(q,{stem,answer},mode,true):true;
+ }
+ if(mode==='answer'){
+  const answer=$('qrAnswerEdit').value;
+  return answer!==q.answer?await saveQ(q,{answer},mode,true):true;
+ }
  if(mode==='knowledge'){
-  const tags=Array.from(new Set($('qrTags').value.split(/[;,；，、]/).map(s=>s.trim()).filter(Boolean)));
-  await saveQ(q,{tags,relation:$('qrRelation').value},mode,true);
+  const tags=Array.from(new Set($('qrTags').value.split(/[;,；，、]/).map(v=>v.trim()).filter(Boolean)));
+  if(!tags.length){note='至少需要保留一个知识点，未保存。';detail();return false}
+  if(JSON.stringify(tags)===JSON.stringify(q.tags||[])&&q.relation===$('qrRelation').value)return true;
+  return await saveQ(q,{tags,relation:$('qrRelation').value},mode,true);
  }
  if(mode==='type'){
   const type=$('qrType').value,tasks=Array.from($('qrContent').querySelectorAll('[data-task]:checked')).map(x=>x.dataset.task);
   const old={...(q.typeAudit20261011||{})};
+  if(!TYPES.includes(type)){note='无效题型，未保存。';detail();return false}
+  if(type===q.type&&JSON.stringify(tasks)===JSON.stringify(old.teacherReview?.tasks||[]))return true;
   old.teacherReview={...(old.teacherReview||{}),status:'confirmed',type,tasks,reviewedAt:new Date().toISOString()};
-  await saveQ(q,{type,typeAudit20261011:old},mode,true);
+  return await saveQ(q,{type,typeAudit20261011:old},mode,true);
  }
+ return false;
 }
 async function decide(status, noteOverride){
  if(saving||dim==='overview')return;
@@ -233,8 +257,8 @@ function init(a){
   const saveApprove=e.target.closest('[data-edit-and-approve]');
   if(saveApprove){
    const rememberedNote=$('qrNote')?.value||'';
-   await edit(saveApprove.dataset.editAndApprove);
-   await decide('approved',rememberedNote);
+   const saved=await edit(saveApprove.dataset.editAndApprove);
+   if(saved)await decide('approved',rememberedNote);
    return;
   }
   const ed=e.target.closest('[data-edit]');if(ed){await edit(ed.dataset.edit);return}
