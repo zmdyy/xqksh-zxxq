@@ -161,3 +161,12 @@
  .quality-review-dialog .qr-head p{display:none}
  .quality-review-dialog .qr-tab{min-width:105px}
 }
+
+/* 默认让编辑区略大；需要时一键扩展至70%。 */
+@media(min-width:741px){
+ .quality-review-dialog .qr-review-layout{grid-template-columns:minmax(0,45%) minmax(0,55%)}
+ .quality-review-dialog .qr-grid.edit-focus .qr-review-layout{grid-template-columns:minmax(0,30%) minmax(0,70%)}
+}
+.qr-focus-toggle{min-height:38px;white-space:nowrap;padding:7px 12px;border-radius:8px;color:#195783;background:#f1f6fb;border:1px solid #b4cade;font-weight:600}
+.qr-focus-toggle[aria-pressed="true"]{background:#d5ebfb;border-color:#4c96c6}
+@media(max-width:740px){.qr-focus-toggle{display:none}}
