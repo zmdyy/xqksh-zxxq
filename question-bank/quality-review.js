@@ -94,35 +94,58 @@ function gallery(images,title,repair){
    '</figure>';
  }).join('')+'</div>';
 }
+
+const INSTRUCTIONS={
+ overview:'先选择需要核对的项目，再在右侧修改或确认。左侧原题仅用于对照。',
+ image:'左侧对照原图和修复候选；需要替换时点击图片下的按钮。确认无误后点击下方“本项审核通过”。',
+ formula:'直接编辑下面的题干、公式或解析。修改后点击“保存修改并确认通过”，也可以先保存、稍后再审核。',
+ answer:'在下面修正答案和解析，对照左侧原题及答案图，再保存或确认。',
+ duplicate:'逐条对照可能重复的来源题。相同文字可能对应不同题图，不能凭题干直接删除。',
+ knowledge:'在下面直接修改知识点标签（用分号分隔）和知识点关系。左侧原题始终可见。',
+ type:'选择整题的主类型，再勾选次级考法。实验题内含画图或计算，不必强制更改主类型。'
+};
+const EDITABLE=new Set(['formula','answer','knowledge','type']);
 function special(q){
- if(dim==='overview')return '<section class="qr-card"><h3>逐项审核状态</h3>'+DIMS.slice(1).map(([d,n])=>'<div class="qr-line"><b>'+n+'</b><span>'+esc(STATUS[audit(q,d).status])+'</span><button data-switch="'+d+'">进入审核</button></div>').join('')+'</section>';
- if(dim==='image')return '<section class="qr-card"><h3>图片质量与物理结构</h3><p>核对标注、上下标、刻度、电路、光路及原图忠实度；采用候选图不等于整题验收。</p>'+gallery(q.images,'题干图',true)+gallery(q.answerImages,'答案图',true)+'<button data-image-batch>批量图像对照与完整ZIP导出</button></section>';
- if(dim==='formula')return '<section class="qr-card"><h3>公式与单位</h3><p>检查计算步骤、单位、分式、上下标和符号。仅修正文本不会自动认定答案正确。</p><label>题干<textarea id="qrStem">'+esc(q.stem||'')+'</textarea></label><label>答案和解析<textarea id="qrAnswerEdit">'+esc(q.answer||'')+'</textarea></label><button data-edit="formula">保存公式与文本修订</button></section>';
- if(dim==='answer')return '<section class="qr-card"><h3>答案和解析</h3><p>核对最终答案、单位、实验结论与图片是否一致。</p><label>答案<textarea id="qrAnswerEdit">'+esc(q.answer||'')+'</textarea></label>'+gallery(q.answerImages,'答案图',false)+'<button data-edit="answer">保存答案修订</button></section>';
- if(dim==='knowledge')return '<section class="qr-card"><h3>知识点及关系</h3><p>支持多标签，交叉应用与并列小问应区分。</p><label>知识点（分号隔开）<textarea id="qrTags">'+esc((q.tags||[]).join('；'))+'</textarea></label><label>知识点关系<select id="qrRelation">'+Object.entries({pending:'待审核',single:'单知识点',cross:'真正交叉应用',parallel:'并列小问',options:'选项辨析'}).map(([k,v])=>'<option value="'+k+'"'+(q.relation===k?' selected':'')+'>'+v+'</option>').join('')+'</select></label><button data-edit="knowledge">保存知识点</button></section>';
+ if(dim==='overview')return '<section class="qr-card qr-overview-actions"><h3>请选择要审核的项目</h3>'+
+  DIMS.slice(1).map(([d,n])=>'<button type="button" class="qr-task-row" data-switch="'+d+'"><b>'+n+'</b><span>'+esc(STATUS[audit(q,d).status]||'待审核')+'</span><span class="qr-task-arrow">开始审核 →</span></button>').join('')+'</section>';
+ if(dim==='image')return '<div class="qr-card"><h3>图片处理</h3><p>原图、增强候选和答案图在左侧并排显示；点击图片可放大。替换修复候选后，仍需单独确认图片质量审核。</p><button type="button" data-image-batch>高级批量图像对照与ZIP导出</button></div>';
+ if(dim==='formula')return '<section class="qr-card qr-edit-fields"><label for="qrStem">题干与公式<textarea id="qrStem">'+esc(q.stem||'')+'</textarea></label><label for="qrAnswerEdit">答案、公式和计算过程<textarea id="qrAnswerEdit">'+esc(q.answer||'')+'</textarea></label></section>';
+ if(dim==='answer')return '<section class="qr-card qr-edit-fields"><label for="qrAnswerEdit">答案和解析<textarea id="qrAnswerEdit">'+esc(q.answer||'')+'</textarea></label></section>';
+ if(dim==='knowledge')return '<section class="qr-card qr-edit-fields"><label for="qrTags">知识点标签（分号分隔）<textarea id="qrTags">'+esc((q.tags||[]).join('；'))+'</textarea></label><label for="qrRelation">知识点关系<select id="qrRelation">'+Object.entries({pending:'待审核',single:'单知识点',cross:'真正交叉应用',parallel:'并列小问',options:'选项辨析'}).map(([k,v])=>'<option value="'+k+'"'+(q.relation===k?' selected':'')+'>'+v+'</option>').join('')+'</select></label></section>';
  if(dim==='type'){
   const t=q.typeAudit20261011||{},old=t.teacherReview||{};
-  return '<section class="qr-card"><h3>主类型与次级考法</h3><p>原类型：'+esc(t.oldType||q.type)+' · 建议：'+esc(t.proposedType||'无')+'</p><label>主类型<select id="qrType">'+TYPES.map(s=>'<option'+(s===(old.type||q.type)?' selected':'')+'>'+s+'</option>').join('')+'</select></label><div class="qr-tasks">'+TASKS.map(s=>'<label><input type="checkbox" data-task="'+esc(s)+'"'+((old.tasks||q.qualityReviewV1?.type?.tasks||[]).includes(s)?' checked':'')+'>'+s+'</label>').join('')+'</div><button data-edit="type">保存题型</button></section>';
+  return '<section class="qr-card qr-edit-fields"><p>原类型：'+esc(t.oldType||q.type)+'；系统建议：'+esc(t.proposedType||'无')+'</p><label for="qrType">主类型<select id="qrType">'+TYPES.map(v=>'<option'+(v===(old.type||q.type)?' selected':'')+'>'+v+'</option>').join('')+'</select></label><strong>次级考法（可多选）</strong><div class="qr-tasks">'+TASKS.map(v=>'<label><input type="checkbox" data-task="'+esc(v)+'"'+((old.tasks||q.qualityReviewV1?.type?.tasks||[]).includes(v)?' checked':'')+'>'+esc(v)+'</label>').join('')+'</div></section>';
  }
  if(dim==='duplicate'){
   const peers=dupMap.get(q.id)||[];
-  return '<section class="qr-card"><h3>重复题与变式对比</h3><p>仅相同规范化题干初筛，图片不同的题不得直接判定重复；不会自动删除。</p>'+
-  (peers.length?peers.map(p=>'<div class="qr-peer"><b>'+esc(p.id)+' · '+esc(p.source||'')+' 第'+esc(p.sourceNo||'?')+'题</b><p>'+esc((p.stem||'').slice(0,170))+'</p><span>配图 '+(p.images||[]).length+' 幅</span><button data-peer="'+esc(p.id)+'">查看该题</button></div>').join(''):'<p>尚未识别到题干完全相同的记录。</p>')+'</section>';
+  return '<section class="qr-card"><h3>候选重复题</h3><p>只有规范化题干相同才会进入自动候选。请检查不同图片、数值和考查目标。</p>'+
+  (peers.length?peers.map(p=>'<div class="qr-peer"><b>'+esc(p.id)+' · '+esc(p.source||'')+' 第'+esc(p.sourceNo||'?')+'题</b><p>'+esc((p.stem||'').slice(0,140))+'</p><span>配图 '+(p.images||[]).length+' 幅</span><button type="button" data-peer="'+esc(p.id)+'">查看关联题</button></div>').join(''):'<p>暂未发现完全相同的题干。</p>')+'</section>';
  }
  return '';
 }
 function detail(){
  const q=api.getQuestions().find(x=>x.id===selected),box=$('qrContent');
- if(!q){box.innerHTML='<p class="qr-empty">此筛选下没有题目。可切换“全部题目”，或导入最新修订题库。</p>';return}
+ if(!q){box.innerHTML='<p class="qr-empty">此筛选下没有题目。可切换“全部题目”或导入最新修订题库。</p>';return}
  const a=dim==='overview'?null:audit(q,dim),flag=hints(q,dim);
- box.innerHTML='<div class="qr-meta">'+esc(q.id)+' · '+esc(q.source||'')+' · 第'+esc(q.sourceNo||'?')+'题 · '+esc(q.type)+'</div>'+
-  '<div class="qr-flags">'+(flag.length?flag.map(s=>'<span>'+esc(s)+'</span>').join(''):'<span class="neutral">当前分类无自动风险提示，仍可人工抽查</span>')+'</div>'+
-  '<h3>原题</h3><div class="qr-stem">'+esc(q.stem||'')+'</div>'+
-  (dim==='image'?'':gallery(q.images,'题干图',false))+
-  '<details class="qr-answer"><summary>展开答案及答案图</summary><pre>'+esc(q.answer||'未提供文字答案')+'</pre>'+gallery(q.answerImages,'答案图',false)+'</details>'+
-  special(q)+
-  (dim==='overview'?'':'<section class="qr-card qr-conclusion"><h3>本项审核结论</h3><label>审核备注<textarea id="qrNote" placeholder="记录存在的问题或通过依据">'+esc(a.note||'')+'</textarea></label><p>当前：'+esc(STATUS[a.status]||'待审核')+'</p><div class="qr-actions"><button class="primary" data-accept="approved">确认通过</button><button data-accept="repair">需要修复</button><button data-accept="discuss">待讨论</button><button data-accept="pending">撤销结论</button></div></section>')+
-  '<div class="qr-footer-actions"><button data-open-original>打开原题完整编辑器</button><span id="qrMessage">'+esc(note)+'</span></div>';
+ const riskButtons=flag.length?flag.map(t=>{
+  const d=t.includes('知识点')?'knowledge':t.includes('公式')||t.includes('符号')?'formula':t.includes('重复')?'duplicate':t.includes('图片')||t.includes('题图')?'image':t.includes('答案')?'answer':t.includes('题型')?'type':dim;
+  return '<button type="button" class="qr-issue" data-switch="'+d+'" title="点击进入对应审核">'+esc(t)+' ↗</button>';
+ }).join(''):'<span class="qr-neutral">此类暂无自动风险提示，仍可人工抽查</span>';
+ const evidence='<div class="qr-evidence"><div class="qr-meta">'+esc(q.id)+' · '+esc(q.source||'')+' · 第'+esc(q.sourceNo||'?')+'题 · '+esc(q.type)+'</div>'+
+  '<div class="qr-flags">'+riskButtons+'</div><h3>原题（对照区）</h3><div class="qr-stem">'+esc(q.stem||'')+'</div>'+
+  gallery(q.images,'题干图',dim==='image')+
+  '<details class="qr-answer"><summary>展开原答案与答案图</summary><pre>'+esc(q.answer||'尚无文字答案')+'</pre>'+gallery(q.answerImages,'答案图',dim==='image')+'</details></div>';
+ const title=Object.fromEntries(DIMS)[dim]||'题库质量审核';
+ const tools='<div class="qr-side"><div class="qr-side-title"><b>'+esc(title)+' · 操作区</b><p>'+esc(INSTRUCTIONS[dim])+'</p></div>'+
+  '<div class="qr-side-scroll">'+special(q)+
+  (dim==='overview'?'':'<label class="qr-note-label" for="qrNote">本项审核备注<textarea id="qrNote" rows="3" placeholder="可记录物理错误、修订理由或验收依据">'+esc(a.note||'')+'</textarea></label>')+
+  '</div><div class="qr-side-bottom">'+(dim==='overview'?'<p>请点击上方任一项目，开始实际修改或复核。</p>':
+  (EDITABLE.has(dim)?'<button type="button" class="qr-save-edit" data-edit="'+dim+'">保存修改</button><button type="button" class="primary qr-save-and-pass" data-edit-and-approve="'+dim+'">保存修改并确认通过</button>':
+  '<button type="button" class="primary" data-accept="approved">确认本项通过</button>')+
+  '<div class="qr-other-actions"><button type="button" data-accept="repair">标记需修复</button><button type="button" data-accept="discuss">待讨论</button><button type="button" data-accept="pending">撤销结论</button></div>'+
+  '<p class="qr-current-status">当前：'+esc(STATUS[a.status]||'待审核')+'</p>')+
+  '<div class="qr-side-link"><button type="button" data-open-original>打开原题完整编辑器</button><span id="qrMessage">'+esc(note)+'</span></div></div></div>';
+ box.innerHTML='<div class="qr-review-layout">'+evidence+tools+'</div>';
 }
 function render(){
  if(!api)return;
@@ -165,13 +188,13 @@ async function edit(mode){
   await saveQ(q,{type,typeAudit20261011:old},mode,true);
  }
 }
-async function decide(status){
+async function decide(status, noteOverride){
  if(saving||dim==='overview')return;
  const q=api.getQuestions().find(x=>x.id===selected);if(!q)return;
  if(status==='approved'&&dim==='answer'&&!String(q.answer||'').trim()&&!(q.answerImages||[]).length){note='答案缺失，请补充后再通过。';detail();return}
  if(status==='approved'&&dim==='image'&&/如图|图甲|图乙|下图|图示/.test(q.stem||'')&&!(q.images||[]).length){note='题目引用了图片但无题图，请先补齐。';detail();return}
  const saved=dim,id=q.id,review={...(q.qualityReviewV1||{})};
- review[saved]={...(review[saved]||{}),status,note:$('qrNote').value.trim(),signature:signature(q,saved),reviewedAt:new Date().toISOString()};
+ review[saved]={...(review[saved]||{}),status,note:(noteOverride==null?$('qrNote').value.trim():noteOverride),signature:signature(q,saved),reviewedAt:new Date().toISOString()};
  q.qualityReviewV1=review;
  if(saved==='type'){q.typeAudit20261011=q.typeAudit20261011||{};q.typeAudit20261011.teacherReview={...(q.typeAudit20261011.teacherReview||{}),status:status==='approved'?'confirmed':status,type:q.type,note:review[saved].note,reviewedAt:review[saved].reviewedAt}}
  try{await api.save(q);api.onChange?.();note='已保存'+STATUS[status]+'，未改变整题物理正确性的审核状态。';if(status==='approved'&&scope!=='all')selected=queue.find(x=>x.id!==id)?.id||id;render()}catch(e){note='保存失败：'+e.message;detail()}
@@ -207,6 +230,13 @@ function init(a){
   const im=e.target.closest('[data-image-action]');if(im){await root.PhysicsImageRepair?.actFor?.(selected,im.dataset.side,Number(im.dataset.index),im.dataset.imageAction);return}
   if(e.target.closest('[data-image-batch]')){$('repairDialog')?.showModal();root.PhysicsImageRepair?.refresh?.();return}
   if(e.target.closest('[data-open-original]')){const id=selected;$('qualityReviewDialog').close();api.openEditor?.(id);return}
+  const saveApprove=e.target.closest('[data-edit-and-approve]');
+  if(saveApprove){
+   const rememberedNote=$('qrNote')?.value||'';
+   await edit(saveApprove.dataset.editAndApprove);
+   await decide('approved',rememberedNote);
+   return;
+  }
   const ed=e.target.closest('[data-edit]');if(ed){await edit(ed.dataset.edit);return}
   const dec=e.target.closest('[data-accept]');if(dec){await decide(dec.dataset.accept);return}
  });
