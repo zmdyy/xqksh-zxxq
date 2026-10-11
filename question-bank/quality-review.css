@@ -229,3 +229,13 @@
  .qr-duplicate-controls{grid-template-columns:1fr}
  .quality-review-dialog .qr-duplicate-workspace .qr-duplicate-mode{grid-template-columns:1fr}
 }
+
+/* 同一异常类别只占一个提示容器，内部位置清单可逐处定位。 */
+.qr-diagnostics-group{border:1px solid #e9bc84;background:#fff2df;border-radius:10px;padding:10px 12px;margin-bottom:12px;display:block}
+.qr-diagnostics-group>strong{font-size:15px;color:#874913;display:block;margin-bottom:4px}
+.qr-diagnostic-summary{color:#685746;font-size:12px;margin-bottom:8px}
+.qr-diagnostic-positions{display:flex;flex-direction:column;gap:5px;max-height:245px;overflow:auto}
+.qr-diagnostic-positions .qr-diagnostic{background:rgba(255,255,255,.82);padding:7px 9px;border:1px solid #efd8b6;font-size:12px}
+.qr-diagnostic-positions .qr-diagnostic b{font-size:12px;font-weight:600}
+.qr-diagnostic-positions .qr-diagnostic small{font-size:11px;color:#6a584b}
+.qr-diagnostic-positions .qr-diagnostic em{font-size:11px}
