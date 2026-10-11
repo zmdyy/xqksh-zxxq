@@ -3,7 +3,7 @@
 'use strict';
 const $=id=>document.getElementById(id),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const MODES=[['overview','待办总览'],['image','图片'],['formula','公式与单位'],['answer','答案'],['duplicate','重复题'],['knowledge','知识点'],['type','题型']];
-const TYPES=['选择题','填空题','作图题','实验题','计算题','综合题','综合能力题','其他'];
+const TYPES=['选择题','填空题','作图题','实验题','计算题','综合题','其他'];
 const TASKS=['选项判断','填空','作图/连线','实验探究','计算','数据或图像处理','综合情境'];
 const STATUS={pending:'待核查',repair:'待修复',dismissed:'疑点已排除',modified:'已修改待复核',awaitingAcceptance:'修复待验收',stale:'内容改变待核验',approved:'已核查',discuss:'待讨论'};
 let api,mode='overview',scope='risks',query='',id='',peerId='',queue=[],diag=new Map(),dupes=new Map(),drawer=false,selectedIssue='',message='',saving=false;
@@ -94,8 +94,15 @@ function gallery(images,title,editable){
  }).join('')+'</div>';
 }
 function issueTags(q){
- const items=issues(q,'overview');
- return items.length?'<div class="qr-flags">'+items.map(i=>'<button type="button" data-issue-id="'+esc(i.id)+'" data-switch="'+esc(i.dim)+'" class="qr-issue">'+esc(i.type)+' ↗</button>').join('')+'</div>':'';
+ const all=issues(q,'overview'),groups=new Map();
+ for(const issue of all){
+  const key=issue.dim,group=groups.get(key)||{first:issue,count:0};
+  group.count++;groups.set(key,group);
+ }
+ const names={formula:'公式与符号异常',image:'图片异常',answer:'答案异常',duplicate:'疑似重复题',knowledge:'知识点匹配',type:'题型需复核'};
+ return groups.size?'<div class="qr-flags">'+Array.from(groups,([key,g])=>
+ '<button type="button" data-issue-id="'+esc(g.first.id)+'" data-switch="'+esc(key)+'" class="qr-issue">'+
+ esc(names[key]||g.first.type)+(g.count>1?' · '+g.count+'处':'')+' ↗</button>').join('')+'</div>':'';
 }
 function original(q,name,withRepair){
  const i=issues(q,'overview');
@@ -108,10 +115,14 @@ function original(q,name,withRepair){
 }
 function diagnosticPanel(q){
  const items=issues(q,mode);
- return items.length?'<section class="qr-diagnostics"><strong>疑点与定位依据</strong>'+items.map(i=>
- '<button type="button" class="qr-diagnostic '+(selectedIssue===i.id?'active':'')+'" data-issue-select="'+esc(i.id)+'"><b>'+esc(i.type)+'</b><span>'+esc(i.location)+'</span><small>'+esc(i.evidence)+'</small>'+
- (i.precision==='unlocated'?'<em>仅规则怀疑，尚未定位</em>':'<em>已定位，点击高亮对应位置</em>')+'</button>').join('')+'</section>':
- '<p class="qr-no-issue">本项暂无规则检出的异常。这仅代表自动规则覆盖范围，不能证明所有物理内容正确。</p>';
+ if(!items.length)return '<p class="qr-no-issue">规则未发现此类异常；不代表物理正确性已确认。</p>';
+ const types=Array.from(new Set(items.map(x=>x.type))).join('、');
+ return '<section class="qr-diagnostics qr-diagnostics-group"><strong>'+esc(types)+(items.length>1?'（'+items.length+'处）':'')+'</strong>'+
+ '<div class="qr-diagnostic-summary">以下是同一审核项目的全部异常位置；点击对应位置查看高亮，不需要分别浏览多个大提示框。</div>'+
+ '<div class="qr-diagnostic-positions">'+items.map((i,n)=>
+ '<button type="button" class="qr-diagnostic '+(selectedIssue===i.id?'active':'')+'" data-issue-select="'+esc(i.id)+'">'+
+ '<b>位置 '+(n+1)+'：'+esc(i.location)+'</b><small>'+esc(i.evidence)+'</small>'+
+ (i.precision==='unlocated'?'<em>仅规则怀疑，尚未定位</em>':'<em>点击定位</em>')+'</button>').join('')+'</div></section>';
 }
 function special(q){
  if(mode==='overview')return '<div class="qr-overview-actions">'+MODES.slice(1).map(([d,title])=>
