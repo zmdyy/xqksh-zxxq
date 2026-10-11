@@ -4,6 +4,21 @@
 const now=()=>new Date().toISOString();
 function plain(q){return [q.stem||'',q.answer||'',q.type||'',JSON.stringify(q.tags||[]),q.relation||''].join('\u001d')}
 function mediaFingerprint(q){return ['images','answerImages'].map(k=>(q[k]||[]).map(i=>i.contentHash?'hash:'+i.contentHash:(i.ref?'unverified':'unverified')).join(';')).join('|')}
+function decodedMediaEqual(a,b){
+ for(const side of ['images','answerImages']){
+  const x=a[side]||[],y=b[side]||[];if(x.length!==y.length)return false;
+  for(let i=0;i<x.length;i++){
+   const ax=x[i],by=y[i];
+   if(ax.contentHash&&by.contentHash&&ax.contentHash!==by.contentHash)return false;
+   if(ax.data&&by.data&&ax.data!==by.data)return false;
+   if((ax.repair?.status||'')!==(by.repair?.status||''))return false;
+   if((ax.repair?.candidateData||'')!==(by.repair?.candidateData||'')&&
+      (ax.repair?.candidateData||by.repair?.candidateData))return false;
+  }
+ }
+ return true;
+}
+
 function isNewer(ver,prior){
  const a=String(ver||'').match(/20\d{2}[-_]?(\d{2})[-_]?(\d{2})/),b=String(prior||'').match(/20\d{2}[-_]?(\d{2})[-_]?(\d{2})/);
  if(!a||!b)return true;
@@ -24,6 +39,10 @@ function preserve(old,incoming,changed){
  else if(old.review==='approved')q.review='approved';
  if(!changed)q.review=old.review||q.review;
  if(old.parts?.length&&!q.parts?.length)q.parts=old.parts;
+ for(const side of ['images','answerImages']){
+   if(!(q[side]||[]).length&&(old[side]||[]).length)q[side]=old[side];
+   else (q[side]||[]).forEach((im,i)=>{if(old[side]?.[i]?.repair?.status==='approved'&&!im.repair?.status)q[side][i]=old[side][i]});
+ }
  if(old.difficulty&&!q.difficulty)q.difficulty=old.difficulty;
  q.sourceRefs=Array.from(new Map([...(incoming.sourceRefs||[]),...(old.sourceRefs||[])].map(x=>[(x.file||'')+'#'+(x.no||''),x])).values());
  q.qualityBaseVersion=incoming.qualityBaseVersion||old.qualityBaseVersion||'';
@@ -48,7 +67,7 @@ function compare(current,payload){
   if(!next?.id||!next.stem)continue;
   const old=existing.get(next.id);
   if(!old){added.push(next);continue}
-  const changed=plain(old)!==plain(next)||mediaFingerprint(old)!==mediaFingerprint(next)||(Number(next.revision||1)>Number(old.revision||1)&&Array.isArray(next.qualityFixes)&&next.qualityFixes.length>0);
+  const changed=plain(old)!==plain(next)||mediaFingerprint(old)!==mediaFingerprint(next)||Number(next.revision||1)>Number(old.revision||1)||Boolean(next.qualityFixes?.length);
   if(!changed){ // no substantive changes; add only new metadata, preserving human review
    continue;
   }
@@ -115,7 +134,7 @@ async function update(file,options){
  await decode(zip,applyList);
  // 修改是否仅为题图，在载入后再作正式比较，防止误报
  const previous=new Map(options.getQuestions().map(q=>[q.id,q]));
- records.updates=records.updates.map(u=>({...u,next:preserve(u.previous,u.next,true)}));
+ records.updates=records.updates.filter(u=>plain(u.previous)!==plain(u.next)||!decodedMediaEqual(u.previous,u.next)).map(u=>({...u,next:preserve(u.previous,u.next,true)}));
  const applied=await transactionApply(options.db,records,version,base);
  const merged=new Map(options.getQuestions().map(q=>[q.id,q]));
  for(const q of records.added)merged.set(q.id,q);
