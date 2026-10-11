@@ -83,6 +83,15 @@ function mergeExisting(target,source){
  if((!target.relation||target.relation==='pending')&&source.relation&&source.relation!=='pending')target.relation=source.relation;
  if(!target.curriculum2022&&source.curriculum2022)target.curriculum2022=source.curriculum2022;
  if(!target.knowledgeReview&&source.knowledgeReview)target.knowledgeReview=source.knowledgeReview;
+ if(source.typeAudit20261011){
+   if(!target.typeAudit20261011) target.typeAudit20261011={...source.typeAudit20261011};
+   else {
+     // 批量导入复核标记时保护教师已确认的题型和专项记录。
+     const manual=target.typeAudit20261011.teacherReview;
+     target.typeAudit20261011={...source.typeAudit20261011,...target.typeAudit20261011};
+     if(manual)target.typeAudit20261011.teacherReview=manual;
+   }
+ }
  if(!target.concept_ids?.length&&source.concept_ids?.length)target.concept_ids=source.concept_ids.slice();
  target.warnings=Array.from(new Set([...(target.warnings||[]),...(source.warnings||[])]));
  return target;
