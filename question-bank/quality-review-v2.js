@@ -134,8 +134,8 @@ function rendered(){
   const choices=(dupes.get(q.id)||[]).map(t=>'<option value="'+esc(t.id)+'"'+(t.id===peerId?' selected':'')+'>'+esc(t.id)+' · '+esc(t.sourceNo||'')+'题</option>').join('');
   left='<div class="qr-pair-header"><b>题目A（当前题）</b></div>'+left;
   const right=peer?'<div class="qr-pair-header"><b>题目B（疑似重复）</b><select id="qrPeerPicker" aria-label="选择对照题">'+choices+'</select></div>'+original(peer,'题目B · '+peer.id,false):'<div class="qr-empty">暂无疑似重复题</div>';
-  host.innerHTML='<div class="qr-review-layout qr-duplicate-mode"><section class="qr-evidence">'+left+'</section><section class="qr-evidence qr-evidence-b">'+right+'</section></div>'+
-  '<div class="qr-duplicate-controls">'+diagnosticPanel(q)+special(q)+'<label>教师备注<textarea id="qrNote">'+esc(audit(q,mode).note||'')+'</textarea></label>'+actions(q)+'</div>';
+  host.innerHTML='<div class="qr-duplicate-workspace"><div class="qr-review-layout qr-duplicate-mode"><section class="qr-evidence">'+left+'</section><section class="qr-evidence qr-evidence-b">'+right+'</section></div>'+
+  '<div class="qr-duplicate-controls">'+diagnosticPanel(q)+special(q)+'<label>教师备注<textarea id="qrNote">'+esc(audit(q,mode).note||'')+'</textarea></label>'+actions(q)+'</div></div>';
   return;
  }
  const side='<div class="qr-side"><div class="qr-side-title"><b>'+esc(Object.fromEntries(MODES)[mode])+'</b></div>'+
@@ -210,7 +210,7 @@ async function save(){
   const tasks=Array.from($('qrContent').querySelectorAll('[data-task]:checked')).map(e=>e.dataset.task);
   changes.typeAudit20261011={...(q.typeAudit20261011||{}),teacherReview:{...(q.typeAudit20261011?.teacherReview||{}),status:'confirmed',type:type||q.type,tasks,reviewedAt:new Date().toISOString()}};
  }
- if(mode==='duplicate')changes.duplicateVerdict=$('qrDuplicateVerdict')?.value||'unknown';
+ if(mode==='duplicate'){ const v=$('qrDuplicateVerdict')?.value||'unknown'; if(v!=='unknown'&&v!==q.qualityReviewV1?.duplicate?.verdict){changes.duplicateVerdict=v} }
  await saveChange(q,changes,mode);render();
 }
 async function decision(action){
