@@ -41,7 +41,7 @@ function preserve(old,incoming,changed){
  if(old.parts?.length&&!q.parts?.length)q.parts=old.parts;
  for(const side of ['images','answerImages']){
    if(!(q[side]||[]).length&&(old[side]||[]).length)q[side]=old[side];
-   else (q[side]||[]).forEach((im,i)=>{if(old[side]?.[i]?.repair?.status==='approved'&&!im.repair?.status)q[side][i]=old[side][i]});
+   else (q[side]||[]).forEach((im,i)=>{if(old[side]?.[i]?.repair?.status==='approved'&&im.repair?.status!=='approved')q[side][i]=old[side][i]});
  }
  if(old.difficulty&&!q.difficulty)q.difficulty=old.difficulty;
  q.sourceRefs=Array.from(new Map([...(incoming.sourceRefs||[]),...(old.sourceRefs||[])].map(x=>[(x.file||'')+'#'+(x.no||''),x])).values());
