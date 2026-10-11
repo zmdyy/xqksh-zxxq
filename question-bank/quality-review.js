@@ -147,7 +147,7 @@ async function saveQ(q,updates,label,history){
   const before={stem:q.stem,answer:q.answer,type:q.type,tags:[...(q.tags||[])],relation:q.relation};
   Object.assign(q,updates);q.updatedAt=new Date().toISOString();q.revision=Number(q.revision||1)+1;
   if(history)q.qualityEditHistory=(q.qualityEditHistory||[]).concat([{at:q.updatedAt,label,before}]).slice(-15);
-  api.updateConcepts?.(q);await api.save(q);api.onChange?.();note='修改已保存。关联审核结果会根据内容变化重新提示核验。';render();
+  if(label==='knowledge')api.updateConcepts?.(q);await api.save(q);api.onChange?.();note='修改已保存。关联审核结果会根据内容变化重新提示核验。';render();
  }catch(e){note='保存失败：'+e.message;detail()}finally{saving=false}
 }
 async function edit(mode){
