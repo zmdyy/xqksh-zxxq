@@ -170,3 +170,62 @@
 .qr-focus-toggle{min-height:38px;white-space:nowrap;padding:7px 12px;border-radius:8px;color:#195783;background:#f1f6fb;border:1px solid #b4cade;font-weight:600}
 .qr-focus-toggle[aria-pressed="true"]{background:#d5ebfb;border-color:#4c96c6}
 @media(max-width:740px){.qr-focus-toggle{display:none}}
+
+/* 教师三操作最终版：小字不占高，常驻两栏，答案默认连续显示。 */
+.quality-review-dialog .qr-head p,.quality-review-dialog .qr-summary,.quality-review-dialog .qr-side-title p{display:none!important}
+.quality-review-dialog .qr-head{padding:8px 16px}
+.quality-review-dialog .qr-tabs{padding:5px 10px}
+.quality-review-dialog .qr-tab{min-height:50px}
+.quality-review-dialog .qr-review-layout{grid-template-columns:minmax(0,46%) minmax(0,54%)}
+.quality-review-dialog .qr-grid.edit-focus .qr-review-layout{grid-template-columns:minmax(0,30%) minmax(0,70%)}
+.quality-review-dialog .qr-evidence .qr-stem{white-space:pre-wrap;overflow-wrap:anywhere}
+.quality-review-dialog .qr-evidence-body{padding-bottom:40px}
+.quality-review-dialog .qr-answer-text{color:#203040}
+.quality-review-dialog .qr-side-title{padding:8px 14px}
+.quality-review-dialog .qr-side-scroll{min-height:0;overflow:auto;padding:10px 16px}
+.quality-review-dialog .qr-side-scroll>label{display:block;font-size:14px;font-weight:600;margin-bottom:9px}
+.quality-review-dialog .qr-side-scroll textarea{width:100%;box-sizing:border-box;min-height:130px;max-height:370px;padding:10px 12px;resize:vertical;border:1px solid #bdcedb;border-radius:8px;font:15px/1.7 "Microsoft YaHei",sans-serif}
+.quality-review-dialog .qr-side-scroll #qrAnswerEdit{min-height:220px}
+.quality-review-dialog .qr-side-scroll input[list]{display:block;min-height:35px;width:100%;margin:7px 0}
+.quality-review-dialog .qr-side-scroll select{min-height:35px}
+.quality-review-dialog .qr-side-bottom.qr-compact-actions{padding:10px 13px;display:block;flex:0 0 auto}
+.qr-primary-actions{display:flex;align-items:stretch;gap:8px;flex-wrap:nowrap}
+.qr-primary-actions>button{flex:1 1 0;min-width:0;min-height:42px;font-size:14px;font-weight:700;white-space:nowrap;padding:8px 10px}
+.qr-primary-actions>label{min-width:144px;flex:0 1 165px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700}
+.qr-primary-actions>label select{width:100%;min-width:0;font-size:13px;min-height:42px;padding:5px 7px}
+.qr-result{display:block;min-height:18px;margin-top:5px;font-size:12px;color:#5c7288;white-space:normal}
+.qr-flags .qr-issue{border:1px solid #edc39a;background:#fff2e6;padding:6px 9px;border-radius:6px;color:#8b501f;cursor:pointer}
+.qr-highlight{background:#ffca78!important;border-bottom:2px solid #a75e17;padding:1px 2px;border-radius:3px;color:inherit}
+.qr-diagnostics{display:grid;gap:8px;margin:0 0 12px}
+.qr-diagnostics>strong{font-size:14px}
+.qr-diagnostic{text-align:left;display:grid;gap:3px;background:#fff8ee;border:1px solid #edcda9;border-radius:8px;padding:10px;cursor:pointer;color:#415569}
+.qr-diagnostic.active{border-color:#be702c;background:#ffedcc}
+.qr-diagnostic b{font-size:14px;color:#79400e}
+.qr-diagnostic span{font-size:12px}
+.qr-diagnostic small{font-size:12px}
+.qr-diagnostic em{font-size:12px;color:#875223;font-style:normal;font-weight:600}
+.qr-no-issue{font-size:13px;color:#536878;line-height:1.6;border:1px solid #dae5eb;border-radius:8px;padding:9px 12px;margin:0 0 12px}
+.qr-overview-actions .qr-task-row{min-height:47px}
+.qr-duplicate-workspace{display:flex;flex-direction:column;height:100%;min-height:0;overflow:hidden}
+.quality-review-dialog .qr-duplicate-workspace .qr-duplicate-mode{flex:1 1 auto;min-height:0;height:auto;grid-template-columns:minmax(0,50%) minmax(0,50%)}
+.qr-duplicate-mode .qr-evidence{min-height:0;overflow:auto;padding-top:5px}
+.qr-pair-header{position:sticky;top:0;background:#eff7fd;border:1px solid #d0e1ee;padding:9px 13px;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.qr-pair-header select{max-width:260px;min-height:32px}
+.qr-duplicate-controls{flex:0 0 auto;border-top:1px solid #bfd1df;background:#f8fbfe;padding:8px 14px;display:grid;grid-template-columns:minmax(170px,1fr) minmax(170px,1fr);align-items:end;gap:8px}
+.qr-duplicate-controls label{font-size:13px;display:block}
+.qr-duplicate-controls textarea{min-height:45px;max-height:80px;width:100%;resize:vertical}
+.qr-duplicate-controls .qr-side-bottom{grid-column:1/-1;padding:0;box-shadow:none}
+.qr-duplicate-controls .qr-diagnostics{display:none}
+@media(max-width:1000px){
+ .quality-review-dialog .qr-review-layout{grid-template-columns:minmax(0,43%) minmax(0,57%)}
+ .qr-primary-actions>label{min-width:122px;flex:0 1 130px}
+ .qr-primary-actions>button{font-size:13px;padding:7px 5px}
+}
+@media(max-width:740px){
+ .quality-review-dialog .qr-review-layout{grid-template-columns:1fr}
+ .qr-primary-actions{flex-wrap:wrap}
+ .qr-primary-actions>button{min-width:28%}
+ .qr-primary-actions>label{flex:1 1 100%}
+ .qr-duplicate-controls{grid-template-columns:1fr}
+ .quality-review-dialog .qr-duplicate-workspace .qr-duplicate-mode{grid-template-columns:1fr}
+}
