@@ -87,7 +87,18 @@ function transactionApply(db,data,version,base){
   const qs=tx.objectStore('questions'),settings=tx.objectStore('settings');
   for(const q of data.added)qs.put(q);
   for(const u of data.updates)qs.put(u.next);
-  const checkpoint={at:now(),from:base||'',to:version,updated:data.updates.map(u=>u.previous),addedIds:data.added.map(q=>q.id)};
+  const checkpoint={at:now(),from:base||'',to:version,
+   updated:data.updates.map(u=>{
+    const old=u.previous,cur=u.next;
+    // 同图只备份文字/元数据，防止复制整套200MB题图导致本地容量耗尽。
+    const mediaChanged=!decodedMediaEqual(old,cur);
+    const fields={stem:old.stem,answer:old.answer,type:old.type,tags:old.tags,relation:old.relation,
+      revision:old.revision,updatedAt:old.updatedAt,review:old.review,qualityReviewV1:old.qualityReviewV1,
+      concept_ids:old.concept_ids,typeAudit20261011:old.typeAudit20261011};
+    if(mediaChanged){fields.images=old.images;fields.answerImages=old.answerImages}
+    return {id:old.id,fields,imageBackedUp:mediaChanged};
+   }),
+   addedIds:data.added.map(q=>q.id)};
   settings.put({id:'bankRollbackV2',value:checkpoint});
   settings.put({id:'bankVersionV2',value:version});
   settings.put({id:'bankUpdateConflictsV2',value:data.conflicts});
@@ -125,7 +136,10 @@ async function update(file,options){
  if(!bank.questions.length)throw Error('题库为空，已停止更新');
  const idSet=new Set();
  for(const q of bank.questions){if(!q.id||idSet.has(q.id))throw Error('题库包含空或重复的题目ID，已停止更新：'+q.id);idSet.add(q.id)}
- const version=String(bank.bankVersion||bank.version||bank.updatedAt||file.name).slice(0,150);
+ // bank.version=1 是JSON格式版本，不是题库批次。使用明确批次ID或文件名+内容校验码。
+ const rawInfo=[file.name,bank.questions.length,bank.exportedAt||''].join('|');
+ let fingerprint=2166136261;for(let i=0;i<rawInfo.length;i++){fingerprint^=rawInfo.charCodeAt(i);fingerprint=Math.imul(fingerprint,16777619)}
+ const version=String(bank.bankVersion||bank.buildId||(file.name+'#'+(fingerprint>>>0).toString(36))).slice(0,150);
  const base=await options.getSetting('bankVersionV2')||'';
  if(base&&!isNewer(version,base))throw Error('所选题库版本可能早于现有版本，自动取消覆盖。现有：'+base+'；导入：'+version);
  let records=compare(options.getQuestions(),bank.questions);
