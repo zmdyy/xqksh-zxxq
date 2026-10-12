@@ -1889,6 +1889,8 @@
 </div>
 
 <script src="data/knowledge/knowledge-db.js"></script>
+<script src="data/knowledge/concept-assessment-data.js?v=20261012v5"></script>
+<script src="data/knowledge/concept-assessment.js?v=20261012v5"></script>
 <script>
 // ============================================================
 //  全局数据池
@@ -7532,6 +7534,7 @@ function qkNormalizeConceptId(value) {
     if (QK_ANNOTATION_ALIAS[raw]) raw = QK_ANNOTATION_ALIAS[raw];
 
     var catalog = qkAnnotationCatalog();
+    var unified=window.PhysicsConceptAssessment?.resolve(raw);if(unified)return unified;
     var rawLower = raw.toLowerCase();
 
     // 1. 标准 concept_id：大小写容错，但不改变内部 canonical id。
@@ -7580,6 +7583,7 @@ function qkNormalizeMappingParts(mapping, qno, examId) {
                 part_id:String(p.part_id || ((qno || 'q') + '/p' + (idx+1))),
                 part_label:String(p.part_label || p.label || (mapping.parts.length === 1 ? '整题' : '子项' + (idx+1))),
                 primary_concept_id:primary,
+                assessment_ids:window.PhysicsConceptAssessment?.normalizePart(p).assessment_ids||[],
                 related_concept_ids:Array.from(new Set(related.filter(function(id){ return id !== primary; }))),
                 candidate_concept_ids:Array.from(new Set(candidates.filter(function(id){ return id !== primary; }))).slice(0,3),
                 confidence:String(p.confidence || 'unknown').toLowerCase(),
@@ -7662,7 +7666,7 @@ function qkRenderCell(questionTitle, scoreHeader, subject) {
         return '<a class="qk-main-badge link" target="_blank" rel="noopener" href="' + escapeHtml(qkKnowledgeUrl(mapping)) + '" title="'
             + escapeHtml((p.part_label || '') + ' · ' + p.primary_concept_id) + '">'
             + (parts.length > 1 ? '<span class="qk-part-label">' + escapeHtml(p.part_label || '') + '</span>' : '')
-            + escapeHtml(label) + ' ↗' + mark + '</a>';
+            + escapeHtml(label) + ' ↗' + mark + '</a>'+((p.assessment_ids||[]).length?'<span class="qk-assessment"> · '+escapeHtml(window.PhysicsConceptAssessment?.methodNames(p.assessment_ids).join('；')||'')+'</span>':'');
     }).join('');
     return '<div class="qk-badge-stack">' + html + '</div>';
 }
@@ -7949,7 +7953,7 @@ function qkBuildAiAnnotationPack() {
     return {
         schema:'physics-exam-concept-annotation-pack',
         schema_version:'1.0',
-        knowledge_db_version:(window.KNOWLEDGE_DB && window.KNOWLEDGE_DB.version) || '2.4',
+        knowledge_db_version:(window.KNOWLEDGE_DB && window.KNOWLEDGE_DB.version) || '2.5',
         exam_context:{
             exam_id:b.id,
             exam_label:b.label || '',
@@ -7961,6 +7965,7 @@ function qkBuildAiAnnotationPack() {
             '只能逐字复制 concept_catalog 中已经存在的 concept_id，禁止根据知识点中文名称自行拼接、翻译、缩写或改写 ID。例如“电阻”必须复制 elec_resistance，绝不能写成 elec_电阻；“串联电路”必须复制 elec_series_circuit，绝不能写成 elec_串联电路。',
             'question_no 必须优先原样使用 exam_context.questions 中对应的 question_no，不要自行改题号。',
             '一道题含多个小问、多个空或多个独立评分步骤时，拆成多个 parts；每个独立评分单元只选一个 primary_concept_id。',
+            '考法保存为 assessment_ids，只能复制 assessment_catalog 中现有ID；考法不替代知识点，不参与重复计分。',
             '辅助涉及的知识点放入 related_concept_ids，不参与重复计分。concept_catalog 已只保留适合考试标注的核心知识点，知识星球中的解释节点和实验/应用节点不会出现在本词表中。',
             '如果一个题号在成绩数据中只有一个整题 score_header，但试卷内需要拆成多个 parts，各 part 的 score_header 必须留空；不要把同一个整题分重复分配给多个知识点。',
             '如果成绩数据本身已有独立子题 score_header，可原样复制到对应 part.score_header。',
@@ -7972,7 +7977,7 @@ function qkBuildAiAnnotationPack() {
             schema:'physics-exam-concept-mapping',
             schema_version:'1.0',
             exam_id:b.id,
-            knowledge_db_version:(window.KNOWLEDGE_DB && window.KNOWLEDGE_DB.version) || '2.4',
+            knowledge_db_version:(window.KNOWLEDGE_DB && window.KNOWLEDGE_DB.version) || '2.5',
             questions:[{
                 question_no:'必须复制 exam_context.questions 中的 question_no',
                 parts:[{
@@ -7980,13 +7985,15 @@ function qkBuildAiAnnotationPack() {
                     part_label:'例如 第1空 / (1) / 步骤2',
                     primary_concept_id:'concept_catalog 中的 concept_id；不确定可为 null',
                     related_concept_ids:[],
+                    assessment_ids:[],
                     candidate_concept_ids:[],
                     confidence:'high | medium | low',
                     score_header:'只有该part对应独立成绩列时才复制精确score_header，否则留空'
                 }]
             }]
         },
-        concept_catalog:catalog
+        concept_catalog:catalog,
+        assessment_catalog:window.PhysicsConceptAssessment?.getCatalog().methods||[]
     };
 }
 
@@ -8108,6 +8115,8 @@ async function qkImportAiAnnotationText(text) {
             }).filter(Boolean);
             if (badCandidates.length) errors.push(target.question_no + '/' + (p.part_id || (pi+1)) + ' 存在无效 candidate_concept_ids：' + badCandidates.join(','));
 
+            var allowedMethods=new Set((window.PhysicsConceptAssessment?.getCatalog().methods||[]).map(function(m){return m.id;}));
+            (p.assessment_ids||[]).forEach(function(id){if(!allowedMethods.has(id))errors.push(target.question_no+'/'+(p.part_id||(pi+1))+' 的考法ID无效：'+id);});
             var confidence = String(p.confidence || 'unknown').toLowerCase();
             if (!['high','medium','low','unknown'].includes(confidence)) confidence = 'unknown';
             var requestedHeader = p.score_header ? String(p.score_header).trim() : '';
@@ -8121,6 +8130,7 @@ async function qkImportAiAnnotationText(text) {
                 part_id:partId,
                 part_label:String(p.part_label || p.label || (rawParts.length === 1 ? '整题' : '子项' + (pi+1))),
                 primary_concept_id:primary,
+                assessment_ids:window.PhysicsConceptAssessment?.normalizePart(p).assessment_ids||[],
                 related_concept_ids:Array.from(new Set(related.filter(function(id){ return id !== primary; }))),
                 candidate_concept_ids:Array.from(new Set(candidates.filter(function(id){ return id !== primary; }))).slice(0,3),
                 confidence:confidence,
@@ -8142,6 +8152,7 @@ async function qkImportAiAnnotationText(text) {
                 part_id:p.part_id,
                 part_label:p.part_label,
                 primary_concept_id:p.primary_concept_id,
+                assessment_ids:p.assessment_ids||[],
                 related_concept_ids:p.related_concept_ids,
                 candidate_concept_ids:p.candidate_concept_ids,
                 confidence:p.confidence,

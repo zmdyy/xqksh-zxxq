@@ -1,7 +1,7 @@
 {
-  "version": "2.4",
-  "update_date": "2026-09-29",
-  "total_count": 421,
+  "version": "2.5",
+  "update_date": "2026-10-12",
+  "total_count": 436,
   "connection_types": {
     "prerequisite": "前置关联",
     "causal": "因果推导",
@@ -3448,6 +3448,126 @@
       "width": 2,
       "strength": 4,
       "note": "发电机利用电磁感应把机械能转化为电能，是“磁生电”和“电与磁相互联系”的典型装置。"
+    },
+    {
+      "from": "energy_solar_energy",
+      "to": "micro_universe_structure",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 2
+    },
+    {
+      "from": "mech_length_measure",
+      "to": "mech_measurement_error",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 3
+    },
+    {
+      "from": "mech_time_measure",
+      "to": "mech_measurement_error",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 3
+    },
+    {
+      "from": "mech_length_measure",
+      "to": "mech_volume_measurement",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 3
+    },
+    {
+      "from": "mech_force_elastic",
+      "to": "mech_spring_dynamometer",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 3
+    },
+    {
+      "from": "mech_force_concept",
+      "to": "mech_force_interaction",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 3
+    },
+    {
+      "from": "mech_motion_reference",
+      "to": "mech_motion_relativity",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 3
+    },
+    {
+      "from": "elec_家庭电路",
+      "to": "elec_household_wiring",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 3
+    },
+    {
+      "from": "elec_安全用电",
+      "to": "elec_household_wiring",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 3
+    },
+    {
+      "from": "elec_parallel_circuit",
+      "to": "elec_household_wiring",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 3
+    },
+    {
+      "from": "elec_导体与绝缘体",
+      "to": "elec_semiconductor",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 3
+    },
+    {
+      "from": "elec_resistance",
+      "to": "elec_superconductor",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 3
+    },
+    {
+      "from": "therm_物质的构成",
+      "to": "therm_material_states",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 3
+    },
+    {
+      "from": "therm_物质的构成",
+      "to": "micro_nanometer_material",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 3
+    },
+    {
+      "from": "math_unit_conversion",
+      "to": "micro_nanometer_material",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 3
     }
   ]
 }

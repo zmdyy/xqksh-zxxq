@@ -1,7 +1,7 @@
 {
   "schema": "physics-misconception-diagnostic-bank",
   "schema_version": "0.1",
-  "knowledge_db_version": "2.4",
+  "knowledge_db_version": "2.5",
   "status": "draft_for_teacher_review",
   "updated_at": "2026-09-29",
   "group_count": 24,
