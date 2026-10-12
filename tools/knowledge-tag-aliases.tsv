@@ -182,3 +182,5 @@ I-U图像分析	elec_ohm_law,elec_resistance	I-U图像分析
 音调及其影响因素	mech_pitch	音调影响因素
 额定功率	elec_额定功率与实际功率	额定功率辨析
 验电器的原理及使用	elec_electroscope	验电器原理与使用
+物质的弹性	mech_material_elasticity		课程标准1.2.1的材料物理属性，区别于弹力
+导热性	therm_thermal_conductivity		课程标准1.2.1的材料物理属性，区别于比热容

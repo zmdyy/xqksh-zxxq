@@ -101,8 +101,9 @@ async function createDocx(options){
  }
  async function renderItem(item,num,isAnswer,width){
    const q=isAnswer?item.answer:item.stem;
-   const text=num+'. '+(q|| (isAnswer?'答案待核对':'题干缺失'));
-   let x=root.PhysicsMathContent?root.PhysicsMathContent.blocks(text).map(b=>b.type==='table'?smallTable(b.rows,width===3.0?4700:10080):paragraph(b.text,{after:100,size:21,bold:false})).join(''):paragraph(text,{after:100,size:21,bold:false});
+   const content=String(q||'').replace(/^\s*\d{1,3}(?:[．、]|\.(?!\d))\s*/,'');
+   const text=num+'. '+(content|| (isAnswer?'答案待核对':'题干缺失'));
+   let x=root.PhysicsMathContent?root.PhysicsMathContent.blocks(text).map((b,i,blocks)=>b.type==='table'?smallTable(b.rows,width===3.0?4700:10080):paragraph(b.text,{after:100,size:21,bold:false,keep:blocks[i+1]?.type==='table'})).join(''):paragraph(text,{after:100,size:21,bold:false});
    x+=await addImages(isAnswer?item.answerImages:item.images,width,width===3.0?1.95:2.65);
    return x+spacer(70);
  }

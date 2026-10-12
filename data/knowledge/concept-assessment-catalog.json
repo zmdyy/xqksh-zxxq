@@ -1,8 +1,8 @@
 {
   "schema": "concept-assessment-catalog",
   "schema_version": 1,
-  "knowledge_db_version": "2.5",
-  "version": "20261012-v1",
+  "knowledge_db_version": "2.6",
+  "version": "20261012-rebuilt-v2",
   "concepts": [
     {
       "concept_id": "mech_motion_reference",
@@ -2298,6 +2298,24 @@
       "description": "纳米是长度单位，1 nm=10⁻⁹ m。纳米尺度材料的部分性质可与宏观材料不同，应结合具体材料和应用讨论。",
       "formula": "",
       "symbol": ""
+    },
+    {
+      "concept_id": "mech_material_elasticity",
+      "name": "物质的弹性",
+      "module": "力学",
+      "chapter": "力",
+      "description": "物体受力时发生形变，撤去力后能够恢复原状，这种物理属性称为弹性。超过弹性限度可能不能完全恢复；应区分材料的弹性、弹性形变和形变产生的弹力。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_thermal_conductivity",
+      "name": "导热性",
+      "module": "热学",
+      "chapter": "内能",
+      "description": "导热性描述材料通过热传导传递热量的能力。比较材料导热性能时应控制形状尺寸、温差等条件；导热快慢不等于吸收相同热量后温度变化大小，不能与比热容混淆。",
+      "formula": "",
+      "symbol": ""
     }
   ],
   "aliases": [
@@ -3792,6 +3810,22 @@
       ],
       "task": "验电器原理与使用",
       "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "物质的弹性",
+      "concept_ids": [
+        "mech_material_elasticity"
+      ],
+      "task": "",
+      "basis": "课程标准1.2.1的材料物理属性，区别于弹力"
+    },
+    {
+      "source": "导热性",
+      "concept_ids": [
+        "therm_thermal_conductivity"
+      ],
+      "task": "",
+      "basis": "课程标准1.2.1的材料物理属性，区别于比热容"
     }
   ],
   "methods": [
@@ -5131,7 +5165,9 @@
       "elec_superconductor",
       "therm_material_states",
       "micro_universe_structure",
-      "micro_nanometer_material"
+      "micro_nanometer_material",
+      "mech_material_elasticity",
+      "therm_thermal_conductivity"
     ],
     "enabledExisting": [
       "micro_atomic_structure",
@@ -5140,6 +5176,15 @@
     "definitionRepairs": [
       "mech_float_sink_condition"
     ],
-    "source": "https://www.ictr.edu.cn/download_center/ywjy/p/1.html"
+    "source": "https://www.ictr.edu.cn/download_center/ywjy/p/1.html",
+    "additionalEvidence": {
+      "clause": "1.2.1",
+      "printedPage": 10,
+      "pdfPage": 17,
+      "concepts": [
+        "mech_material_elasticity",
+        "therm_thermal_conductivity"
+      ]
+    }
   }
 }

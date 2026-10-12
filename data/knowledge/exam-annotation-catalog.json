@@ -1,9 +1,9 @@
 {
   "schema": "physics-exam-concept-catalog",
   "schema_version": "1.1",
-  "knowledge_db_version": "2.5",
+  "knowledge_db_version": "2.6",
   "updated_at": "2026-10-12",
-  "concept_count": 255,
+  "concept_count": 257,
   "usage_rules": [
     "考试标注只能输出本词表中的 concept_id，不得自行创建新的 concept_id。",
     "本词表只包含适合用于考试主知识点标注的核心知识节点；explanatory、application、satellite 以及独立 Meta 概念归类节点均不作为AI主标注候选。",
@@ -2329,6 +2329,24 @@
       "module": "跨学科支撑",
       "chapter": "物质与材料",
       "description": "纳米是长度单位，1 nm=10⁻⁹ m。纳米尺度材料的部分性质可与宏观材料不同，应结合具体材料和应用讨论。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_material_elasticity",
+      "name": "物质的弹性",
+      "module": "力学",
+      "chapter": "力",
+      "description": "物体受力时发生形变，撤去力后能够恢复原状，这种物理属性称为弹性。超过弹性限度可能不能完全恢复；应区分材料的弹性、弹性形变和形变产生的弹力。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_thermal_conductivity",
+      "name": "导热性",
+      "module": "热学",
+      "chapter": "内能",
+      "description": "导热性描述材料通过热传导传递热量的能力。比较材料导热性能时应控制形状尺寸、温差等条件；导热快慢不等于吸收相同热量后温度变化大小，不能与比热容混淆。",
       "formula": "",
       "symbol": ""
     }

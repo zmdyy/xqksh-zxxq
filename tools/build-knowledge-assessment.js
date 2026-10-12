@@ -4,7 +4,7 @@ const fs=require('node:fs'),path=require('node:path');
 const dir=path.join(__dirname,'../data/knowledge');
 const db=JSON.parse(fs.readFileSync(path.join(dir,'知识点数据库.json'),'utf8'));
 const oldCatalog=JSON.parse(fs.readFileSync(path.join(dir,'exam-annotation-catalog.json'),'utf8'));
-const version='2.5',date='2026-10-12';
+const version='2.6',date='2026-10-12';
 const additions=[
  ['mech_measurement_error','测量误差','力学','机械运动','测量值与真实值之间的差异。误差不能完全消除，多次测量求平均值等方法可减小误差；错误操作属于错误。',['mech_length_measure','mech_time_measure']],
  ['mech_volume_measurement','体积测量','力学','质量与密度','用量筒测量液体体积，视线与凹液面最低处相平；用排液法测不溶于液体且能浸没的固体体积。',['mech_length_measure']],
@@ -16,7 +16,9 @@ const additions=[
  ['elec_superconductor','超导体','电磁学','电流与电路','某些材料在特定条件下电阻降为零，称为超导现象；超导应用需要满足材料和温度等条件。',['elec_resistance']],
  ['therm_material_states','物质的三态','热学','物态变化','固态通常有一定形状和体积，液态通常有一定体积而无固定形状，气态通常没有固定形状和体积；状态变化伴随吸热或放热。',['therm_物质的构成']],
  ['micro_universe_structure','宇宙的层次结构','跨学科支撑','物质与宇宙','地球属于太阳系，太阳系属于银河系。认识宇宙中天体及其层次关系，并区分宏观宇宙与微观物质结构。',[]],
- ['micro_nanometer_material','纳米材料','跨学科支撑','物质与材料','纳米是长度单位，1 nm=10⁻⁹ m。纳米尺度材料的部分性质可与宏观材料不同，应结合具体材料和应用讨论。',['therm_物质的构成','math_unit_conversion']]
+ ['micro_nanometer_material','纳米材料','跨学科支撑','物质与材料','纳米是长度单位，1 nm=10⁻⁹ m。纳米尺度材料的部分性质可与宏观材料不同，应结合具体材料和应用讨论。',['therm_物质的构成','math_unit_conversion']],
+ ['mech_material_elasticity','物质的弹性','力学','力','物体受力时发生形变，撤去力后能够恢复原状，这种物理属性称为弹性。超过弹性限度可能不能完全恢复；应区分材料的弹性、弹性形变和形变产生的弹力。',['therm_material_states']],
+ ['therm_thermal_conductivity','导热性','热学','内能','导热性描述材料通过热传导传递热量的能力。比较材料导热性能时应控制形状尺寸、温差等条件；导热快慢不等于吸收相同热量后温度变化大小，不能与比热容混淆。',['therm_热传递']]
 ];
 const added=[];
 for(const [id,name,module,chapter,definition,prerequisites] of additions){
@@ -43,11 +45,11 @@ const catalog={...oldCatalog,knowledge_db_version:version,updated_at:date,concep
 write('exam-annotation-catalog.json',catalog);
 for(const file of ['diagnostic-question-bank.json']){const j=JSON.parse(fs.readFileSync(path.join(dir,file)));j.knowledge_db_version=version;write(file,j);}
 const diagPath=path.join(__dirname,'../knowledge/诊断题库.js');
-if(fs.existsSync(diagPath))fs.writeFileSync(diagPath,fs.readFileSync(diagPath,'utf8').replace(/"knowledge_db_version":\s*"2\.4"/g,'"knowledge_db_version": "2.5"'));
+if(fs.existsSync(diagPath))fs.writeFileSync(diagPath,fs.readFileSync(diagPath,'utf8').replace(/"knowledge_db_version":\s*"2\.[456]"/g,'"knowledge_db_version": "'+version+'"'));
 const specs=fs.readFileSync(path.join(__dirname,'knowledge-tag-aliases.tsv'),'utf8').trim().split('\n').filter(x=>x&&!x.startsWith('#')).map(line=>{const [source,ids,task,basis]=line.split('\t');return {source,concept_ids:(ids||'').split(',').filter(Boolean),task:task||'',basis:basis||'依据概念定义与任务边界对应'};});
 const taskDefs=[['identify','概念与规则辨析'],['calculate','数值计算'],['draw','作图与连接'],['experiment','实验操作与探究'],['graph','图像与数据分析'],['estimate','估测与量级判断'],['dynamic','条件变化分析'],['measure','仪器读数与测量'],['application','情境与装置应用'],['method','科学探究方法']].map(([id,name])=>({id,name}));
 const methods=new Map(taskDefs.map(x=>[x.id,x]));
 for(const s of specs)if(s.task)methods.set('task:'+s.task,{id:'task:'+s.task,name:s.task,concept_ids:s.concept_ids});
-const out={schema:'concept-assessment-catalog',schema_version:1,knowledge_db_version:version,version:'20261012-v1',concepts,aliases:specs,methods:[...methods.values()],coverage:{added:additions.map(x=>x[0]),enabledExisting:['micro_atomic_structure','energy_efficiency'],definitionRepairs:['mech_float_sink_condition'],source:'https://www.ictr.edu.cn/download_center/ywjy/p/1.html'}};
+const out={schema:'concept-assessment-catalog',schema_version:1,knowledge_db_version:version,version:'20261012-rebuilt-v2',concepts,aliases:specs,methods:[...methods.values()],coverage:{added:additions.map(x=>x[0]),enabledExisting:['micro_atomic_structure','energy_efficiency'],definitionRepairs:['mech_float_sink_condition'],source:'https://www.ictr.edu.cn/download_center/ywjy/p/1.html',additionalEvidence:{clause:'1.2.1',printedPage:10,pdfPage:17,concepts:['mech_material_elasticity','therm_thermal_conductivity']}}};
 write('concept-assessment-catalog.json',out);fs.writeFileSync(path.join(dir,'concept-assessment-data.js'),'window.CONCEPT_ASSESSMENT_CATALOG = '+JSON.stringify(out)+';\n');
 console.log(JSON.stringify({nodes:db.data.length,concepts:concepts.length,aliases:specs.length,methods:methods.size,added}));

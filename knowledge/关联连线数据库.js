@@ -1,7 +1,7 @@
 window._CONN_DATA = {
-  "version": "2.5",
+  "version": "2.6",
   "update_date": "2026-10-12",
-  "total_count": 436,
+  "total_count": 438,
   "connection_types": {
     "prerequisite": "前置关联",
     "causal": "因果推导",
@@ -3564,6 +3564,22 @@ window._CONN_DATA = {
     {
       "from": "math_unit_conversion",
       "to": "micro_nanometer_material",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 3
+    },
+    {
+      "from": "therm_material_states",
+      "to": "mech_material_elasticity",
+      "type": "prerequisite",
+      "color": "",
+      "width": 2,
+      "strength": 3
+    },
+    {
+      "from": "therm_热传递",
+      "to": "therm_thermal_conductivity",
       "type": "prerequisite",
       "color": "",
       "width": 2,

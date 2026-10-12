@@ -15,6 +15,9 @@ assert.ok(!A.matches(q,{primary:c1.concept_id,assessment:'draw'}),'another subqu
 assert.ok(!A.matches(q,{primary:c1.concept_id,related:c2.concept_id,relation:'both'}),'parallel tasks are not a cross-concept task');
 assert.ok(M.validate('面积9cm²、重力G₁').length===0,'a symbol and unit power are not missing equations');
 assert.ok(M.validate('\\(\\frac{1}{2}\\)').length===0);
+assert.ok(M.validate('\\(25\\mathrm{℃}＝25℃\\)').length===0);
+assert.ok(!M.mathml('25\\mathrm{℃}＝25℃').includes('℃'),'Celsius exports as a native degree sign and C');
+assert.ok(M.mathml('50％').includes('%'),'full-width percent is normalized inside math');
 assert.ok(M.validate('\\(x_1_2\\)').length>0,'double subscript rejected');
 assert.ok(M.validate('\\)错误\\(').length>0,'reversed delimiters rejected');
 assert.ok(M.validate('\\(\\)').length>0,'empty math rejected');

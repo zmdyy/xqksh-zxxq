@@ -1,7 +1,7 @@
 window.KNOWLEDGE_DB = {
-  "version": "2.5",
+  "version": "2.6",
   "update_date": "2026-10-12",
-  "total_count": 336,
+  "total_count": 338,
   "modules": [
     "力学",
     "热学",
@@ -14077,6 +14077,90 @@ window.KNOWLEDGE_DB = {
       "x": -78,
       "y": 12,
       "z": 158,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 2,
+      "coverageAudit": {
+        "at": "2026-10-12",
+        "basis": "课程知识结构与题库语义覆盖复核"
+      }
+    },
+    {
+      "id": "mech_material_elasticity",
+      "name": "物质的弹性",
+      "module": "力学",
+      "chapter": "力",
+      "node_type": "core",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "物体受力时发生形变，撤去力后能够恢复原状，这种物理属性称为弹性。超过弹性限度可能不能完全恢复；应区分材料的弹性、弹性形变和形变产生的弹力。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "therm_material_states"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -66,
+      "y": -6,
+      "z": 168,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 2,
+      "coverageAudit": {
+        "at": "2026-10-12",
+        "basis": "课程知识结构与题库语义覆盖复核"
+      }
+    },
+    {
+      "id": "therm_thermal_conductivity",
+      "name": "导热性",
+      "module": "热学",
+      "chapter": "内能",
+      "node_type": "core",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "导热性描述材料通过热传导传递热量的能力。比较材料导热性能时应控制形状尺寸、温差等条件；导热快慢不等于吸收相同热量后温度变化大小，不能与比热容混淆。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "therm_热传递"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -148,
+      "y": -56,
+      "z": 114,
       "size": 8,
       "color": "",
       "brightness": 1,
