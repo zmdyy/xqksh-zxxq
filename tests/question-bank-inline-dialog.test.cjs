@@ -11,7 +11,7 @@ assert.match(index,/id="bankDetailsButton"/);
 assert.match(index,/id="bankDetailsPanel"[^>]*hidden/);
 assert.match(index,/id="studentNameDialog"/);
 assert.match(index,/id="exportStudentName"/);
-assert.match(index,/id="print-settings"|class="print-settings"/);
+assert.match(index,/id="print-settings"|class="print-settings(?: [^"]*)?"/);
 assert.doesNotMatch(index,/class="student-export-panel"/);
 assert.match(app,/await window\.StudentPracticeExport\.promptForExport\(\)/);
 function element(){

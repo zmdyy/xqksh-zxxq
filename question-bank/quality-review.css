@@ -1,4 +1,5 @@
 /* 原题库统一质量审核：教师使用，适配桌面大屏和笔记本。 */
+.quality-review-dialog:not([open]){display:none}
 .quality-review-dialog{border:1px solid #c3d4e2;border-radius:14px;padding:0;max-width:none;width:min(1550px,98vw);height:min(94vh,1060px);max-height:94vh;background:#f6f9fc;color:#23354a}
 .quality-review-dialog::backdrop{background:rgba(12,29,48,.66)}
 .qr-head{padding:14px 20px;background:#fff;border-bottom:1px solid #d8e3ed;display:flex;align-items:center;justify-content:space-between;gap:18px}

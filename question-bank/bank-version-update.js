@@ -9,8 +9,8 @@ function decodedMediaEqual(a,b){
   const x=a[side]||[],y=b[side]||[];if(x.length!==y.length)return false;
   for(let i=0;i<x.length;i++){
    const ax=x[i],by=y[i];
-   if(ax.contentHash&&by.contentHash&&ax.contentHash!==by.contentHash)return false;
-   if(ax.data&&by.data&&ax.data!==by.data)return false;
+   if(ax.data&&by.data){if(ax.data!==by.data)return false;}
+   else if(ax.contentHash&&by.contentHash&&ax.contentHash!==by.contentHash)return false;
    if((ax.repair?.status||'')!==(by.repair?.status||''))return false;
    if((ax.repair?.candidateData||'')!==(by.repair?.candidateData||'')&&
       (ax.repair?.candidateData||by.repair?.candidateData))return false;
@@ -29,6 +29,14 @@ function preserve(old,incoming,changed){
  const q={...incoming};
  // 不丢教师的历史记录、使用标记以及修复前的原图。模型修复涉及字段时不继承旧的“已通过”结论。
  q.qualityReviewV1={...(incoming.qualityReviewV1||{}),...(old.qualityReviewV1||{})};
+ for(const [dim,value] of Object.entries(incoming.qualityReviewV1||{})){
+  const prior=old.qualityReviewV1?.[dim];
+  if(prior&&!prior.signature&&value.importedContentSignature&&prior.status===value.status&&prior.reviewedAt===value.reviewedAt)
+   q.qualityReviewV1[dim]={...prior,signature:value.signature,importedContentSignature:value.importedContentSignature};
+ }
+ if(old.knowledgeMappingV1?.status==='approved'&&root.PhysicsConceptAssessment?.digest(old)===root.PhysicsConceptAssessment?.digest(incoming)){
+  q.knowledgeMappingV1=old.knowledgeMappingV1;q.concept_ids=old.concept_ids;q.assessment_ids=old.assessment_ids;
+ }
  if(incoming.qualityReviewV1?.duplicate?.status==='resolved')q.qualityReviewV1.duplicate={...incoming.qualityReviewV1.duplicate};
  q.qualityReviewEventsV2=[...(old.qualityReviewEventsV2||[])];
  for(const evt of incoming.qualityReviewEventsV2||[]){
@@ -50,6 +58,14 @@ function preserve(old,incoming,changed){
  if(old.difficulty&&!q.difficulty)q.difficulty=old.difficulty;
  q.sourceRefs=Array.from(new Map([...(incoming.sourceRefs||[]),...(old.sourceRefs||[])].map(x=>[(x.file||'')+'#'+(x.no||''),x])).values());
  q.qualityBaseVersion=incoming.qualityBaseVersion||old.qualityBaseVersion||'';
+ if(root.PhysicsConceptAssessment)root.PhysicsConceptAssessment.annotate(q);
+ if(!changed&&root.PhysicsQualityReview){
+  for(const [dim,record] of Object.entries(q.qualityReviewV1)){
+   const prior=old.qualityReviewV1?.[dim];
+   if(prior?.signature===root.PhysicsQualityReview.signature(old,dim))
+    q.qualityReviewV1[dim]={...record,signature:root.PhysicsQualityReview.signature(q,dim)};
+  }
+ }
  if(changed){
   const review={...q.qualityReviewV1};
   const isChanged={formula:old.stem!==q.stem||old.answer!==q.answer,answer:old.answer!==q.answer||mediaFingerprint({answerImages:old.answerImages})!==mediaFingerprint({answerImages:q.answerImages}),image:mediaFingerprint(old)!==mediaFingerprint(q),knowledge:JSON.stringify(old.tags||[])!==JSON.stringify(q.tags||[])||old.relation!==q.relation,type:old.type!==q.type,duplicate:old.stem!==q.stem};
@@ -71,10 +87,16 @@ function compare(current,payload){
   if(!next?.id||!next.stem)continue;
   const old=existing.get(next.id);
   if(!old){added.push(next);continue}
-  const changed=plain(old)!==plain(next)||mediaFingerprint(old)!==mediaFingerprint(next)||Number(next.revision||1)>Number(old.revision||1)||Boolean(next.qualityFixes?.length);
+  const changed=plain(old)!==plain(next)||mediaFingerprint(old)!==mediaFingerprint(next);
   if(!changed){
    // 即使题干未变，新母版中的人工审核事件、排除疑点及复核候选也需要同步。
    const merged={...old};let changedMetadata=false;
+   if(next.knowledgeMappingV1&&old.knowledgeMappingV1?.status!=='approved'&&root.PhysicsConceptAssessment?.digest(old)===next.knowledgeMappingV1.signature){
+    for(const field of ['knowledgeMappingV1','assessment_ids','concept_ids'])if(JSON.stringify(old[field])!==JSON.stringify(next[field])){merged[field]=next[field];changedMetadata=true;}
+   }
+   if(next.duplicatePairsV1){const pairs={...(old.duplicatePairsV1||{}),...next.duplicatePairsV1};if(JSON.stringify(pairs)!==JSON.stringify(old.duplicatePairsV1)){merged.duplicatePairsV1=pairs;changedMetadata=true;}}
+   for(const field of ['qualityBaseVersion','mathRecoveryV5','mathImageHistoryV5'])if(next[field]&&JSON.stringify(next[field])!==JSON.stringify(old[field])){merged[field]=next[field];changedMetadata=true;}
+   if(Number(next.revision||1)>Number(old.revision||1)){merged.revision=next.revision;merged.qualityFixes=next.qualityFixes;changedMetadata=true;}
    const inType=next.typeAudit20261011,oldType=old.typeAudit20261011;
    if(inType?.needsManualReview&&!oldType?.needsManualReview&&!oldType?.teacherReview){
     merged.typeAudit20261011={...inType,...oldType};changedMetadata=true;
@@ -90,6 +112,10 @@ function compare(current,payload){
    for(const [d,value] of Object.entries(incomingReview)){
     if(!review[d]||review[d].status==='pending'||(d==='duplicate'&&value.status==='resolved'&&review[d]?.status!=='resolved')){
       review[d]=value;changedMetadata=true;
+    }else if(!review[d].signature&&value.importedContentSignature&&review[d].status===value.status&&review[d].reviewedAt===value.reviewedAt){
+      review[d]={...review[d],signature:value.signature,importedContentSignature:value.importedContentSignature};changedMetadata=true;
+    }else if(!review[d].signature&&value.status==='awaitingAcceptance'&&value.priorDecision?.status===review[d].status&&value.priorDecision?.reviewedAt===review[d].reviewedAt){
+      review[d]=value;changedMetadata=true;
     }
    }
    if(changedMetadata){merged.qualityReviewV1=review;metadataUpdates.push({previous:old,next:merged})}
@@ -97,8 +123,11 @@ function compare(current,payload){
   }
     const newRev=Number(next.revision||1),oldRev=Number(old.revision||1);
   const isRepair=Array.isArray(next.qualityFixes)&&next.qualityFixes.length>0;
-  if((newRev>oldRev||isRepair)&&old.review!=='approved'){
-   updates.push({previous:old,next:preserve(old,next,true)});
+  const changedFields=['stem','answer','type','tags','relation'].filter(k=>JSON.stringify(old[k])!==JSON.stringify(next[k]));
+  const approvedPatchSafe=changedFields.length>0&&changedFields.every(field=>(next.qualityFixes||[]).some(f=>f.field===field&&JSON.stringify(f.before)===JSON.stringify(old[field])));
+  const verifyMediaOnly=old.review==='approved'&&plain(old)===plain(next)&&mediaFingerprint(old)!==mediaFingerprint(next);
+  if(verifyMediaOnly||((newRev>oldRev||isRepair)&&(old.review!=='approved'||approvedPatchSafe))){
+   updates.push({previous:old,next:preserve(old,next,true),incoming:next,verifyMediaOnly});
   }else{
    conflicts.push({id:old.id,oldRevision:oldRev,newRevision:newRev,reason:old.review==='approved'?'人工整题审核受保护':'新版修订版本号不足以安全覆盖'});
   }
@@ -123,7 +152,7 @@ function transactionApply(db,data,version,base){
     if(mediaChanged){fields.images=old.images;fields.answerImages=old.answerImages}
     return {id:old.id,fields,imageBackedUp:mediaChanged};
    }),
-   addedIds:data.added.map(q=>q.id),metadataPrevious:(data.metadataUpdates||[]).map(u=>({id:u.previous.id,typeAudit20261011:u.previous.typeAudit20261011}))};
+   addedIds:data.added.map(q=>q.id),metadataPrevious:(data.metadataUpdates||[]).map(u=>({id:u.previous.id,fields:{qualityReviewV1:u.previous.qualityReviewV1,qualityReviewEventsV2:u.previous.qualityReviewEventsV2,knowledgeMappingV1:u.previous.knowledgeMappingV1,concept_ids:u.previous.concept_ids,assessment_ids:u.previous.assessment_ids,duplicatePairsV1:u.previous.duplicatePairsV1,typeAudit20261011:u.previous.typeAudit20261011}}))};
   settings.put({id:'bankRollbackV2',value:checkpoint});
   settings.put({id:'bankVersionV2',value:version});
   settings.put({id:'bankUpdateConflictsV2',value:data.conflicts});
@@ -169,15 +198,18 @@ async function update(file,options){
  if(base&&!isNewer(version,base))throw Error('所选题库版本可能早于现有版本，自动取消覆盖。现有：'+base+'；导入：'+version);
  let records=compare(options.getQuestions(),bank.questions);
  // 只解压将要写入的题图，原有未修改题不再反复加载，减少大型ZIP处理内存。
- const applyList=[...records.added,...records.updates.map(u=>u.next)];
+ const applyList=[...records.added,...records.updates.map(u=>u.incoming)];
  await decode(zip,applyList);
  // 修改是否仅为题图，在载入后再作正式比较，防止误报
- const previous=new Map(options.getQuestions().map(q=>[q.id,q]));
- records.updates=records.updates.filter(u=>
-  plain(u.previous)!==plain(u.next)||!decodedMediaEqual(u.previous,u.next)||
-  (u.next.qualityReviewV1?.duplicate?.status==='resolved'&&u.previous.qualityReviewV1?.duplicate?.status!=='resolved')||
-  JSON.stringify(u.next.mergedFromIds||[])!==JSON.stringify(u.previous.mergedFromIds||[])
- ).map(u=>({...u,next:preserve(u.previous,u.next,true)}));
+ const contentUpdates=[];
+ for(const u of records.updates){
+  const changed=plain(u.previous)!==plain(u.incoming)||!decodedMediaEqual(u.previous,u.incoming);
+  if(u.verifyMediaOnly&&changed){records.conflicts.push({id:u.previous.id,reason:'人工已审核的题图内容不同，保留本机版本'});continue;}
+  const next=preserve(u.previous,u.incoming,changed);
+  if(changed)contentUpdates.push({previous:u.previous,next});
+  else if(JSON.stringify(next)!==JSON.stringify(u.previous))records.metadataUpdates.push({previous:u.previous,next});
+ }
+ records.updates=contentUpdates;
  const applied=await transactionApply(options.db,records,version,base);
  const merged=new Map(options.getQuestions().map(q=>[q.id,q]));
  for(const q of records.added)merged.set(q.id,q);

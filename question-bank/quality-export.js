@@ -1,25 +1,27 @@
-/* 单个轻量 XLSX：待修复、教师修改、已排除，只有变化元数据，无整题图像。 */
+/* 单个轻量 XLSX：待修复、教师修改、重复处理、已排除。 */
 (function(root){
 'use strict';
 const columns=[
- ['待修复',['事件ID','题目ID','题库版本','题目版本','审核项目','异常位置','异常类型','判断依据','可定位片段','教师备注','记录时间']],
+ ['待修复',['事件ID','题目ID','题库版本','题目版本','审核项目','异常位置','异常类型','判断依据','可定位片段','教师备注','记录时间','关联题ID','比较结论','保留题ID','内容校验签名','异常ID']],
  ['教师修改',['事件ID','题目ID','题库版本','题目版本','修改字段','原内容','新内容','记录时间']],
- ['已排除',['事件ID','题目ID','题库版本','题目版本','审核项目','异常位置','异常类型','排除依据/教师备注','记录时间']]
+ ['重复处理',['事件ID','题目ID','题库版本','题目版本','题目对ID','比较结论','保留题ID','签名','备注','记录时间']],
+ ['已排除',['事件ID','题目ID','题库版本','题目版本','审核项目','异常位置','异常类型','排除依据/教师备注','记录时间','关联题ID','比较结论','保留题ID','内容校验签名','异常ID']]
 ];
 const xml=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]))
  .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g,'');
 function gather(questions,ledger,baseVersion){
- const seen=new Set(ledger||[]),sheets=[[],[],[]],keys=[];
- function emit(sheet,id,values){if(seen.has(id))return;sheets[sheet].push([id,...values]);keys.push(id)}
+ const seen=new Set(ledger||[]),sheets=[[],[],[],[]],keys=[];
+ function emit(sheet,id,values){if(seen.has(id))return;seen.add(id);sheets[sheet].push([id,...values]);keys.push(id)}
  for(const q of questions||[]){
   const source=String(q.qualityBaseVersion||baseVersion||'未设置母版版本');
   const version=String(q.revision||1);
   for(const ev of q.qualityReviewEventsV2||[]){
    const id=ev.id||[q.id,ev.dim,ev.action,ev.at].join('|');
    if(ev.action==='repair'){
-    emit(0,id,[q.id,source,version,ev.dim||'',ev.location||'',ev.type||'',ev.evidence||'',ev.snippet||'',ev.note||'',ev.at||'']);
+    emit(0,id,[q.id,source,version,ev.dim||'',ev.location||'',ev.type||'',ev.evidence||'',ev.snippet||'',ev.note||'',ev.at||'',ev.peerId||'',ev.verdict||'',ev.survivorId||'',ev.signature||q.qualityReviewV1?.[ev.dim]?.signature||'',ev.issueId||'']);
+   }else if(ev.action==='resolved'){emit(2,id,[q.id,source,version,ev.pairId||'',ev.verdict||'',ev.survivorId||'',JSON.stringify(ev.signatures||{}),ev.note||'',ev.reviewedAt||ev.at||'']);
    }else if(ev.action==='dismissed'){
-    emit(2,id,[q.id,source,version,ev.dim||'',ev.location||'',ev.type||'',ev.note||ev.evidence||'',ev.at||'']);
+    emit(3,id,[q.id,source,version,ev.dim||'',ev.location||'',ev.type||'',ev.note||ev.evidence||'',ev.at||'',ev.peerId||'',ev.verdict||'',ev.survivorId||'',ev.signature||q.qualityReviewV1?.[ev.dim]?.signature||'',ev.issueId||'']);
    }
   }
   for(const edit of q.qualityEditHistory||[]){
@@ -30,7 +32,7 @@ function gather(questions,ledger,baseVersion){
     const id=[q.id,edit.at,k].join('|');
     const nv=Object.prototype.hasOwnProperty.call(changes,k)?changes[k]:q[k],ov=prev[k];
     if(JSON.stringify(nv)===JSON.stringify(ov))continue;
-    emit(1,id,[q.id,source,version,k,Array.isArray(ov)?ov.join('；'):ov||'',Array.isArray(nv)?nv.join('；'):nv??'',edit.at||'']);
+    emit(1,id,[q.id,source,version,k,ov&&typeof ov==='object'?JSON.stringify(ov):ov??'',nv&&typeof nv==='object'?JSON.stringify(nv):nv??'',edit.at||'']);
    }
   }
  }
@@ -66,7 +68,7 @@ async function create(questions,ledger,baseVersion){
  zip.file('_rels/.rels','<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>');
  zip.file('xl/workbook.xml','<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>'+
  columns.map(([name],i)=>'<sheet name="'+xml(name)+'" sheetId="'+(i+1)+'" r:id="rId'+(i+1)+'"/>').join('')+'</sheets></workbook>');
- zip.file('xl/_rels/workbook.xml.rels','<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+columns.map((_,i)=>'<Relationship Id="rId'+(i+1)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet'+(i+1)+'.xml"/>').join('')+'<Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>');
+ zip.file('xl/_rels/workbook.xml.rels','<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+columns.map((_,i)=>'<Relationship Id="rId'+(i+1)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet'+(i+1)+'.xml"/>').join('')+'<Relationship Id="rIdStyles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>');
  zip.file('xl/styles.xml','<?xml version="1.0" encoding="UTF-8"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/></font><font><b/><sz val="11"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs></styleSheet>');
  columns.forEach(([name,headers],i)=>zip.file('xl/worksheets/sheet'+(i+1)+'.xml',sheetXml(name,headers,data.sheets[i])));
  return {...data,blob:await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:5}})};

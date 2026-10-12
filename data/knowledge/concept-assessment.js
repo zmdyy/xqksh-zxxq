@@ -32,7 +32,7 @@ function annotate(q,options){
  });
  q.concept_ids=unique([...wholeIds,...parts.flatMap(p=>p.concept_ids)]);
  q.assessment_ids=unique(parts.flatMap(p=>p.assessment_ids));
- q.knowledgeMappingV1={schema:1,catalogVersion:catalog.version,knowledgeDbVersion:catalog.knowledge_db_version,signature:sig,status:unknown.length?'needsReview':'mapped',unmapped_tags:unknown,parts,source:'semantic-alias-and-context',scope:'知识归属与考法；不代表物理正确性已验收'};
+ q.knowledgeMappingV1={schema:1,catalogVersion:catalog.version,knowledgeDbVersion:catalog.knowledge_db_version,signature:sig,status:unknown.length||parts.some(p=>!p.primary_concept_id)?'needsReview':'mapped',unmapped_tags:unknown,parts,source:'semantic-alias-and-context',scope:'知识归属与考法；不代表物理正确性已验收'};
  return q;
 }
 function units(q){annotate(q);return q.knowledgeMappingV1?.parts||[];}

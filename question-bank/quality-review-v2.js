@@ -5,17 +5,18 @@ const $=id=>document.getElementById(id),esc=x=>String(x??'').replace(/[&<>"']/g,
 const MODES=[['overview','待办总览'],['image','图片'],['formula','公式与单位'],['answer','答案'],['duplicate','重复题'],['knowledge','知识点'],['type','题型']];
 const TYPES=['选择题','填空题','作图题','实验题','计算题','综合题','其他'];
 const TASKS=['选项判断','填空','作图/连线','实验探究','计算','数据或图像处理','综合情境'];
-const STATUS={pending:'待核查',repair:'待修复',dismissed:'疑点已排除',modified:'已修改待复核',awaitingAcceptance:'修复待验收',stale:'内容改变待核验',approved:'已核查',discuss:'待讨论'};
+const STATUS={pending:'待核查',repair:'待修复',dismissed:'疑点已排除',modified:'已修改待复核',awaitingAcceptance:'修复待验收',stale:'内容改变待核验',approved:'已核查',resolved:'已处理',discuss:'待讨论'};
 let api,mode='overview',scope='risks',query='',id='',peerId='',queue=[],diag=new Map(),dupes=new Map(),drawer=false,selectedIssue='',message='',saving=false;
 const D=()=>root.PhysicsQualityDiagnostics;
 const normalize=s=>D().norm(s);
 function signature(q,d){
  const imgs=a=>(a||[]).map(i=>i.contentHash||((i.data||i.ref||'').slice(0,48))+'-'+(i.data?.length||0)).join(';');
- const v={image:[q.stem,imgs(q.images),imgs(q.answerImages)].join('|'),formula:[q.stem,q.answer].join('|'),answer:[q.stem,q.answer,imgs(q.answerImages)].join('|'),duplicate:[normalize(q.stem),imgs(q.images)].join('|'),knowledge:[q.stem,JSON.stringify(q.tags||[]),q.relation].join('|'),type:[q.stem,q.type].join('|')};
+ const v={image:[q.stem,imgs(q.images),imgs(q.answerImages)].join('|'),formula:[q.stem,q.answer].join('|'),answer:[q.stem,q.answer,imgs(q.answerImages)].join('|'),duplicate:[normalize(q.stem),imgs(q.images)].join('|'),knowledge:[q.stem,JSON.stringify(q.tags||[]),q.relation,JSON.stringify(q.knowledgeMappingV1?.parts?.map(p=>[p.part_id,p.primary_concept_id,p.related_concept_ids,p.assessment_ids])||[])].join('|'),type:[q.stem,q.type].join('|')};
  let h=2166136261;for(const x of v[d]||''){h^=x.charCodeAt(0);h=Math.imul(h,16777619)}return (h>>>0).toString(36);
 }
 function audit(q,d){
  const r=q.qualityReviewV1?.[d];if(!r)return {status:'pending',issues:{}};
+ if(!r.signature&&['approved','dismissed'].includes(r.status)&&r.importedContentSignature){r.signature=r.importedContentSignature;}
  if(['approved','dismissed','modified'].includes(r.status)&&r.signature!==signature(q,d))return {...r,status:'stale'};
  const flagged=diag.get(q.id)?.filter(x=>x.dim===d)||[];
  const decisions=r.issues||{};
@@ -35,13 +36,15 @@ function buildIndexes(){
   if(!byStem.has(k))byStem.set(k,[]);
   byStem.get(k).push(q);
  }
- for(const group of byStem.values())if(group.length>1)for(const q of group)dupes.set(q.id,group.filter(x=>x.id!==q.id));
+ for(const group of byStem.values())if(group.length>1)for(const q of group){const peers=group.filter(x=>x.id!==q.id&&!pairDecision(q,x));if(peers.length)dupes.set(q.id,peers);}
  for(const q of questions)diag.set(q.id,D().scan(q,{duplicates:dupes,catalogByName:api.catalogByName}));
 }
+function pairDecision(a,b){const key=[a.id,b.id].sort().join('|');const r=a.duplicatePairsV1?.[key]||b.duplicatePairsV1?.[key];if(!r)return false;return ['different','variation','same'].includes(r.verdict)&&r.signatures?.[a.id]===signature(a,'duplicate')&&r.signatures?.[b.id]===signature(b,'duplicate');}
 function issues(q,d){const i=diag.get(q.id)||[];return d==='overview'?i:i.filter(x=>x.dim===d)}
 function filteredIssue(q,d){
  const a=audit(q,d),signatureNow=signature(q,d);
  if(a.status==='approved')return [];
+ if(a.status==='dismissed'&&a.signature===signatureNow&&!Object.keys(a.issues||{}).length)return [];
  return issues(q,d).filter(x=>!(a.issues?.[x.id]?.status==='dismissed'&&a.issues[x.id]?.signature===signatureNow));
 }
 function overall(q){
@@ -106,7 +109,7 @@ function issueTags(q){
 }
 function original(q,name,withRepair){
  const i=issues(q,'overview');
- const show=source=>D().markText(String(q[source]||''),i,source,esc);
+ const show=source=>{const text=String(q[source]||'');return i.some(x=>x.source===source&&x.precision==='exact')?D().markText(text,i,source,esc):(root.PhysicsMathContent?.html(text)||esc(text));};
  return '<div class="qr-evidence-body"><div class="qr-meta">'+esc(name||q.id)+' · '+esc(q.source||'')+' · 第'+esc(q.sourceNo||'?')+'题 · '+esc(q.type)+'</div>'+
  issueTags(q)+'<h3>原题</h3><div class="qr-stem">'+show('stem')+'</div>'+
  gallery(q.images||[],'原题图片',withRepair)+
@@ -126,12 +129,13 @@ function diagnosticPanel(q){
 }
 function special(q){
  if(mode==='overview')return '<div class="qr-overview-actions">'+MODES.slice(1).map(([d,title])=>
- '<button type="button" class="qr-task-row" data-switch="'+d+'"><b>'+title+'</b><span>'+STATUS[audit(q,d).status]||'待核查'+'</span><span>进入 →</span></button>').join('')+'</div>';
+ '<button type="button" class="qr-task-row" data-switch="'+d+'"><b>'+title+'</b><span>'+(STATUS[audit(q,d).status]||'待核查')+'</span><span>进入 →</span></button>').join('')+'</div>';
  if(mode==='formula')return '<label>题干、公式<textarea id="qrStem">'+esc(q.stem||'')+'</textarea></label><label>答案、计算过程<textarea id="qrAnswerEdit">'+esc(q.answer||'')+'</textarea></label>';
  if(mode==='answer')return '<label>答案与解析<textarea id="qrAnswerEdit">'+esc(q.answer||'')+'</textarea></label>';
  if(mode==='knowledge'){
   const concepts=Array.from(new Map(Array.from(api.catalogByName.values()).filter(v=>v?.name).map(v=>[v.name,v])).values());
-  return '<label>从知识图谱搜索<input type="text" id="qrKnowledgePick" list="qrKnowledgeOptions" placeholder="搜索或输入知识点名称"></label>'+
+  const A=root.PhysicsConceptAssessment;A?.annotate(q);const mapping=q.knowledgeMappingV1;const mappingView=mapping?'<div class="qr-mapping">'+mapping.parts.map(p=>'<p><b>'+esc(p.part_label)+'</b> · '+esc((p.concept_ids||[]).map(id=>A.getCatalog().concepts.find(c=>c.concept_id===id)?.name||id).join('；'))+'<br>考法：'+esc(A.methodNames(p.assessment_ids).join('；'))+'<br>'+esc(p.primary_concept_id?'已确定主知识点':'主辅关系待复核')+'<label>主知识点<select data-task-primary="'+esc(p.part_id)+'"><option value="">待确定</option>'+(p.concept_ids||[]).map(cid=>'<option value="'+esc(cid)+'"'+(cid===p.primary_concept_id?' selected':'')+'>'+esc(A.getCatalog().concepts.find(c=>c.concept_id===cid)?.name||cid)+'</option>').join('')+'</select></label><label>具体考法（可多选）<select multiple size="4" data-task-assessments="'+esc(p.part_id)+'">'+A.getCatalog().methods.filter(m=>!m.concept_ids||m.concept_ids.some(id=>p.concept_ids.includes(id))).map(m=>'<option value="'+esc(m.id)+'"'+(p.assessment_ids.includes(m.id)?' selected':'')+'>'+esc(m.name)+'</option>').join('')+'</select></label></p>').join('')+'</div>':'';
+  return mappingView+'<label>从知识图谱搜索<input type="text" id="qrKnowledgePick" list="qrKnowledgeOptions" placeholder="搜索或输入知识点名称"></label>'+
   '<datalist id="qrKnowledgeOptions">'+concepts.map(v=>'<option value="'+esc(v.name)+'">'+esc(v.module||'')+'</option>').join('')+'</datalist>'+
   '<button type="button" data-add-concept>＋添加知识点</button><label>已有知识点<textarea id="qrTags">'+esc((q.tags||[]).join('；'))+'</textarea></label>'+
   '<label>知识点关系<select id="qrRelation">'+Object.entries({pending:'待判断',single:'单知识点',cross:'真正交叉应用',parallel:'并列小问',options:'选项辨析'}).map(([val,text])=>
@@ -142,7 +146,7 @@ function special(q){
   return '<h4>次级考法</h4><div class="qr-tasks">'+TASKS.map(t=>'<label><input type="checkbox" data-task="'+esc(t)+'"'+(tasks.includes(t)?' checked':'')+'>'+esc(t)+'</label>').join('')+'</div>';
  }
  if(mode==='duplicate'){
-  return '<label>两题比较结论<select id="qrDuplicateVerdict">'+Object.entries({unknown:'待判断',same:'完全重复',variation:'同题变式',different:'不是重复题'}).map(([k,t])=>'<option value="'+k+'"'+(q.qualityReviewV1?.duplicate?.verdict===k?' selected':'')+'>'+t+'</option>').join('')+'</select></label>';
+  return '<label>两题比较结论<select id="qrDuplicateVerdict">'+Object.entries({unknown:'待判断',same:'完全重复',variation:'同题变式',different:'不是重复题'}).map(([k,t])=>'<option value="'+k+'"'+(q.qualityReviewV1?.duplicate?.verdict===k?' selected':'')+'>'+t+'</option>').join('')+'</select></label><label>完全重复时保留<select id="qrDuplicateKeep"><option value="current">题目A</option><option value="peer">题目B</option></select></label>';
  }
  if(mode==='image')return '<button type="button" data-image-batch>高级图片对照与整库ZIP导出</button>';
  return '';
@@ -180,7 +184,6 @@ function render(){
  if(!api)return;
  buildIndexes();tabs();
  queue=api.getQuestions().filter(include).sort((a,b)=>issueScore(b)-issueScore(a)||String(a.source||'').localeCompare(String(b.source||''),'zh-CN'));
- if(id&&mode!=='overview'&&scope==='risks'&&!queue.some(x=>x.id===id)&&api.getQuestions().some(x=>x.id===id)){scope='all';$('qrScope').value='all';queue=api.getQuestions().filter(include)}
  if(!queue.some(q=>q.id===id))id=queue[0]?.id||'';
  const pos=queue.findIndex(q=>q.id===id),page=Math.floor(Math.max(pos,0)/40),items=queue.slice(page*40,(page+1)*40);
  $('qrList').innerHTML=items.map((q,j)=>'<button data-id="'+esc(q.id)+'" class="'+(q.id===id?'active':'')+'"><b>'+(page*40+j+1)+'. '+esc(q.sourceNo||'?')+'题</b><small>'+esc(q.source||q.id)+'</small><small>'+esc((q.stem||'').slice(0,55))+'</small></button>').join('')||'<p class="qr-empty">没有符合条件的题目</p>';
@@ -210,7 +213,7 @@ async function saveChange(q,changes,kind){
   q.qualityEditHistory=[...(q.qualityEditHistory||[]),{at:now,label:kind,before,changes:changed}];
   const review={...(q.qualityReviewV1||{})};
   for(const f of fields){
-   for(const dim of ({stem:['formula','answer','duplicate','knowledge','type'],answer:['formula','answer'],type:['type'],tags:['knowledge'],relation:['knowledge'],typeAudit20261011:['type']})[f]||[]){
+   for(const dim of ({stem:['formula','answer','duplicate','knowledge','type'],answer:['formula','answer'],type:['type'],tags:['knowledge'],relation:['knowledge'],knowledgeMappingV1:['knowledge'],typeAudit20261011:['type']})[f]||[]){
     review[dim]={...(review[dim]||{}),status:'modified',signature:signature(q,dim),reviewedAt:now,note:'教师已修改，待复核'};
    }
   }
@@ -220,6 +223,7 @@ async function saveChange(q,changes,kind){
 }
 async function save(){
  const q=api.getQuestions().find(x=>x.id===id);if(!q)return;
+ if(mode==='duplicate'){await resolveDuplicate(q);render();return;}
  const changes={},type=$('qrMainType')?.value;
  if(type&&type!==q.type)changes.type=type;
  if(mode==='formula'){changes.stem=$('qrStem').value;changes.answer=$('qrAnswerEdit').value;if(!changes.stem.trim()){message='题干不能清空';rendered();return}}
@@ -228,6 +232,7 @@ async function save(){
   const tags=Array.from(new Set($('qrTags').value.split(/[；;,，、]/).map(x=>x.trim()).filter(Boolean)));
   if(!tags.length){message='知识点不能全部删除';rendered();return}
   changes.tags=tags;changes.relation=$('qrRelation').value;
+  if(root.PhysicsConceptAssessment){const A=root.PhysicsConceptAssessment,shadow={...q,tags,relation:changes.relation};A.annotate(shadow,{force:true});const mapping=JSON.parse(JSON.stringify(shadow.knowledgeMappingV1));const allowed=new Set(A.getCatalog().methods.map(m=>m.id));for(const p of mapping.parts){const pick=Array.from($('qrContent').querySelectorAll('[data-task-primary]')).find(el=>el.dataset.taskPrimary===p.part_id);const input=Array.from($('qrContent').querySelectorAll('[data-task-assessments]')).find(el=>el.dataset.taskAssessments===p.part_id);const primary=pick?.value||null,methods=input?Array.from(input.selectedOptions).map(o=>o.value):p.assessment_ids;if(methods.some(x=>!allowed.has(x))){message='考法编号无效，请使用已列出的目录编号';rendered();return;}p.primary_concept_id=primary;p.related_concept_ids=primary?p.concept_ids.filter(x=>x!==primary):[];p.candidate_concept_ids=primary?[]:p.concept_ids;p.assessment_ids=methods;p.status=primary?'confirmed':'needsReview';}mapping.status=mapping.parts.some(p=>!p.primary_concept_id)?'needsReview':'approved';mapping.signature=A.digest(shadow);changes.knowledgeMappingV1=mapping;changes.assessment_ids=Array.from(new Set(mapping.parts.flatMap(p=>p.assessment_ids)));changes.concept_ids=shadow.concept_ids;}
  }
  if(mode==='type'){
   const tasks=Array.from($('qrContent').querySelectorAll('[data-task]:checked')).map(e=>e.dataset.task);
@@ -236,9 +241,19 @@ async function save(){
  if(mode==='duplicate'){ const v=$('qrDuplicateVerdict')?.value||'unknown'; if(v!=='unknown'&&v!==q.qualityReviewV1?.duplicate?.verdict){changes.duplicateVerdict=v} }
  await saveChange(q,changes,mode);render();
 }
+async function resolveDuplicate(q){
+ const peer=(dupes.get(q.id)||[]).find(x=>x.id===peerId)||(dupes.get(q.id)||[])[0],verdict=$('qrDuplicateVerdict')?.value||'unknown';
+ if(!peer||verdict==='unknown'){message='请选择对照题和比较结论';return;}
+ const at=new Date().toISOString(),key=[q.id,peer.id].sort().join('|'),survivor=$('qrDuplicateKeep')?.value==='peer'?peer:q,archived=survivor===q?peer:q;
+ const record={pairId:key,questionIds:[q.id,peer.id],verdict,signatures:{[q.id]:signature(q,'duplicate'),[peer.id]:signature(peer,'duplicate')},survivorId:verdict==='same'?survivor.id:null,reviewedAt:at,note:$('qrNote')?.value||''};
+ const next=[q,peer].map(x=>({...x,duplicatePairsV1:{...(x.duplicatePairsV1||{}),[key]:record},qualityReviewV1:{...(x.qualityReviewV1||{}),duplicate:{status:'resolved',verdict,signature:signature(x,'duplicate'),reviewedAt:at,peerId:x===q?peer.id:q.id}},qualityReviewEventsV2:[...(x.qualityReviewEventsV2||[]),{id:key+'|'+at+'|resolved',dim:'duplicate',action:'resolved',...record}]}));
+ if(verdict==='same')next.find(x=>x.id===archived.id).archivedAsDuplicate={survivorId:survivor.id,at,reason:'教师对照确认完全重复',reversible:true};
+ try{if(api.saveMany)await api.saveMany(next);else for(const x of next)await api.save(x);for(let i=0;i<next.length;i++)Object.assign([q,peer][i],next[i]);api.onChange?.();message=verdict==='same'?'已保留'+survivor.id+'，归档'+archived.id:'这对题的比较结论已保存';}catch(e){message='保存失败：'+e.message;}
+}
 async function decision(action){
  if(saving||mode==='overview')return;
  const q=api.getQuestions().find(x=>x.id===id);if(!q)return;
+ if(mode==='duplicate'){await resolveDuplicate(q);render();return;}
  const verdict=mode==='duplicate'?$('qrDuplicateVerdict')?.value||'unknown':'';
  if(mode==='duplicate'&&verdict==='unknown'){message='请先选择两道题的比较结论';rendered();return}
  if(mode==='duplicate'&&action==='dismissed'&&verdict==='same'){message='完全重复的题不能排除疑点，请选择需修复';rendered();return}
@@ -307,5 +322,5 @@ function init(options){
  });
  $('qrExport').addEventListener('click',exportExcel);
 }
-root.PhysicsQualityReview={init,refresh:render,audit,overall,signature};
+root.PhysicsQualityReview={init,refresh:render,audit,overall,signature,pairDecision};
 })(typeof window!=='undefined'?window:globalThis);
