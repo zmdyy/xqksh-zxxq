@@ -10,8 +10,19 @@ const server=http.createServer((req,res)=>{const u=decodeURIComponent(req.url.sp
   const page=await browser.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
   const url='http://127.0.0.1:'+server.address().port+'/question-bank/';await page.goto(url);await page.waitForFunction(()=>document.querySelector('#conceptFilter').options.length>200);
   assert.equal(await page.locator('#qualityReviewDialog').isVisible(),false,'closed audit dialog must not occupy the homepage');
-  await page.evaluate(()=>new Promise(r=>{const req=indexedDB.open('PhysicsTrainingBankV1');req.onsuccess=()=>{const db=req.result,tx=db.transaction('questions','readwrite');for(const id of ['A','B'])tx.objectStore('questions').put({id,stem:'一个电路实验如图所示，比较接线方法是否正确。',answer:'根据电路接线判断',tags:['电路'],type:'实验题',images:[],answerImages:[],review:'pending',revision:1});tx.oncomplete=()=>{db.close();r()}}}));
-  await page.reload();await page.waitForSelector('.qcard');await page.click('#qualityReviewBtn');await page.locator('[data-dim="duplicate"]').click();await page.selectOption('#qrDuplicateVerdict','different');await page.locator('[data-decision="dismissed"]').click();await page.waitForFunction(()=>!document.querySelector('#qrDuplicateVerdict'));
+  await page.evaluate(()=>new Promise(r=>{const req=indexedDB.open('PhysicsTrainingBankV1');req.onsuccess=()=>{const db=req.result,tx=db.transaction('questions','readwrite');for(const id of ['A','B'])tx.objectStore('questions').put({id,stem:'一个电路实验如图所示，比较接线方法是否正确。',answer:'根据电路接线判断，F=；\nη=。',tags:['电路'],type:'实验题',images:[],answerImages:[],review:'pending',revision:1});tx.oncomplete=()=>{db.close();r()}}}));
+  await page.reload();await page.waitForSelector('.qcard');await page.click('#qualityReviewBtn');
+  const positions=page.locator('[data-issue-select]');
+  await positions.nth(0).click();assert.equal(await positions.nth(0).getAttribute('aria-pressed'),'true');
+  await positions.nth(1).focus();await page.keyboard.press('Enter');
+  assert.equal(await page.locator('[data-issue-select].active').count(),1);assert.equal(await positions.nth(1).getAttribute('aria-pressed'),'true');
+  assert.equal(await page.locator('.qr-current-issue').count(),1);assert.ok((await page.locator('.qr-selected-position').innerText()).includes('当前选中'));
+  await page.locator('[data-dim="formula"]').click();await page.fill('#qrAnswerEdit','尚未保存的教师修改');
+  await page.locator('[data-issue-select]').nth(0).click();await page.locator('[data-issue-select]').nth(1).click();
+  assert.equal(await page.locator('#qrAnswerEdit').inputValue(),'尚未保存的教师修改','selecting evidence must not discard unsaved teacher input');
+  await page.locator('[data-dim="overview"]').click();await page.locator('[data-issue-select]').last().click();
+  assert.equal(await page.locator('[data-issue-select].active').count(),1);assert.equal(await page.locator('.qr-current-issue').count(),0);assert.ok((await page.locator('.qr-selected-position').innerText()).includes('尚无精确定位'));
+  await page.locator('[data-dim="duplicate"]').click();await page.selectOption('#qrDuplicateVerdict','different');await page.locator('[data-decision="dismissed"]').click();await page.waitForFunction(()=>!document.querySelector('#qrDuplicateVerdict'));
   assert.equal(await page.locator('#qrScope').inputValue(),'risks','resolving a pair must not switch to all questions');
   await page.click('#qrClose');await page.reload();await page.waitForSelector('.qcard');await page.click('#qualityReviewBtn');await page.locator('[data-dim="duplicate"]').click();assert.equal(await page.locator('#qrDuplicateVerdict').count(),0,'resolved pair stays out of the attention queue after reload');await page.click('#qrClose');
   const updateResult=await page.evaluate(async()=>{

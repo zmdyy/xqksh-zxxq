@@ -123,9 +123,22 @@ function diagnosticPanel(q){
  return '<section class="qr-diagnostics qr-diagnostics-group"><strong>'+esc(types)+(items.length>1?'（'+items.length+'处）':'')+'</strong>'+
  '<div class="qr-diagnostic-summary">以下是同一审核项目的全部异常位置；点击对应位置查看高亮，不需要分别浏览多个大提示框。</div>'+
  '<div class="qr-diagnostic-positions">'+items.map((i,n)=>
- '<button type="button" class="qr-diagnostic '+(selectedIssue===i.id?'active':'')+'" data-issue-select="'+esc(i.id)+'">'+
+ '<button type="button" class="qr-diagnostic '+(selectedIssue===i.id?'active':'')+'" data-issue-select="'+esc(i.id)+'" aria-pressed="'+(selectedIssue===i.id?'true':'false')+'">'+
  '<b>位置 '+(n+1)+'：'+esc(i.location)+'</b><small>'+esc(i.evidence)+'</small>'+
- (i.precision==='unlocated'?'<em>仅规则怀疑，尚未定位</em>':'<em>点击定位</em>')+'</button>').join('')+'</div></section>';
+ (i.precision==='unlocated'?'<em>仅规则怀疑，尚未定位</em>':'<em>点击定位</em>')+'</button>').join('')+'</div><p class="qr-selected-position" role="status" aria-live="polite">请选择一个异常位置</p></section>';
+}
+function selectIssue(issueId,scroll=false){
+ selectedIssue=issueId||'';
+ const host=$('qrContent');
+ const buttons=Array.from(host.querySelectorAll('[data-issue-select]'));
+ const chosen=buttons.find(b=>b.dataset.issueSelect===selectedIssue);
+ for(const b of buttons){const active=b===chosen;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));}
+ const marks=Array.from(host.querySelectorAll('[data-issue]'));
+ const target=marks.find(m=>m.dataset.issue===selectedIssue);
+ for(const m of marks)m.classList.toggle('qr-current-issue',m===target);
+ const status=host.querySelector('.qr-selected-position');
+ if(status)status.textContent=chosen?'当前选中：'+chosen.querySelector('b').textContent+(target?'（左侧对应位置已突出显示）':'（尚无精确定位，请结合题目核对）'):'请选择一个异常位置';
+ if(scroll&&target)target.scrollIntoView({behavior:'smooth',block:'center'});
 }
 function special(q){
  if(mode==='overview')return '<div class="qr-overview-actions">'+MODES.slice(1).map(([d,title])=>
@@ -170,6 +183,7 @@ function rendered(){
  (mode==='overview'?'':'<label>教师备注<textarea id="qrNote" placeholder="可选：描述位置及问题">'+esc(audit(q,mode).note||'')+'</textarea></label>')+
  '</div>'+actions(q)+'</div>';
  host.innerHTML='<div class="qr-review-layout"><section class="qr-evidence">'+left+'</section>'+side+'</div>';
+ selectIssue(selectedIssue);
 }
 function actions(q){
  if(mode==='overview')return '<div class="qr-side-bottom"><p>点击右侧的审核项目开始。</p><span>当前题：'+esc(overall(q).label)+'</span></div>';
@@ -311,8 +325,7 @@ function init(options){
   const zoom=e.target.closest('[data-zoom]');if(zoom){zoom.classList.toggle('expanded');return}
   const focus=e.target.closest('[data-switch]');if(focus){focusMode(focus.dataset.switch,focus.dataset.issueId);return}
   const highlight=e.target.closest('[data-issue-select]');if(highlight){
-   selectedIssue=highlight.dataset.issueSelect;const elem=Array.from($('qrContent').querySelectorAll('[data-issue]')).find(x=>x.dataset.issue===selectedIssue);
-   if(elem)elem.scrollIntoView({behavior:'smooth',block:'center'});else message='仅规则怀疑，尚未定位';return;
+   selectIssue(highlight.dataset.issueSelect,true);return;
   }
   const image=e.target.closest('[data-image-action]');if(image){await root.PhysicsImageRepair?.actFor?.(id,image.dataset.side,Number(image.dataset.index),image.dataset.imageAction);render();return}
   if(e.target.closest('[data-image-batch]')){$('repairDialog').showModal();root.PhysicsImageRepair?.refresh?.();return}
