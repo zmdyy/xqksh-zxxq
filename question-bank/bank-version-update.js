@@ -121,6 +121,7 @@ function compare(current,payload){
    if(changedMetadata){merged.qualityReviewV1=review;metadataUpdates.push({previous:old,next:merged})}
    continue;
   }
+    if(old.teacherEditedAt){conflicts.push({id:old.id,reason:'教师网页修改受保护',previous:old,incoming:next});continue;}
     const newRev=Number(next.revision||1),oldRev=Number(old.revision||1);
   const isRepair=Array.isArray(next.qualityFixes)&&next.qualityFixes.length>0;
   const changedFields=['stem','answer','type','tags','relation'].filter(k=>JSON.stringify(old[k])!==JSON.stringify(next[k]));

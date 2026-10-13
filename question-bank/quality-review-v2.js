@@ -143,8 +143,7 @@ function selectIssue(issueId,scroll=false){
 function special(q){
  if(mode==='overview')return '<div class="qr-overview-actions">'+MODES.slice(1).map(([d,title])=>
  '<button type="button" class="qr-task-row" data-switch="'+d+'"><b>'+title+'</b><span>'+(STATUS[audit(q,d).status]||'待核查')+'</span><span>进入 →</span></button>').join('')+'</div>';
- if(mode==='formula')return '<label>题干、公式<textarea id="qrStem">'+esc(q.stem||'')+'</textarea></label><label>答案、计算过程<textarea id="qrAnswerEdit">'+esc(q.answer||'')+'</textarea></label>';
- if(mode==='answer')return '<label>答案与解析<textarea id="qrAnswerEdit">'+esc(q.answer||'')+'</textarea></label>';
+ if(mode==='formula'||mode==='answer')return '<p>题干、答案、单位和公式统一在上方“物理编辑器”修改。这里保留审核结论与教师备注。</p>';
  if(mode==='knowledge'){
   const concepts=Array.from(new Map(Array.from(api.catalogByName.values()).filter(v=>v?.name).map(v=>[v.name,v])).values());
   const A=root.PhysicsConceptAssessment;A?.annotate(q);const mapping=q.knowledgeMappingV1;const mappingView=mapping?'<div class="qr-mapping">'+mapping.parts.map(p=>'<p><b>'+esc(p.part_label)+'</b> · '+esc((p.concept_ids||[]).map(id=>A.getCatalog().concepts.find(c=>c.concept_id===id)?.name||id).join('；'))+'<br>考法：'+esc(A.methodNames(p.assessment_ids).join('；'))+'<br>'+esc(p.primary_concept_id?'已确定主知识点':'主辅关系待复核')+'<label>主知识点<select data-task-primary="'+esc(p.part_id)+'"><option value="">待确定</option>'+(p.concept_ids||[]).map(cid=>'<option value="'+esc(cid)+'"'+(cid===p.primary_concept_id?' selected':'')+'>'+esc(A.getCatalog().concepts.find(c=>c.concept_id===cid)?.name||cid)+'</option>').join('')+'</select></label><label>具体考法（可多选）<select multiple size="4" data-task-assessments="'+esc(p.part_id)+'">'+A.getCatalog().methods.filter(m=>!m.concept_ids||m.concept_ids.some(id=>p.concept_ids.includes(id))).map(m=>'<option value="'+esc(m.id)+'"'+(p.assessment_ids.includes(m.id)?' selected':'')+'>'+esc(m.name)+'</option>').join('')+'</select></label></p>').join('')+'</div>':'';
@@ -182,7 +181,7 @@ function rendered(){
  '<div class="qr-side-scroll">'+diagnosticPanel(q)+special(q)+
  (mode==='overview'?'':'<label>教师备注<textarea id="qrNote" placeholder="可选：描述位置及问题">'+esc(audit(q,mode).note||'')+'</textarea></label>')+
  '</div>'+actions(q)+'</div>';
- host.innerHTML='<div class="qr-review-layout"><section class="qr-evidence">'+left+'</section>'+side+'</div>';
+ host.innerHTML='<button type="button" data-unified-editor class="primary">打开物理编辑器 · 单位 / 公式 / 对照</button><div class="qr-review-layout"><section class="qr-evidence">'+left+'</section>'+side+'</div>';
  selectIssue(selectedIssue);
 }
 function actions(q){
@@ -240,8 +239,8 @@ async function save(){
  if(mode==='duplicate'){await resolveDuplicate(q);render();return;}
  const changes={},type=$('qrMainType')?.value;
  if(type&&type!==q.type)changes.type=type;
- if(mode==='formula'){changes.stem=$('qrStem').value;changes.answer=$('qrAnswerEdit').value;if(!changes.stem.trim()){message='题干不能清空';rendered();return}}
- if(mode==='answer')changes.answer=$('qrAnswerEdit').value;
+ if(mode==='formula'){changes.stem=q.stem;changes.answer=q.answer;if(!changes.stem.trim()){message='题干不能清空';rendered();return}}
+ if(mode==='answer')changes.answer=q.answer;
  if(mode==='knowledge'){
   const tags=Array.from(new Set($('qrTags').value.split(/[；;,，、]/).map(x=>x.trim()).filter(Boolean)));
   if(!tags.length){message='知识点不能全部删除';rendered();return}
@@ -322,6 +321,7 @@ function init(options){
  $('qrPrevious').addEventListener('click',()=>next(-1));$('qrFollowing').addEventListener('click',()=>next(1));
  $('qrContent').addEventListener('change',e=>{if(e.target?.id==='qrPeerPicker'){peerId=e.target.value;rendered()}});
  $('qrContent').addEventListener('click',async e=>{
+  if(e.target.closest('[data-unified-editor]')){const stem=$('qrStem'),answer=$('qrAnswerEdit'),q=api.getQuestions().find(x=>x.id===id);if((stem&&stem.value!==q.stem)||(answer&&answer.value!==q.answer)||($('qrNote')&&$('qrNote').value!==(audit(q,mode).note||''))){message='请先保存当前审核区修改，再打开物理编辑器';const hint=document.createElement('p');hint.textContent=message;e.target.after(hint);return}await api.openEditor(id,{review:true});return}
   const zoom=e.target.closest('[data-zoom]');if(zoom){zoom.classList.toggle('expanded');return}
   const focus=e.target.closest('[data-switch]');if(focus){focusMode(focus.dataset.switch,focus.dataset.issueId);return}
   const highlight=e.target.closest('[data-issue-select]');if(highlight){

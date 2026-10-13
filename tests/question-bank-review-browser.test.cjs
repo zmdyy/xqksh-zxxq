@@ -17,9 +17,9 @@ const server=http.createServer((req,res)=>{const u=decodeURIComponent(req.url.sp
   await positions.nth(1).focus();await page.keyboard.press('Enter');
   assert.equal(await page.locator('[data-issue-select].active').count(),1);assert.equal(await positions.nth(1).getAttribute('aria-pressed'),'true');
   assert.equal(await page.locator('.qr-current-issue').count(),1);assert.ok((await page.locator('.qr-selected-position').innerText()).includes('当前选中'));
-  await page.locator('[data-dim="formula"]').click();await page.fill('#qrAnswerEdit','尚未保存的教师修改');
+  await page.locator('[data-dim="formula"]').click();await page.fill('#qrNote','尚未保存的教师修改');
   await page.locator('[data-issue-select]').nth(0).click();await page.locator('[data-issue-select]').nth(1).click();
-  assert.equal(await page.locator('#qrAnswerEdit').inputValue(),'尚未保存的教师修改','selecting evidence must not discard unsaved teacher input');
+  assert.equal(await page.locator('#qrNote').inputValue(),'尚未保存的教师修改','selecting evidence must not discard unsaved teacher input');
   await page.locator('[data-dim="overview"]').click();await page.locator('[data-issue-select]').last().click();
   assert.equal(await page.locator('[data-issue-select].active').count(),1);assert.equal(await page.locator('.qr-current-issue').count(),0);assert.ok((await page.locator('.qr-selected-position').innerText()).includes('尚无精确定位'));
   await page.locator('[data-dim="duplicate"]').click();await page.selectOption('#qrDuplicateVerdict','different');await page.locator('[data-decision="dismissed"]').click();await page.waitForFunction(()=>!document.querySelector('#qrDuplicateVerdict'));

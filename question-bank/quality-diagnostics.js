@@ -25,6 +25,11 @@ function scan(q,options){
    }
   }
  }
+ if(root.PhysicsInput)for(const [key,text]of [['stem',stem],['answer',answer]])for(const x of root.PhysicsInput.scan(text)){
+  const decisionKey=key+'|'+text+'|'+x.start+'|'+x.before;
+  if((q.normalizationDecisionsV1||[]).some(d=>d.key===decisionKey&&d.status==='correct'))continue;
+  add('formula','符号与单位书写待确认',key==='stem'?'题干':'答案',x.reason+'；建议：'+x.after,x.before,key,x.start,x.end);
+ }
  if(/如图|图甲|图乙|图丙|下图|图示/.test(stem)&&!(q.images||[]).length){
   const m=/如图|图甲|图乙|图丙|下图|图示/.exec(stem);
   add('image','疑似缺少题图','题干 · 字符'+(m.index+1),'题干引用图片，但题干图资源为空','请对照原卷，确认是否缺图','stem',m.index,m.index+m[0].length);

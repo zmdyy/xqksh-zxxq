@@ -68,7 +68,7 @@ function attachRepairCandidates(target,source){
  return inserted;
 }
 function mergeExisting(target,source){
- attachRepairCandidates(target,source);
+ if(!target.teacherEditedAt)attachRepairCandidates(target,source);
  const refs=target.sourceRefs||[{file:target.source,no:target.sourceNo}];
  const keys=new Set(refs.map(r=>r.file+'#'+r.no));
  for(const x of source.sourceRefs||[{file:source.source,no:source.sourceNo}]){
@@ -76,11 +76,11 @@ function mergeExisting(target,source){
    const key=x.file+'#'+x.no;if(keys.has(key))continue;
    refs.push(x);keys.add(key);
  }
- target.sourceRefs=refs;
- if(!target.answer&&source.answer)target.answer=source.answer;
- if(!target.answerImages?.length&&source.answerImages?.length)target.answerImages=source.answerImages;
- if(!target.tags?.length&&source.tags?.length)target.tags=source.tags.slice();
- if((!target.relation||target.relation==='pending')&&source.relation&&source.relation!=='pending')target.relation=source.relation;
+ target.sourceRefs=refs;if(!target.sourceEvidenceV1&&source.sourceEvidenceV1)target.sourceEvidenceV1=source.sourceEvidenceV1;
+ if(!target.teacherEditedAt&&!target.answer&&source.answer)target.answer=source.answer;
+ if(!target.teacherEditedAt&&!target.answerImages?.length&&source.answerImages?.length)target.answerImages=source.answerImages;
+ if(!target.teacherEditedAt&&!target.tags?.length&&source.tags?.length)target.tags=source.tags.slice();
+ if(!target.teacherEditedAt&&(!target.relation||target.relation==='pending')&&source.relation&&source.relation!=='pending')target.relation=source.relation;
  if(!target.curriculum2022&&source.curriculum2022)target.curriculum2022=source.curriculum2022;
  if(!target.knowledgeReview&&source.knowledgeReview)target.knowledgeReview=source.knowledgeReview;
  if(source.qualityReviewV1){
@@ -103,6 +103,7 @@ function mergeExisting(target,source){
  return target;
 }
 function applyQualityRepair(target,source,now){
+ if(target.teacherEditedAt)return false;
  const quality=Array.isArray(source.qualityFixes)?source.qualityFixes:[];
  const fields=new Set(quality.filter(x=>x&&['stem','answer','type','tags'].includes(x.field)).map(x=>x.field));
  const incomingRevision=Number(source.revision||1),currentRevision=Number(target.revision||1);
