@@ -10,20 +10,27 @@ const DRAW='http://schemas.openxmlformats.org/drawingml/2006/main';
 const W='http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const escapeXml=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
 const uncode=v=>v.replace(/[^\x09\x0A\x0D\x20-\uD7FF\uE000-\uFFFD]/g,'');
-function textRun(s,bold=false,size=21){
-  return '<w:r><w:rPr><w:rFonts w:ascii="Microsoft YaHei" w:eastAsia="Microsoft YaHei"/>'+(bold?'<w:b/>':'')+'<w:sz w:val="'+size+'"/></w:rPr><w:t xml:space="preserve">'+escapeXml(uncode(s))+'</w:t></w:r>';
+function textRun(s,bold=false,size=21,vertical=''){
+  return '<w:r><w:rPr><w:rFonts w:ascii="Microsoft YaHei" w:eastAsia="Microsoft YaHei"/>'+(bold?'<w:b/>':'')+(vertical?'<w:vertAlign w:val="'+vertical+'"/>':'')+'<w:sz w:val="'+size+'"/></w:rPr><w:t xml:space="preserve">'+escapeXml(uncode(s))+'</w:t></w:r>';
 }
 function paragraph(text,opts={}){
  const align='<w:jc w:val="'+(opts.align||'left')+'"/><w:snapToGrid w:val="0"/>';
  const space='<w:spacing w:before="'+(opts.before||0)+'" w:after="'+(opts.after??100)+'" w:line="330" w:lineRule="auto"/>';
  const pPr='<w:pPr>'+align+space+(opts.keep?'<w:keepNext/>':'')+'</w:pPr>';
- const runs=String(text??'').split('\n').map((line,i)=>(i?'<w:r><w:br/></w:r>':'')+textRun(line,opts.bold,opts.size||21)).join('');
+ const run=t=>root.PhysicsMathContent?root.PhysicsMathContent.tokens(t).map(piece=>{
+   if(piece.type==='math'){
+     if(!root.mml2omml)throw Error('原生Word公式转换模块未加载');
+     return root.mml2omml(root.PhysicsMathContent.mathml(piece.text).replace(/<annotation[\s\S]*?<\/annotation>/g,''));
+   }
+   return piece.text.split('\n').map((line,i)=>(i?'<w:r><w:br/></w:r>':'')+root.PhysicsMathContent.unicodeRuns(line,(v,vertical)=>textRun(v,opts.bold,opts.size||21,vertical))).join('');
+ }).join(''):textRun(t,opts.bold,opts.size||21);
+ const runs=root.PhysicsMathContent?run(String(text??'')):String(text??'').split('\n').map((line,i)=>(i?'<w:r><w:br/></w:r>':'')+run(line)).join('');
  return '<w:p>'+pPr+runs+'</w:p>';
 }
 function spacer(points=100){return '<w:p><w:pPr><w:spacing w:after="'+points+'"/></w:pPr></w:p>'}
 function pageBreak(){return '<w:p><w:r><w:br w:type="page"/></w:r></w:p>'}
 function smallTable(rows,width=10080){
- const widths=rows[0]?.length===2?[Math.floor(width/2),Math.ceil(width/2)]:[width];
+ const count=Math.max(...rows.map(r=>r.length),1),widths=Array.from({length:count},()=>Math.floor(width/count));
  const cells=rows.map(row=>'<w:tr>'+row.map((t,i)=>{
  const cell=paragraph(t,{size:17,after:35});
  return '<w:tc><w:tcPr><w:tcW w:w="'+widths[i]+'" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="4" w:color="AAAAAA"/><w:left w:val="single" w:sz="4" w:color="AAAAAA"/><w:bottom w:val="single" w:sz="4" w:color="AAAAAA"/><w:right w:val="single" w:sz="4" w:color="AAAAAA"/></w:tcBorders><w:tcMar><w:top w:w="70" w:type="dxa"/><w:left w:w="90" w:type="dxa"/><w:bottom w:w="70" w:type="dxa"/><w:right w:w="90" w:type="dxa"/></w:tcMar></w:tcPr>'+cell+'</w:tc>'
@@ -94,7 +101,9 @@ async function createDocx(options){
  }
  async function renderItem(item,num,isAnswer,width){
    const q=isAnswer?item.answer:item.stem;
-   let x=paragraph(num+'. '+(q|| (isAnswer?'答案待核对':'题干缺失')),{after:100,size:21,bold:false});
+   const content=String(q||'').replace(/^\s*\d{1,3}(?:[．、]|\.(?!\d))\s*/,'');
+   const text=num+'. '+(content|| (isAnswer?'答案待核对':'题干缺失'));
+   let x=root.PhysicsMathContent?root.PhysicsMathContent.blocks(text).map((b,i,blocks)=>b.type==='table'?smallTable(b.rows,width===3.0?4700:10080):paragraph(b.text,{after:100,size:21,bold:false,keep:blocks[i+1]?.type==='table'})).join(''):paragraph(text,{after:100,size:21,bold:false});
    x+=await addImages(isAnswer?item.answerImages:item.images,width,width===3.0?1.95:2.65);
    return x+spacer(70);
  }

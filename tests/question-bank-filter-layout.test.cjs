@@ -7,13 +7,13 @@ const css=fs.readFileSync(path.join(root,'style.css'),'utf8');
 const app=fs.readFileSync(path.join(root,'app.js'),'utf8');
 assert.doesNotMatch(html,/教师选题 · 一页练习 · 背面答案 · 本地保存/);
 assert.doesNotMatch(html,/本页面在浏览器本地解析和保存教师上传的题目/);
-assert.match(html,/<section class="bank-query-panel"/);
+assert.match(html,/<section class="bank-query-panel(?: [^"]*)?"/);
 assert.match(html,/class="bank-query-main"/);
 assert.match(html,/class="bank-query-fields bank-query-knowledge"/);
 assert.match(html,/class="bank-query-fields bank-query-conditions"/);
 assert.match(css,/\.bank-query-panel/);
 assert.match(css,/@media\(max-width:650px\)/);
-const ids=['search','fileInput','conceptFilter','conceptFilter2','relationFilter','typeFilter','difficultyFilter','reviewFilter','usedFilter','classFilter','resetFiltersBtn','activeFilterSummary'];
+const ids=['search','fileInput','conceptFilter','conceptFilter2','relationFilter','typeFilter','difficultyFilter','reviewFilter','usedFilter','classFilter','assessmentFilter','conceptRoleFilter','resetFiltersBtn','activeFilterSummary'];
 for(const id of ids){
  const count=(html.match(new RegExp('id="'+id+'"','g'))||[]).length;
  assert.equal(count,1,id+' appears exactly once');
@@ -45,8 +45,8 @@ api.renderActiveFilters();
 assert.equal(els.activeFilterSummary.hidden,false);
 assert.match(els.activeFilterSummary.innerHTML,/主要知识点/);
 api.resetQuestionFilters();
-for(const id of ids.filter(x=>!['fileInput','resetFiltersBtn','activeFilterSummary'].includes(x))){
- const expected=id==='classFilter'?'801':id==='relationFilter'?'any':'';
+for(const id of ids.filter(x=>!['fileInput','assessmentFilter','conceptRoleFilter','resetFiltersBtn','activeFilterSummary'].includes(x))){
+ const expected=id==='classFilter'?'801':['relationFilter','conceptRoleFilter'].includes(id)?'any':'';
  assert.equal(els[id].value,expected,id+' reset');
 }
 console.log('PASS: no top disclaimer, grouped filters, concept relations, active chips, reset');

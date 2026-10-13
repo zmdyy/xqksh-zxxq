@@ -310,3 +310,5 @@
 .repair-subfigure .repair-compare img{height:210px}
 .repair-state.mixed{background:#fff0d9;color:#975923}
 @media(max-width:650px){.repair-subfigure .repair-compare{grid-template-columns:1fr 1fr}.repair-subfigure .repair-compare img{height:155px}}
+
+.physics-math{display:inline-block;vertical-align:middle;white-space:nowrap}.physics-math math{font-size:1.08em}.physics-math-error{background:#fff1cc;color:#9b3300}.physics-data-table{border-collapse:collapse;margin:8px 0;max-width:100%;font-size:inherit}.physics-data-table td,.physics-data-table th{border:1px solid #64748b;padding:5px 9px;text-align:center}.concept-method-tag{background:#e8f4ea;color:#17532d}

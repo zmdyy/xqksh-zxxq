@@ -4,7 +4,7 @@ const root=path.join(__dirname,'../question-bank');
 const text=fs.readFileSync(path.join(root,'image-repair-review.js'),'utf8');
 const merger=fs.readFileSync(path.join(root,'bank-merge.js'),'utf8');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
-for(const id of ['repairManagerBtn','repairDialog','repairCards','repairExportBtn','repairProgress','repairPrev','repairNext'])assert.match(html,new RegExp('id="'+id+'"'));
+for(const id of ['qualityReviewBtn','repairDialog','repairCards','repairExportBtn','repairProgress','repairPrev','repairNext'])assert.match(html,new RegExp('id="'+id+'"'));
 let calls=0;
 function element(id){return {value:'',textContent:'',innerHTML:'',hidden:false,disabled:false,open:false,dataset:{},listeners:{},
   addEventListener(evt,fn){this.listeners[evt]=fn},showModal(){this.open=true},close(){this.open=false}}}
@@ -21,7 +21,7 @@ const api=win.PhysicsImageRepair;
 api.init({getQuestions:()=>questions,getEvents:()=>[],getMeta:()=>({}),save:async x=>saved.push(x.id),onChange:()=>calls++});
 ui.repairManagerBtn.listeners.click();
 assert.equal(ui.repairDialog.open,true);
-assert.deepEqual(JSON.parse(JSON.stringify(api.count())),{all:1,questions:1,approved:0,pending:1,rejected:0});
+assert.deepEqual(JSON.parse(JSON.stringify(api.count())),{all:1,questions:1,approved:0,pending:1,rejected:0,duplicatePositions:0});
 (async()=>{
  await ui.repairCards.listeners.click({target:{closest:()=>({dataset:{repairAction:'approve',key:'0'}})}});
  assert.equal(q.answerImages[0].data,better);

@@ -1,0 +1,5190 @@
+{
+  "schema": "concept-assessment-catalog",
+  "schema_version": 1,
+  "knowledge_db_version": "2.6",
+  "version": "20261012-rebuilt-v2",
+  "concepts": [
+    {
+      "concept_id": "mech_motion_reference",
+      "name": "参照物",
+      "module": "力学",
+      "chapter": "机械运动",
+      "description": "判断物体运动时被选作标准的物体。选择不同参照物，运动描述不同。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_motion_speed",
+      "name": "速度",
+      "module": "力学",
+      "chapter": "机械运动",
+      "description": "路程与时间之比，描述运动快慢的物理量。",
+      "formula": "v=s/t",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_uniform_motion",
+      "name": "匀速直线运动",
+      "module": "力学",
+      "chapter": "机械运动",
+      "description": "速度大小和方向都不变的直线运动。",
+      "formula": "s=vt",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_variable_motion",
+      "name": "变速运动",
+      "module": "力学",
+      "chapter": "机械运动",
+      "description": "速度大小或方向变化的运动。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_avg_speed",
+      "name": "平均速度",
+      "module": "力学",
+      "chapter": "机械运动",
+      "description": "总路程与总时间之比，粗略描述变速运动。",
+      "formula": "v_avg=s_total/t_total",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_instant_speed",
+      "name": "瞬时速度",
+      "module": "力学",
+      "chapter": "机械运动",
+      "description": "某一时刻或某一位置的速度。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_time_measure",
+      "name": "时间测量",
+      "module": "力学",
+      "chapter": "机械运动",
+      "description": "使用停表、秒表测量时间间隔。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_length_measure",
+      "name": "长度测量",
+      "module": "力学",
+      "chapter": "机械运动",
+      "description": "使用刻度尺测量长度，估读到分度值下一位。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_sound_production",
+      "name": "声音的产生",
+      "module": "力学",
+      "chapter": "声现象",
+      "description": "声音由物体振动产生，振动停止发声停止。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_sound_propagation",
+      "name": "声音的传播",
+      "module": "力学",
+      "chapter": "声现象",
+      "description": "声音需要通过介质传播，真空不能传声。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_sound_speed",
+      "name": "声速",
+      "module": "力学",
+      "chapter": "声现象",
+      "description": "声音在介质中的传播速度，固体最快气体最慢。",
+      "formula": "v=s/t",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_pitch",
+      "name": "音调",
+      "module": "力学",
+      "chapter": "声现象",
+      "description": "声音的高低，由振动频率决定，频率越高音调越高。",
+      "formula": "f=1/T",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_loudness",
+      "name": "响度",
+      "module": "力学",
+      "chapter": "声现象",
+      "description": "声音的大小，由振幅决定，振幅越大响度越大。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_timbre",
+      "name": "音色",
+      "module": "力学",
+      "chapter": "声现象",
+      "description": "声音的特色，由发声体材料和结构决定。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_noise_control",
+      "name": "噪声控制",
+      "module": "力学",
+      "chapter": "声现象",
+      "description": "在声源处、传播过程中、人耳处控制噪声。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_ultrasound_infrasound",
+      "name": "超声波次声波",
+      "module": "力学",
+      "chapter": "声现象",
+      "description": "超声波频率>20000Hz，次声波频率<20Hz，各有特殊应用。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_mass",
+      "name": "质量",
+      "module": "力学",
+      "chapter": "质量与密度",
+      "description": "物体所含物质的多少，是物体的基本属性。",
+      "formula": "m",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_mass_measurement",
+      "name": "质量测量",
+      "module": "力学",
+      "chapter": "质量与密度",
+      "description": "使用天平测量质量，调节平衡螺母使横梁平衡。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_density",
+      "name": "密度",
+      "module": "力学",
+      "chapter": "质量与密度",
+      "description": "某种物质组成的物体质量与体积之比。",
+      "formula": "ρ=m/V",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_density_measurement",
+      "name": "密度测量",
+      "module": "力学",
+      "chapter": "质量与密度",
+      "description": "用天平和量筒测量物质密度。",
+      "formula": "ρ=m/V",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_material_identification",
+      "name": "物质鉴别",
+      "module": "力学",
+      "chapter": "质量与密度",
+      "description": "通过密度比较鉴别物质种类。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_hollow_problem",
+      "name": "空心问题",
+      "module": "力学",
+      "chapter": "质量与密度",
+      "description": "通过密度比较判断物体是否空心。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_force_concept",
+      "name": "力的概念",
+      "module": "力学",
+      "chapter": "力",
+      "description": "力是物体对物体的作用，施力物体和受力物体同时存在。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_force_effects",
+      "name": "力的作用效果",
+      "module": "力学",
+      "chapter": "力",
+      "description": "力可以改变物体的形状，也可以改变物体的运动状态。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_force_elements",
+      "name": "力的三要素",
+      "module": "力学",
+      "chapter": "力",
+      "description": "力的大小、方向和作用点称为力的三要素。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_force_diagram",
+      "name": "力的示意图",
+      "module": "力学",
+      "chapter": "力",
+      "description": "用带箭头线段表示力，线段起点表示作用点。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_force_gravity",
+      "name": "重力",
+      "module": "力学",
+      "chapter": "力",
+      "description": "由于地球吸引而使物体受到的力，方向竖直向下。",
+      "formula": "G=mg",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_force_elastic",
+      "name": "弹力",
+      "module": "力学",
+      "chapter": "力",
+      "description": "物体发生弹性形变时产生的力。",
+      "formula": "F=kx",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_friction",
+      "name": "摩擦力",
+      "module": "力学",
+      "chapter": "力",
+      "description": "两个接触面阻碍相对运动的力，分为静摩擦、滑动摩擦和滚动摩擦。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_force_analysis",
+      "name": "受力分析",
+      "module": "力学",
+      "chapter": "力",
+      "description": "对物体进行受力分析，画出受力示意图。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_newton1",
+      "name": "牛顿第一定律",
+      "module": "力学",
+      "chapter": "运动和力",
+      "description": "一切物体在没有受到力时，总保持静止或匀速直线运动状态。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_inertia",
+      "name": "惯性",
+      "module": "力学",
+      "chapter": "运动和力",
+      "description": "物体保持原来运动状态不变的性质，一切物体都有惯性。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_balance_forces",
+      "name": "二力平衡",
+      "module": "力学",
+      "chapter": "运动和力",
+      "description": "作用在同一物体上的两个力，大小相等、方向相反、同一直线。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_balanced_vs_interaction",
+      "name": "平衡力与相互作用力",
+      "module": "力学",
+      "chapter": "运动和力",
+      "description": "平衡力作用在同一物体，相互作用力作用在不同物体。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_force_motion_state",
+      "name": "力与运动状态",
+      "module": "力学",
+      "chapter": "运动和力",
+      "description": "力是改变物体运动状态的原因，不是维持运动的原因。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_force_composition",
+      "name": "同一直线二力合成",
+      "module": "力学",
+      "chapter": "运动和力",
+      "description": "同向相加，反向相减。",
+      "formula": "F=F1+F2或F=|F1-F2|",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_pressure_force",
+      "name": "压力",
+      "module": "力学",
+      "chapter": "压强",
+      "description": "垂直作用在物体表面上的力。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_pressure",
+      "name": "压强",
+      "module": "力学",
+      "chapter": "压强",
+      "description": "物体所受压力与受力面积之比。",
+      "formula": "p=F/S",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_liquid_pressure",
+      "name": "液体压强",
+      "module": "力学",
+      "chapter": "压强",
+      "description": "液体内部向各个方向都有压强，深度越大压强越大。",
+      "formula": "p=ρgh",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_atmospheric_pressure",
+      "name": "大气压强",
+      "module": "力学",
+      "chapter": "压强",
+      "description": "大气对浸在其中的物体产生的压强。",
+      "formula": "p0=1.013×10^5Pa",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_pressure_measure",
+      "name": "大气压测量",
+      "module": "力学",
+      "chapter": "压强",
+      "description": "托里拆利实验测量大气压值。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_fluid_pressure",
+      "name": "流体压强与流速",
+      "module": "力学",
+      "chapter": "压强",
+      "description": "流体流速越大的位置压强越小。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_communicating_vessels",
+      "name": "连通器",
+      "module": "力学",
+      "chapter": "压强",
+      "description": "上端开口下端连通的容器，液面高度相同。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_pascal_principle",
+      "name": "帕斯卡原理",
+      "module": "力学",
+      "chapter": "压强",
+      "description": "加在密闭液体上的压强大小不变地向各个方向传递。",
+      "formula": "F1/S1=F2/S2",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_buoyancy_cause",
+      "name": "浮力产生原因",
+      "module": "力学",
+      "chapter": "浮力",
+      "description": "浸在液体中的物体上下表面压力差即为浮力。",
+      "formula": "F浮=F向上-F向下",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_archimedes",
+      "name": "阿基米德原理",
+      "module": "力学",
+      "chapter": "浮力",
+      "description": "浸在液体中的物体所受浮力等于排开液体的重力。",
+      "formula": "F浮=ρ液gV排",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_float_sink_condition",
+      "name": "物体浮沉条件",
+      "module": "力学",
+      "chapter": "浮力",
+      "description": "浸没物体所受浮力大于、等于、小于重力时，分别上浮、悬浮、下沉；漂浮时浮力等于重力。对不吸液、不透液且可用整体平均密度描述的物体，可结合物体与液体密度比较判断最终状态。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_浮力应用_轮船",
+      "name": "浮力应用·轮船",
+      "module": "力学",
+      "chapter": "浮力",
+      "description": "采用空心增大排开液体体积，从而增大浮力。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_浮力应用_潜水艇",
+      "name": "浮力应用·潜水艇",
+      "module": "力学",
+      "chapter": "浮力",
+      "description": "通过改变自身重量实现浮沉。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_浮力应用_气球飞艇",
+      "name": "浮力应用·气球飞艇",
+      "module": "力学",
+      "chapter": "浮力",
+      "description": "充入密度小于空气的气体获得浮力。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_lever",
+      "name": "杠杆",
+      "module": "力学",
+      "chapter": "简单机械",
+      "description": "在力作用下绕固定点转动的硬棒。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_lever_balance",
+      "name": "杠杆平衡条件",
+      "module": "力学",
+      "chapter": "简单机械",
+      "description": "动力×动力臂=阻力×阻力臂。",
+      "formula": "F1L1=F2L2",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_滑轮",
+      "name": "滑轮",
+      "module": "力学",
+      "chapter": "简单机械",
+      "description": "定滑轮不省力改变力的方向，动滑轮省一半力。",
+      "formula": "F=G/2(动滑轮)",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_滑轮组",
+      "name": "滑轮组",
+      "module": "力学",
+      "chapter": "简单机械",
+      "description": "定滑轮和动滑轮组合，既省力又能改变力的方向。",
+      "formula": "F=G/n",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_inclined_plane",
+      "name": "斜面",
+      "module": "力学",
+      "chapter": "简单机械",
+      "description": "斜面越长越省力，高度相同斜面越长所需拉力越小。",
+      "formula": "FL=Gh",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_wheel_axle",
+      "name": "轮轴",
+      "module": "力学",
+      "chapter": "简单机械",
+      "description": "轮半径是轴半径的几倍，作用在轮上的力就是轴上的几分之一。",
+      "formula": "F1R=F2r",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_work",
+      "name": "功",
+      "module": "力学",
+      "chapter": "功和功率",
+      "description": "力与在力的方向上移动距离的乘积。",
+      "formula": "W=Fs",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_power",
+      "name": "功率",
+      "module": "力学",
+      "chapter": "功和功率",
+      "description": "功与做功所用时间之比，表示做功快慢。",
+      "formula": "P=W/t",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_efficiency",
+      "name": "机械效率",
+      "module": "力学",
+      "chapter": "功和功率",
+      "description": "有用功与总功之比，η=W有/W总，机械效率总小于1。",
+      "formula": "η=W有/W总×100%",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_mechanical_energy",
+      "name": "机械能",
+      "module": "力学",
+      "chapter": "功和功率",
+      "description": "动能和势能统称为机械能。",
+      "formula": "E机械=Ek+Ep",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_temperature",
+      "name": "温度",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "description": "表示物体冷热程度的物理量。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_thermometer",
+      "name": "温度计",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "description": "利用液体热胀冷缩的原理制成。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_melting_freezing",
+      "name": "熔化与凝固",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "description": "物质从固态变为液态（熔化）或从液态变为固态（凝固）。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_熔化吸热与凝固放热",
+      "name": "熔化吸热与凝固放热",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "description": "熔化过程吸收热量，凝固过程放出热量。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_汽化与液化",
+      "name": "汽化与液化",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "description": "物质从液态变为气态（汽化）或从气态变为液态（液化）。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_蒸发与沸腾",
+      "name": "蒸发与沸腾",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "description": "蒸发在任何温度下进行，沸腾在沸点进行。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_液化方法",
+      "name": "液化方法",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "description": "降低温度和压缩体积可使气体液化。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_升华与凝华",
+      "name": "升华与凝华",
+      "module": "热学",
+      "chapter": "温度与物态变化",
+      "description": "物质从固态直接变为气态（升华）或从气态直接变为固态（凝华）。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_物质的构成",
+      "name": "物质的构成",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "description": "物质由分子、原子等微观粒子构成。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_分子热运动",
+      "name": "分子热运动",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "description": "一切物质的分子都在永不停息地做无规则运动。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_扩散现象",
+      "name": "扩散现象",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "description": "不同物质相互接触时彼此进入对方的现象。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_分子间作用力",
+      "name": "分子间作用力",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "description": "分子间同时存在引力和斥力。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_internal_energy",
+      "name": "内能",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "description": "物体内部所有分子热运动的动能和分子势能的总和。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_改变内能的方式",
+      "name": "改变内能的方式",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "description": "做功和热传递可以改变物体的内能。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_热量",
+      "name": "热量",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "description": "在热传递过程中传递的能量的多少。",
+      "formula": "Q",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_热传递",
+      "name": "热传递",
+      "module": "热学",
+      "chapter": "分子热运动与内能",
+      "description": "热量从高温物体传向低温物体的过程。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_specific_heat",
+      "name": "比热容",
+      "module": "热学",
+      "chapter": "比热容与热量",
+      "description": "一定质量的某种物质温度升高1℃所吸收的热量。",
+      "formula": "c=Q/mΔt",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_heat_calculation",
+      "name": "热量计算",
+      "module": "热学",
+      "chapter": "比热容与热量",
+      "description": "吸收或放出的热量与比热容、质量和温度变化有关。",
+      "formula": "Q=cmΔt",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_水的比热容",
+      "name": "水的比热容",
+      "module": "热学",
+      "chapter": "比热容与热量",
+      "description": "水的比热容较大，常用于散热和保温。",
+      "formula": "c水=4.2×10^3J/(kg·℃)",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_calorific_value",
+      "name": "热值",
+      "module": "热学",
+      "chapter": "比热容与热量",
+      "description": "燃料完全燃烧放出的热量与其质量之比。",
+      "formula": "q=Q/m",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_heat_engine",
+      "name": "热机",
+      "module": "热学",
+      "chapter": "比热容与热量",
+      "description": "将内能转化为机械能的机器。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_heat_engine_efficiency",
+      "name": "热机效率",
+      "module": "热学",
+      "chapter": "比热容与热量",
+      "description": "热机所做的有用功与燃料完全燃烧放出的热量之比。",
+      "formula": "η=W有用/Q总",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_熔点与凝固点",
+      "name": "熔点与凝固点",
+      "module": "热学",
+      "chapter": "物态变化中的能量",
+      "description": "晶体有固定的熔点和凝固点，非晶体没有。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_晶体与非晶体",
+      "name": "晶体与非晶体",
+      "module": "热学",
+      "chapter": "物态变化中的能量",
+      "description": "晶体有规则结构，非晶体没有规则结构。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_沸点与气压",
+      "name": "沸点与气压",
+      "module": "热学",
+      "chapter": "物态变化中的能量",
+      "description": "气压越高沸点越高，气压越低沸点越低。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_蒸发致冷",
+      "name": "蒸发致冷",
+      "module": "热学",
+      "chapter": "物态变化中的能量",
+      "description": "液体蒸发时要吸收热量，有制冷作用。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_物态变化中的能量转化",
+      "name": "物态变化中的能量转化",
+      "module": "热学",
+      "chapter": "物态变化中的能量",
+      "description": "物态变化伴随着能量的转移和转化。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_物态变化图像",
+      "name": "物态变化图像",
+      "module": "热学",
+      "chapter": "物态变化中的能量",
+      "description": "用温度-时间图像表示物态变化过程。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_自然界水循环",
+      "name": "自然界水循环",
+      "module": "热学",
+      "chapter": "物态变化中的能量",
+      "description": "水的三态变化构成了自然界的水循环。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_能量守恒定律_热学",
+      "name": "能量守恒定律(热学)",
+      "module": "热学",
+      "chapter": "热力学基础",
+      "description": "能量既不会凭空产生也不会凭空消失，只能从一种形式转化为另一种形式。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_热力学第一定律",
+      "name": "热力学第一定律",
+      "module": "热学",
+      "chapter": "热力学基础",
+      "description": "物体内能变化等于外界对物体做功与传热之和。",
+      "formula": "ΔU=W+Q",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_热传递方向",
+      "name": "热传递方向",
+      "module": "热学",
+      "chapter": "热力学基础",
+      "description": "热量自发地从高温物体传向低温物体。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_温度与分子运动",
+      "name": "温度与分子运动",
+      "module": "热学",
+      "chapter": "热力学基础",
+      "description": "温度是分子热运动剧烈程度的标志。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_热膨胀",
+      "name": "热膨胀",
+      "module": "热学",
+      "chapter": "热力学基础",
+      "description": "一般物体温度升高时体积膨胀，温度降低时体积收缩。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_相变潜热",
+      "name": "相变潜热",
+      "module": "热学",
+      "chapter": "热力学基础",
+      "description": "物态变化过程中吸收或放出的热量。",
+      "formula": "Q=mL",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_light_source",
+      "name": "光源",
+      "module": "光学",
+      "chapter": "光的直线传播",
+      "description": "自身能够发光的物体叫做光源。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_rectilinear_propagation",
+      "name": "光的直线传播",
+      "module": "光学",
+      "chapter": "光的直线传播",
+      "description": "光在同种均匀介质中沿直线传播。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_light_speed",
+      "name": "光速",
+      "module": "光学",
+      "chapter": "光的直线传播",
+      "description": "光在真空中传播速度最快。",
+      "formula": "c=3×10^8m/s",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_影子的形成",
+      "name": "影子的形成",
+      "module": "光学",
+      "chapter": "光的直线传播",
+      "description": "光沿直线传播遇到不透明物体时形成影子。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_日食与月食",
+      "name": "日食与月食",
+      "module": "光学",
+      "chapter": "光的直线传播",
+      "description": "日食是月球位于太阳和地球之间，月食是地球位于太阳和月球之间。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_小孔成像",
+      "name": "小孔成像",
+      "module": "光学",
+      "chapter": "光的直线传播",
+      "description": "小孔成倒立的实像，像的大小与物距和像距有关。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_reflection_law",
+      "name": "光的反射定律",
+      "module": "光学",
+      "chapter": "光的反射",
+      "description": "反射光线、入射光线和法线在同一平面内，反射角等于入射角。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_镜面反射与漫反射",
+      "name": "镜面反射与漫反射",
+      "module": "光学",
+      "chapter": "光的反射",
+      "description": "镜面反射在光滑表面发生，漫反射在粗糙表面发生，都遵循反射定律。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_平面镜成像",
+      "name": "平面镜成像",
+      "module": "光学",
+      "chapter": "光的反射",
+      "description": "平面镜成等大正立的虚像，像与物关于镜面对称。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_平面镜应用",
+      "name": "平面镜应用",
+      "module": "光学",
+      "chapter": "光的反射",
+      "description": "穿衣镜、潜望镜、牙医镜等利用平面镜成像。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_球面镜",
+      "name": "球面镜",
+      "module": "光学",
+      "chapter": "光的反射",
+      "description": "凹面镜会聚光线，凸面镜发散光线。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_凹面镜",
+      "name": "凹面镜",
+      "module": "光学",
+      "chapter": "光的反射",
+      "description": "凹面镜将平行光会聚于焦点，太阳灶应用此原理。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_凸面镜",
+      "name": "凸面镜",
+      "module": "光学",
+      "chapter": "光的反射",
+      "description": "凸面镜使平行光发散，视野更大，用于汽车后视镜。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_光路可逆性",
+      "name": "光路可逆性",
+      "module": "光学",
+      "chapter": "光的反射",
+      "description": "在反射和折射现象中光路是可逆的。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_refraction_law",
+      "name": "光的折射定律",
+      "module": "光学",
+      "chapter": "光的折射",
+      "description": "光从一种介质斜射入另一种介质时传播方向发生偏折。",
+      "formula": "n=sin i/sin r",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_折射现象",
+      "name": "折射现象",
+      "module": "光学",
+      "chapter": "光的折射",
+      "description": "池水看起来变浅、筷子在水中弯折等。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_透镜",
+      "name": "透镜",
+      "module": "光学",
+      "chapter": "光的折射",
+      "description": "凸透镜中间厚边缘薄，凹透镜中间薄边缘厚。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_凸透镜对光的作用",
+      "name": "凸透镜对光的作用",
+      "module": "光学",
+      "chapter": "光的折射",
+      "description": "凸透镜对光有会聚作用，平行于主光轴的光会聚于焦点。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_凹透镜对光的作用",
+      "name": "凹透镜对光的作用",
+      "module": "光学",
+      "chapter": "光的折射",
+      "description": "凹透镜对光有发散作用，平行于主光轴的光发散后反向延长过焦点。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_生活中的透镜",
+      "name": "生活中的透镜",
+      "module": "光学",
+      "chapter": "光的折射",
+      "description": "放大镜是凸透镜，相机镜头是凸透镜组合。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_lens_imaging",
+      "name": "凸透镜成像规律",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "description": "物距不同，成像的性质（虚实、大小、正倒）不同。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_u_2f成像",
+      "name": "u>2f成像",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "description": "物体在二倍焦距以外，成倒立缩小的实像。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_f_u_2f成像",
+      "name": "f<u<2f成像",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "description": "物体在焦距和二倍焦距之间，成倒立放大的实像。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_u_f成像",
+      "name": "u<f成像",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "description": "物体在焦距以内，成正立放大的虚像。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_照相机",
+      "name": "照相机",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "description": "u>2f时成倒立缩小的实像，应用于照相机。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_投影仪",
+      "name": "投影仪",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "description": "f<u<2f时成倒立放大的实像，应用于投影仪。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_放大镜",
+      "name": "放大镜",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "description": "u<f时成正立放大的虚像，应用于放大镜。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_眼镜与视力矫正",
+      "name": "眼镜与视力矫正",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "description": "近视用凹透镜矫正，远视用凸透镜矫正。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_dispersion",
+      "name": "光的色散",
+      "module": "光学",
+      "chapter": "光的色散",
+      "description": "白光通过三棱镜分解为七种色光的现象。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_色光混合",
+      "name": "色光混合",
+      "module": "光学",
+      "chapter": "光的色散",
+      "description": "红、绿、蓝是色光的三原色。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_物体的颜色",
+      "name": "物体的颜色",
+      "module": "光学",
+      "chapter": "光的色散",
+      "description": "物体的颜色由它反射或透过的色光决定。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_红外线与紫外线",
+      "name": "红外线与紫外线",
+      "module": "光学",
+      "chapter": "光的色散",
+      "description": "红外线热效应强，紫外线具有杀菌作用。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_charge",
+      "name": "电荷",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "自然界只有两种电荷：正电荷和负电荷。同种相斥，异种相吸。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_摩擦起电",
+      "name": "摩擦起电",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "用摩擦的方法使物体带电，实质是电子的转移。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_导体与绝缘体",
+      "name": "导体与绝缘体",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "容易导电的物体叫导体，不容易导电的物体叫绝缘体。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_current",
+      "name": "电流",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "电荷的定向移动形成电流，正电荷移动方向为电流方向。",
+      "formula": "I=Q/t",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_电路",
+      "name": "电路",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "由电源、导线、开关和用电器组成的电流路径。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_series_circuit",
+      "name": "串联电路",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "各用电器依次相连，电流只有一条路径。",
+      "formula": "I=I1=I2,U=U1+U2",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_parallel_circuit",
+      "name": "并联电路",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "各用电器并列相连，电流有多条路径。",
+      "formula": "I=I1+I2,U=U1=U2",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_电流表",
+      "name": "电流表",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "测量电流的仪表，必须串联在电路中。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_voltage",
+      "name": "电压",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "电压是形成电流的原因，电源提供电压。",
+      "formula": "U",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_电压表",
+      "name": "电压表",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "测量电压的仪表，必须并联在电路中。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_resistance",
+      "name": "电阻",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "导体对电流的阻碍作用，用R表示。",
+      "formula": "R=U/I",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_影响电阻的因素",
+      "name": "影响电阻的因素",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "电阻与材料、长度、横截面积和温度有关。",
+      "formula": "R=ρL/S",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_滑动变阻器",
+      "name": "滑动变阻器",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "通过改变接入电路中电阻丝的长度来改变电阻。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_ohm_law",
+      "name": "欧姆定律",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "导体中的电流与导体两端电压成正比，与导体电阻成反比。",
+      "formula": "I=U/R",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_伏安法测电阻",
+      "name": "伏安法测电阻",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "用电压表和电流表测量电阻的方法。",
+      "formula": "R=U/I",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_串联电路特点",
+      "name": "串联电路特点",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "串联电路中电流处处相等，总电压等于各部分电压之和，总电阻等于各电阻之和。",
+      "formula": "R=R1+R2,I=I1=I2",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_并联电路特点",
+      "name": "并联电路特点",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "并联电路中各支路两端电压相等，干路电流等于各支路电流之和，总电阻小于任一支路电阻。",
+      "formula": "1/R=1/R1+1/R2",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_电路故障分析",
+      "name": "电路故障分析",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "通过电表示数变化判断电路故障。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_electric_work",
+      "name": "电功",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "电流所做的功，即电能转化为其他形式能的多少。",
+      "formula": "W=UIt",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_电能表",
+      "name": "电能表",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "测量用电器消耗电能多少的仪表。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_electric_power",
+      "name": "电功率",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "电流在单位时间内所做的功。",
+      "formula": "P=UI",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_额定功率与实际功率",
+      "name": "额定功率与实际功率",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "用电器在额定电压下正常工作时的功率。",
+      "formula": "P额=U额I额",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_joule_law",
+      "name": "焦耳定律",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "电流通过导体产生的热量与电流平方、电阻和通电时间成正比。",
+      "formula": "Q=I²Rt",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_电热利用与防止",
+      "name": "电热利用与防止",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "电热器（利用）和散热设计（防止）。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_家庭电路",
+      "name": "家庭电路",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "由进户线、电能表、总开关、保险装置等组成。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_安全用电",
+      "name": "安全用电",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "不接触低压带电体，不靠近高压带电体。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_测电笔",
+      "name": "测电笔",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "辨别火线和零线的工具。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_触电急救",
+      "name": "触电急救",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "迅速切断电源，用绝缘体将触电者与带电体分离。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_磁现象",
+      "name": "磁现象",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "磁体具有吸引铁钴镍的性质，磁极间同名相斥异名相吸。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_magnetic_field",
+      "name": "磁场",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "磁体周围存在的一种特殊物质，对放入其中的磁体产生力的作用。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_地磁场",
+      "name": "地磁场",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "地球周围存在的磁场，地磁北极在地理南极附近。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_电流的磁效应",
+      "name": "电流的磁效应",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "通电导体周围存在磁场，磁场方向与电流方向有关。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_电磁铁",
+      "name": "电磁铁",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "插入铁芯的通电螺线管，磁性有无和强弱可控制。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_电磁继电器",
+      "name": "电磁继电器",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "利用电磁铁控制工作电路通断的开关。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_磁场对电流的作用",
+      "name": "磁场对电流的作用",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "通电导体在磁场中受到力的作用，力方向与电流和磁场方向有关。",
+      "formula": "F=BIL",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_electric_motor",
+      "name": "电动机",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "利用通电线圈在磁场中受力转动的原理制成。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_electromagnetic_induction",
+      "name": "电磁感应现象",
+      "module": "电磁学",
+      "chapter": "电磁感应",
+      "description": "闭合电路的一部分导体在磁场中做切割磁感线运动时产生感应电流。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_generator",
+      "name": "发电机",
+      "module": "电磁学",
+      "chapter": "电磁感应",
+      "description": "利用电磁感应原理将机械能转化为电能。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_交流电",
+      "name": "交流电",
+      "module": "电磁学",
+      "chapter": "电磁感应",
+      "description": "电流方向周期性变化的电流，我国交流电频率50Hz。",
+      "formula": "f=50Hz,T=0.02s",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_变压器",
+      "name": "变压器",
+      "module": "电磁学",
+      "chapter": "电磁感应",
+      "description": "利用电磁感应原理改变交流电压的装置。",
+      "formula": "U1/U2=n1/n2",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_电磁波",
+      "name": "电磁波",
+      "module": "电磁学",
+      "chapter": "电磁感应",
+      "description": "变化的电流在空间产生电磁波，传播不需要介质。",
+      "formula": "c=λf",
+      "symbol": ""
+    },
+    {
+      "concept_id": "energy_energy_conservation",
+      "name": "能量守恒定律",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "description": "能量既不会凭空产生也不会凭空消失，只能从一种形式转化为另一种形式或从一个物体转移到另一个物体。",
+      "formula": "E守恒",
+      "symbol": ""
+    },
+    {
+      "concept_id": "energy_energy_classification",
+      "name": "能源分类",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "description": "按来源分为一次能源和二次能源，按能否再生分为可再生能源和不可再生能源。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "energy_solar_energy",
+      "name": "太阳能",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "description": "太阳是巨大的核聚变反应堆，太阳辐射能是地球上能量的主要来源。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "energy_nuclear_energy",
+      "name": "核能",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "description": "原子核发生变化时释放的巨大能量。",
+      "formula": "E=mc²",
+      "symbol": ""
+    },
+    {
+      "concept_id": "energy_nuclear_fusion_fission",
+      "name": "核聚变与核裂变",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "description": "核裂变是重核分裂，核聚变是轻核聚合。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "energy_renewable_nonrenewable",
+      "name": "可再生与不可再生",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "description": "可再生能源可循环利用，不可再生能源用后短期内无法恢复。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "energy_energy_environment",
+      "name": "能源与环境",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "description": "化石能源的使用带来环境污染问题，发展清洁能源是方向。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "energy_sustainable_可持续发展",
+      "name": "可持续发展",
+      "module": "能量",
+      "chapter": "能源与可持续发展",
+      "description": "满足当代需求又不损害后代满足其需求的能力的发展方式。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "math_unit_conversion",
+      "name": "单位换算",
+      "module": "数学",
+      "chapter": "物理计算支撑",
+      "description": "同一物理量可用不同单位表示，换算时乘或除相应进率。代入物理公式前，须先把各量统一到国际制单位。",
+      "formula": "1km/h=1/3.6 m/s",
+      "symbol": ""
+    },
+    {
+      "concept_id": "math_power_notation",
+      "name": "次方与科学计数法",
+      "module": "数学",
+      "chapter": "物理计算支撑",
+      "description": "aⁿ 表示 n 个 a 相乘；科学计数法把很大或很小的数写成 a×10ⁿ（1≤a<10）。平方、立方分别对应面积、体积单位的进率。",
+      "formula": "a×10^n",
+      "symbol": ""
+    },
+    {
+      "concept_id": "math_linear_graph",
+      "name": "一次函数图像",
+      "module": "数学",
+      "chapter": "物理计算支撑",
+      "description": "形如 y=kx+b 的关系，图像是一条直线。b=0 时为正比例函数，图像过原点，斜率 k 表示因变量随自变量变化的快慢。",
+      "formula": "y=kx+b",
+      "symbol": ""
+    },
+    {
+      "concept_id": "math_inverse_graph",
+      "name": "反比例函数图像",
+      "module": "数学",
+      "chapter": "物理计算支撑",
+      "description": "形如 y=k/x（k≠0）的关系，图像是双曲线。物理题通常只取第一象限：一个量增大时另一个量减小，乘积保持不变。",
+      "formula": "y=k/x",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_frequency",
+      "name": "频率",
+      "module": "力学",
+      "chapter": "声现象",
+      "description": "物体每秒振动的次数，用f表示，单位是赫兹（Hz）。",
+      "formula": "",
+      "symbol": "f"
+    },
+    {
+      "concept_id": "mech_amplitude",
+      "name": "振幅",
+      "module": "力学",
+      "chapter": "声现象",
+      "description": "振动物体偏离平衡位置的最大距离，振幅越大通常响度越大。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_buoyancy",
+      "name": "浮力",
+      "module": "力学",
+      "chapter": "浮力",
+      "description": "浸在液体或气体中的物体受到流体竖直向上的托力。",
+      "formula": "",
+      "symbol": "F浮"
+    },
+    {
+      "concept_id": "mech_sliding_friction",
+      "name": "滑动摩擦力",
+      "module": "力学",
+      "chapter": "力",
+      "description": "两个接触面发生相对滑动时，在接触面上产生的阻碍相对运动的力。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_friction_factors",
+      "name": "影响滑动摩擦力大小的因素",
+      "module": "力学",
+      "chapter": "力",
+      "description": "滑动摩擦力大小主要与压力大小和接触面的粗糙程度有关。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_work_conditions",
+      "name": "做功的两个必要因素",
+      "module": "力学",
+      "chapter": "功和功率",
+      "description": "作用在物体上的力，以及物体在这个力的方向上通过的距离，是力对物体做功的两个必要因素。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_useful_work",
+      "name": "有用功",
+      "module": "力学",
+      "chapter": "功和功率",
+      "description": "为了达到目的而必须做的功。",
+      "formula": "",
+      "symbol": "W有"
+    },
+    {
+      "concept_id": "mech_extra_work",
+      "name": "额外功",
+      "module": "力学",
+      "chapter": "功和功率",
+      "description": "克服机械自重、摩擦等不得不额外做的功。",
+      "formula": "",
+      "symbol": "W额"
+    },
+    {
+      "concept_id": "mech_total_work",
+      "name": "总功",
+      "module": "力学",
+      "chapter": "功和功率",
+      "description": "动力对机械所做的功，通常等于有用功与额外功之和。",
+      "formula": "W总=W有+W额",
+      "symbol": "W总"
+    },
+    {
+      "concept_id": "mech_kinetic_energy",
+      "name": "动能",
+      "module": "力学",
+      "chapter": "功和功率",
+      "description": "物体由于运动而具有的能量；质量越大、速度越大，动能越大。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_gravitational_potential_energy",
+      "name": "重力势能",
+      "module": "力学",
+      "chapter": "功和功率",
+      "description": "物体由于被举高而具有的能量；质量和相对高度会影响其大小。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_elastic_potential_energy",
+      "name": "弹性势能",
+      "module": "力学",
+      "chapter": "功和功率",
+      "description": "发生弹性形变的物体由于弹性形变而具有的能量。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_mechanical_energy_conversion",
+      "name": "动能和势能的转化",
+      "module": "力学",
+      "chapter": "功和功率",
+      "description": "动能和势能可以相互转化；只有重力或弹力做功等理想条件下机械能可保持不变。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "micro_atomic_structure",
+      "name": "原子结构",
+      "module": "跨学科支撑",
+      "chapter": "化学·物质微观结构",
+      "description": "原子由位于中心的原子核和核外电子构成。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_positive_charge",
+      "name": "正电荷",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "规定与丝绸摩擦过的玻璃棒所带的电荷为正电荷。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_negative_charge",
+      "name": "负电荷",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "规定与毛皮摩擦过的橡胶棒所带的电荷为负电荷。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_charge_interaction",
+      "name": "电荷间的相互作用",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "同种电荷相互排斥，异种电荷相互吸引。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_charged_body_property",
+      "name": "带电体吸引轻小物体",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "带电体具有吸引轻小物体的性质。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_charge_quantity",
+      "name": "电荷量",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "物体所带电荷的多少叫电荷量，常简称电量，单位是库仑（C）。",
+      "formula": "",
+      "symbol": "Q"
+    },
+    {
+      "concept_id": "elec_electroscope",
+      "name": "验电器",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "检验物体是否带电的仪器，常利用同种电荷相互排斥使金属箔张开。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_electron_transfer",
+      "name": "电子转移",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "物体之间发生电子转移时，失去电子的物体显正电，得到电子的物体显负电。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_current_direction",
+      "name": "电流方向",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "规定正电荷定向移动的方向为电流方向；金属导体中电子定向移动方向与电流方向相反。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_closed_circuit",
+      "name": "通路",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "处处连通、能形成持续电流的电路状态。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_open_circuit",
+      "name": "断路",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "电路某处断开，不能形成持续电流的电路状态。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_short_circuit",
+      "name": "短路",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "电流未经正常用电器而直接形成低电阻通路的异常连接，可能造成过大电流。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_electric_energy",
+      "name": "电能",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "与电有关的一种能量形式；电流做功的过程伴随电能向其他形式能转化。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_magnetic_pole",
+      "name": "磁极",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "磁体上磁性最强的两个部位，分别称为N极和S极。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_magnetic_pole_interaction",
+      "name": "磁极间的相互作用",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "同名磁极相互排斥，异名磁极相互吸引。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_magnetic_field_lines",
+      "name": "磁感线",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "用来形象描述磁场分布的假想曲线；曲线上某点切线方向表示该点磁场方向，疏密反映磁场强弱。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_solenoid",
+      "name": "通电螺线管",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "通电后的螺线管周围存在类似条形磁体的磁场，并有N、S极。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_ampere_rule",
+      "name": "安培定则",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "用右手握住通电螺线管，四指指向电流方向，大拇指所指的一端是N极。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_normal",
+      "name": "法线",
+      "module": "光学",
+      "chapter": "光的反射",
+      "description": "过入射点并垂直于反射面的直线。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_incidence_angle",
+      "name": "入射角",
+      "module": "光学",
+      "chapter": "光的反射",
+      "description": "入射光线与法线的夹角。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_reflection_angle",
+      "name": "反射角",
+      "module": "光学",
+      "chapter": "光的反射",
+      "description": "反射光线与法线的夹角。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_focus",
+      "name": "焦点",
+      "module": "光学",
+      "chapter": "光的折射",
+      "description": "平行于主光轴的光经凸透镜折射后会聚的点；凹透镜对应虚焦点。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_focal_length",
+      "name": "焦距",
+      "module": "光学",
+      "chapter": "光的折射",
+      "description": "光心到焦点的距离，用f表示。",
+      "formula": "",
+      "symbol": "f"
+    },
+    {
+      "concept_id": "opt_object_distance",
+      "name": "物距",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "description": "物体到透镜光心的距离，用u表示。",
+      "formula": "",
+      "symbol": "u"
+    },
+    {
+      "concept_id": "opt_image_distance",
+      "name": "像距",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "description": "像到透镜光心的距离，用v表示。",
+      "formula": "",
+      "symbol": "v"
+    },
+    {
+      "concept_id": "opt_real_image",
+      "name": "实像",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "description": "由实际光线会聚形成、能够在光屏上承接到的像。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_virtual_image",
+      "name": "虚像",
+      "module": "光学",
+      "chapter": "凸透镜成像",
+      "description": "由实际光线反向延长线会聚形成、不能在光屏上承接到的像。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "energy_energy",
+      "name": "能量",
+      "module": "能量",
+      "chapter": "能量与转化",
+      "description": "物体能够对外做功，表明物体具有能量；能量有多种存在形式。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "energy_energy_conversion",
+      "name": "能量转化",
+      "module": "能量",
+      "chapter": "能量与转化",
+      "description": "能量从一种形式转变为另一种形式的过程。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "energy_energy_transfer",
+      "name": "能量转移",
+      "module": "能量",
+      "chapter": "能量与转化",
+      "description": "同一种能量从一个物体转移到另一个物体的过程。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "energy_efficiency",
+      "name": "效率",
+      "module": "能量",
+      "chapter": "能量与转化",
+      "description": "表示能量或功有效利用程度的比值思想；机械效率常用有用功与总功之比，热机效率常用有用功与燃料完全燃烧放出热量之比。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_vibration",
+      "name": "振动",
+      "module": "力学",
+      "chapter": "声现象",
+      "description": "物体在某一位置附近做往复运动的现象；发声体通常都在振动。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_potential_energy",
+      "name": "势能",
+      "module": "力学",
+      "chapter": "功和功率",
+      "description": "物体由于位置或发生弹性形变而具有的能量，包括重力势能和弹性势能。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_incident_point",
+      "name": "入射点",
+      "module": "光学",
+      "chapter": "光的反射",
+      "description": "入射光线射到反射面或两种介质分界面上的点。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_refracted_ray",
+      "name": "折射光线",
+      "module": "光学",
+      "chapter": "光的折射",
+      "description": "光从一种介质进入另一种介质发生折射后，在第二种介质中传播的光线。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_refraction_angle",
+      "name": "折射角",
+      "module": "光学",
+      "chapter": "光的折射",
+      "description": "折射光线与法线的夹角。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_optical_center",
+      "name": "光心",
+      "module": "光学",
+      "chapter": "光的折射",
+      "description": "薄透镜的中心附近可看作光心，经过光心的光线传播方向近似不变。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "opt_principal_axis",
+      "name": "主光轴",
+      "module": "光学",
+      "chapter": "光的折射",
+      "description": "通过透镜两个球面球心的直线称为主光轴。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_magnetism_property",
+      "name": "磁性",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "磁体能够吸引铁、钴、镍等物质的性质。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_magnet",
+      "name": "磁体",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "具有磁性的物体叫磁体。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_oersted_experiment",
+      "name": "奥斯特实验",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "通电导线附近的小磁针发生偏转，说明电流周围存在磁场，揭示了电与磁的联系。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_electromagnet_factors",
+      "name": "影响电磁铁磁性强弱的因素",
+      "module": "电磁学",
+      "chapter": "电与磁",
+      "description": "电磁铁磁性强弱与电流大小、线圈匝数以及是否有铁芯等因素有关。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_electric_heating",
+      "name": "电流的热效应",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "电流通过导体时，电能转化为内能，导体会发热。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_measure_lamp_power",
+      "name": "测量小灯泡的电功率",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "用电压表测小灯泡两端电压、电流表测通过灯泡的电流，利用P=UI计算电功率，并比较额定功率与实际功率。",
+      "formula": "P=UI",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_power_source",
+      "name": "电源",
+      "module": "电磁学",
+      "chapter": "电路基础",
+      "description": "提供电能、维持电路两端电压的装置，工作时把其他形式的能转化为电能。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_series_current_rule",
+      "name": "串联电路电流规律",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "串联电路中各处电流相等。",
+      "formula": "I=I₁=I₂=…",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_series_voltage_rule",
+      "name": "串联电路电压规律",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "串联电路两端总电压等于各部分电路两端电压之和。",
+      "formula": "U=U₁+U₂+…",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_series_resistance_rule",
+      "name": "串联电路电阻关系",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "串联电路总电阻等于各串联电阻之和。",
+      "formula": "R=R₁+R₂+…",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_parallel_current_rule",
+      "name": "并联电路电流规律",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "并联电路干路电流等于各支路电流之和。",
+      "formula": "I=I₁+I₂+…",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_parallel_voltage_rule",
+      "name": "并联电路电压规律",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "并联电路各支路两端电压相等，并等于电源两端电压。",
+      "formula": "U=U₁=U₂=…",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_parallel_resistance_rule",
+      "name": "并联电路电阻关系",
+      "module": "电磁学",
+      "chapter": "欧姆定律",
+      "description": "并联电路总电阻的倒数等于各支路电阻倒数之和；总电阻小于任一支路电阻。",
+      "formula": "1/R=1/R₁+1/R₂+…",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_measurement_error",
+      "name": "测量误差",
+      "module": "力学",
+      "chapter": "机械运动",
+      "description": "测量值与真实值之间的差异。误差不能完全消除，多次测量求平均值等方法可减小误差；错误操作属于错误。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_volume_measurement",
+      "name": "体积测量",
+      "module": "力学",
+      "chapter": "质量与密度",
+      "description": "用量筒测量液体体积，视线与凹液面最低处相平；用排液法测不溶于液体且能浸没的固体体积。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_spring_dynamometer",
+      "name": "弹簧测力计",
+      "module": "力学",
+      "chapter": "力",
+      "description": "在弹性限度内，弹簧伸长量与所受拉力成正比。使用时检查量程、分度值和零点，拉力沿弹簧轴线，读数时视线正对刻度。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_force_interaction",
+      "name": "力的相互作用",
+      "module": "力学",
+      "chapter": "力",
+      "description": "物体间力的作用是相互的。一对相互作用力大小相等、方向相反、作用在不同物体上，同时产生和消失。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_motion_relativity",
+      "name": "运动和静止的相对性",
+      "module": "力学",
+      "chapter": "机械运动",
+      "description": "运动或静止是相对于所选参照物而言的；同一物体相对于不同参照物可以有不同的运动状态。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_household_wiring",
+      "name": "家庭电路接线规则",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "description": "用电器和插座并联；开关串联在火线与被控制用电器之间。螺口灯座中心触点经开关接火线，螺纹接零线；三孔插座按左零右火上接地连接。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_semiconductor",
+      "name": "半导体",
+      "module": "电磁学",
+      "chapter": "电流与电路",
+      "description": "半导体的导电能力介于导体和绝缘体之间，并可随温度、光照或掺杂等条件改变；可用于二极管、光敏和热敏器件。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "elec_superconductor",
+      "name": "超导体",
+      "module": "电磁学",
+      "chapter": "电流与电路",
+      "description": "某些材料在特定条件下电阻降为零，称为超导现象；超导应用需要满足材料和温度等条件。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_material_states",
+      "name": "物质的三态",
+      "module": "热学",
+      "chapter": "物态变化",
+      "description": "固态通常有一定形状和体积，液态通常有一定体积而无固定形状，气态通常没有固定形状和体积；状态变化伴随吸热或放热。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "micro_universe_structure",
+      "name": "宇宙的层次结构",
+      "module": "跨学科支撑",
+      "chapter": "物质与宇宙",
+      "description": "地球属于太阳系，太阳系属于银河系。认识宇宙中天体及其层次关系，并区分宏观宇宙与微观物质结构。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "micro_nanometer_material",
+      "name": "纳米材料",
+      "module": "跨学科支撑",
+      "chapter": "物质与材料",
+      "description": "纳米是长度单位，1 nm=10⁻⁹ m。纳米尺度材料的部分性质可与宏观材料不同，应结合具体材料和应用讨论。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "mech_material_elasticity",
+      "name": "物质的弹性",
+      "module": "力学",
+      "chapter": "力",
+      "description": "物体受力时发生形变，撤去力后能够恢复原状，这种物理属性称为弹性。超过弹性限度可能不能完全恢复；应区分材料的弹性、弹性形变和形变产生的弹力。",
+      "formula": "",
+      "symbol": ""
+    },
+    {
+      "concept_id": "therm_thermal_conductivity",
+      "name": "导热性",
+      "module": "热学",
+      "chapter": "内能",
+      "description": "导热性描述材料通过热传导传递热量的能力。比较材料导热性能时应控制形状尺寸、温差等条件；导热快慢不等于吸收相同热量后温度变化大小，不能与比热容混淆。",
+      "formula": "",
+      "symbol": ""
+    }
+  ],
+  "aliases": [
+    {
+      "source": "I-U图像分析",
+      "concept_ids": [
+        "elec_ohm_law",
+        "elec_resistance"
+      ],
+      "task": "I-U图像分析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "两种电荷",
+      "concept_ids": [
+        "elec_positive_charge",
+        "elec_negative_charge"
+      ],
+      "task": "电荷种类辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "串、并联电路的设计",
+      "concept_ids": [
+        "elec_series_circuit",
+        "elec_parallel_circuit"
+      ],
+      "task": "按控制要求设计电路",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "串联电路和并联电路的辨别",
+      "concept_ids": [
+        "elec_series_circuit",
+        "elec_parallel_circuit"
+      ],
+      "task": "串并联辨别",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "串联电路的电压规律",
+      "concept_ids": [
+        "elec_series_voltage_rule"
+      ],
+      "task": "串联电压关系应用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "串联电路的电流规律",
+      "concept_ids": [
+        "elec_series_current_rule"
+      ],
+      "task": "串联电流关系应用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "二力平衡的条件及其应用",
+      "concept_ids": [
+        "mech_balance_forces"
+      ],
+      "task": "二力平衡条件应用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "产生感应电流的条件",
+      "concept_ids": [
+        "elec_electromagnetic_induction"
+      ],
+      "task": "感应电流产生条件辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "伏安法测电阻的探究实验",
+      "concept_ids": [
+        "elec_伏安法测电阻"
+      ],
+      "task": "伏安法测电阻实验",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "作光的反射光路图",
+      "concept_ids": [
+        "opt_reflection_law"
+      ],
+      "task": "反射光路作图",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "作光的折射光路图",
+      "concept_ids": [
+        "opt_refraction_law"
+      ],
+      "task": "折射光路作图",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "做功改变物体内能",
+      "concept_ids": [
+        "therm_改变内能的方式"
+      ],
+      "task": "辨析做功改变内能",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "光的反射",
+      "concept_ids": [
+        "opt_reflection_law"
+      ],
+      "task": "反射现象与规律",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "光的折射",
+      "concept_ids": [
+        "opt_refraction_law"
+      ],
+      "task": "折射现象与规律",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "光的直线传播及其应用",
+      "concept_ids": [
+        "opt_rectilinear_propagation"
+      ],
+      "task": "直线传播情境应用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "凝华及凝华放热",
+      "concept_ids": [
+        "therm_升华与凝华"
+      ],
+      "task": "凝华与放热辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "凸透镜三条特殊光线",
+      "concept_ids": [
+        "opt_凸透镜对光的作用",
+        "opt_focus",
+        "opt_optical_center"
+      ],
+      "task": "透镜特殊光线作图",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "凸透镜成像作图",
+      "concept_ids": [
+        "opt_lens_imaging"
+      ],
+      "task": "凸透镜成像作图",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "凸透镜的会聚作用",
+      "concept_ids": [
+        "opt_凸透镜对光的作用"
+      ],
+      "task": "会聚作用辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "凹透镜的发散作用",
+      "concept_ids": [
+        "opt_凹透镜对光的作用"
+      ],
+      "task": "发散作用辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "分子间相互作用力",
+      "concept_ids": [
+        "therm_分子间作用力"
+      ],
+      "task": "分子作用力辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "刻度尺的使用",
+      "concept_ids": [
+        "mech_length_measure"
+      ],
+      "task": "刻度尺读数与操作",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "力作用的相互性",
+      "concept_ids": [
+        "mech_force_interaction"
+      ],
+      "task": "相互作用力辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "力的三要素及力的示意图",
+      "concept_ids": [
+        "mech_force_elements",
+        "mech_force_diagram"
+      ],
+      "task": "力的示意图表达",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "力的作用是相互的",
+      "concept_ids": [
+        "mech_force_interaction"
+      ],
+      "task": "相互作用力辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "力的方向",
+      "concept_ids": [
+        "mech_force_elements"
+      ],
+      "task": "力的方向辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "力的施力物体和受力物体",
+      "concept_ids": [
+        "mech_force_concept"
+      ],
+      "task": "施力与受力物体辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "力的示意图判读",
+      "concept_ids": [
+        "mech_force_diagram"
+      ],
+      "task": "力的示意图判读",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "力臂的画法",
+      "concept_ids": [
+        "mech_lever"
+      ],
+      "task": "力臂作图",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "功率的测量实验",
+      "concept_ids": [
+        "mech_power"
+      ],
+      "task": "功率测量实验",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "功率的计算",
+      "concept_ids": [
+        "mech_power"
+      ],
+      "task": "功率计算",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "功的计算及应用",
+      "concept_ids": [
+        "mech_work"
+      ],
+      "task": "功的计算与条件判断",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "动圈式话筒的构造和原理",
+      "concept_ids": [
+        "elec_electromagnetic_induction"
+      ],
+      "task": "装置原理辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "动能和势能的大小变化",
+      "concept_ids": [
+        "mech_kinetic_energy",
+        "mech_potential_energy"
+      ],
+      "task": "能量大小变化分析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "匀速直线运动特点",
+      "concept_ids": [
+        "mech_uniform_motion"
+      ],
+      "task": "匀速运动辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "半导体特点及作用",
+      "concept_ids": [
+        "elec_semiconductor"
+      ],
+      "task": "材料性质与应用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "原子结构",
+      "concept_ids": [
+        "micro_atomic_structure"
+      ],
+      "task": "微观结构辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "反射光路图的判读",
+      "concept_ids": [
+        "opt_reflection_law"
+      ],
+      "task": "反射光路判读",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "发电机的构造和原理",
+      "concept_ids": [
+        "elec_generator"
+      ],
+      "task": "发电机原理辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "变阻器及其应用",
+      "concept_ids": [
+        "elec_滑动变阻器"
+      ],
+      "task": "变阻器接法与应用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "固体密度的测量",
+      "concept_ids": [
+        "mech_density_measurement"
+      ],
+      "task": "固体密度测量",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "声传递信息",
+      "concept_ids": [
+        "mech_sound_propagation"
+      ],
+      "task": "声音传递信息",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "声音的响度",
+      "concept_ids": [
+        "mech_loudness"
+      ],
+      "task": "响度辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "声音的音色",
+      "concept_ids": [
+        "mech_timbre"
+      ],
+      "task": "音色辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "声音的音调",
+      "concept_ids": [
+        "mech_pitch"
+      ],
+      "task": "音调辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "太阳能及其利用与转化",
+      "concept_ids": [
+        "energy_solar_energy",
+        "energy_energy_conversion"
+      ],
+      "task": "太阳能利用与转化",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "太阳能的相关计算",
+      "concept_ids": [
+        "energy_solar_energy",
+        "energy_efficiency"
+      ],
+      "task": "太阳能利用计算",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "宇宙",
+      "concept_ids": [
+        "micro_universe_structure"
+      ],
+      "task": "宇宙层次辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "安全用电原则",
+      "concept_ids": [
+        "elec_安全用电"
+      ],
+      "task": "安全用电判断",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "实物的电路连接",
+      "concept_ids": [
+        "elec_电路"
+      ],
+      "task": "实物电路连接",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "实用电动机的构造、特点和应用",
+      "concept_ids": [
+        "elec_electric_motor"
+      ],
+      "task": "电动机原理与应用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "实际功率",
+      "concept_ids": [
+        "elec_额定功率与实际功率"
+      ],
+      "task": "实际功率判断",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "实验数据分析",
+      "concept_ids": [],
+      "task": "实验数据分析",
+      "basis": "通用考法；具体知识点必须结合实验任务确定"
+    },
+    {
+      "source": "家庭电路工作电压、零线、火线的辨别",
+      "concept_ids": [
+        "elec_家庭电路",
+        "elec_测电笔"
+      ],
+      "task": "家庭电路导线辨别",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "家庭电路的故障分析",
+      "concept_ids": [
+        "elec_电路故障分析",
+        "elec_家庭电路"
+      ],
+      "task": "家庭电路故障判断",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "家庭电路的组成",
+      "concept_ids": [
+        "elec_家庭电路"
+      ],
+      "task": "家庭电路组成辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "家庭电路的连接",
+      "concept_ids": [
+        "elec_household_wiring"
+      ],
+      "task": "家庭电路接线与纠错",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "密度公式及其应用",
+      "concept_ids": [
+        "mech_density"
+      ],
+      "task": "密度公式应用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "密度及其特性",
+      "concept_ids": [
+        "mech_density"
+      ],
+      "task": "密度特性辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "左手定则",
+      "concept_ids": [
+        "elec_磁场对电流的作用"
+      ],
+      "task": "通电导线受力方向辨析",
+      "basis": "作为方向判断的拓展考法，不新增初中主知识点"
+    },
+    {
+      "source": "平衡状态的判断",
+      "concept_ids": [
+        "mech_balance_forces"
+      ],
+      "task": "平衡状态判断",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "平面镜成像作图",
+      "concept_ids": [
+        "opt_平面镜成像"
+      ],
+      "task": "平面镜成像作图",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "平面镜成像特点",
+      "concept_ids": [
+        "opt_平面镜成像"
+      ],
+      "task": "平面镜成像特点应用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "平面镜的应用",
+      "concept_ids": [
+        "opt_平面镜应用"
+      ],
+      "task": "平面镜情境应用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "并联电路的电压规律",
+      "concept_ids": [
+        "elec_parallel_voltage_rule"
+      ],
+      "task": "并联电压关系应用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "并联电路的电流规律",
+      "concept_ids": [
+        "elec_parallel_current_rule"
+      ],
+      "task": "并联电流关系应用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "弹簧测力计及其使用",
+      "concept_ids": [
+        "mech_spring_dynamometer"
+      ],
+      "task": "测力计读数与操作",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "影响电磁铁磁性强弱的因素及其探究",
+      "concept_ids": [
+        "elec_electromagnet_factors"
+      ],
+      "task": "电磁铁影响因素探究",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "惯性及其现象",
+      "concept_ids": [
+        "mech_inertia"
+      ],
+      "task": "惯性现象解释",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "探究不同物质的吸热能力",
+      "concept_ids": [
+        "therm_specific_heat"
+      ],
+      "task": "比较吸热能力实验",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "探究串、并联电路中的电压规律实验",
+      "concept_ids": [
+        "elec_series_voltage_rule",
+        "elec_parallel_voltage_rule"
+      ],
+      "task": "串并联电压探究",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "探究串并联电路中的电流特点实验",
+      "concept_ids": [
+        "elec_series_current_rule",
+        "elec_parallel_current_rule"
+      ],
+      "task": "串并联电流探究",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "探究杠杆的平衡条件实验",
+      "concept_ids": [
+        "mech_lever_balance"
+      ],
+      "task": "杠杆平衡探究",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "探究用电器的电功率实验",
+      "concept_ids": [
+        "elec_measure_lamp_power"
+      ],
+      "task": "电功率测量实验",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "探究电流与电压、电阻的关系实验",
+      "concept_ids": [
+        "elec_ohm_law"
+      ],
+      "task": "电流与电压电阻关系探究",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "探究电流与电压的关系",
+      "concept_ids": [
+        "elec_ohm_law"
+      ],
+      "task": "电流与电压关系探究",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "控制变量法",
+      "concept_ids": [],
+      "task": "控制变量法",
+      "basis": "通用探究方法不替代主知识点"
+    },
+    {
+      "source": "提出可探究问题",
+      "concept_ids": [],
+      "task": "提出可探究问题",
+      "basis": "通用探究任务不替代主知识点"
+    },
+    {
+      "source": "摩擦力的大小",
+      "concept_ids": [
+        "mech_friction"
+      ],
+      "task": "摩擦力大小判断",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "斜面机械效率的测量实验",
+      "concept_ids": [
+        "mech_efficiency",
+        "mech_inclined_plane"
+      ],
+      "task": "斜面机械效率测量",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "斜面的机械效率",
+      "concept_ids": [
+        "mech_efficiency",
+        "mech_inclined_plane"
+      ],
+      "task": "斜面机械效率分析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "时间及其测量",
+      "concept_ids": [
+        "mech_time_measure"
+      ],
+      "task": "时间测量",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "时间速度路程的图像分析",
+      "concept_ids": [
+        "mech_motion_speed",
+        "mech_avg_speed"
+      ],
+      "task": "运动图像分析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "机械效率的计算",
+      "concept_ids": [
+        "mech_efficiency"
+      ],
+      "task": "机械效率计算",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "机械能及其转化",
+      "concept_ids": [
+        "mech_mechanical_energy",
+        "mech_mechanical_energy_conversion"
+      ],
+      "task": "机械能转化分析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "机械运动及其分类",
+      "concept_ids": [
+        "mech_motion_reference",
+        "mech_uniform_motion",
+        "mech_variable_motion"
+      ],
+      "task": "运动类型辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "机械运动的定义",
+      "concept_ids": [
+        "mech_motion_reference"
+      ],
+      "task": "运动描述",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "杠杆中最小力的问题",
+      "concept_ids": [
+        "mech_lever_balance"
+      ],
+      "task": "杠杆最小力分析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "杠杆及其五要素",
+      "concept_ids": [
+        "mech_lever"
+      ],
+      "task": "杠杆五要素辨识",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "杠杆的分类",
+      "concept_ids": [
+        "mech_lever"
+      ],
+      "task": "杠杆类型判断",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "杠杆的动态平衡分析",
+      "concept_ids": [
+        "mech_lever_balance"
+      ],
+      "task": "杠杆动态平衡分析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "杠杆的平衡分析法及其应用",
+      "concept_ids": [
+        "mech_lever_balance"
+      ],
+      "task": "杠杆平衡条件应用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "杠杆的平衡条件",
+      "concept_ids": [
+        "mech_lever_balance"
+      ],
+      "task": "杠杆平衡条件应用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "核聚变",
+      "concept_ids": [
+        "energy_nuclear_fusion_fission"
+      ],
+      "task": "核聚变核裂变辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "根据实物图画电路图",
+      "concept_ids": [
+        "elec_电路"
+      ],
+      "task": "实物图转换电路图",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "欧姆定律及其应用",
+      "concept_ids": [
+        "elec_ohm_law"
+      ],
+      "task": "欧姆定律应用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "比热容的定义及其计算公式",
+      "concept_ids": [
+        "therm_specific_heat"
+      ],
+      "task": "比热容定义与计算",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "汽化及汽化吸热的特点",
+      "concept_ids": [
+        "therm_汽化与液化"
+      ],
+      "task": "汽化与吸热辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "测电笔的使用",
+      "concept_ids": [
+        "elec_测电笔"
+      ],
+      "task": "测电笔操作",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "测量物体运动的平均速度",
+      "concept_ids": [
+        "mech_avg_speed"
+      ],
+      "task": "平均速度测量",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "浮力大小的计算",
+      "concept_ids": [
+        "mech_buoyancy",
+        "mech_archimedes"
+      ],
+      "task": "浮力计算",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "液体压强的特点",
+      "concept_ids": [
+        "mech_liquid_pressure"
+      ],
+      "task": "液体压强影响因素",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "液体压强计算公式的应用",
+      "concept_ids": [
+        "mech_liquid_pressure"
+      ],
+      "task": "液体压强计算",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "液体密度的测量",
+      "concept_ids": [
+        "mech_density_measurement"
+      ],
+      "task": "液体密度测量",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "温度、热量与内能的关系",
+      "concept_ids": [
+        "therm_temperature",
+        "therm_热量",
+        "therm_internal_energy"
+      ],
+      "task": "温度热量内能辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "温度及温度计的使用与读数",
+      "concept_ids": [
+        "therm_temperature",
+        "therm_thermometer"
+      ],
+      "task": "温度计读数与操作",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "滑动变阻器的原理及其使用",
+      "concept_ids": [
+        "elec_滑动变阻器"
+      ],
+      "task": "滑动变阻器接法",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "滑动变阻器的原理及应用",
+      "concept_ids": [
+        "elec_滑动变阻器"
+      ],
+      "task": "滑动变阻器应用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "滑轮（组）机械效率的测量实验",
+      "concept_ids": [
+        "mech_efficiency",
+        "mech_滑轮组"
+      ],
+      "task": "滑轮组机械效率测量",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "热传导",
+      "concept_ids": [
+        "therm_热传递"
+      ],
+      "task": "热传递方式辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "热传递改变物体内能",
+      "concept_ids": [
+        "therm_改变内能的方式",
+        "therm_热传递"
+      ],
+      "task": "热传递改变内能",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "热机的四个冲程",
+      "concept_ids": [
+        "therm_heat_engine"
+      ],
+      "task": "四冲程辨识",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "热机的效率",
+      "concept_ids": [
+        "therm_heat_engine_efficiency"
+      ],
+      "task": "热机效率分析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "热量的概念",
+      "concept_ids": [
+        "therm_热量"
+      ],
+      "task": "热量概念辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "热量的计算",
+      "concept_ids": [
+        "therm_heat_calculation"
+      ],
+      "task": "热量计算",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "焦耳定律的应用",
+      "concept_ids": [
+        "elec_joule_law"
+      ],
+      "task": "焦耳定律应用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "熔化和凝固的温度—时间图象",
+      "concept_ids": [
+        "therm_物态变化图像",
+        "therm_melting_freezing"
+      ],
+      "task": "熔化凝固图像分析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "燃料的热值",
+      "concept_ids": [
+        "therm_calorific_value"
+      ],
+      "task": "热值定义与应用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "物体带电情况的判断",
+      "concept_ids": [
+        "elec_charge_interaction",
+        "elec_charged_body_property"
+      ],
+      "task": "带电情况判断",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "物体的浮沉条件及其应用",
+      "concept_ids": [
+        "mech_float_sink_condition"
+      ],
+      "task": "浮沉条件应用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "物态变化",
+      "concept_ids": [
+        "therm_melting_freezing",
+        "therm_汽化与液化",
+        "therm_升华与凝华"
+      ],
+      "task": "物态变化辨析",
+      "basis": "上位标签；需按题干涉及的具体变化筛选"
+    },
+    {
+      "source": "物理学方法",
+      "concept_ids": [],
+      "task": "科学探究方法",
+      "basis": "通用方法不替代主知识点"
+    },
+    {
+      "source": "物质的三态",
+      "concept_ids": [
+        "therm_material_states"
+      ],
+      "task": "物质状态辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电功与热量的综合计算",
+      "concept_ids": [
+        "elec_electric_work",
+        "therm_heat_calculation"
+      ],
+      "task": "电能与热量联合计算",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电功率的测量",
+      "concept_ids": [
+        "elec_measure_lamp_power"
+      ],
+      "task": "电功率测量实验",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电功率的计算",
+      "concept_ids": [
+        "elec_electric_power"
+      ],
+      "task": "电功率计算",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电功的计算",
+      "concept_ids": [
+        "elec_electric_work"
+      ],
+      "task": "电功计算",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电压的测量及电压表的使用",
+      "concept_ids": [
+        "elec_电压表"
+      ],
+      "task": "电压表接法与读数",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电压表的连接",
+      "concept_ids": [
+        "elec_电压表"
+      ],
+      "task": "电压表接法",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电流的形成",
+      "concept_ids": [
+        "elec_current"
+      ],
+      "task": "电流形成辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电流的方向",
+      "concept_ids": [
+        "elec_current_direction"
+      ],
+      "task": "电流方向辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电流表的连接",
+      "concept_ids": [
+        "elec_电流表"
+      ],
+      "task": "电流表接法",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电流的测量及电流表的使用",
+      "concept_ids": [
+        "elec_电流表"
+      ],
+      "task": "电流表接法与读数",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电源及其能量转化",
+      "concept_ids": [
+        "elec_power_source",
+        "energy_energy_conversion"
+      ],
+      "task": "电源能量转化",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电磁感应",
+      "concept_ids": [
+        "elec_electromagnetic_induction"
+      ],
+      "task": "电磁感应辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电磁波在日常生活中的应用",
+      "concept_ids": [
+        "elec_电磁波"
+      ],
+      "task": "电磁波应用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电磁波的传播",
+      "concept_ids": [
+        "elec_电磁波"
+      ],
+      "task": "电磁波传播辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电磁继电器的组成、原理和特点",
+      "concept_ids": [
+        "elec_电磁继电器"
+      ],
+      "task": "继电器原理与控制",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电磁铁的其他应用",
+      "concept_ids": [
+        "elec_电磁铁"
+      ],
+      "task": "电磁铁应用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电磁铁的构造和原理",
+      "concept_ids": [
+        "elec_电磁铁"
+      ],
+      "task": "电磁铁构造辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电荷及带电粒子",
+      "concept_ids": [
+        "elec_charge",
+        "micro_atomic_structure"
+      ],
+      "task": "电荷与带电粒子辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电荷间的相互作用规律",
+      "concept_ids": [
+        "elec_charge_interaction"
+      ],
+      "task": "电荷相互作用判断",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电路故障的判断",
+      "concept_ids": [
+        "elec_电路故障分析"
+      ],
+      "task": "电路故障判断",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电路的三种状态",
+      "concept_ids": [
+        "elec_closed_circuit",
+        "elec_open_circuit",
+        "elec_short_circuit"
+      ],
+      "task": "通断短路辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电路的动态分析",
+      "concept_ids": [
+        "elec_ohm_law"
+      ],
+      "task": "电路动态分析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电路的基本连接方式",
+      "concept_ids": [
+        "elec_series_circuit",
+        "elec_parallel_circuit"
+      ],
+      "task": "连接方式辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电路的构成及电路图",
+      "concept_ids": [
+        "elec_电路"
+      ],
+      "task": "电路组成与符号",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电路的组成及元件作用",
+      "concept_ids": [
+        "elec_电路"
+      ],
+      "task": "电路组成与元件作用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电路设计与调试",
+      "concept_ids": [
+        "elec_电路"
+      ],
+      "task": "电路设计与调试",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电路连接和纠错",
+      "concept_ids": [
+        "elec_电路"
+      ],
+      "task": "电路连接与纠错",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电阻的串联",
+      "concept_ids": [
+        "elec_series_resistance_rule"
+      ],
+      "task": "串联电阻计算",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "电阻的并联",
+      "concept_ids": [
+        "elec_parallel_resistance_rule"
+      ],
+      "task": "并联电阻计算",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "直流电动机的构造原理与工作过程",
+      "concept_ids": [
+        "elec_electric_motor"
+      ],
+      "task": "电动机工作过程",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "磁场对通电导线的作用",
+      "concept_ids": [
+        "elec_磁场对电流的作用"
+      ],
+      "task": "磁场对电流作用辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "磁感线及其特点",
+      "concept_ids": [
+        "elec_magnetic_field_lines"
+      ],
+      "task": "磁感线判读与作图",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "科学家及其贡献",
+      "concept_ids": [],
+      "task": "科学史辨析",
+      "basis": "宽泛来源标签；需结合具体发现标注知识点"
+    },
+    {
+      "source": "科学探索",
+      "concept_ids": [],
+      "task": "科学探究方法",
+      "basis": "宽泛任务标签；需结合具体任务标注知识点"
+    },
+    {
+      "source": "能源",
+      "concept_ids": [
+        "energy_energy_classification"
+      ],
+      "task": "能源分类与利用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "能源及其分类",
+      "concept_ids": [
+        "energy_energy_classification"
+      ],
+      "task": "能源分类",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "能量的利用效率",
+      "concept_ids": [
+        "energy_efficiency"
+      ],
+      "task": "能量利用效率分析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "能量的转化或转移",
+      "concept_ids": [
+        "energy_energy_conversion",
+        "energy_energy_transfer"
+      ],
+      "task": "能量转化与转移辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "误差及其减小方法",
+      "concept_ids": [
+        "mech_measurement_error"
+      ],
+      "task": "误差判断与减小",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "质量及其特性",
+      "concept_ids": [
+        "mech_mass"
+      ],
+      "task": "质量特性辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "质量的估测",
+      "concept_ids": [
+        "mech_mass"
+      ],
+      "task": "质量估测",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "超声波与人耳听觉频率范围",
+      "concept_ids": [
+        "mech_ultrasound_infrasound"
+      ],
+      "task": "频率范围辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "运动和静止的相对性",
+      "concept_ids": [
+        "mech_motion_relativity"
+      ],
+      "task": "参照物与相对运动",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "运动的描述",
+      "concept_ids": [
+        "mech_motion_reference"
+      ],
+      "task": "选择参照物描述运动",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "近视与远视的矫正",
+      "concept_ids": [
+        "opt_眼镜与视力矫正"
+      ],
+      "task": "视力矫正辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "透镜及其特点与分类",
+      "concept_ids": [
+        "opt_透镜"
+      ],
+      "task": "透镜分类",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "透镜的光路图",
+      "concept_ids": [
+        "opt_凸透镜对光的作用",
+        "opt_凹透镜对光的作用"
+      ],
+      "task": "透镜光路作图",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "通电直导线周围的磁场",
+      "concept_ids": [
+        "elec_电流的磁效应"
+      ],
+      "task": "电流磁场判断",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "通电螺线管的极性和电流方向的判断",
+      "concept_ids": [
+        "elec_ampere_rule",
+        "elec_solenoid"
+      ],
+      "task": "螺线管极性与电流方向",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "通电螺线管的磁场",
+      "concept_ids": [
+        "elec_solenoid"
+      ],
+      "task": "螺线管磁场判断",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "速度与物体运动",
+      "concept_ids": [
+        "mech_motion_speed"
+      ],
+      "task": "运动快慢比较",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "速度公式及其应用",
+      "concept_ids": [
+        "mech_motion_speed"
+      ],
+      "task": "速度路程时间计算",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "重力及其大小的计算",
+      "concept_ids": [
+        "mech_force_gravity"
+      ],
+      "task": "重力计算",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "重力示意图",
+      "concept_ids": [
+        "mech_force_gravity",
+        "mech_force_diagram"
+      ],
+      "task": "重力示意图作图",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "量筒的选择和使用",
+      "concept_ids": [
+        "mech_volume_measurement"
+      ],
+      "task": "量筒选择与读数",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "长度及其测量",
+      "concept_ids": [
+        "mech_length_measure"
+      ],
+      "task": "长度测量",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "长度的估测",
+      "concept_ids": [
+        "mech_length_measure"
+      ],
+      "task": "长度估测",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "音调及其影响因素",
+      "concept_ids": [
+        "mech_pitch"
+      ],
+      "task": "音调影响因素",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "额定功率",
+      "concept_ids": [
+        "elec_额定功率与实际功率"
+      ],
+      "task": "额定功率辨析",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "验电器的原理及使用",
+      "concept_ids": [
+        "elec_electroscope"
+      ],
+      "task": "验电器原理与使用",
+      "basis": "依据概念定义与任务边界对应"
+    },
+    {
+      "source": "物质的弹性",
+      "concept_ids": [
+        "mech_material_elasticity"
+      ],
+      "task": "",
+      "basis": "课程标准1.2.1的材料物理属性，区别于弹力"
+    },
+    {
+      "source": "导热性",
+      "concept_ids": [
+        "therm_thermal_conductivity"
+      ],
+      "task": "",
+      "basis": "课程标准1.2.1的材料物理属性，区别于比热容"
+    }
+  ],
+  "methods": [
+    {
+      "id": "identify",
+      "name": "概念与规则辨析"
+    },
+    {
+      "id": "calculate",
+      "name": "数值计算"
+    },
+    {
+      "id": "draw",
+      "name": "作图与连接"
+    },
+    {
+      "id": "experiment",
+      "name": "实验操作与探究"
+    },
+    {
+      "id": "graph",
+      "name": "图像与数据分析"
+    },
+    {
+      "id": "estimate",
+      "name": "估测与量级判断"
+    },
+    {
+      "id": "dynamic",
+      "name": "条件变化分析"
+    },
+    {
+      "id": "measure",
+      "name": "仪器读数与测量"
+    },
+    {
+      "id": "application",
+      "name": "情境与装置应用"
+    },
+    {
+      "id": "method",
+      "name": "科学探究方法"
+    },
+    {
+      "id": "task:I-U图像分析",
+      "name": "I-U图像分析",
+      "concept_ids": [
+        "elec_ohm_law",
+        "elec_resistance"
+      ]
+    },
+    {
+      "id": "task:电荷种类辨析",
+      "name": "电荷种类辨析",
+      "concept_ids": [
+        "elec_positive_charge",
+        "elec_negative_charge"
+      ]
+    },
+    {
+      "id": "task:按控制要求设计电路",
+      "name": "按控制要求设计电路",
+      "concept_ids": [
+        "elec_series_circuit",
+        "elec_parallel_circuit"
+      ]
+    },
+    {
+      "id": "task:串并联辨别",
+      "name": "串并联辨别",
+      "concept_ids": [
+        "elec_series_circuit",
+        "elec_parallel_circuit"
+      ]
+    },
+    {
+      "id": "task:串联电压关系应用",
+      "name": "串联电压关系应用",
+      "concept_ids": [
+        "elec_series_voltage_rule"
+      ]
+    },
+    {
+      "id": "task:串联电流关系应用",
+      "name": "串联电流关系应用",
+      "concept_ids": [
+        "elec_series_current_rule"
+      ]
+    },
+    {
+      "id": "task:二力平衡条件应用",
+      "name": "二力平衡条件应用",
+      "concept_ids": [
+        "mech_balance_forces"
+      ]
+    },
+    {
+      "id": "task:感应电流产生条件辨析",
+      "name": "感应电流产生条件辨析",
+      "concept_ids": [
+        "elec_electromagnetic_induction"
+      ]
+    },
+    {
+      "id": "task:伏安法测电阻实验",
+      "name": "伏安法测电阻实验",
+      "concept_ids": [
+        "elec_伏安法测电阻"
+      ]
+    },
+    {
+      "id": "task:反射光路作图",
+      "name": "反射光路作图",
+      "concept_ids": [
+        "opt_reflection_law"
+      ]
+    },
+    {
+      "id": "task:折射光路作图",
+      "name": "折射光路作图",
+      "concept_ids": [
+        "opt_refraction_law"
+      ]
+    },
+    {
+      "id": "task:辨析做功改变内能",
+      "name": "辨析做功改变内能",
+      "concept_ids": [
+        "therm_改变内能的方式"
+      ]
+    },
+    {
+      "id": "task:反射现象与规律",
+      "name": "反射现象与规律",
+      "concept_ids": [
+        "opt_reflection_law"
+      ]
+    },
+    {
+      "id": "task:折射现象与规律",
+      "name": "折射现象与规律",
+      "concept_ids": [
+        "opt_refraction_law"
+      ]
+    },
+    {
+      "id": "task:直线传播情境应用",
+      "name": "直线传播情境应用",
+      "concept_ids": [
+        "opt_rectilinear_propagation"
+      ]
+    },
+    {
+      "id": "task:凝华与放热辨析",
+      "name": "凝华与放热辨析",
+      "concept_ids": [
+        "therm_升华与凝华"
+      ]
+    },
+    {
+      "id": "task:透镜特殊光线作图",
+      "name": "透镜特殊光线作图",
+      "concept_ids": [
+        "opt_凸透镜对光的作用",
+        "opt_focus",
+        "opt_optical_center"
+      ]
+    },
+    {
+      "id": "task:凸透镜成像作图",
+      "name": "凸透镜成像作图",
+      "concept_ids": [
+        "opt_lens_imaging"
+      ]
+    },
+    {
+      "id": "task:会聚作用辨析",
+      "name": "会聚作用辨析",
+      "concept_ids": [
+        "opt_凸透镜对光的作用"
+      ]
+    },
+    {
+      "id": "task:发散作用辨析",
+      "name": "发散作用辨析",
+      "concept_ids": [
+        "opt_凹透镜对光的作用"
+      ]
+    },
+    {
+      "id": "task:分子作用力辨析",
+      "name": "分子作用力辨析",
+      "concept_ids": [
+        "therm_分子间作用力"
+      ]
+    },
+    {
+      "id": "task:刻度尺读数与操作",
+      "name": "刻度尺读数与操作",
+      "concept_ids": [
+        "mech_length_measure"
+      ]
+    },
+    {
+      "id": "task:相互作用力辨析",
+      "name": "相互作用力辨析",
+      "concept_ids": [
+        "mech_force_interaction"
+      ]
+    },
+    {
+      "id": "task:力的示意图表达",
+      "name": "力的示意图表达",
+      "concept_ids": [
+        "mech_force_elements",
+        "mech_force_diagram"
+      ]
+    },
+    {
+      "id": "task:力的方向辨析",
+      "name": "力的方向辨析",
+      "concept_ids": [
+        "mech_force_elements"
+      ]
+    },
+    {
+      "id": "task:施力与受力物体辨析",
+      "name": "施力与受力物体辨析",
+      "concept_ids": [
+        "mech_force_concept"
+      ]
+    },
+    {
+      "id": "task:力的示意图判读",
+      "name": "力的示意图判读",
+      "concept_ids": [
+        "mech_force_diagram"
+      ]
+    },
+    {
+      "id": "task:力臂作图",
+      "name": "力臂作图",
+      "concept_ids": [
+        "mech_lever"
+      ]
+    },
+    {
+      "id": "task:功率测量实验",
+      "name": "功率测量实验",
+      "concept_ids": [
+        "mech_power"
+      ]
+    },
+    {
+      "id": "task:功率计算",
+      "name": "功率计算",
+      "concept_ids": [
+        "mech_power"
+      ]
+    },
+    {
+      "id": "task:功的计算与条件判断",
+      "name": "功的计算与条件判断",
+      "concept_ids": [
+        "mech_work"
+      ]
+    },
+    {
+      "id": "task:装置原理辨析",
+      "name": "装置原理辨析",
+      "concept_ids": [
+        "elec_electromagnetic_induction"
+      ]
+    },
+    {
+      "id": "task:能量大小变化分析",
+      "name": "能量大小变化分析",
+      "concept_ids": [
+        "mech_kinetic_energy",
+        "mech_potential_energy"
+      ]
+    },
+    {
+      "id": "task:匀速运动辨析",
+      "name": "匀速运动辨析",
+      "concept_ids": [
+        "mech_uniform_motion"
+      ]
+    },
+    {
+      "id": "task:材料性质与应用",
+      "name": "材料性质与应用",
+      "concept_ids": [
+        "elec_semiconductor"
+      ]
+    },
+    {
+      "id": "task:微观结构辨析",
+      "name": "微观结构辨析",
+      "concept_ids": [
+        "micro_atomic_structure"
+      ]
+    },
+    {
+      "id": "task:反射光路判读",
+      "name": "反射光路判读",
+      "concept_ids": [
+        "opt_reflection_law"
+      ]
+    },
+    {
+      "id": "task:发电机原理辨析",
+      "name": "发电机原理辨析",
+      "concept_ids": [
+        "elec_generator"
+      ]
+    },
+    {
+      "id": "task:变阻器接法与应用",
+      "name": "变阻器接法与应用",
+      "concept_ids": [
+        "elec_滑动变阻器"
+      ]
+    },
+    {
+      "id": "task:固体密度测量",
+      "name": "固体密度测量",
+      "concept_ids": [
+        "mech_density_measurement"
+      ]
+    },
+    {
+      "id": "task:声音传递信息",
+      "name": "声音传递信息",
+      "concept_ids": [
+        "mech_sound_propagation"
+      ]
+    },
+    {
+      "id": "task:响度辨析",
+      "name": "响度辨析",
+      "concept_ids": [
+        "mech_loudness"
+      ]
+    },
+    {
+      "id": "task:音色辨析",
+      "name": "音色辨析",
+      "concept_ids": [
+        "mech_timbre"
+      ]
+    },
+    {
+      "id": "task:音调辨析",
+      "name": "音调辨析",
+      "concept_ids": [
+        "mech_pitch"
+      ]
+    },
+    {
+      "id": "task:太阳能利用与转化",
+      "name": "太阳能利用与转化",
+      "concept_ids": [
+        "energy_solar_energy",
+        "energy_energy_conversion"
+      ]
+    },
+    {
+      "id": "task:太阳能利用计算",
+      "name": "太阳能利用计算",
+      "concept_ids": [
+        "energy_solar_energy",
+        "energy_efficiency"
+      ]
+    },
+    {
+      "id": "task:宇宙层次辨析",
+      "name": "宇宙层次辨析",
+      "concept_ids": [
+        "micro_universe_structure"
+      ]
+    },
+    {
+      "id": "task:安全用电判断",
+      "name": "安全用电判断",
+      "concept_ids": [
+        "elec_安全用电"
+      ]
+    },
+    {
+      "id": "task:实物电路连接",
+      "name": "实物电路连接",
+      "concept_ids": [
+        "elec_电路"
+      ]
+    },
+    {
+      "id": "task:电动机原理与应用",
+      "name": "电动机原理与应用",
+      "concept_ids": [
+        "elec_electric_motor"
+      ]
+    },
+    {
+      "id": "task:实际功率判断",
+      "name": "实际功率判断",
+      "concept_ids": [
+        "elec_额定功率与实际功率"
+      ]
+    },
+    {
+      "id": "task:实验数据分析",
+      "name": "实验数据分析",
+      "concept_ids": []
+    },
+    {
+      "id": "task:家庭电路导线辨别",
+      "name": "家庭电路导线辨别",
+      "concept_ids": [
+        "elec_家庭电路",
+        "elec_测电笔"
+      ]
+    },
+    {
+      "id": "task:家庭电路故障判断",
+      "name": "家庭电路故障判断",
+      "concept_ids": [
+        "elec_电路故障分析",
+        "elec_家庭电路"
+      ]
+    },
+    {
+      "id": "task:家庭电路组成辨析",
+      "name": "家庭电路组成辨析",
+      "concept_ids": [
+        "elec_家庭电路"
+      ]
+    },
+    {
+      "id": "task:家庭电路接线与纠错",
+      "name": "家庭电路接线与纠错",
+      "concept_ids": [
+        "elec_household_wiring"
+      ]
+    },
+    {
+      "id": "task:密度公式应用",
+      "name": "密度公式应用",
+      "concept_ids": [
+        "mech_density"
+      ]
+    },
+    {
+      "id": "task:密度特性辨析",
+      "name": "密度特性辨析",
+      "concept_ids": [
+        "mech_density"
+      ]
+    },
+    {
+      "id": "task:通电导线受力方向辨析",
+      "name": "通电导线受力方向辨析",
+      "concept_ids": [
+        "elec_磁场对电流的作用"
+      ]
+    },
+    {
+      "id": "task:平衡状态判断",
+      "name": "平衡状态判断",
+      "concept_ids": [
+        "mech_balance_forces"
+      ]
+    },
+    {
+      "id": "task:平面镜成像作图",
+      "name": "平面镜成像作图",
+      "concept_ids": [
+        "opt_平面镜成像"
+      ]
+    },
+    {
+      "id": "task:平面镜成像特点应用",
+      "name": "平面镜成像特点应用",
+      "concept_ids": [
+        "opt_平面镜成像"
+      ]
+    },
+    {
+      "id": "task:平面镜情境应用",
+      "name": "平面镜情境应用",
+      "concept_ids": [
+        "opt_平面镜应用"
+      ]
+    },
+    {
+      "id": "task:并联电压关系应用",
+      "name": "并联电压关系应用",
+      "concept_ids": [
+        "elec_parallel_voltage_rule"
+      ]
+    },
+    {
+      "id": "task:并联电流关系应用",
+      "name": "并联电流关系应用",
+      "concept_ids": [
+        "elec_parallel_current_rule"
+      ]
+    },
+    {
+      "id": "task:测力计读数与操作",
+      "name": "测力计读数与操作",
+      "concept_ids": [
+        "mech_spring_dynamometer"
+      ]
+    },
+    {
+      "id": "task:电磁铁影响因素探究",
+      "name": "电磁铁影响因素探究",
+      "concept_ids": [
+        "elec_electromagnet_factors"
+      ]
+    },
+    {
+      "id": "task:惯性现象解释",
+      "name": "惯性现象解释",
+      "concept_ids": [
+        "mech_inertia"
+      ]
+    },
+    {
+      "id": "task:比较吸热能力实验",
+      "name": "比较吸热能力实验",
+      "concept_ids": [
+        "therm_specific_heat"
+      ]
+    },
+    {
+      "id": "task:串并联电压探究",
+      "name": "串并联电压探究",
+      "concept_ids": [
+        "elec_series_voltage_rule",
+        "elec_parallel_voltage_rule"
+      ]
+    },
+    {
+      "id": "task:串并联电流探究",
+      "name": "串并联电流探究",
+      "concept_ids": [
+        "elec_series_current_rule",
+        "elec_parallel_current_rule"
+      ]
+    },
+    {
+      "id": "task:杠杆平衡探究",
+      "name": "杠杆平衡探究",
+      "concept_ids": [
+        "mech_lever_balance"
+      ]
+    },
+    {
+      "id": "task:电功率测量实验",
+      "name": "电功率测量实验",
+      "concept_ids": [
+        "elec_measure_lamp_power"
+      ]
+    },
+    {
+      "id": "task:电流与电压电阻关系探究",
+      "name": "电流与电压电阻关系探究",
+      "concept_ids": [
+        "elec_ohm_law"
+      ]
+    },
+    {
+      "id": "task:电流与电压关系探究",
+      "name": "电流与电压关系探究",
+      "concept_ids": [
+        "elec_ohm_law"
+      ]
+    },
+    {
+      "id": "task:控制变量法",
+      "name": "控制变量法",
+      "concept_ids": []
+    },
+    {
+      "id": "task:提出可探究问题",
+      "name": "提出可探究问题",
+      "concept_ids": []
+    },
+    {
+      "id": "task:摩擦力大小判断",
+      "name": "摩擦力大小判断",
+      "concept_ids": [
+        "mech_friction"
+      ]
+    },
+    {
+      "id": "task:斜面机械效率测量",
+      "name": "斜面机械效率测量",
+      "concept_ids": [
+        "mech_efficiency",
+        "mech_inclined_plane"
+      ]
+    },
+    {
+      "id": "task:斜面机械效率分析",
+      "name": "斜面机械效率分析",
+      "concept_ids": [
+        "mech_efficiency",
+        "mech_inclined_plane"
+      ]
+    },
+    {
+      "id": "task:时间测量",
+      "name": "时间测量",
+      "concept_ids": [
+        "mech_time_measure"
+      ]
+    },
+    {
+      "id": "task:运动图像分析",
+      "name": "运动图像分析",
+      "concept_ids": [
+        "mech_motion_speed",
+        "mech_avg_speed"
+      ]
+    },
+    {
+      "id": "task:机械效率计算",
+      "name": "机械效率计算",
+      "concept_ids": [
+        "mech_efficiency"
+      ]
+    },
+    {
+      "id": "task:机械能转化分析",
+      "name": "机械能转化分析",
+      "concept_ids": [
+        "mech_mechanical_energy",
+        "mech_mechanical_energy_conversion"
+      ]
+    },
+    {
+      "id": "task:运动类型辨析",
+      "name": "运动类型辨析",
+      "concept_ids": [
+        "mech_motion_reference",
+        "mech_uniform_motion",
+        "mech_variable_motion"
+      ]
+    },
+    {
+      "id": "task:运动描述",
+      "name": "运动描述",
+      "concept_ids": [
+        "mech_motion_reference"
+      ]
+    },
+    {
+      "id": "task:杠杆最小力分析",
+      "name": "杠杆最小力分析",
+      "concept_ids": [
+        "mech_lever_balance"
+      ]
+    },
+    {
+      "id": "task:杠杆五要素辨识",
+      "name": "杠杆五要素辨识",
+      "concept_ids": [
+        "mech_lever"
+      ]
+    },
+    {
+      "id": "task:杠杆类型判断",
+      "name": "杠杆类型判断",
+      "concept_ids": [
+        "mech_lever"
+      ]
+    },
+    {
+      "id": "task:杠杆动态平衡分析",
+      "name": "杠杆动态平衡分析",
+      "concept_ids": [
+        "mech_lever_balance"
+      ]
+    },
+    {
+      "id": "task:杠杆平衡条件应用",
+      "name": "杠杆平衡条件应用",
+      "concept_ids": [
+        "mech_lever_balance"
+      ]
+    },
+    {
+      "id": "task:核聚变核裂变辨析",
+      "name": "核聚变核裂变辨析",
+      "concept_ids": [
+        "energy_nuclear_fusion_fission"
+      ]
+    },
+    {
+      "id": "task:实物图转换电路图",
+      "name": "实物图转换电路图",
+      "concept_ids": [
+        "elec_电路"
+      ]
+    },
+    {
+      "id": "task:欧姆定律应用",
+      "name": "欧姆定律应用",
+      "concept_ids": [
+        "elec_ohm_law"
+      ]
+    },
+    {
+      "id": "task:比热容定义与计算",
+      "name": "比热容定义与计算",
+      "concept_ids": [
+        "therm_specific_heat"
+      ]
+    },
+    {
+      "id": "task:汽化与吸热辨析",
+      "name": "汽化与吸热辨析",
+      "concept_ids": [
+        "therm_汽化与液化"
+      ]
+    },
+    {
+      "id": "task:测电笔操作",
+      "name": "测电笔操作",
+      "concept_ids": [
+        "elec_测电笔"
+      ]
+    },
+    {
+      "id": "task:平均速度测量",
+      "name": "平均速度测量",
+      "concept_ids": [
+        "mech_avg_speed"
+      ]
+    },
+    {
+      "id": "task:浮力计算",
+      "name": "浮力计算",
+      "concept_ids": [
+        "mech_buoyancy",
+        "mech_archimedes"
+      ]
+    },
+    {
+      "id": "task:液体压强影响因素",
+      "name": "液体压强影响因素",
+      "concept_ids": [
+        "mech_liquid_pressure"
+      ]
+    },
+    {
+      "id": "task:液体压强计算",
+      "name": "液体压强计算",
+      "concept_ids": [
+        "mech_liquid_pressure"
+      ]
+    },
+    {
+      "id": "task:液体密度测量",
+      "name": "液体密度测量",
+      "concept_ids": [
+        "mech_density_measurement"
+      ]
+    },
+    {
+      "id": "task:温度热量内能辨析",
+      "name": "温度热量内能辨析",
+      "concept_ids": [
+        "therm_temperature",
+        "therm_热量",
+        "therm_internal_energy"
+      ]
+    },
+    {
+      "id": "task:温度计读数与操作",
+      "name": "温度计读数与操作",
+      "concept_ids": [
+        "therm_temperature",
+        "therm_thermometer"
+      ]
+    },
+    {
+      "id": "task:滑动变阻器接法",
+      "name": "滑动变阻器接法",
+      "concept_ids": [
+        "elec_滑动变阻器"
+      ]
+    },
+    {
+      "id": "task:滑动变阻器应用",
+      "name": "滑动变阻器应用",
+      "concept_ids": [
+        "elec_滑动变阻器"
+      ]
+    },
+    {
+      "id": "task:滑轮组机械效率测量",
+      "name": "滑轮组机械效率测量",
+      "concept_ids": [
+        "mech_efficiency",
+        "mech_滑轮组"
+      ]
+    },
+    {
+      "id": "task:热传递方式辨析",
+      "name": "热传递方式辨析",
+      "concept_ids": [
+        "therm_热传递"
+      ]
+    },
+    {
+      "id": "task:热传递改变内能",
+      "name": "热传递改变内能",
+      "concept_ids": [
+        "therm_改变内能的方式",
+        "therm_热传递"
+      ]
+    },
+    {
+      "id": "task:四冲程辨识",
+      "name": "四冲程辨识",
+      "concept_ids": [
+        "therm_heat_engine"
+      ]
+    },
+    {
+      "id": "task:热机效率分析",
+      "name": "热机效率分析",
+      "concept_ids": [
+        "therm_heat_engine_efficiency"
+      ]
+    },
+    {
+      "id": "task:热量概念辨析",
+      "name": "热量概念辨析",
+      "concept_ids": [
+        "therm_热量"
+      ]
+    },
+    {
+      "id": "task:热量计算",
+      "name": "热量计算",
+      "concept_ids": [
+        "therm_heat_calculation"
+      ]
+    },
+    {
+      "id": "task:焦耳定律应用",
+      "name": "焦耳定律应用",
+      "concept_ids": [
+        "elec_joule_law"
+      ]
+    },
+    {
+      "id": "task:熔化凝固图像分析",
+      "name": "熔化凝固图像分析",
+      "concept_ids": [
+        "therm_物态变化图像",
+        "therm_melting_freezing"
+      ]
+    },
+    {
+      "id": "task:热值定义与应用",
+      "name": "热值定义与应用",
+      "concept_ids": [
+        "therm_calorific_value"
+      ]
+    },
+    {
+      "id": "task:带电情况判断",
+      "name": "带电情况判断",
+      "concept_ids": [
+        "elec_charge_interaction",
+        "elec_charged_body_property"
+      ]
+    },
+    {
+      "id": "task:浮沉条件应用",
+      "name": "浮沉条件应用",
+      "concept_ids": [
+        "mech_float_sink_condition"
+      ]
+    },
+    {
+      "id": "task:物态变化辨析",
+      "name": "物态变化辨析",
+      "concept_ids": [
+        "therm_melting_freezing",
+        "therm_汽化与液化",
+        "therm_升华与凝华"
+      ]
+    },
+    {
+      "id": "task:科学探究方法",
+      "name": "科学探究方法",
+      "concept_ids": []
+    },
+    {
+      "id": "task:物质状态辨析",
+      "name": "物质状态辨析",
+      "concept_ids": [
+        "therm_material_states"
+      ]
+    },
+    {
+      "id": "task:电能与热量联合计算",
+      "name": "电能与热量联合计算",
+      "concept_ids": [
+        "elec_electric_work",
+        "therm_heat_calculation"
+      ]
+    },
+    {
+      "id": "task:电功率计算",
+      "name": "电功率计算",
+      "concept_ids": [
+        "elec_electric_power"
+      ]
+    },
+    {
+      "id": "task:电功计算",
+      "name": "电功计算",
+      "concept_ids": [
+        "elec_electric_work"
+      ]
+    },
+    {
+      "id": "task:电压表接法与读数",
+      "name": "电压表接法与读数",
+      "concept_ids": [
+        "elec_电压表"
+      ]
+    },
+    {
+      "id": "task:电压表接法",
+      "name": "电压表接法",
+      "concept_ids": [
+        "elec_电压表"
+      ]
+    },
+    {
+      "id": "task:电流形成辨析",
+      "name": "电流形成辨析",
+      "concept_ids": [
+        "elec_current"
+      ]
+    },
+    {
+      "id": "task:电流方向辨析",
+      "name": "电流方向辨析",
+      "concept_ids": [
+        "elec_current_direction"
+      ]
+    },
+    {
+      "id": "task:电流表接法",
+      "name": "电流表接法",
+      "concept_ids": [
+        "elec_电流表"
+      ]
+    },
+    {
+      "id": "task:电流表接法与读数",
+      "name": "电流表接法与读数",
+      "concept_ids": [
+        "elec_电流表"
+      ]
+    },
+    {
+      "id": "task:电源能量转化",
+      "name": "电源能量转化",
+      "concept_ids": [
+        "elec_power_source",
+        "energy_energy_conversion"
+      ]
+    },
+    {
+      "id": "task:电磁感应辨析",
+      "name": "电磁感应辨析",
+      "concept_ids": [
+        "elec_electromagnetic_induction"
+      ]
+    },
+    {
+      "id": "task:电磁波应用",
+      "name": "电磁波应用",
+      "concept_ids": [
+        "elec_电磁波"
+      ]
+    },
+    {
+      "id": "task:电磁波传播辨析",
+      "name": "电磁波传播辨析",
+      "concept_ids": [
+        "elec_电磁波"
+      ]
+    },
+    {
+      "id": "task:继电器原理与控制",
+      "name": "继电器原理与控制",
+      "concept_ids": [
+        "elec_电磁继电器"
+      ]
+    },
+    {
+      "id": "task:电磁铁应用",
+      "name": "电磁铁应用",
+      "concept_ids": [
+        "elec_电磁铁"
+      ]
+    },
+    {
+      "id": "task:电磁铁构造辨析",
+      "name": "电磁铁构造辨析",
+      "concept_ids": [
+        "elec_电磁铁"
+      ]
+    },
+    {
+      "id": "task:电荷与带电粒子辨析",
+      "name": "电荷与带电粒子辨析",
+      "concept_ids": [
+        "elec_charge",
+        "micro_atomic_structure"
+      ]
+    },
+    {
+      "id": "task:电荷相互作用判断",
+      "name": "电荷相互作用判断",
+      "concept_ids": [
+        "elec_charge_interaction"
+      ]
+    },
+    {
+      "id": "task:电路故障判断",
+      "name": "电路故障判断",
+      "concept_ids": [
+        "elec_电路故障分析"
+      ]
+    },
+    {
+      "id": "task:通断短路辨析",
+      "name": "通断短路辨析",
+      "concept_ids": [
+        "elec_closed_circuit",
+        "elec_open_circuit",
+        "elec_short_circuit"
+      ]
+    },
+    {
+      "id": "task:电路动态分析",
+      "name": "电路动态分析",
+      "concept_ids": [
+        "elec_ohm_law"
+      ]
+    },
+    {
+      "id": "task:连接方式辨析",
+      "name": "连接方式辨析",
+      "concept_ids": [
+        "elec_series_circuit",
+        "elec_parallel_circuit"
+      ]
+    },
+    {
+      "id": "task:电路组成与符号",
+      "name": "电路组成与符号",
+      "concept_ids": [
+        "elec_电路"
+      ]
+    },
+    {
+      "id": "task:电路组成与元件作用",
+      "name": "电路组成与元件作用",
+      "concept_ids": [
+        "elec_电路"
+      ]
+    },
+    {
+      "id": "task:电路设计与调试",
+      "name": "电路设计与调试",
+      "concept_ids": [
+        "elec_电路"
+      ]
+    },
+    {
+      "id": "task:电路连接与纠错",
+      "name": "电路连接与纠错",
+      "concept_ids": [
+        "elec_电路"
+      ]
+    },
+    {
+      "id": "task:串联电阻计算",
+      "name": "串联电阻计算",
+      "concept_ids": [
+        "elec_series_resistance_rule"
+      ]
+    },
+    {
+      "id": "task:并联电阻计算",
+      "name": "并联电阻计算",
+      "concept_ids": [
+        "elec_parallel_resistance_rule"
+      ]
+    },
+    {
+      "id": "task:电动机工作过程",
+      "name": "电动机工作过程",
+      "concept_ids": [
+        "elec_electric_motor"
+      ]
+    },
+    {
+      "id": "task:磁场对电流作用辨析",
+      "name": "磁场对电流作用辨析",
+      "concept_ids": [
+        "elec_磁场对电流的作用"
+      ]
+    },
+    {
+      "id": "task:磁感线判读与作图",
+      "name": "磁感线判读与作图",
+      "concept_ids": [
+        "elec_magnetic_field_lines"
+      ]
+    },
+    {
+      "id": "task:科学史辨析",
+      "name": "科学史辨析",
+      "concept_ids": []
+    },
+    {
+      "id": "task:能源分类与利用",
+      "name": "能源分类与利用",
+      "concept_ids": [
+        "energy_energy_classification"
+      ]
+    },
+    {
+      "id": "task:能源分类",
+      "name": "能源分类",
+      "concept_ids": [
+        "energy_energy_classification"
+      ]
+    },
+    {
+      "id": "task:能量利用效率分析",
+      "name": "能量利用效率分析",
+      "concept_ids": [
+        "energy_efficiency"
+      ]
+    },
+    {
+      "id": "task:能量转化与转移辨析",
+      "name": "能量转化与转移辨析",
+      "concept_ids": [
+        "energy_energy_conversion",
+        "energy_energy_transfer"
+      ]
+    },
+    {
+      "id": "task:误差判断与减小",
+      "name": "误差判断与减小",
+      "concept_ids": [
+        "mech_measurement_error"
+      ]
+    },
+    {
+      "id": "task:质量特性辨析",
+      "name": "质量特性辨析",
+      "concept_ids": [
+        "mech_mass"
+      ]
+    },
+    {
+      "id": "task:质量估测",
+      "name": "质量估测",
+      "concept_ids": [
+        "mech_mass"
+      ]
+    },
+    {
+      "id": "task:频率范围辨析",
+      "name": "频率范围辨析",
+      "concept_ids": [
+        "mech_ultrasound_infrasound"
+      ]
+    },
+    {
+      "id": "task:参照物与相对运动",
+      "name": "参照物与相对运动",
+      "concept_ids": [
+        "mech_motion_relativity"
+      ]
+    },
+    {
+      "id": "task:选择参照物描述运动",
+      "name": "选择参照物描述运动",
+      "concept_ids": [
+        "mech_motion_reference"
+      ]
+    },
+    {
+      "id": "task:视力矫正辨析",
+      "name": "视力矫正辨析",
+      "concept_ids": [
+        "opt_眼镜与视力矫正"
+      ]
+    },
+    {
+      "id": "task:透镜分类",
+      "name": "透镜分类",
+      "concept_ids": [
+        "opt_透镜"
+      ]
+    },
+    {
+      "id": "task:透镜光路作图",
+      "name": "透镜光路作图",
+      "concept_ids": [
+        "opt_凸透镜对光的作用",
+        "opt_凹透镜对光的作用"
+      ]
+    },
+    {
+      "id": "task:电流磁场判断",
+      "name": "电流磁场判断",
+      "concept_ids": [
+        "elec_电流的磁效应"
+      ]
+    },
+    {
+      "id": "task:螺线管极性与电流方向",
+      "name": "螺线管极性与电流方向",
+      "concept_ids": [
+        "elec_ampere_rule",
+        "elec_solenoid"
+      ]
+    },
+    {
+      "id": "task:螺线管磁场判断",
+      "name": "螺线管磁场判断",
+      "concept_ids": [
+        "elec_solenoid"
+      ]
+    },
+    {
+      "id": "task:运动快慢比较",
+      "name": "运动快慢比较",
+      "concept_ids": [
+        "mech_motion_speed"
+      ]
+    },
+    {
+      "id": "task:速度路程时间计算",
+      "name": "速度路程时间计算",
+      "concept_ids": [
+        "mech_motion_speed"
+      ]
+    },
+    {
+      "id": "task:重力计算",
+      "name": "重力计算",
+      "concept_ids": [
+        "mech_force_gravity"
+      ]
+    },
+    {
+      "id": "task:重力示意图作图",
+      "name": "重力示意图作图",
+      "concept_ids": [
+        "mech_force_gravity",
+        "mech_force_diagram"
+      ]
+    },
+    {
+      "id": "task:量筒选择与读数",
+      "name": "量筒选择与读数",
+      "concept_ids": [
+        "mech_volume_measurement"
+      ]
+    },
+    {
+      "id": "task:长度测量",
+      "name": "长度测量",
+      "concept_ids": [
+        "mech_length_measure"
+      ]
+    },
+    {
+      "id": "task:长度估测",
+      "name": "长度估测",
+      "concept_ids": [
+        "mech_length_measure"
+      ]
+    },
+    {
+      "id": "task:音调影响因素",
+      "name": "音调影响因素",
+      "concept_ids": [
+        "mech_pitch"
+      ]
+    },
+    {
+      "id": "task:额定功率辨析",
+      "name": "额定功率辨析",
+      "concept_ids": [
+        "elec_额定功率与实际功率"
+      ]
+    },
+    {
+      "id": "task:验电器原理与使用",
+      "name": "验电器原理与使用",
+      "concept_ids": [
+        "elec_electroscope"
+      ]
+    }
+  ],
+  "coverage": {
+    "added": [
+      "mech_measurement_error",
+      "mech_volume_measurement",
+      "mech_spring_dynamometer",
+      "mech_force_interaction",
+      "mech_motion_relativity",
+      "elec_household_wiring",
+      "elec_semiconductor",
+      "elec_superconductor",
+      "therm_material_states",
+      "micro_universe_structure",
+      "micro_nanometer_material",
+      "mech_material_elasticity",
+      "therm_thermal_conductivity"
+    ],
+    "enabledExisting": [
+      "micro_atomic_structure",
+      "energy_efficiency"
+    ],
+    "definitionRepairs": [
+      "mech_float_sink_condition"
+    ],
+    "source": "https://www.ictr.edu.cn/download_center/ywjy/p/1.html",
+    "additionalEvidence": {
+      "clause": "1.2.1",
+      "printedPage": 10,
+      "pdfPage": 17,
+      "concepts": [
+        "mech_material_elasticity",
+        "therm_thermal_conductivity"
+      ]
+    }
+  }
+}

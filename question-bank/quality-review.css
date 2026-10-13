@@ -1,4 +1,5 @@
 /* 原题库统一质量审核：教师使用，适配桌面大屏和笔记本。 */
+.quality-review-dialog:not([open]){display:none}
 .quality-review-dialog{border:1px solid #c3d4e2;border-radius:14px;padding:0;max-width:none;width:min(1550px,98vw);height:min(94vh,1060px);max-height:94vh;background:#f6f9fc;color:#23354a}
 .quality-review-dialog::backdrop{background:rgba(12,29,48,.66)}
 .qr-head{padding:14px 20px;background:#fff;border-bottom:1px solid #d8e3ed;display:flex;align-items:center;justify-content:space-between;gap:18px}
@@ -239,3 +240,9 @@
 .qr-diagnostic-positions .qr-diagnostic b{font-size:12px;font-weight:600}
 .qr-diagnostic-positions .qr-diagnostic small{font-size:11px;color:#6a584b}
 .qr-diagnostic-positions .qr-diagnostic em{font-size:11px}
+
+/* 当前异常位置独立于键盘焦点；选择时不重建编辑器，保留未保存的输入。 */
+.quality-review-dialog .qr-diagnostic-positions .qr-diagnostic.active{background:#dceeff;border:2px solid #1767a0;box-shadow:inset 5px 0 #1767a0;padding:6px 8px}
+.quality-review-dialog .qr-diagnostic-positions .qr-diagnostic.active b{color:#134d78}
+.quality-review-dialog .qr-highlight.qr-current-issue{background:#bde5ff!important;outline:3px solid #1767a0;outline-offset:2px;border-bottom-color:#1767a0}
+.qr-selected-position{margin:8px 0 0;font-size:13px;font-weight:700;color:#134d78;line-height:1.5}

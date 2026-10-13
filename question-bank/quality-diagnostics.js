@@ -25,18 +25,29 @@ function scan(q,options){
    }
   }
  }
+ if(root.PhysicsInput)for(const [key,text]of [['stem',stem],['answer',answer]])for(const x of root.PhysicsInput.scan(text)){
+  const decisionKey=key+'|'+text+'|'+x.start+'|'+x.before;
+  if((q.normalizationDecisionsV1||[]).some(d=>d.key===decisionKey&&d.status==='correct'))continue;
+  add('formula','符号与单位书写待确认',key==='stem'?'题干':'答案',x.reason+'；建议：'+x.after,x.before,key,x.start,x.end);
+ }
  if(/如图|图甲|图乙|图丙|下图|图示/.test(stem)&&!(q.images||[]).length){
   const m=/如图|图甲|图乙|图丙|下图|图示/.exec(stem);
   add('image','疑似缺少题图','题干 · 字符'+(m.index+1),'题干引用图片，但题干图资源为空','请对照原卷，确认是否缺图','stem',m.index,m.index+m[0].length);
  }
  for(const [side,name] of [['images','题干图'],['answerImages','答案图']]){
   (q[side]||[]).forEach((im,i)=>{
-   if(im.repair?.candidateData&&im.repair?.status!=='approved'&&im.repair?.status!=='rejected')
+   if((im.repair?.candidateData||im.repair?.candidateRef)&&im.repair?.status!=='approved'&&im.repair?.status!=='rejected')
     add('image','图片修复候选待确认',name+' · 图'+(i+1),'存在候选增强图，尚未确认是否忠实原图','需核对刻度、符号、结构及文字','',null,null);
   });
  }
  if(!answer.trim()&&!(q.answerImages||[]).length)add('answer','缺少答案','答案区','答案文本和答案图均为空','需对照标准答案补全','',null,null);
  if(!tags.length)add('knowledge','知识点缺失','知识点','题目标签列表为空','应根据整题主要考查任务标注','',null,null);
+ else if(root.PhysicsConceptAssessment){
+  root.PhysicsConceptAssessment.annotate(q);
+  const unknown=q.knowledgeMappingV1?.unmapped_tags||[];
+  if(unknown.length)add('knowledge','知识语义映射待补充','知识点','未找到对应规则：'+unknown.join('、'),'保留原标签，结合具体任务判断','',null,null);
+  if(q.knowledgeMappingV1?.parts?.some(p=>p.status==='needsReview'))add('knowledge','小问主辅归属待确认','知识点与考法','已对应候选知识点，但综合任务的主知识点尚未确定','候选不进入知识点重复计分','',null,null);
+ }
  else if(options?.catalogByName instanceof Map&&options.catalogByName.size){
   const unknown=tags.filter(t=>!options.catalogByName.has(norm(t)));
   if(unknown.length)add('knowledge','知识图谱映射不完整','知识点','无法按名称映射：'+unknown.join('、'),'属于标签对齐问题，不等于物理知识点错误','',null,null);
@@ -45,7 +56,8 @@ function scan(q,options){
   add('type','题型分类待核验','主类型','此前规则检测标记为人工复核候选','需按整道题主任务和次级考法确认','',null,null);
  const dup=options?.duplicates?.get(q.id);
  if(dup?.length)add('duplicate','疑似重复题','题干及题图','规范化题干与'+dup.length+'道题相同，尚未比较图片、答案和数值','只有逐项核对后才能判定真正重复','',null,null);
- if(!issues.some(x=>x.dim==='formula')&&q.hasMath&&/[=＝]/.test(stem+' '+answer))
+ if(root.PhysicsMathContent)for(const [key,text]of [['stem',stem],['answer',answer]])for(const e of root.PhysicsMathContent.validate(text))add('formula',e.type,key==='stem'?'题干':'答案',e.detail||'数学结构核验',e.detail||'',key,e.start,e.end);
+ if(!issues.some(x=>x.dim==='formula')&&q.hasMath&&!q.mathRecoveryV5&&/[=＝]/.test(stem+' '+answer))
   add('formula','数学内容需要抽查','题干与解析','题库原始记录带有数学公式标记，常规规则未精确定位异常','仅规则怀疑，尚未定位','',null,null);
  return issues;
 }

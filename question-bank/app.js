@@ -14,24 +14,27 @@ function sourceBase(name){return String(name||'').replace(/\.(docx|doc|json)$/i,
 function tell(msg,error){$('status').textContent=msg;$('status').className=error?'error':''}
 function uniqueTags(x){return Array.from(new Set((Array.isArray(x)?x:String(x||'').split(/[;；,，、]/)).map(y=>String(y).trim()).filter(Boolean)))}
 function inferType(s){for(const x of ['作图题','选择题','填空题','实验题','计算题','综合题'])if(String(s||'').includes(x.replace('题','')))return x;return '其他'}
-function applyConcepts(q){q.concept_ids=Array.from(new Set((q.tags||[]).map(x=>state.catalogByName.get(norm(x))?.concept_id).filter(Boolean)))}
+function applyConcepts(q){if(window.PhysicsConceptAssessment){window.PhysicsConceptAssessment.annotate(q);return}q.concept_ids=Array.from(new Set((q.tags||[]).map(x=>state.catalogByName.get(norm(x))?.concept_id).filter(Boolean)))}
 function openDB(){return new Promise((yes,no)=>{let r=indexedDB.open(DB_NAME,1);r.onupgradeneeded=()=>{for(const x of ['questions','events','settings'])if(!r.result.objectStoreNames.contains(x))r.result.createObjectStore(x,{keyPath:'id'})};r.onsuccess=()=>yes(r.result);r.onerror=()=>no(r.error)})}
 function getAll(table){return new Promise((yes,no)=>{const r=db.transaction(table).objectStore(table).getAll();r.onsuccess=()=>yes(r.result);r.onerror=()=>no(r.error)})}
 function getOne(table,id){return new Promise((yes,no)=>{const r=db.transaction(table).objectStore(table).get(id);r.onsuccess=()=>yes(r.result);r.onerror=()=>no(r.error)})}
 function put(table,val){return new Promise((yes,no)=>{const tx=db.transaction(table,'readwrite');tx.objectStore(table).put(val);tx.oncomplete=()=>yes();tx.onerror=()=>no(tx.error||Error('本地存储失败，可能空间不足'))})}
+function putManyQuestions(items){return new Promise((yes,no)=>{const tx=db.transaction('questions','readwrite');for(const q of items)tx.objectStore('questions').put(q);tx.oncomplete=()=>yes();tx.onerror=()=>no(tx.error||Error('保存失败'));});}
 function del(table,id){return new Promise((yes,no)=>{const tx=db.transaction(table,'readwrite');tx.objectStore(table).delete(id);tx.oncomplete=()=>yes();tx.onerror=()=>no(tx.error)})}
 async function bankSetting(key){return (await getOne('settings',key))?.value}
 async function saveBankSetting(key,value){await put('settings',{id:key,value})}
-async function init(){try{db=await openDB();state.questions=await getAll('questions');state.events=await getAll('events');let m=await getOne('settings','meta');state.meta=m?m.value:{};await loadCatalog();bind();window.PhysicsBankInlineDetails?.init?.({getQuestions:()=>state.questions,catalogById:state.catalogById,catalogByName:state.catalogByName,focusConcept,resetDetailFilters});window.PhysicsImageRepair?.init?.({getQuestions:()=>state.questions,getEvents:()=>state.events,getMeta:()=>state.meta,save:q=>put('questions',q),onChange:()=>{invalidateWordDownload();render()}});window.PhysicsQualityReview?.init?.({getQuestions:()=>state.questions.filter(q=>!q.archivedAsDuplicate),save:q=>put('questions',q),openEditor,updateConcepts:applyConcepts,catalogByName:state.catalogByName,getSetting:bankSetting,setSetting:saveBankSetting,onChange:()=>{invalidateWordDownload();render()}});if(window.StudentPracticeExport){await window.StudentPracticeExport.init({getEvents:()=>state.events,onSelectionChange:invalidateWordDownload})}const params=new URLSearchParams(location.search);const cid=params.get('concept_id'),cname=params.get('concept_name');if(cname){focusConcept(cname)}else if(cid){const c=state.catalogById.get(cid);if(c){$('conceptFilter').value=c.name;tell('已从知识星球定位：'+c.name)}}render()}catch(e){console.error(e);tell('题库启动失败：'+e.message,true)}}
-async function loadCatalog(){try{let r=await fetch('../data/knowledge/exam-annotation-catalog.json');if(!r.ok)throw Error('HTTP '+r.status);let j=await r.json();state.catalog=j.concepts||[];state.catalog.forEach(c=>{state.catalogByName.set(norm(c.name),c);state.catalogById.set(c.concept_id,c)});for(let id of ['conceptFilter','conceptFilter2'])$(''+id).insertAdjacentHTML('beforeend',state.catalog.map(c=>'<option value="'+esc(c.name)+'">'+esc(c.module+' / '+c.name)+'</option>').join(''));state.questions.filter(q=>!(q.concept_ids||[]).length).forEach(applyConcepts)}catch(e){tell('知识点目录暂不可用，仍可通过题目文字检索。',true)}}
+async function init(){try{db=await openDB();state.questions=await getAll('questions');state.events=await getAll('events');let m=await getOne('settings','meta');state.meta=m?m.value:{};await loadCatalog();bind();initTeacherEditor();window.PhysicsBankInlineDetails?.init?.({getQuestions:()=>state.questions,catalogById:state.catalogById,catalogByName:state.catalogByName,focusConcept,resetDetailFilters});window.PhysicsImageRepair?.init?.({getQuestions:()=>state.questions,getEvents:()=>state.events,getMeta:()=>state.meta,save:q=>put('questions',q),onChange:()=>{invalidateWordDownload();render()}});window.PhysicsQualityReview?.init?.({getQuestions:()=>state.questions.filter(q=>!q.archivedAsDuplicate),save:q=>put('questions',q),saveMany:putManyQuestions,openEditor,updateConcepts:applyConcepts,catalogByName:state.catalogByName,getSetting:bankSetting,setSetting:saveBankSetting,onChange:()=>{invalidateWordDownload();render()}});if(window.StudentPracticeExport){await window.StudentPracticeExport.init({getEvents:()=>state.events,onSelectionChange:invalidateWordDownload})}const params=new URLSearchParams(location.search);const cid=params.get('concept_id'),cname=params.get('concept_name');if(cname){focusConcept(cname)}else if(cid){const c=state.catalogById.get(cid);if(c){$('conceptFilter').value=c.name;tell('已从知识星球定位：'+c.name)}}renderAssessmentOptions();if(params.get('assessment_id')&&$('assessmentFilter'))$('assessmentFilter').value=params.get('assessment_id');render()}catch(e){console.error(e);tell('题库启动失败：'+e.message,true)}}
+async function loadCatalog(){try{let r=await fetch('../data/knowledge/exam-annotation-catalog.json');if(!r.ok)throw Error('HTTP '+r.status);let j=await r.json();state.catalog=j.concepts||[];state.catalog.forEach(c=>{state.catalogByName.set(norm(c.name),c);state.catalogById.set(c.concept_id,c)});for(let id of ['conceptFilter','conceptFilter2'])$(''+id).insertAdjacentHTML('beforeend',state.catalog.map(c=>'<option value="'+esc(c.name)+'">'+esc(c.module+' / '+c.name)+'</option>').join(''));window.PhysicsConceptAssessment?.configure(window.CONCEPT_ASSESSMENT_CATALOG);state.questions.forEach(applyConcepts);renderAssessmentOptions()}catch(e){tell('知识点目录暂不可用，仍可通过题目文字检索。',true)}}
 function actualAssignments(id,cls){return state.events.filter(e=>e.status==='assigned'&&(!cls||e.className===cls)&&e.items.some(t=>t.id.split('::')[0]===id))}
 function usedRecently(id,cls){return actualAssignments(id,cls).some(e=>new Date(e.date).getTime()>Date.now()-30*86400000)}
 function tagMatches(q,label){
+if(window.PhysicsConceptAssessment){const cid=window.PhysicsConceptAssessment.resolve(label);if(cid){applyConcepts(q);return (q.concept_ids||[]).includes(cid)}}
 const target=norm(label);if(!target)return true;
 if((q.tags||[]).some(t=>{const v=norm(t);return v===target||(Math.min(v.length,target.length)>=3&&(v.includes(target)||target.includes(v)))}))return true;
 const cid=state.catalogByName.get(target)?.concept_id;return Boolean(cid&&(q.concept_ids||[]).includes(cid))
 }
-function matches(q){if(q.archivedAsDuplicate)return false;let term=norm($('search').value);if(term&&!norm([q.stem,q.source,q.sourceNo,(q.tags||[]).join(' '),q.type].join(' ')).includes(term))return false;let a=$('conceptFilter').value,b=$('conceptFilter2').value,m=$('relationFilter').value;if(a&&b){if(m==='any'){if(!tagMatches(q,a)&&!tagMatches(q,b))return false}else if(!tagMatches(q,a)||!tagMatches(q,b))return false}else if(a&&!tagMatches(q,a))return false;else if(b&&!tagMatches(q,b))return false;if(m==='cross'&&q.relation!=='cross')return false;if(m==='parallel'&&!['parallel','options'].includes(q.relation))return false;
+function renderAssessmentOptions(){const field=$('assessmentFilter');if(!field||!window.PhysicsConceptAssessment)return;const old=field.value,A=window.PhysicsConceptAssessment,cid=A.resolve($('conceptFilter').value);const available=new Map();for(const q of state.questions.filter(x=>!x.archivedAsDuplicate)){for(const p of A.units(q)){if(cid&&!p.concept_ids.includes(cid))continue;for(const id of p.assessment_ids){available.set(id,(available.get(id)||0)+1)}}}field.innerHTML='<option value="">全部考法</option>'+[...available].map(([id,n])=>'<option value="'+esc(id)+'">'+esc(A.methodNames([id])[0])+'（'+n+'个任务）</option>').join('');field.value=available.has(old)?old:'';}
+function matches(q){if(q.archivedAsDuplicate)return false;const method=$('assessmentFilter')?.value||'',role=$('conceptRoleFilter')?.value||'any';if(window.PhysicsConceptAssessment&&(method||role==='primary'||$('relationFilter').value==='cross')){if(!window.PhysicsConceptAssessment.matches(q,{primary:$('conceptFilter').value,related:$('conceptFilter2').value,assessment:method,primaryOnly:role==='primary',relation:$('relationFilter').value}))return false;}let term=norm($('search').value);if(term&&!norm([q.stem,q.source,q.sourceNo,(q.tags||[]).join(' '),(q.concept_ids||[]).map(id=>state.catalogById.get(id)?.name||id).join(' '),window.PhysicsConceptAssessment?.methodNames(q.assessment_ids).join(' ')||'',q.type].join(' ')).includes(term))return false;let a=$('conceptFilter').value,b=$('conceptFilter2').value,m=$('relationFilter').value;if(a&&b){if(m==='any'){if(!tagMatches(q,a)&&!tagMatches(q,b))return false}else if(!tagMatches(q,a)||!tagMatches(q,b))return false}else if(a&&!tagMatches(q,a))return false;else if(b&&!tagMatches(q,b))return false;if(m==='cross'&&q.relation!=='cross')return false;if(m==='parallel'&&!['parallel','options'].includes(q.relation))return false;
 if($('typeFilter').value&&q.type!==$('typeFilter').value)return false;if($('difficultyFilter').value&&q.difficulty!==$('difficultyFilter').value)return false;if($('reviewFilter').value&&q.review!==$('reviewFilter').value)return false;let status=$('usedFilter').value,cls=$('classFilter').value.trim();if(status==='unused'&&actualAssignments(q.id,'').length)return false;if(status==='used'&&!actualAssignments(q.id,'').length)return false;if(status==='recent'&&usedRecently(q.id,cls))return false;return true}
 function mediaSrc(img){return img&&img.useRedraw&&img.redrawPng?img.redrawPng:(img?.data||img?.src||'')}
 function findQuestion(id){return state.questions.find(q=>q.id===id.split('::')[0])}
@@ -44,7 +47,7 @@ function focusConcept(label){
    const option=document.createElement('option');option.value=label;option.textContent=label+'（题库标签）';select.appendChild(option);
  }
  select.value=label;
- for(const id of ['conceptFilter2','typeFilter','difficultyFilter','usedFilter','reviewFilter'])$(id).value='';
+ for(const id of ['conceptFilter2','typeFilter','difficultyFilter','usedFilter','reviewFilter','assessmentFilter'])if($(id))$(id).value='';if($('conceptRoleFilter'))$('conceptRoleFilter').value='any';renderAssessmentOptions();
  $('relationFilter').value='any';$('search').value='';render();
  tell('已筛选知识点：'+label);
 }
@@ -55,11 +58,11 @@ function resetDetailFilters(){
  $('detailSearch').value='';
  window.PhysicsBankInlineDetails?.refreshIfOpen?.();
 }
-const BANK_FILTER_IDS=['search','conceptFilter','conceptFilter2','relationFilter','typeFilter','difficultyFilter','reviewFilter','usedFilter','classFilter'];
+const BANK_FILTER_IDS=['search','conceptFilter','conceptFilter2','relationFilter','typeFilter','difficultyFilter','reviewFilter','usedFilter','classFilter','assessmentFilter','conceptRoleFilter'];
 function resetQuestionFilters(){
  for(const id of BANK_FILTER_IDS){
    const field=$(id);
-   field.value=id==='relationFilter'?'any':id==='classFilter'?'801':'';
+   if(field)field.value=['relationFilter','conceptRoleFilter'].includes(id)?'any':id==='classFilter'?'801':'';
  }
  render();
  tell('筛选条件已重置');
@@ -70,12 +73,12 @@ function renderActiveFilters(){
  const names={
    search:'关键词',conceptFilter:'主要知识点',conceptFilter2:'关联知识点',
    relationFilter:'知识点关系',typeFilter:'题型',difficultyFilter:'难度',
-   reviewFilter:'审核状态',usedFilter:'布置记录',classFilter:'班级'
+   reviewFilter:'审核状态',usedFilter:'布置记录',classFilter:'班级',assessmentFilter:'考法',conceptRoleFilter:'角色'
  };
  const active=[];
  for(const id of BANK_FILTER_IDS){
    const field=$(id),value=(field?.value||'').trim();
-   if(!value||(id==='relationFilter'&&value==='any')||(id==='classFilter'&&(value==='801'||!$('usedFilter').value)))continue;
+   if(!value||(['relationFilter','conceptRoleFilter'].includes(id)&&value==='any')||(id==='classFilter'&&(value==='801'||!$('usedFilter').value)))continue;
    const selected=field.tagName==='SELECT'?field.options[field.selectedIndex]?.textContent:value;
    active.push({id,label:names[id]+'：'+(selected||value)});
  }
@@ -87,7 +90,7 @@ function renderActiveFilters(){
 }
 
 function render(){let qs=state.questions.filter(matches);$('count').textContent=qs.length+' / '+state.questions.filter(q=>!q.archivedAsDuplicate).length+'条';$('results').innerHTML=qs.length?qs.slice(0,60).map(q=>{let name=({'cross':'真实交叉','single':'单知识点','parallel':'并列小问','options':'选项辨析','pending':'关系待审'})[q.relation||'pending'];let quality=q.hasMath?' ⚠ Word公式需逐题核对':'';let pics=(q.images||[]).slice(0,3).map(x=>'<img src="'+esc(mediaSrc(x))+'" alt="原题图" loading="lazy">').join('');let parts=(q.parts||[]).map(p=>'<div class="basket-item"><span class="title">'+esc(p.label+' '+p.stem.slice(0,40))+'</span><button class="small" data-add="'+esc(q.id+'::'+p.id)+'">＋此小问</button></div>').join('');
-return '<article class="qcard"><div class="qtop"><strong>'+esc(q.type+' · 第'+(q.sourceNo||'?')+'题')+'</strong><div class="right"><span class="tag">'+esc(q.difficulty||'难度待审')+'</span><span class="tag '+(q.review==='approved'?'approved':'')+'">'+(q.review==='approved'?'已审核':'待审核')+'</span></div></div><div class="qsource">'+esc(q.source)+' · '+esc(name)+' · '+esc(quality)+' · 已布置 '+actualAssignments(q.id,'').length+' 次</div><div class="qstem">'+esc((q.stem||'').slice(0,260))+'</div><div class="qimage">'+pics+'</div><div class="qfooter"><div class="qfootleft">'+(q.tags||[]).slice(0,8).map(x=>'<span class="tag">'+esc(x)+'</span>').join('')+'</div><div class="qfootright"><button class="small" data-edit="'+esc(q.id)+'">审核 / 拆题</button><button class="small primary" data-add="'+esc(q.id)+'">＋整题</button></div></div>'+(parts?'<details><summary>独立子题 ('+q.parts.length+')</summary>'+parts+'</details>':'')+'</article>'}).join('')+(qs.length>60?'<p class="hint">仅显示前60条，请进一步筛选。</p>':''):'<p class="empty">未找到题目。可以导入原始 Word，或调整筛选条件。</p>';renderBasket();renderUsage();renderActiveFilters();window.StudentPracticeExport?.renderHistory?.();window.PhysicsBankInlineDetails?.refreshIfOpen?.()}
+return '<article class="qcard"><div class="qtop"><strong>'+esc(q.type+' · 第'+(q.sourceNo||'?')+'题')+'</strong><div class="right"><span class="tag">'+esc(q.difficulty||'难度待审')+'</span><span class="tag '+(q.review==='approved'?'approved':'')+'">'+(q.review==='approved'?'已审核':'待审核')+'</span></div></div><div class="qsource">'+esc(q.source)+' · '+esc(name)+' · '+esc(quality)+' · 已布置 '+actualAssignments(q.id,'').length+' 次</div><div class="qstem">'+(window.PhysicsMathContent?window.PhysicsMathContent.html(window.PhysicsMathContent.preview(q.stem||'',600)):esc((q.stem||'').slice(0,260)))+'</div><div class="qimage">'+pics+'</div><div class="qfooter"><div class="qfootleft">'+(q.concept_ids?.length?q.concept_ids.map(id=>state.catalogById.get(id)?.name||id):q.tags||[]).slice(0,8).map(x=>'<span class="tag">'+esc(x)+'</span>').join('')+'</div><div class="qfootright"><button class="small" data-edit="'+esc(q.id)+'">编辑 / 审核</button><button class="small primary" data-add="'+esc(q.id)+'">＋整题</button></div></div>'+(parts?'<details><summary>独立子题 ('+q.parts.length+')</summary>'+parts+'</details>':'')+'</article>'}).join('')+(qs.length>60?'<p class="hint">仅显示前60条，请进一步筛选。</p>':''):'<p class="empty">未找到题目。可以导入原始 Word，或调整筛选条件。</p>';renderBasket();renderUsage();renderActiveFilters();window.StudentPracticeExport?.renderHistory?.();window.PhysicsBankInlineDetails?.refreshIfOpen?.()}
 function renderBasket(){$('basketCount').textContent=state.basket.length+'道';$('basket').innerHTML=state.basket.length?state.basket.map((id,i)=>'<div class="basket-item"><span class="title">'+esc((i+1)+'. '+selectedLabel(id))+'</span><button data-up="'+i+'" '+(!i?'disabled':'')+'>↑</button><button data-down="'+i+'" '+(i===state.basket.length-1?'disabled':'')+'>↓</button><button data-remove="'+i+'">×</button></div>').join(''):'<p class="hint">尚未选题；可选整题或经审核的独立小问。</p>'}
 function renderUsage(){let cls=$('classFilter').value.trim();let list=state.events.filter(e=>e.status==='assigned'&&(!cls||e.className===cls)).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,12);$('usageSummary').innerHTML=list.length?list.map(e=>'<div class="event"><b>'+esc(e.className)+'</b> · '+esc(e.date.slice(0,10))+' · '+e.items.length+'题<br>'+esc(e.title||'精准练习')+'<br><button class="small" data-feedback-event="'+esc(e.id)+'">录入反馈</button> <button class="small" data-cancel-event="'+esc(e.id)+'">撤回布置</button>'+(e.feedback?'<br>'+esc(e.feedback.note||'已反馈'):'')+'</div>').join(''):'<p class="hint">本班尚无已确认的使用记录。</p>'}
 function applyIndex(q){for(let r of q.sourceRefs||[{file:q.source,no:q.sourceNo}]){let d=state.meta[sourceBase(r.file)]?.[r.no];if(!d)continue;q.difficulty=q.difficulty||d.difficulty;q.type=q.type==='其他'?d.type:q.type;q.tags=q.tags?.length?q.tags:d.tags;applyConcepts(q);return true}return false}
@@ -97,7 +100,7 @@ async function parseDocx(file){if(!window.JSZip)throw Error('缺少 JSZip');let 
 let rels={},rel=zip.file('word/_rels/document.xml.rels');if(rel){let rd=new DOMParser().parseFromString(await rel.async('text'),'application/xml');Array.from(rd.getElementsByTagName('*')).filter(x=>x.localName==='Relationship').forEach(x=>{let path=x.getAttribute('Target')||'';if(/image/i.test(x.getAttribute('Type')||'')&&!/^https?:/.test(path))rels[x.getAttribute('Id')]=path.startsWith('/')?path.slice(1):'word/'+path.replace(/^\.\//,'')})}
 let questions=[],answers=new Map(),curr=null,phase='question',type='其他',cache={};
 async function imagesFrom(p){let out=[];for(let n of Array.from(p.getElementsByTagName('*')).filter(x=>x.localName==='blip')){let rid=n.getAttribute('r:embed')||n.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships','embed'),path=rels[rid];if(!path)continue;path=path.replace(/word\/\.\.\//g,'');if(!cache[path]){let z=zip.file(path);if(!z)continue;let ext=path.split('.').pop().toLowerCase();cache[path]={data:'data:'+(ext==='jpg'||ext==='jpeg'?'image/jpeg':ext==='gif'?'image/gif':ext==='svg'?'image/svg+xml':'image/png')+';base64,'+await z.async('base64'),sourcePath:path}}out.push({...cache[path]})}return out}
-for(let child of Array.from(body.children)){let paras=child.localName==='p'?[child]:child.localName==='tbl'?Array.from(child.getElementsByTagName('*')).filter(x=>x.localName==='p'):[];for(let p of paras){let txt=Array.from(p.getElementsByTagName('*')).filter(x=>['t','tab','br'].includes(x.localName)).map(x=>x.localName==='t'?x.textContent:x.localName==='tab'?' ':'\n').join('').trim();if(txt.includes('答案解析部分')){phase='answer';curr=null;continue}let m=txt.match(/^\s*(\d{1,3})[．.、]\s*(.*)$/),a=txt.match(/^\s*(\d{1,3})[．.、]\s*【答案】(.*)$/);if(phase==='question'&&/^[一二三四五六七八九十]+[、．.]\s*(选择|填空|作图|计算|实验|综合)/.test(txt)){type=inferType(txt);continue}
+for(let child of Array.from(body.children)){let paras=child.localName==='p'?[child]:child.localName==='tbl'?[child]:[];for(let p of paras){let txt=(window.PhysicsMathContent?window.PhysicsMathContent.fromWordNode(p):Array.from(p.getElementsByTagName('*')).filter(x=>['t','tab','br'].includes(x.localName)).map(x=>x.localName==='t'?x.textContent:x.localName==='tab'?' ':'\n').join('')).trim();if(txt.includes('答案解析部分')){phase='answer';curr=null;continue}let m=txt.match(/^\s*(\d{1,3})[．.、]\s*(.*)$/),a=txt.match(/^\s*(\d{1,3})[．.、]\s*【答案】(.*)$/);if(phase==='question'&&/^[一二三四五六七八九十]+[、．.]\s*(选择|填空|作图|计算|实验|综合)/.test(txt)){type=inferType(txt);continue}
 if(phase==='answer'&&a){curr={n:a[1],text:a[2],images:[]};answers.set(curr.n,curr)}
 else if(phase==='question'&&m){curr={n:m[1],text:m[2],images:[],type};questions.push(curr)}
 else if(curr&&txt)curr.text+=(curr.text?'\n':'')+txt;
@@ -111,7 +114,7 @@ for(const item of questions){
    stem:item.text,answer:ans?.text||'',images:item.images,answerImages:ans?.images||[],
    difficulty:'',tags:[],concept_ids:[],relation:'pending',review:'pending',revision:1,
    parts:[],sourceRefs:[{file:file.name,no:item.n}],createdAt:now(),updatedAt:now()};
- applyIndex(q);batch.push(q);
+ q.sourceEvidenceV1={kind:'docx-extracted',source:file.name,sourceNo:item.n,stem:item.text,answer:ans?.text||'',at:now()};applyIndex(q);batch.push(q);
 }
 const result=await window.QuestionBankMerge.mergeQuestions(batch,{
  questions:state.questions,save:q=>put('questions',q),updateConcepts:applyConcepts,now,hash
@@ -131,7 +134,8 @@ async function removeExcludedQuestions(ids){
    if(!confirm('修订包要求从题库删除 '+toRemove.length+' 道有明确质量问题的题目（残缺公式或缺标准答案图）。删除不会清空历史布置记录，是否确认？'))return {removed:0,protected:protectedQuestions.length,cancelled:true};
    for(const q of toRemove)await del('questions',q.id);
    state.questions=state.questions.filter(q=>!set.has(q.id)||q.review==='approved');
-   state.basket=state.basket.filter(id=>!set.has(String(id).split('::')[0]));
+   const removedIds=new Set(toRemove.map(q=>q.id));
+   state.basket=state.basket.filter(id=>!removedIds.has(String(id).split('::')[0]));
    invalidateWordDownload();render();
  }
  return {removed:toRemove.length,protected:protectedQuestions.length};
@@ -160,7 +164,7 @@ $('activeFilterSummary').addEventListener('click',e=>{
  render();
 });
 for(let id of ['search','classFilter'])$(id).addEventListener('input',render);
-for(let id of ['conceptFilter','conceptFilter2','typeFilter','difficultyFilter','usedFilter','relationFilter','reviewFilter'])$(id).addEventListener('change',render);
+for(let id of ['conceptFilter','conceptFilter2','typeFilter','difficultyFilter','usedFilter','relationFilter','reviewFilter','assessmentFilter','conceptRoleFilter'])$(id)?.addEventListener('change',()=>{if(id==='conceptFilter')renderAssessmentOptions();render()});
 $('fileInput').addEventListener('change',async e=>{let files=Array.from(e.target.files||[]);e.target.value='';for(let file of files){try{tell('正在本地处理 '+file.name);if(/\.docx$/i.test(file.name))await parseDocx(file);else if(/\.doc$/i.test(file.name))await parseDocIndex(file);else if(/\.json$/i.test(file.name))await importJson(file);else if(/\.zip$/i.test(file.name))await importPrivateZip(file);else throw Error('文件格式不支持')}catch(ex){tell(file.name+'：'+ex.message,true);console.error(ex)}}render()});
 $('results').addEventListener('click',e=>{let b=e.target.closest('button');if(!b)return;if(b.dataset.add)addQuestion(b.dataset.add);if(b.dataset.edit)openEditor(b.dataset.edit)});
 $('basket').addEventListener('click',e=>{let b=e.target.closest('button');if(!b)return;let val=b.dataset.remove??b.dataset.up??b.dataset.down;if(val==null)return;let n=Number(val);if(b.dataset.remove!=null)state.basket.splice(n,1);else if(b.dataset.up!=null&&n>0)[state.basket[n-1],state.basket[n]]=[state.basket[n],state.basket[n-1]];else if(b.dataset.down!=null&&n<state.basket.length-1)[state.basket[n+1],state.basket[n]]=[state.basket[n],state.basket[n+1]];invalidateWordDownload();renderBasket()});
@@ -197,7 +201,36 @@ return '<div class="part-review"><strong>'+esc(p.label)+'</strong><label>子题�
 }).join('');
 $('partsEditor').innerHTML=(q.parts||[]).length?'<h3>独立小问 · 图与答案须教师逐项核对</h3>'+rows:'<p class="hint">默认保持整题；只有子题能独立完成才拆分。</p>'
 }
-function openEditor(id){let q=state.questions.find(x=>x.id===id);if(!q)return;state.current=id;$('editorTitle').textContent='审核题目 · '+q.source+' · 第'+q.sourceNo+'题';
+function openEditor(id,options){return window.PhysicsTeacherEditor.open(id,options)}
+function initTeacherEditor(){
+ window.PhysicsTeacherEditor.init({questions:()=>state.questions,getQuestion:async id=>{const q=await getOne('questions',id);if(q){const i=state.questions.findIndex(x=>x.id===id);if(i>=0)state.questions[i]=q;}return q;},split:splitParts,getDraft:id=>bankSetting('teacher-draft:'+id),setDraft:(id,value)=>value?saveBankSetting('teacher-draft:'+id,value):del('settings','teacher-draft:'+id),commit:commitTeacherEdit,onClose:()=>{if($('qualityReviewDialog').open)window.PhysicsQualityReview.refresh()}});
+ $('newQuestionBtn').onclick=()=>openEditor('new-'+uid(),{newQuestion:{id:'',stem:'',answer:'',source:'网页新建',sourceNo:'',type:'其他',tags:[],images:[],answerImages:[],parts:[],review:'pending',relation:'pending',revision:0}});
+ $('backupZipBtn').onclick=()=>backupZip().catch(e=>tell(e.message,true));
+}
+async function commitTeacherEdit(base,work){
+ const Editor=window.PhysicsTeacherEditor;
+ const saved=await new Promise((yes,no)=>{
+ const tx=db.transaction(['questions','settings'],'readwrite'),store=tx.objectStore('questions'),request=store.get(work.id);let result,failure;
+ request.onsuccess=()=>{try{
+ const current=request.result;
+ if(current&&((current.revision||0)!==(base.revision||0)||Editor.fingerprint(current)!==Editor.fingerprint(base)))throw Error('此题已被其他操作修改，请重开后核对草稿，未覆盖新版本');
+ result={...(current||base),...structuredClone(Editor.content(work)),id:work.id};
+ const changed=Object.keys(Editor.content(work)).filter(k=>JSON.stringify(Editor.content(base)[k])!==JSON.stringify(Editor.content(work)[k]));
+ if(current&&!changed.length){result=current;tx.objectStore('settings').delete('teacher-draft:'+work.id);return}
+ result.teacherHistoryV1=[...(current?.teacherHistoryV1||[]),{at:now(),fields:changed,before:structuredClone(Editor.content(base)),baseRevision:base.revision||0}];
+ result.qualityEditHistory=[...(current?.qualityEditHistory||[]),{at:now(),source:'teacher-editor',fields:changed,before:Object.fromEntries(changed.map(k=>[k,structuredClone(Editor.content(base)[k])])),changes:Object.fromEntries(changed.map(k=>[k,structuredClone(Editor.content(work)[k])]))}];
+ if(base.review==='approved'&&work.review==='approved'&&changed.some(k=>['stem','answer','images','answerImages','parts'].includes(k)))result.review='pending';
+ result.teacherEditedAt=now();result.updatedAt=now();result.createdAt=result.createdAt||now();result.revision=(current?.revision||0)+1;
+ result.qualityReviewV1=structuredClone(current?.qualityReviewV1||{});
+ for(const dim of ['formula','answer','image','knowledge','duplicate','type'])if(window.PhysicsQualityReview.signature(base,dim)!==window.PhysicsQualityReview.signature(result,dim))result.qualityReviewV1[dim]={...(result.qualityReviewV1[dim]||{}),status:'modified',signature:window.PhysicsQualityReview.signature(result,dim),reviewedAt:now()};
+ applyConcepts(result);store.put(result);tx.objectStore('settings').delete('teacher-draft:'+work.id);
+ }catch(e){failure=e;tx.abort()}};
+ tx.oncomplete=()=>yes(result);tx.onabort=()=>no(failure||tx.error||Error('保存事务未完成'));tx.onerror=()=>no(tx.error||Error('本地保存失败'));
+ });
+ const i=state.questions.findIndex(q=>q.id===saved.id);if(i<0)state.questions.push(saved);else state.questions[i]=saved;invalidateWordDownload();render();return saved;
+}
+async function backupZip(){const settings=await getAll('settings');const data={format:'physics-training-bank-v1',exportedAt:now(),questions:state.questions,events:state.events,meta:state.meta,settings};const zip=new JSZip();zip.file('teacher-bank-backup.json',JSON.stringify(data));download(await zip.generateAsync({type:'blob',compression:'DEFLATE'}),'私人题库完整备份_'+today()+'.zip');tell('已导出完整题库、图片、版本历史与草稿。')}
+function legacyOpenEditor(id){let q=state.questions.find(x=>x.id===id);if(!q)return;state.current=id;$('editorTitle').textContent='审核题目 · '+q.source+' · 第'+q.sourceNo+'题';
 $('editorBody').innerHTML='<div class="editor-fields">'+field('题干（包含公共情境）','editStem',q.stem,true)+field('答案与简短解析','editAnswer',q.answer,true)+field('知识点（用分号分隔）','editTags',(q.tags||[]).join('；'))+
 '<label>题型<select id="editType">'+['作图题','选择题','填空题','实验题','计算题','综合题','其他'].map(x=>'<option '+(q.type===x?'selected':'')+'>'+x+'</option>').join('')+'</select></label>'+
 '<label>难度<select id="editDifficulty">'+['','容易','普通','困难'].map(x=>'<option value="'+x+'" '+(q.difficulty===x?'selected':'')+'>'+(x||'待审')+'</option>').join('')+'</select></label>'+
@@ -219,9 +252,13 @@ return {...p,stem:($('part_'+i)?.value||p.stem).trim(),answer:($('partAnswer_'+i
 $('removeEditor').onclick=async()=>{if(!confirm('从当前浏览器本地题库删除？原始文件不会被删除，历史事件保留。'))return;await del('questions',id);state.questions=state.questions.filter(x=>x.id!==id);state.basket=state.basket.filter(x=>x.split('::')[0]!==id);$('editorDialog').close();render()};
 $('editorDialog').showModal()}
 function download(blob,name){let url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2500)}
-async function backup(onlyHistory){let j={format:'physics-training-bank-v1',exportedAt:now(),questions:onlyHistory?[]:state.questions,events:state.events,meta:onlyHistory?{}:state.meta};download(new Blob([JSON.stringify(j)],{type:'application/json'}),(onlyHistory?'题目使用历史_':'私人题库完整备份_')+today()+'.json');tell('本地备份已导出，请避免公开传播第三方题目。')}
-async function restore(file){let j=JSON.parse(await file.text());if(j.format!=='physics-training-bank-v1')throw Error('这不是可识别的题库备份');if(!confirm('确定导入备份？同ID记录会更新，其他记录保留。'))return;await restoreObject(j);render();tell('已恢复题库与使用记录')}
-async function restoreObject(j){for(let q of j.questions||[]){let i=state.questions.findIndex(x=>x.id===q.id);if(i>=0)state.questions[i]=q;else state.questions.push(q);applyConcepts(q);await put('questions',q)}for(let e of j.events||[]){let i=state.events.findIndex(x=>x.id===e.id);if(i>=0)state.events[i]=e;else state.events.push(e);await put('events',e)}state.meta={...state.meta,...(j.meta||{})};await put('settings',{id:'meta',value:state.meta});window.StudentPracticeExport?.renderHistory?.()}
+async function backup(onlyHistory){let j={settings:onlyHistory?[]:await getAll('settings'),format:'physics-training-bank-v1',exportedAt:now(),questions:onlyHistory?[]:state.questions,events:state.events,meta:onlyHistory?{}:state.meta};download(new Blob([JSON.stringify(j)],{type:'application/json'}),(onlyHistory?'题目使用历史_':'私人题库完整备份_')+today()+'.json');tell('本地备份已导出，请避免公开传播第三方题目。')}
+async function restore(file){let j;if(/\.zip$/i.test(file.name)){const zip=await JSZip.loadAsync(await file.arrayBuffer()),f=zip.file('teacher-bank-backup.json');if(!f)throw Error('请在更新题库版本入口导入候选包；恢复备份仅接受完整备份ZIP');j=JSON.parse(await f.async('text'))}else j=JSON.parse(await file.text());if(j.format!=='physics-training-bank-v1')throw Error('这不是可识别的题库备份');if(!confirm('确定导入备份？同ID记录会更新，其他记录保留。'))return;await restoreObject(j);render();tell('已恢复题库与使用记录')}
+async function restoreObject(j){
+ const qs=structuredClone(j.questions||[]),events=structuredClone(j.events||[]),settings=j.settings||[];for(const q of qs)applyConcepts(q);const meta={...state.meta,...(j.meta||{})};
+ await new Promise((yes,no)=>{const tx=db.transaction(['questions','events','settings'],'readwrite');for(const q of qs)tx.objectStore('questions').put(q);for(const e of events)tx.objectStore('events').put(e);for(const setting of settings)if(setting&&typeof setting.id==='string')tx.objectStore('settings').put(setting);tx.objectStore('settings').put({id:'meta',value:meta});tx.oncomplete=yes;tx.onerror=()=>no(tx.error);tx.onabort=()=>no(tx.error||Error('备份恢复失败，未应用部分内容'))});
+ const merged=new Map(state.questions.map(q=>[q.id,q]));for(const q of qs)merged.set(q.id,q);state.questions=[...merged.values()];const ev=new Map(state.events.map(e=>[e.id,e]));for(const e of events)ev.set(e.id,e);state.events=[...ev.values()];state.meta=meta;invalidateWordDownload();window.StudentPracticeExport?.renderHistory?.();
+}
 async function assignBasket(){if(!state.basket.length)return tell('试题篮为空',true);let cl=prompt('实际布置给哪个班级？',$('classFilter').value||'801');if(!cl||!cl.trim())return;let day=prompt('实际布置日期（YYYY-MM-DD）',today());if(!day)return;if(!/^\d{4}-\d{2}-\d{2}$/.test(day))return tell('日期格式错误',true);let title=prompt('练习名称','物理精准练习')||'物理精准练习';let items=state.basket.map(id=>({id,revision:findQuestion(id)?.revision||1})),fingerprint=hash(cl.trim()+'|'+day+'|'+items.map(x=>x.id).sort().join('|'));if(state.events.some(e=>e.status==='assigned'&&e.fingerprint===fingerprint))return tell('同班同日同一套题已记录，避免重复计次。',true);if(!confirm('已经实际布置或印发给学生？只有确认后才计入使用次数。'))return;let ev={id:uid(),fingerprint,className:cl.trim(),date:day+'T12:00:00',title,items,status:'assigned',createdAt:now()};state.events.push(ev);await put('events',ev);$('classFilter').value=cl.trim();render();tell('已记录 '+cl+' 班实际布置 '+items.length+'题。')}
 
 function printable(id){
@@ -242,8 +279,8 @@ function paperImages(imgs){return imgs.length?'<div class="images">'+imgs.map(s=
 const PAPER_STYLE='@page{size:A4;margin:14mm 15mm}*{box-sizing:border-box}.sheet{background:white;color:#111;font:11pt "Microsoft YaHei",SimSun,sans-serif;height:269mm;overflow:hidden;position:relative;page-break-after:always}.sheet:last-child{page-break-after:auto}.sheet h2{text-align:center;font-size:17pt;margin:0 0 5mm}.sheet .meta{text-align:center;font-size:10pt;border-bottom:1px solid #888;padding-bottom:4mm;margin-bottom:5mm}.sheet .questions.double{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9mm;align-items:start}.sheet .paper-column{min-width:0}.sheet .question,.sheet .answer{break-inside:avoid;page-break-inside:avoid;margin-bottom:5mm}.sheet .stem{white-space:pre-wrap;line-height:1.58;margin-bottom:3mm}.sheet .images{display:flex;flex-wrap:wrap;gap:3mm}.sheet .images img{max-width:100%;max-height:67mm;width:auto;height:auto;object-fit:contain}.sheet .double .images img{max-height:49.5mm}.sheet .answer .images img{max-height:67mm}.sheet .double .answer .images img{max-height:49.5mm}.sheet .answer p{white-space:pre-wrap;line-height:1.6;margin:2mm 0}.sheet .feedback{width:100%;border-collapse:collapse;font-size:9pt;margin-top:4mm}.sheet .feedback td,.sheet .feedback th{border:1px solid #aaa;padding:2mm;text-align:left}.sheet .foot{position:absolute;bottom:0;width:100%;display:flex;justify-content:space-between;color:#777;font-size:9pt}';
 function renderPaperQuestions(items,layout,answerSide){
  const blocks=items.map((item,i)=>answerSide
-   ?'<div class="answer"><b>'+(i+1)+'.</b>'+paperImages(item.answerImages)+'<p>'+esc(item.answer)+'</p></div>'
-   :'<div class="question"><div class="stem"><b>'+(i+1)+'.</b> '+esc(item.stem)+'</div>'+paperImages(item.images)+'</div>');
+   ?'<div class="answer"><b>'+(i+1)+'.</b>'+paperImages(item.answerImages)+'<p>'+(window.PhysicsMathContent?.html(item.answer)||esc(item.answer))+'</p></div>'
+   :'<div class="question"><div class="stem"><b>'+(i+1)+'.</b> '+(window.PhysicsMathContent?.html(item.stem)||esc(item.stem))+'</div>'+paperImages(item.images)+'</div>');
  if(layout==='double'){
    const col=(parity)=>blocks.filter((x,i)=>i%2===parity).join('');
    return '<div class="questions double"><div class="paper-column">'+col(0)+'</div><div class="paper-column">'+col(1)+'</div></div>';

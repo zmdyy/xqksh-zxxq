@@ -1,7 +1,7 @@
 {
-  "version": "2.4",
-  "update_date": "2026-09-29",
-  "total_count": 325,
+  "version": "2.6",
+  "update_date": "2026-10-12",
+  "total_count": 338,
   "modules": [
     "力学",
     "热学",
@@ -2069,7 +2069,7 @@
       "chapter": "浮力",
       "difficulty": 1,
       "grade": 8,
-      "core_definition": "ρ物<ρ液漂浮，ρ物=ρ液悬浮，ρ物>ρ液下沉。",
+      "core_definition": "浸没物体所受浮力大于、等于、小于重力时，分别上浮、悬浮、下沉；漂浮时浮力等于重力。对不吸液、不透液且可用整体平均密度描述的物体，可结合物体与液体密度比较判断最终状态。",
       "formula": "无",
       "units": "",
       "history": {},
@@ -8782,14 +8782,15 @@
       "aliases": [
         "原子的结构"
       ],
-      "node_type": "explanatory",
+      "node_type": "core",
       "x": 0,
       "y": 0,
       "z": 0,
       "size": 8,
       "color": "",
       "brightness": 1,
-      "star_level": 3
+      "star_level": 3,
+      "annotation_enabled": true
     },
     {
       "id": "micro_nucleus",
@@ -10421,14 +10422,15 @@
       "aliases": [
         "能量利用效率"
       ],
-      "node_type": "explanatory",
+      "node_type": "core",
       "x": 0,
       "y": 0,
       "z": 0,
       "size": 8,
       "color": "",
       "brightness": 1,
-      "star_level": 3
+      "star_level": 3,
+      "annotation_enabled": true
     },
     {
       "id": "energy_chemical_energy",
@@ -13617,6 +13619,556 @@
       "star_level": 4,
       "node_type": "satellite",
       "satellite_kind": "cross"
+    },
+    {
+      "id": "mech_measurement_error",
+      "name": "测量误差",
+      "module": "力学",
+      "chapter": "机械运动",
+      "node_type": "core",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "测量值与真实值之间的差异。误差不能完全消除，多次测量求平均值等方法可减小误差；错误操作属于错误。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "mech_length_measure",
+        "mech_time_measure"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -33,
+      "y": 7,
+      "z": 88,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 2,
+      "coverageAudit": {
+        "at": "2026-10-12",
+        "basis": "课程知识结构与题库语义覆盖复核"
+      }
+    },
+    {
+      "id": "mech_volume_measurement",
+      "name": "体积测量",
+      "module": "力学",
+      "chapter": "质量与密度",
+      "node_type": "core",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "用量筒测量液体体积，视线与凹液面最低处相平；用排液法测不溶于液体且能浸没的固体体积。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "mech_length_measure"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -33,
+      "y": 7,
+      "z": 92,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 2,
+      "coverageAudit": {
+        "at": "2026-10-12",
+        "basis": "课程知识结构与题库语义覆盖复核"
+      }
+    },
+    {
+      "id": "mech_spring_dynamometer",
+      "name": "弹簧测力计",
+      "module": "力学",
+      "chapter": "力",
+      "node_type": "core",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "在弹性限度内，弹簧伸长量与所受拉力成正比。使用时检查量程、分度值和零点，拉力沿弹簧轴线，读数时视线正对刻度。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "mech_force_elastic"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -103,
+      "y": -38,
+      "z": -64,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 2,
+      "coverageAudit": {
+        "at": "2026-10-12",
+        "basis": "课程知识结构与题库语义覆盖复核"
+      }
+    },
+    {
+      "id": "mech_force_interaction",
+      "name": "力的相互作用",
+      "module": "力学",
+      "chapter": "力",
+      "node_type": "core",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "物体间力的作用是相互的。一对相互作用力大小相等、方向相反、作用在不同物体上，同时产生和消失。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "mech_force_concept"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -28,
+      "y": 12,
+      "z": 0,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 2,
+      "coverageAudit": {
+        "at": "2026-10-12",
+        "basis": "课程知识结构与题库语义覆盖复核"
+      }
+    },
+    {
+      "id": "mech_motion_relativity",
+      "name": "运动和静止的相对性",
+      "module": "力学",
+      "chapter": "机械运动",
+      "node_type": "core",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "运动或静止是相对于所选参照物而言的；同一物体相对于不同参照物可以有不同的运动状态。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "mech_motion_reference"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 0,
+      "y": -3,
+      "z": 72,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 2,
+      "coverageAudit": {
+        "at": "2026-10-12",
+        "basis": "课程知识结构与题库语义覆盖复核"
+      }
+    },
+    {
+      "id": "elec_household_wiring",
+      "name": "家庭电路接线规则",
+      "module": "电磁学",
+      "chapter": "电功率",
+      "node_type": "core",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "用电器和插座并联；开关串联在火线与被控制用电器之间。螺口灯座中心触点经开关接火线，螺纹接零线；三孔插座按左零右火上接地连接。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "elec_家庭电路",
+        "elec_安全用电",
+        "elec_parallel_circuit"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 122,
+      "y": -138,
+      "z": -44,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 2,
+      "coverageAudit": {
+        "at": "2026-10-12",
+        "basis": "课程知识结构与题库语义覆盖复核"
+      }
+    },
+    {
+      "id": "elec_semiconductor",
+      "name": "半导体",
+      "module": "电磁学",
+      "chapter": "电流与电路",
+      "node_type": "core",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "半导体的导电能力介于导体和绝缘体之间，并可随温度、光照或掺杂等条件改变；可用于二极管、光敏和热敏器件。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "elec_导体与绝缘体"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -58,
+      "y": -88,
+      "z": 127,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 2,
+      "coverageAudit": {
+        "at": "2026-10-12",
+        "basis": "课程知识结构与题库语义覆盖复核"
+      }
+    },
+    {
+      "id": "elec_superconductor",
+      "name": "超导体",
+      "module": "电磁学",
+      "chapter": "电流与电路",
+      "node_type": "core",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "某些材料在特定条件下电阻降为零，称为超导现象；超导应用需要满足材料和温度等条件。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "elec_resistance"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -8,
+      "y": -108,
+      "z": -34,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 2,
+      "coverageAudit": {
+        "at": "2026-10-12",
+        "basis": "课程知识结构与题库语义覆盖复核"
+      }
+    },
+    {
+      "id": "therm_material_states",
+      "name": "物质的三态",
+      "module": "热学",
+      "chapter": "物态变化",
+      "node_type": "core",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "固态通常有一定形状和体积，液态通常有一定体积而无固定形状，气态通常没有固定形状和体积；状态变化伴随吸热或放热。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "therm_物质的构成"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -78,
+      "y": 12,
+      "z": 150,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 2,
+      "coverageAudit": {
+        "at": "2026-10-12",
+        "basis": "课程知识结构与题库语义覆盖复核"
+      }
+    },
+    {
+      "id": "micro_universe_structure",
+      "name": "宇宙的层次结构",
+      "module": "跨学科支撑",
+      "chapter": "物质与宇宙",
+      "node_type": "core",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "地球属于太阳系，太阳系属于银河系。认识宇宙中天体及其层次关系，并区分宏观宇宙与微观物质结构。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "energy_solar_energy"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": 12,
+      "y": -18,
+      "z": 54,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 2,
+      "coverageAudit": {
+        "at": "2026-10-12",
+        "basis": "课程知识结构与题库语义覆盖复核"
+      }
+    },
+    {
+      "id": "micro_nanometer_material",
+      "name": "纳米材料",
+      "module": "跨学科支撑",
+      "chapter": "物质与材料",
+      "node_type": "core",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "纳米是长度单位，1 nm=10⁻⁹ m。纳米尺度材料的部分性质可与宏观材料不同，应结合具体材料和应用讨论。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "therm_物质的构成",
+        "math_unit_conversion"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -78,
+      "y": 12,
+      "z": 158,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 2,
+      "coverageAudit": {
+        "at": "2026-10-12",
+        "basis": "课程知识结构与题库语义覆盖复核"
+      }
+    },
+    {
+      "id": "mech_material_elasticity",
+      "name": "物质的弹性",
+      "module": "力学",
+      "chapter": "力",
+      "node_type": "core",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "物体受力时发生形变，撤去力后能够恢复原状，这种物理属性称为弹性。超过弹性限度可能不能完全恢复；应区分材料的弹性、弹性形变和形变产生的弹力。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "therm_material_states"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -66,
+      "y": -6,
+      "z": 168,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 2,
+      "coverageAudit": {
+        "at": "2026-10-12",
+        "basis": "课程知识结构与题库语义覆盖复核"
+      }
+    },
+    {
+      "id": "therm_thermal_conductivity",
+      "name": "导热性",
+      "module": "热学",
+      "chapter": "内能",
+      "node_type": "core",
+      "difficulty": 1,
+      "grade": 8,
+      "core_definition": "导热性描述材料通过热传导传递热量的能力。比较材料导热性能时应控制形状尺寸、温差等条件；导热快慢不等于吸收相同热量后温度变化大小，不能与比热容混淆。",
+      "formula": "无",
+      "units": "",
+      "history": {},
+      "key_experiments": [],
+      "applications": [],
+      "common_mistakes": [],
+      "exam_points": {
+        "frequency": 2,
+        "question_types": [
+          "选择题",
+          "填空题"
+        ]
+      },
+      "prerequisites": [
+        "therm_热传递"
+      ],
+      "follow_ups": [],
+      "parallels": [],
+      "cross_module": [],
+      "cross_disciplinary": [],
+      "tags": [],
+      "x": -148,
+      "y": -56,
+      "z": 114,
+      "size": 8,
+      "color": "",
+      "brightness": 1,
+      "star_level": 2,
+      "coverageAudit": {
+        "at": "2026-10-12",
+        "basis": "课程知识结构与题库语义覆盖复核"
+      }
     }
   ]
 }

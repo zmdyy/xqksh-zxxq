@@ -22,13 +22,13 @@ requireText(rootHtml, 'id="qkKnowledgePlanetBtn"', '小题分析缺少“知识�
 requireText(rootHtml, "window.open('knowledge/index.html','_blank','noopener')", '知识星球按钮未绑定本地页面');
 requireText(rootHtml, "return !k.node_type || k.node_type === 'core';", 'AI标注词表未限制为核心知识点');
 requireText(rootHtml, "knowledge/index.html?concept_id=", '小题知识点未使用 concept_id 深链');
-requireText(rootHtml, "|| '2.4'", 'AI标注包兜底知识库版本不是 2.4');
+requireText(rootHtml, "|| '2.5'", 'AI标注包兜底知识库版本不是 2.5');
 requireText(rootHtml, 'function collectStudentErrorsFromAllBatches(studentName, studentClass)', '错题本未使用学生身份辅助信息');
 requireText(rootHtml, 'batchSet[batch.id] = true', '错题本跨批次统计仍按批次名称或非错题批次计数');
 requireText(rootHtml, 'subjectSet[subjName] = true', '错题本科目统计缺失');
 requireText(rootHtml, 'window.getErrorNotebookQuestionSnapshots = getErrorNotebookQuestionSnapshots', '错题本未提供原卷截图导出接口');
 requireText(rootHtml, 'detailItemNames: e.detailItemNames || [e.itemName]', '错题本导出未保留合并子问信息');
-requireText(rootHtml, 'notebook-docx.js?v=8', '错题本Word生成器版本未更新');
+requireText(rootHtml, 'notebook-docx.js?v=14', '错题本Word生成器版本未更新');
 requireText(rootHtml, "MINERU_CLOUD_AGENT_BASE = 'https://mineru.net/api/v1/agent'", 'MinerU轻量解析未接官方云端Agent API');
 requireText(rootHtml, "MINERU_CLOUD_V4_BASE = 'https://mineru.net/api/v4'", 'MinerU精准解析未接官方V4 API');
 requireText(rootHtml, 'function mineruEmbedZipAssets', 'MinerU精准结果未内嵌ZIP图片');
@@ -37,8 +37,8 @@ requireText(rootHtml, 'async function parsePdfToMarkdown_MinerUPreciseCloud', '�
 requireText(rootHtml, 'id="mineruToken"', 'MinerU精准模式缺少独立Token输入');
 requireText(rootHtml, 'parsePdfToMarkdown_MinerULocalProxy', 'MinerU缺少本地兼容后备');
 requireText(rootHtml, 'async function findMineruProxyBase()', 'MinerU未探测同源本地代理');
-requireText(rootHtml, "candidates.push(window.location.origin)", 'MinerU未优先使用同源代理');
-const mineruEntryCount = (rootHtml.match(/async function parsePdfToMarkdown_MinerU\(file, progressCb, precise\)/g) || []).length;
+requireText(rootHtml, "base: window.location.origin", 'MinerU未优先使用同源代理');
+const mineruEntryCount = (rootHtml.match(/async function parsePdfToMarkdown_MinerU\(file, progressCb, precise(?:Model)?\)/g) || []).length;
 if (mineruEntryCount !== 1) errors.push('MinerU主入口函数数量异常: ' + mineruEntryCount);
 if (/defaultKey:\s*['"][^'"]+['"]/.test(rootHtml)) errors.push('公开页面仍包含预填API密钥');
 

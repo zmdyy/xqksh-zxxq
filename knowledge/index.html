@@ -902,6 +902,8 @@ body.diagnostic-modal-open{overflow:hidden}
 <script src="vendor/pinyinjs/pinyin_dict_withtone.js"></script>
 <script src="vendor/pinyinjs/pinyinUtil.js"></script>
 <script src="../data/knowledge/knowledge-db.js"></script>
+<script src="../data/knowledge/concept-assessment-data.js?v=20261012v5"></script>
+<script src="../data/knowledge/concept-assessment.js?v=20261012v5"></script>
 <script src="力学思维拓展数据库.js"></script>
 <script src="电磁学思维拓展数据库.js"></script>
 <script src="光学思维拓展数据库.js"></script>
@@ -1305,6 +1307,8 @@ function saveLearned(data) {
 function isLearned(id) {
   return !!(getLearned()[id]);
 }
+
+let currentModule = 'all';
 
 // Enhanced state management
 const stateManager = {
@@ -3332,8 +3336,9 @@ function renderDiagnosticIntro(star) {
   }
   panelDiagnosticWrap.style.display = 'block';
   const bankLink = '<a href="../question-bank/index.html?concept_id=' + encodeURIComponent(star.id) + '" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;margin-top:10px;padding:11px;border-radius:10px;background:#155e75;color:white;font-weight:800">▣ 此知识点的精准训练题库 ↗</a>';
+  const methods=window.PhysicsConceptAssessment?.catalogForConcept(star.id).filter(m=>m.concept_ids?.length)||[];const methodLinks=methods.length?'<div class="diag-intro"><b>具体考法</b><br>'+methods.map(m=>'<a style="color:#c8f4ff;display:inline-block;margin:5px" href="../question-bank/index.html?concept_id='+encodeURIComponent(star.id)+'&assessment_id='+encodeURIComponent(m.id)+'" target="_blank" rel="noopener">'+m.name+'</a>').join('')+'</div>':'';
   if (!group) {
-    panelDiagnostic.innerHTML = '<div class="diag-intro">该知识点暂无独立迷思诊断题，可进入训练题库筛选巩固题。</div>' + bankLink;
+    panelDiagnostic.innerHTML = '<div class="diag-intro">该知识点暂无独立迷思诊断题，可进入训练题库筛选巩固题。</div>' + bankLink + methodLinks;
     return;
   }
   const last = getDiagnosticResult(star.id);
@@ -3343,7 +3348,7 @@ function renderDiagnosticIntro(star) {
     (last ? '<br><span style="color:rgba(216,179,90,.9)">上次结果：' + last.correct_count + '/' + last.total + '，可重新诊断。</span>' : '') +
     '</div>' +
     '<button type="button" class="diag-btn" id="diagStartBtn" style="margin-top:11px">打开迷思诊断（' + group.questions.length + '题）</button>';
-  panelDiagnostic.insertAdjacentHTML('beforeend', bankLink);
+  panelDiagnostic.insertAdjacentHTML('beforeend', bankLink + methodLinks);
   const btn = document.getElementById('diagStartBtn');
   if (btn) btn.onclick = function(e) {
     e.preventDefault(); e.stopPropagation();
@@ -4100,7 +4105,7 @@ function flyToOverview() {
 const moduleBtns = document.querySelectorAll('.module-btn');
 const sidebarBtns = document.querySelectorAll('#sidebar .s-btn');
 
-let currentModule = 'all';
+
 
 function setActiveModule(mod) {
   currentModule = mod;
