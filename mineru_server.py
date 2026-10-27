@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import base64
 import io
+import json
 import mimetypes
 import os
 import re
@@ -165,7 +166,7 @@ def poll_precise(batch_id, token, file_name, data_id, timeout=1200):
     raise TimeoutError("MinerU precise parse timeout")
 
 
-def extract_precise_markdown(zip_url):
+def extract_precise_result(zip_url):
     zip_resp = requests.get(zip_url, timeout=TIMEOUT)
     zip_resp.raise_for_status()
     with zipfile.ZipFile(io.BytesIO(zip_resp.content)) as zf:
@@ -176,7 +177,30 @@ def extract_precise_markdown(zip_url):
             raise RuntimeError("No Markdown file found in MinerU result ZIP")
         md_name = md_names[0]
         markdown = zf.read(md_name).decode("utf-8", errors="replace")
-        return embed_zip_assets(markdown, zf, md_name)
+        # Prefer middle JSON: it carries page dimensions and native geometry.
+        names = zf.namelist()
+        candidates = [(n, "middle_json", None) for n in names if n.lower().endswith(("_middle.json", "middle_json.json"))]
+        candidates += [(n, "content_list", "1000") for n in names if n.lower().endswith(("_content_list.json", "content_list.json"))]
+        def has_coordinates(value):
+            if isinstance(value, dict):
+                if isinstance(value.get("bbox"), list) and len(value["bbox"]) == 4:
+                    return True
+                return any(has_coordinates(v) for v in value.values())
+            if isinstance(value, list):
+                return any(has_coordinates(v) for v in value)
+            return False
+
+        layout = None
+        for name, fmt, coordinates in candidates:
+            try:
+                data = json.loads(zf.read(name).decode("utf-8"))
+                if not has_coordinates(data):
+                    continue
+                layout = {"format": fmt, "coordinate_system": coordinates, "data": data}
+                break
+            except (ValueError, UnicodeDecodeError):
+                app.logger.warning("MinerU layout JSON could not be read")
+        return embed_zip_assets(markdown, zf, md_name), layout
 
 def normalize_remote_markdown_assets(markdown, markdown_url):
     base = urljoin(markdown_url, ".")
@@ -429,12 +453,13 @@ def precise_status():
         if not zip_url:
             raise RuntimeError("MinerU did not return full_zip_url")
 
-        markdown = extract_precise_markdown(zip_url)
+        markdown, layout = extract_precise_result(zip_url)
         app.logger.info("MinerU precise completed batch=%s", batch_id)
         return jsonify(
             ok=True,
             state="done",
             markdown=markdown,
+            layout=layout,
             batch_id=batch_id,
             full_zip_url=zip_url,
             extract_progress=progress,
@@ -497,11 +522,12 @@ def parse_file_precise():
         if not zip_url:
             raise RuntimeError("MinerU did not return full_zip_url")
 
-        markdown = extract_precise_markdown(zip_url)
+        markdown, layout = extract_precise_result(zip_url)
 
         return jsonify(
             ok=True,
             markdown=markdown,
+            layout=layout,
             batch_id=batch_id,
             full_zip_url=zip_url,
             source="mineru_precise",

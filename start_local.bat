@@ -1,38 +1,38 @@
 @echo off
 chcp 65001 >nul
 cd /d "%~dp0"
-
-echo ============================================
-echo xqksh-zxxq local server + MinerU proxy
-echo ============================================
-echo.
-
-echo [1/3] Checking Python...
-python --version
+setlocal
+set "PYTHON_CMD=python"
+python -c "import sys; assert sys.version_info >= (3,10)" >nul 2>nul
 if errorlevel 1 (
-  echo Python not found. Please install Python 3.10+ first.
-  pause
-  exit /b 1
-)
-
-echo [2/3] Checking dependencies...
-python -c "import flask,requests" 2>nul
-if errorlevel 1 (
-  echo Installing dependencies...
-  python -m pip install -r requirements-mineru.txt
+  set "PYTHON_CMD=py -3"
+  py -3 -c "import sys; assert sys.version_info >= (3,10)" >nul 2>nul
   if errorlevel 1 (
-    echo Dependency installation failed.
+    echo Python 3.10 or newer is required. Install Python and enable Add Python to PATH.
     pause
     exit /b 1
   )
 )
-
-echo [3/3] Starting same-origin web app and MinerU proxy...
-echo Open: http://127.0.0.1:5500/index.html
-echo Health: http://127.0.0.1:5500/health
-echo.
-set MINERU_PORT=5500
-set MINERU_SERVE_APP=1
+if not exist ".venv\Scripts\python.exe" (
+  echo Creating local Python environment...
+  %PYTHON_CMD% -m venv .venv
+  if errorlevel 1 goto failed
+)
+".venv\Scripts\python.exe" -c "import flask,requests" >nul 2>nul
+if errorlevel 1 (
+  echo Installing web service dependencies...
+  ".venv\Scripts\python.exe" -m pip install -r requirements-mineru.txt
+  if errorlevel 1 goto failed
+)
+set "MINERU_PORT=5500"
+set "MINERU_SERVE_APP=1"
+echo Open http://127.0.0.1:5500/index.html
+echo Keep this window open while using the application.
 start "" cmd /c "timeout /t 2 /nobreak >nul & start http://127.0.0.1:5500/index.html"
-python mineru_server.py
+".venv\Scripts\python.exe" mineru_server.py
 pause
+exit /b
+:failed
+echo Setup failed. Check the error above and your network connection, then run this file again.
+pause
+exit /b 1

@@ -146,3 +146,9 @@ location.reload();
 ### Render 免费实例说明
 
 免费 Web Service 闲置后会休眠，首次请求可能需要较长时间唤醒。前端针对公网代理使用更长的健康检查等待时间，避免把冷启动误判成服务故障。
+
+## 空白原卷切题复核
+
+支持整卷连续滚动、MinerU 版面坐标候选、人工调整与跨页多区域、重叠核对及复核备份。公共原卷复核后，个人错题本按小题失分自动复用区域，并支持 Word 与打印／保存 PDF。
+
+本地双击 `start_local.bat`，在设置中填写自己的 MinerU Token；无需部署本地 MinerU 模型。操作与验证边界见 [本地使用说明](LOCAL_PAPER_REVIEW.md)。切题及宿主适配测试：`npm run test:paper`。
